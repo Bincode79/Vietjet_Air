@@ -410,8 +410,12 @@ export default function PassengerInfoStep({
                             id={`passenger-${i}-name`}
                             name={`passenger-${i}-name`}
                             type="text"
+                            autoCapitalize="characters"
+                            className="uppercase font-medium"
                             value={p.name}
-                            onChange={(e) => updatePassenger(i, 'name', e.target.value)}
+                            onChange={(e) =>
+                              updatePassenger(i, 'name', e.target.value.toUpperCase())
+                            }
                             required
                           />
                         </UnderlineField>
@@ -426,8 +430,12 @@ export default function PassengerInfoStep({
                             id={`passenger-${i}-firstName`}
                             name={`passenger-${i}-firstName`}
                             type="text"
+                            autoCapitalize="characters"
+                            className="uppercase font-medium"
                             value={p.firstName || ''}
-                            onChange={(e) => updatePassenger(i, 'firstName', e.target.value)}
+                            onChange={(e) =>
+                              updatePassenger(i, 'firstName', e.target.value.toUpperCase())
+                            }
                             required
                           />
                         </UnderlineField>
@@ -575,8 +583,12 @@ export default function PassengerInfoStep({
                         id={`passenger-${i}-idNumber`}
                         name={`passenger-${i}-idNumber`}
                         type="text"
+                        autoCapitalize="characters"
+                        className="uppercase font-medium"
                         value={p.idNumber}
-                        onChange={(e) => updatePassenger(i, 'idNumber', e.target.value)}
+                        onChange={(e) =>
+                          updatePassenger(i, 'idNumber', e.target.value.toUpperCase())
+                        }
                         required={requiresIdNumber(p.type)}
                       />
                     </UnderlineField>
