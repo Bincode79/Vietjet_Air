@@ -146,8 +146,6 @@ export default function HeroSection() {
           }}
           aria-hidden="true"
         />
-
-
       </div>
 
       {/* Dải đặt vé 380px neo mép phải container 1200px chuẩn vietjetair.com */}
