@@ -1,72 +1,49 @@
-# NHIỆM VỤ ĐIỀU PHỐI CURSOR AGENT: HOÀN THIỆN GIAO DIỆN MOBILE CHUẨN 1:1 VIETJET AIR
+# BẢN PHÂN CHIA NHIỆM VỤ ĐẨY NHANH TIẾN ĐỘ DỰ ÁN (ORCA x CURSOR)
 
-## 1. Mục tiêu
-Thực hiện đồng bộ 100% giao diện Mobile cho trang Tìm vé / Lựa chọn chuyến bay (`/tim-ve`) theo đúng chuẩn thiết kế của Vietjet Air trên điện thoại (độ phân giải Responsive 472×915 và 390×844), khắc phục triệt để lỗi bị tường lửa WAF của trang web thật chặn.
-
----
-
-## 2. Đường dẫn kiểm tra nội bộ (Localhost Preview)
-Không mở trực tiếp `newweb.vietjetair.com/vi/select-flight` vì cơ chế AWS WAF 403 và thiếu session.
-Hãy sử dụng đường dẫn kiểm tra nội bộ đã tích hợp sẵn dữ liệu chuẩn:
-```text
-http://localhost:4028/tim-ve?from=HAN&to=SGN&depart=2026-11-16&return=2026-11-22&currency=VND&adult=1
-```
+## 1. Nguyên tắc cốt lõi & Cam kết
+1. **Giữ nguyên 100% giao diện trang chủ (`/trang-chu`, `/vi`, `HeroSection.tsx`)**: Không thay đổi layout hoặc xóa bỏ banner, form tìm kiếm hiện hữu.
+2. **Tập trung tối đa cho Mobile**: Người dùng chủ yếu truy cập bằng smartphone (viewport chuẩn: 390×844 và 440×956).
+3. **Phân chia độc lập - Không xung đột mã nguồn**:
+   - **Orca (Antigravity):** Phụ trách Core API, logic thanh toán, xác thực PNR, bảo mật dữ liệu, tạo file PDF và vận hành hệ thống máy chủ VPS (`https://vietjet.shop`).
+   - **Cursor Agent:** Phụ trách Giao diện UI/UX Mobile (Bước 2: Hành khách, Bước 3: Ghế & Dịch vụ, Bước 4: Thanh toán VietQR), trải nghiệm chạm vuốt và căn chỉnh CSS.
 
 ---
 
-## 3. Danh sách các hạng mục cần chỉnh sửa mã nguồn
+## 2. Phân công công việc chi tiết cho Cursor Agent (Frontend & UI Mobile)
 
-### Hạng mục 1: Băng vàng phụ dưới Header (`src/app/tim-ve/components/FlightBookingResultsWrapper.tsx`)
-1. **Tràn viền màn hình (Full-bleed):** Băng vàng (`#FFC700` hoặc gradient vàng Vietjet) chiếm 100% chiều ngang màn hình mobile, dính sát dưới Header đỏ.
-2. **Cụm bên trái:** Nút Pill bo tròn nền trắng:
-   - Chữ "Tổng" màu xám đậm.
-   - Số tiền "0 VND" màu đỏ đậm `#C4121A` in đậm (font-bold).
-   - Biểu tượng mũi tên nhỏ chỉ xuống `▼`.
-   - Sự kiện bấm: mở modal chi tiết đặt chỗ (`setShowSummaryModal(true)`).
-3. **Cụm bên phải:** 4 vòng tròn bước đặt vé:
-   - Bước 1 (Chọn chuyến): Nền xanh lá `#43B02A`, icon máy bay trắng xoay 45°.
-   - Bước 2, 3, 4: Nền trắng viền vàng hoặc nền vàng cam với icon hành khách, giỏ hàng, dấu $.
+### Nhiệm vụ C-1: Tối ưu UI Mobile Bước 2 — Nhập Thông Tin Khách Hàng (`src/features/flights/components/PassengerInfoStep.tsx`)
+- **Mục tiêu:** Thao tác điền form trên điện thoại dễ dàng, không bị tràn màn hình hay che khuất bởi bàn phím ảo.
+- **Yêu cầu chi tiết:**
+  1. Hỗ trợ tự động viết hoa (Auto-capitalization `uppercase`) cho ô Họ và Tên đệm & Tên.
+  2. Nút toggle chọn danh xưng (`Ông` / `Bà` / `Cô` / `Bé trai` / `Bé gái`) dạng nút bấm bo tròn to, dễ bấm bằng ngón tay cái.
+  3. Form nhập Ngày sinh có date-picker thân thiện trên mobile.
+  4. Nút bấm `Tiếp tục` màu vàng nổi bật cố định ở chân trang.
 
----
+### Nhiệm vụ C-2: Tối ưu UI Mobile Bước 3 — Chọn Ghế & Dịch Vụ (`src/features/flights/components/AddonsStep.tsx`, `SeatMap.tsx`)
+- **Mục tiêu:** Trực quan hóa sơ đồ máy bay Airbus A320/A321 trên màn hình dọc.
+- **Yêu cầu chi tiết:**
+  1. Sơ đồ ghế 3-3 hỗ trợ thu phóng và cuộn dọc mượt mà; chú thích màu ghế (Đỏ: Hàng đầu/Thoát hiểm, Vàng: Phía trước, Xanh: Tiêu chuẩn) rõ ràng.
+  2. Tab Hành lý ký gửi: Thẻ chọn gói kg dạng lưới 2 cột bo góc tròn mềm mại, hiển thị giá tiền rõ ràng.
 
-### Hạng mục 2: Khung ngày bay hình đám mây (`src/features/flights/components/FlightResultsStep.tsx`)
-1. **Ngày đang chọn (Active):**
-   - Tạo hình **Huy hiệu Đám mây vàng (Scalloped Cloud Badge)** viền đỏ cam mềm mại.
-   - Bên trong gồm: Thứ (ví dụ: `Thứ hai`), Ngày tháng (`7 tháng 12`), Giá khởi điểm (`Từ 890 000 VND` với số tiền in đậm đỏ/cam).
-2. **Các ngày còn lại (Inactive):**
-   - Khung thẻ trắng bo góc tinh tế.
-   - Thu nhỏ kích thước trên mobile để hiển thị vừa vặn 3 ngày liền kề cùng 2 nút mũi tên tròn `<` và `>` hai bên mà không làm vỡ khung màn hình.
-
----
-
-### Hạng mục 3: Bảng danh sách chuyến bay 5 cột (`src/features/flights/components/FlightResultsStep.tsx`)
-1. **Hàng Header 4 hạng vé:**
-   - 4 cột gắn liền: BUSINESS (nâu olive `#8E7022`), SkyBoss (đỏ `#C4121A`), Deluxe (cam `#F58220`), Eco (xanh lá `#43B02A`).
-   - Sử dụng logo SVG chính thức từ thư mục: `/images/fare-classes/*.svg`.
-2. **Cột thông tin chuyến bay bên trái:**
-   - Nền vàng gradient tươi sáng, hiển thị mã hiệu chuyến bay (ví dụ: `VJ134`), giờ đi và đến (`05:00 Đến 07:10`), thông tin tàu bay (`Airbus A321 - Bay thẳng`) và mũi tên chỉ xuống `v`.
-3. **4 Cột giá vé bên phải:**
-   - Xóa bỏ các pill nhãn chữ lặp lại ("BUSINESS", "SKYBOSS") bên trong từng ô giá trên mobile.
-   - Ô có vé: Số tiền hàng trên in đậm rõ nét (ví dụ: `1.790`), hàng dưới hiển thị đơn vị nghiêng màu xám (*`000 VND`*), kèm mũi tên trỏ xuống `v`.
-   - Ô hết vé: Icon máy bay gạch chéo trong vòng tròn + dòng chữ xám `Hết chỗ`.
+### Nhiệm vụ C-3: Tối ưu UI Mobile Bước 4 — Quét Mã VietQR & Thanh Toán (`src/app/thanh-toan/components/VietQRModal.tsx`)
+- **Mục tiêu:** Màn hình chuyển khoản ngân hàng tự động 1 chạm.
+- **Yêu cầu chi tiết:**
+  1. Mã VietQR căn giữa, tự co giãn vừa vặn màn hình điện thoại.
+  2. Nút `Tải ảnh QR về máy` và nút `Sao chép số tài khoản` / `Sao chép nội dung chuyển khoản` kèm hiệu ứng thông báo chớp nhoáng (toast).
+  3. Đồng hồ đếm ngược giữ chỗ nổi bật.
 
 ---
 
-### Hạng mục 4: Nút "Đi tiếp" nổi ở chân trang
-- Nút bấm bo tròn màu vàng đậm (`#FFC700` đến `#FFB800`), đổ bóng nhẹ `shadow-lg`, nằm cố định chính giữa đáy màn hình cách mép dưới 20px.
-- Chữ `Đi tiếp` màu đen in đậm rõ ràng.
+## 3. Phân công công việc cho Orca (Backend, PDF & Vận hành VPS)
 
----
+### Nhiệm vụ O-1: Bảo đảm API & Hiệu năng
+- Đảm bảo 133 test suites (1181 unit test) luôn pass 100%.
+- Kiểm soát xử lý đồng thời (concurrency) khi nhiều người dùng cùng khóa ghế.
 
-### Hạng mục 5: Nền trời mây và dải lượn sóng Vietjet
-- Nền trang màu xanh da trời nhạt với các cụm mây trắng mờ.
-- Chân trang có dải lượn sóng 3 màu thương hiệu: Đỏ - Vàng - Xanh lá.
+### Nhiệm vụ O-2: Hệ thống xuất vé PDF & Email
+- Duy trì engine PDF thuần Node.js (`src/lib/pdf/boarding-pass.ts`) với font nhúng KoHo sắc nét.
+- Xử lý gửi email vé điện tử đính kèm file PDF tự động sau khi nhận webhook VietQR.
 
----
-
-## 4. Kiểm tra và xác nhận (Verification)
-1. Chạy lệnh kiểm tra TypeScript:
-   ```bash
-   npm run type-check
-   ```
-2. Mở trình duyệt nội bộ của Cursor tại `http://localhost:4028/tim-ve?...` ở kích thước `472×915` để kiểm tra độ hoàn thiện 1:1.
+### Nhiệm vụ O-3: Triển khai & Giám sát Production VPS
+- Giữ vững zero-downtime trên VPS `https://vietjet.shop` qua PM2 cluster mode.
+- Cập nhật định kỳ ngay khi Cursor hoàn tất các nhánh frontend.
