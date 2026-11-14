@@ -78,15 +78,16 @@ describe('round-trip booking flow', () => {
   it('supports selecting outbound then return flight and advancing to passenger info', () => {
     render(<FlightBookingClient />);
 
+    // Băng chọn chặng bay (tablist) đã bị xoá — chuyển chặng là tự động.
+    expect(screen.queryByRole('tablist')).not.toBeInTheDocument();
+
     // Initially on outbound leg
-    expect(screen.getByRole('tab', { name: /chiều đi/i })).toHaveAttribute('aria-selected', 'true');
     expect(screen.getByRole('button', { name: 'Chọn chuyến đi VJ301' })).toBeInTheDocument();
 
     // Select outbound flight
     fireEvent.click(screen.getByRole('button', { name: 'Chọn chuyến đi VJ301' }));
 
     // Automatically switches to return leg
-    expect(screen.getByRole('tab', { name: /chiều về/i })).toHaveAttribute('aria-selected', 'true');
     expect(screen.getByRole('button', { name: 'Chọn chuyến về VJ302' })).toBeInTheDocument();
 
     // Select return flight -> advances to passenger info step

@@ -1,24 +1,14 @@
 'use client';
 
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { FlightBookingClient } from '@/features/bookings';
-import { PASSENGER_TYPE_LABELS, type PassengerType } from '@/features/bookings';
-import { getAirportCity } from '@/features/flights';
+import { type PassengerType } from '@/features/bookings';
 import { FareBenefitsModal } from '@/features/flights';
 import type { FareClassId } from '@/features/bookings/pricing';
 import { Icon } from '@/shared/components/ui';
-import { MdOutlinePerson } from 'react-icons/md';
 import BookingSummaryPanel from './BookingSummaryPanel';
 import PassengerDetailModal from './PassengerDetailModal';
-
-/** "2 Người lớn, 1 Trẻ em" — only the categories actually on the booking. */
-function describePax(counts: Record<PassengerType, number>): string {
-  return (['adult', 'child', 'infant'] as const)
-    .filter((type) => counts[type] > 0)
-    .map((type) => `${counts[type]} ${PASSENGER_TYPE_LABELS[type]}`)
-    .join(', ');
-}
 
 interface FlightBookingResultsWrapperProps {
   trip: string;
@@ -94,7 +84,6 @@ export default function FlightBookingResultsWrapper({
     child: Number(searchParams.get('child') ?? 0) || 0,
     infant: Number(searchParams.get('infant') ?? 0) || 0,
   }));
-  const tripLabel = isRoundTrip ? 'Chuyến bay khứ hồi' : 'Chuyến bay một chiều';
 
   const [bookings, setBookings] = useState<Record<'outbound' | 'inbound', SelectedBooking | null>>({
     outbound: null,
@@ -103,24 +92,10 @@ export default function FlightBookingResultsWrapper({
   const [continueSignal, setContinueSignal] = useState(0);
   const [showBenefitsModal, setShowBenefitsModal] = useState(false);
   const [showSummaryModal, setShowSummaryModal] = useState(false);
-  const [isPaxDropdownOpen, setIsPaxDropdownOpen] = useState(false);
   const [bookingStep, setBookingStep] = useState(1);
   /** Tổng tiền do bước con báo lên — panel tổng tính từ `bookings`, thanh đáy
       tính từ đây, nên hai nơi phải lấy cùng một nguồn. */
   const [clientTotal, setClientTotal] = useState<number>(0);
-
-  const paxRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!isPaxDropdownOpen) return;
-    const handleClickOutside = (e: MouseEvent) => {
-      if (!paxRef.current?.contains(e.target as Node)) {
-        setIsPaxDropdownOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [isPaxDropdownOpen]);
 
   const selectedBooking = bookings[bookingKey];
 
@@ -229,199 +204,12 @@ export default function FlightBookingResultsWrapper({
           `18px/700` uppercase. KHÔNG full-bleed: khối nằm trong container
           `1200px` (x=120 ở viewport 1440), nền trang bên ngoài là trắng. */}
       <div className="bg-white px-4 pt-4 lg:px-0" data-testid="trip-board">
-        <div className="vj-booking-strip mx-auto flex max-w-[1200px] items-center justify-between gap-x-3 px-4 py-2 text-gray-950">
-          <div className="flex items-center gap-1">
-            <span className="vj-booking-strip-title">{tripLabel}</span>
-            <span className="opacity-50">|</span>
-            <div className="relative inline-block" ref={paxRef}>
-              <button
-                type="button"
-                onClick={() => setIsPaxDropdownOpen((v) => !v)}
-                className="inline-flex items-center gap-1.5 cursor-pointer bg-white/80 hover:bg-white border border-amber-300/80 hover:border-amber-400 px-2.5 py-1 rounded-lg shadow-2xs transition-all focus:outline-none focus:ring-1 focus:ring-amber-400 text-xs font-semibold text-gray-900"
-                title="Thay đổi số lượng hành khách"
-              >
-                <MdOutlinePerson className="h-4 w-4 text-[var(--vj-red)] shrink-0" />
-                <span className="font-bold">{describePax(paxCounts)}</span>
-                <span className="text-2xs opacity-70">▼</span>
-              </button>
-
-              {isPaxDropdownOpen && (
-                <div className="absolute left-0 top-full mt-2 z-50 w-72 rounded-vj bg-white p-4 shadow-xl border border-gray-200 text-gray-800 text-xs">
-                  <div className="font-bold text-xs text-gray-900 mb-3 pb-2 border-b border-gray-100 flex justify-between items-center">
-                    <span>Chọn số lượng hành khách</span>
-                    <button
-                      type="button"
-                      onClick={() => setIsPaxDropdownOpen(false)}
-                      className="text-gray-400 hover:text-gray-600 text-sm font-bold cursor-pointer"
-                    >
-                      ✕
-                    </button>
-                  </div>
-
-                  <div className="space-y-3 font-normal">
-                    {/* Người lớn */}
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <div className="font-bold text-gray-900">Người lớn :</div>
-                        <div className="text-2xs text-gray-400">12 tuổi trở lên</div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <button
-                          type="button"
-                          onClick={() => {
-                            if (paxCounts.adult > 1) {
-                              setPaxCounts((prev) => ({ ...prev, adult: prev.adult - 1 }));
-                            }
-                          }}
-                          disabled={paxCounts.adult <= 1}
-                          className="w-6 h-6 flex items-center justify-center rounded-full border border-gray-300 text-gray-700 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed font-bold cursor-pointer"
-                        >
-                          -
-                        </button>
-                        <span className="w-4 text-center font-bold text-gray-900">
-                          {paxCounts.adult}
-                        </span>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            const total = paxCounts.adult + paxCounts.child + paxCounts.infant;
-                            if (total < 9) {
-                              setPaxCounts((prev) => ({
-                                ...prev,
-                                adult: prev.adult + 1,
-                              }));
-                            }
-                          }}
-                          disabled={paxCounts.adult + paxCounts.child + paxCounts.infant >= 9}
-                          className="w-6 h-6 flex items-center justify-center rounded-full border border-gray-300 text-gray-700 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed font-bold cursor-pointer"
-                        >
-                          +
-                        </button>
-                      </div>
-                    </div>
-
-                    {/* Trẻ em */}
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <div className="font-bold text-gray-900">Trẻ em :</div>
-                        <div className="text-2xs text-gray-400">2 - 11 tuổi (75%)</div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <button
-                          type="button"
-                          onClick={() => {
-                            if (paxCounts.child > 0) {
-                              setPaxCounts((prev) => ({ ...prev, child: prev.child - 1 }));
-                            }
-                          }}
-                          disabled={paxCounts.child <= 0}
-                          className="w-6 h-6 flex items-center justify-center rounded-full border border-gray-300 text-gray-700 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed font-bold cursor-pointer"
-                        >
-                          -
-                        </button>
-                        <span className="w-4 text-center font-bold text-gray-900">
-                          {paxCounts.child}
-                        </span>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            const total = paxCounts.adult + paxCounts.child + paxCounts.infant;
-                            if (total < 9 && paxCounts.child < paxCounts.adult * 2) {
-                              setPaxCounts((prev) => ({
-                                ...prev,
-                                child: prev.child + 1,
-                              }));
-                            }
-                          }}
-                          disabled={
-                            paxCounts.adult + paxCounts.child + paxCounts.infant >= 9 ||
-                            paxCounts.child >= paxCounts.adult * 2
-                          }
-                          className="w-6 h-6 flex items-center justify-center rounded-full border border-gray-300 text-gray-700 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed font-bold cursor-pointer"
-                        >
-                          +
-                        </button>
-                      </div>
-                    </div>
-
-                    {/* Em bé */}
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <div className="font-bold text-gray-900">Em bé :</div>
-                        <div className="text-2xs text-gray-400">Dưới 2 tuổi (Miễn phí)</div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <button
-                          type="button"
-                          onClick={() => {
-                            if (paxCounts.infant > 0) {
-                              setPaxCounts((prev) => ({ ...prev, infant: prev.infant - 1 }));
-                            }
-                          }}
-                          disabled={paxCounts.infant <= 0}
-                          className="w-6 h-6 flex items-center justify-center rounded-full border border-gray-300 text-gray-700 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed font-bold cursor-pointer"
-                        >
-                          -
-                        </button>
-                        <span className="w-4 text-center font-bold text-gray-900">
-                          {paxCounts.infant}
-                        </span>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            const total = paxCounts.adult + paxCounts.child + paxCounts.infant;
-                            if (total < 9 && paxCounts.infant < paxCounts.adult) {
-                              setPaxCounts((prev) => ({
-                                ...prev,
-                                infant: prev.infant + 1,
-                              }));
-                            }
-                          }}
-                          disabled={
-                            paxCounts.adult + paxCounts.child + paxCounts.infant >= 9 ||
-                            paxCounts.infant >= paxCounts.adult
-                          }
-                          className="w-6 h-6 flex items-center justify-center rounded-full border border-gray-300 text-gray-700 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed font-bold cursor-pointer"
-                        >
-                          +
-                        </button>
-                      </div>
-                    </div>
-
-                    <button
-                      type="button"
-                      onClick={() => setIsPaxDropdownOpen(false)}
-                      className="w-full mt-3 py-1.5 bg-primary text-white font-bold rounded-vj hover:bg-red-700 transition-colors cursor-pointer text-center"
-                    >
-                      Xác nhận
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
-            <span className="mx-1 h-3.5 w-px bg-black/20" aria-hidden="true" />
-            <span className="inline-flex items-center gap-1.5 text-xs">
-              <span className="inline-block w-2.5 h-2.5 rounded-full border-2 border-red-600 bg-red-600" />
-              <span className="font-semibold text-gray-800">Điểm khởi hành</span>
-              <span className="font-bold text-red-700">
-                {searchParams.get('from')
-                  ? `${getAirportCity(searchParams.get('from')!)} ( ${searchParams.get('from')!.toUpperCase()} )`
-                  : '---'}
-              </span>
-            </span>
-            <span className="inline-flex items-center gap-1.5 text-xs">
-              <span className="inline-block w-2.5 h-2.5 rounded-full border-2 border-green-600 bg-green-600" />
-              <span className="font-semibold text-gray-800">Điểm đến</span>
-              <span className="font-bold text-red-700">
-                {searchParams.get('to')
-                  ? `${getAirportCity(searchParams.get('to')!)} ( ${searchParams.get('to')!.toUpperCase()} )`
-                  : '---'}
-              </span>
-            </span>
-          </div>
-
+        {/* Băng trip chỉ còn 4 vòng tròn bước — khối tiêu đề/hành khách/tuyến
+            đã bị xoá theo yêu cầu. Băng vẫn giữ nền gradient vàng + bo góc
+            16px như site thật. */}
+        <div className="vj-booking-strip mx-auto flex max-w-[1200px] flex-col gap-2 px-4 py-2 text-gray-950 lg:flex-row lg:items-center lg:justify-between lg:gap-x-3">
           {/* 4 circular step indicators from sample image */}
-          <div className="flex items-center gap-1.5 sm:gap-2">
+          <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
             <div
               className={`w-6 h-6 sm:w-7 sm:h-7 rounded-full flex items-center justify-center shadow-xs text-white font-bold transition-all ${
                 bookingStep === 1 ? 'bg-vj-step-green' : 'bg-vj-amber'

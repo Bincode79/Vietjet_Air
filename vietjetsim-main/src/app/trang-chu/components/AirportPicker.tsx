@@ -448,7 +448,7 @@ export default function AirportPicker({
                     role="presentation"
                     className="sticky top-0 z-10 flex items-center justify-between bg-red-50/95 px-3 py-1.5 text-xs font-semibold text-red-800 border-b border-red-100/80 backdrop-blur-sm"
                   >
-                    <span className="flex items-center gap-1.5 font-bold">
+                    <span className="flex items-center gap-1.5 font-bold text-black">
                       <span aria-hidden="true">🇻🇳</span> Chặng bay nội địa
                     </span>
                     <span className="text-xs2 font-semibold text-red-600 bg-white/90 px-2 py-0.5 rounded-full border border-red-100">
@@ -474,7 +474,7 @@ export default function AirportPicker({
                             <span className="truncate text-sm font-bold text-[var(--foreground)]">
                               {airport.city} ( {airport.code} )
                             </span>
-                            <span className="shrink-0 rounded bg-red-100/70 px-1.5 py-0.5 text-2xs font-semibold text-red-700">
+                            <span className="shrink-0 rounded bg-red-100/70 px-1.5 py-0.5 text-2xs font-semibold text-black">
                               Nội địa
                             </span>
                           </span>

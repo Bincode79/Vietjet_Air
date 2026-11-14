@@ -369,7 +369,8 @@ export default function HeroBookingWidget() {
               </span>
             </label>
 
-            {/* Hàng 5 — công tắc "Tìm vé rẻ nhất" (42px) + tiêu đề H3 18px/700 trắng.
+            {/* Hàng 5 — công tắc "Tìm vé rẻ nhất" (nút trượt ngang 36×20px) +
+                tiêu đề H3 18px/700 trắng.
                 MOBILE: site thật không hiện → ẩn ở dưới `lg`. */}
             <div className="hidden h-[48px] items-center gap-2 lg:flex">
               <button
@@ -378,14 +379,14 @@ export default function HeroBookingWidget() {
                 aria-checked={cheapestOnly}
                 aria-label="Tìm vé rẻ nhất"
                 onClick={() => setCheapestOnly((prev) => !prev)}
-                className={`relative h-[42px] w-[42px] shrink-0 cursor-pointer rounded-full transition ${
+                className={`relative h-[20px] w-[36px] shrink-0 cursor-pointer rounded-full transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white ${
                   cheapestOnly ? 'bg-vjred' : 'bg-white/35'
                 }`}
               >
                 <span
                   aria-hidden="true"
-                  className={`absolute top-1/2 h-6 w-6 -translate-y-1/2 rounded-full bg-white transition-all ${
-                    cheapestOnly ? 'left-[19px]' : 'left-[3px]'
+                  className={`absolute top-1/2 h-[16px] w-[16px] -translate-y-1/2 rounded-full bg-white shadow-sm transition-all duration-200 ${
+                    cheapestOnly ? 'left-[18px]' : 'left-[2px]'
                   }`}
                 />
               </button>

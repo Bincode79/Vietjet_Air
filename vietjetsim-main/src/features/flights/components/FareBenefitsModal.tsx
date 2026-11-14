@@ -208,9 +208,9 @@ export default function FareBenefitsModal({
                           className={`text-center py-1.5 px-1 flex items-center justify-center min-h-[30px] ${col.headerClass}`}
                         >
                           <img
-                            src={`/images/fare-classes/${col.id}-logo.png`}
+                            src={`/images/fare-classes/${col.id}-logo.svg`}
                             alt={col.label}
-                            className="h-3.5 w-auto object-contain"
+                            className="h-4 sm:h-5 w-auto object-contain max-w-[85%]"
                           />
                           <span className="sr-only">{col.label}</span>
                         </div>

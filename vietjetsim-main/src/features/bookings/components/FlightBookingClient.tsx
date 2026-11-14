@@ -596,65 +596,6 @@ function FlightBookingClientInner({
       <div className="mx-auto max-w-full">
         {step === 1 && (
           <ErrorBoundary inline variant="api" retryLabel="Tìm lại chuyến bay">
-            {isRoundTrip && (
-              <div
-                role="tablist"
-                aria-label="Chọn chặng bay"
-                className="mb-4 grid grid-cols-2 gap-2 rounded-xl bg-[var(--surface-2)] p-1.5 border border-[var(--border)]"
-              >
-                <button
-                  type="button"
-                  role="tab"
-                  aria-selected={currentLeg === 'outbound'}
-                  onClick={() => setCurrentLeg('outbound')}
-                  className={`flex flex-col items-start px-3 py-2 sm:px-4 sm:py-2.5 rounded-lg text-left transition-all ${
-                    currentLeg === 'outbound'
-                      ? 'bg-white shadow-sm border border-[rgb(var(--vj-red-rgb))]/30 text-gray-900 font-bold'
-                      : 'text-gray-600 hover:text-gray-900 font-medium'
-                  }`}
-                >
-                  <div className="flex items-center gap-1.5 text-xs sm:text-sm">
-                    <span className="inline-block w-2 h-2 rounded-full bg-primary" />
-                    <span>Chiều đi</span>
-                    {booking.selectedFlight && (
-                      <span className="ml-1 inline-flex items-center gap-0.5 rounded bg-emerald-50 px-1.5 py-0.5 text-2xs font-bold text-emerald-700">
-                        <Icon name="CheckIcon" size={10} />
-                        {booking.selectedFlight.flightNo}
-                      </span>
-                    )}
-                  </div>
-                  <div className="text-2xs sm:text-xs text-gray-500 truncate mt-0.5">
-                    {params.from || 'SGN'} → {params.to || 'HAN'} ({params.depart || 'Ngày đi'})
-                  </div>
-                </button>
-
-                <button
-                  type="button"
-                  role="tab"
-                  aria-selected={currentLeg === 'inbound'}
-                  onClick={() => setCurrentLeg('inbound')}
-                  className={`flex flex-col items-start px-3 py-2 sm:px-4 sm:py-2.5 rounded-lg text-left transition-all ${
-                    currentLeg === 'inbound'
-                      ? 'bg-white shadow-sm border border-[rgb(var(--vj-red-rgb))]/30 text-gray-900 font-bold'
-                      : 'text-gray-600 hover:text-gray-900 font-medium'
-                  }`}
-                >
-                  <div className="flex items-center gap-1.5 text-xs sm:text-sm">
-                    <span className="inline-block w-2 h-2 rounded-full bg-primary" />
-                    <span>Chiều về</span>
-                    {booking.returnFlight && (
-                      <span className="ml-1 inline-flex items-center gap-0.5 rounded bg-emerald-50 px-1.5 py-0.5 text-2xs font-bold text-emerald-700">
-                        <Icon name="CheckIcon" size={10} />
-                        {booking.returnFlight.flightNo}
-                      </span>
-                    )}
-                  </div>
-                  <div className="text-2xs sm:text-xs text-gray-500 truncate mt-0.5">
-                    {params.to || 'HAN'} → {params.from || 'SGN'} ({params.return || 'Ngày về'})
-                  </div>
-                </button>
-              </div>
-            )}
             {currentLeg === 'outbound' ? (
               <FlightResultsStep
                 key="outbound-step"

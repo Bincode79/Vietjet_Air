@@ -1047,53 +1047,53 @@ export default function FlightResultsStep({
                 role="button"
                 tabIndex={0}
                 onClick={() => setCompareFare('business')}
-                className="bg-[#8E7022] hover:bg-[#7a5f1a] text-white py-1.5 sm:py-2 px-1 text-center rounded-t-sm flex items-center justify-center gap-1 sm:gap-1.5 cursor-pointer shadow-xs min-h-[30px] transition-colors"
+                className="bg-[#8E7022] hover:bg-[#7a5f1a] text-white py-1.5 sm:py-2 px-1 text-center rounded-t-sm flex items-center justify-center cursor-pointer shadow-xs min-h-[30px] transition-colors"
               >
                 <img
-                  src="/images/fare-classes/business-logo.png"
+                  src="/images/fare-classes/business-logo.svg"
                   alt="BUSINESS"
-                  className="h-3.5 sm:h-4 w-auto object-contain max-w-[35%]"
+                  className="h-4 sm:h-5 w-auto object-contain max-w-[85%]"
                 />
-                <span className="text-3xs sm:text-xs font-bold font-koho uppercase tracking-wider text-white">BUSINESS</span>
+                <span className="sr-only">BUSINESS</span>
               </div>
               <div
                 role="button"
                 tabIndex={0}
                 onClick={() => setCompareFare('skyboss')}
-                className="bg-[#D71920] hover:bg-[#bf151b] text-white py-1.5 sm:py-2 px-1 text-center rounded-t-sm flex items-center justify-center gap-1 sm:gap-1.5 cursor-pointer shadow-xs min-h-[30px] transition-colors"
+                className="bg-[#D71920] hover:bg-[#bf151b] text-white py-1.5 sm:py-2 px-1 text-center rounded-t-sm flex items-center justify-center cursor-pointer shadow-xs min-h-[30px] transition-colors"
               >
                 <img
-                  src="/images/fare-classes/skyboss-logo.png"
+                  src="/images/fare-classes/skyboss-logo.svg"
                   alt="skyBOSS"
-                  className="h-3.5 sm:h-4 w-auto object-contain max-w-[35%]"
+                  className="h-4 sm:h-5 w-auto object-contain max-w-[85%]"
                 />
-                <span className="text-3xs sm:text-xs font-bold font-koho uppercase tracking-wider text-white">skyBOSS</span>
+                <span className="sr-only">skyBOSS</span>
               </div>
               <div
                 role="button"
                 tabIndex={0}
                 onClick={() => setCompareFare('deluxe')}
-                className="bg-[#FF8800] hover:bg-[#e67a00] text-white py-1.5 sm:py-2 px-1 text-center rounded-t-sm flex items-center justify-center gap-1 sm:gap-1.5 cursor-pointer shadow-xs min-h-[30px] transition-colors"
+                className="bg-[#FF8800] hover:bg-[#e67a00] text-white py-1.5 sm:py-2 px-1 text-center rounded-t-sm flex items-center justify-center cursor-pointer shadow-xs min-h-[30px] transition-colors"
               >
                 <img
-                  src="/images/fare-classes/deluxe-logo.png"
+                  src="/images/fare-classes/deluxe-logo.svg"
                   alt="Deluxe"
-                  className="h-3.5 sm:h-4 w-auto object-contain max-w-[35%]"
+                  className="h-4 sm:h-5 w-auto object-contain max-w-[85%]"
                 />
-                <span className="text-3xs sm:text-xs font-bold font-koho uppercase tracking-wider text-white">Deluxe</span>
+                <span className="sr-only">Deluxe</span>
               </div>
               <div
                 role="button"
                 tabIndex={0}
                 onClick={() => setCompareFare('eco')}
-                className="bg-[#EC2029] hover:bg-[#d91a21] text-white py-1.5 sm:py-2 px-1 text-center rounded-t-sm flex items-center justify-center gap-1 sm:gap-1.5 cursor-pointer shadow-xs min-h-[30px] transition-colors"
+                className="bg-[#43B02A] hover:bg-[#399a24] text-white py-1.5 sm:py-2 px-1 text-center rounded-t-sm flex items-center justify-center cursor-pointer shadow-xs min-h-[30px] transition-colors"
               >
                 <img
-                  src="/images/fare-classes/eco-logo.png"
+                  src="/images/fare-classes/eco-logo.svg"
                   alt="Eco"
-                  className="h-3.5 sm:h-4 w-auto object-contain max-w-[35%]"
+                  className="h-4 sm:h-5 w-auto object-contain max-w-[85%]"
                 />
-                <span className="text-3xs sm:text-xs font-bold font-koho uppercase tracking-wider text-white">Eco</span>
+                <span className="sr-only">Eco</span>
               </div>
             </div>
           </div>
