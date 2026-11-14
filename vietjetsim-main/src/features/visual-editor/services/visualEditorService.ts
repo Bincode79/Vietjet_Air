@@ -1,8 +1,5 @@
 import { apiRequest } from '@/shared/services';
-import {
-  PUBLIC_PAGE_LAYOUT_ENDPOINT,
-  VISUAL_EDITOR_ENDPOINT,
-} from '../constants';
+import { PUBLIC_PAGE_LAYOUT_ENDPOINT, VISUAL_EDITOR_ENDPOINT } from '../constants';
 import type { PageLayout } from '../types';
 
 /** Phản hồi của endpoint quản trị. */

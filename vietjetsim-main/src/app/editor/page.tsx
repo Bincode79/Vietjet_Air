@@ -533,463 +533,466 @@ export default function VSCodeWebEditorPage() {
           <VisualEditorView pagePath={VISUAL_EDITOR_PAGE_PATH} />
         ) : (
           <>
-        {/* Activity Bar (Icons) */}
-        <div
-          style={{
-            width: '48px',
-            backgroundColor: '#333333',
-            borderRight: '1px solid #252526',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            padding: '10px 0',
-            gap: '16px',
-          }}
-        >
-          <div style={{ cursor: 'pointer', fontSize: '20px', color: '#FFFFFF' }} title="Explorer">
-            📁
-          </div>
-          <div style={{ cursor: 'pointer', fontSize: '20px', color: '#858585' }} title="Search">
-            🔍
-          </div>
-          <div
-            style={{ cursor: 'pointer', fontSize: '20px', color: '#858585' }}
-            title="Source Control"
-          >
-            🌿
-          </div>
-        </div>
-
-        {/* Sidebar File Explorer */}
-        <div
-          style={{
-            width: '260px',
-            backgroundColor: '#252526',
-            borderRight: '1px solid #1E1E1E',
-            display: 'flex',
-            flexDirection: 'column',
-            overflow: 'hidden',
-          }}
-        >
-          <div
-            style={{
-              padding: '10px 14px',
-              fontSize: '11px',
-              fontWeight: 700,
-              letterSpacing: '0.08em',
-              textTransform: 'uppercase',
-              color: '#BBBBBB',
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-            }}
-          >
-            <span>EXPLORER: VIETJET-APP</span>
-            <span
-              style={{ cursor: 'pointer', fontSize: '14px' }}
-              onClick={loadTree}
-              title="Làm mới"
-            >
-              ↻
-            </span>
-          </div>
-
-          <div style={{ padding: '0 10px 8px' }}>
-            <input
-              type="text"
-              placeholder="Tìm kiếm tệp..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              style={{
-                width: '100%',
-                backgroundColor: '#3C3C3C',
-                border: '1px solid #3C3C3C',
-                borderRadius: '4px',
-                padding: '4px 8px',
-                color: '#FFF',
-                fontSize: '12px',
-                outline: 'none',
-              }}
-            />
-          </div>
-
-          <div style={{ flex: 1, overflowY: 'auto', padding: '4px 0' }}>
-            {isLoading ? (
-              <div style={{ padding: '16px', fontSize: '12px', color: '#858585' }}>
-                Đang tải danh sách file...
-              </div>
-            ) : (
-              renderTree(fileTree)
-            )}
-          </div>
-        </div>
-
-        {/* Code Editor Area */}
-        <div
-          style={{
-            flex: 1,
-            display: 'flex',
-            flexDirection: 'column',
-            overflow: 'hidden',
-            backgroundColor: '#1E1E1E',
-          }}
-        >
-          {/* Tabs Bar */}
-          <div
-            style={{
-              height: '35px',
-              backgroundColor: '#252526',
-              display: 'flex',
-              alignItems: 'center',
-              overflowX: 'auto',
-              borderBottom: '1px solid #1E1E1E',
-            }}
-          >
-            {openTabs.map((tab) => {
-              const isActive = tab.path === activeTabPath;
-              return (
-                <div
-                  key={tab.path}
-                  onClick={() => setActiveTabPath(tab.path)}
-                  style={{
-                    height: '100%',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    padding: '0 14px',
-                    fontSize: '13px',
-                    backgroundColor: isActive ? '#1E1E1E' : '#2D2D2D',
-                    color: isActive ? '#FFFFFF' : '#969696',
-                    borderRight: '1px solid #252526',
-                    borderTop: isActive ? '2px solid #EC2029' : '2px solid transparent',
-                    cursor: 'pointer',
-                    userSelect: 'none',
-                  }}
-                >
-                  <span>{tab.name}</span>
-                  {tab.isDirty && (
-                    <span style={{ color: '#EC2029', fontSize: '14px', fontWeight: 'bold' }}>
-                      ●
-                    </span>
-                  )}
-                  <span
-                    onClick={(e) => closeTab(e, tab.path)}
-                    style={{
-                      fontSize: '12px',
-                      borderRadius: '4px',
-                      padding: '0 2px',
-                      marginLeft: '4px',
-                    }}
-                    className="hover:bg-[#444444]"
-                  >
-                    ✕
-                  </span>
-                </div>
-              );
-            })}
-          </div>
-
-          {/* Breadcrumb Bar */}
-          {activeTab && (
+            {/* Activity Bar (Icons) */}
             <div
               style={{
-                height: '22px',
-                backgroundColor: '#1E1E1E',
-                padding: '0 16px',
+                width: '48px',
+                backgroundColor: '#333333',
+                borderRight: '1px solid #252526',
                 display: 'flex',
+                flexDirection: 'column',
                 alignItems: 'center',
-                fontSize: '11px',
-                color: '#858585',
-                borderBottom: '1px solid #282828',
+                padding: '10px 0',
+                gap: '16px',
               }}
             >
-              <span>vietjet-air &gt; {activeTab.path.replace(/\//g, ' > ')}</span>
+              <div
+                style={{ cursor: 'pointer', fontSize: '20px', color: '#FFFFFF' }}
+                title="Explorer"
+              >
+                📁
+              </div>
+              <div style={{ cursor: 'pointer', fontSize: '20px', color: '#858585' }} title="Search">
+                🔍
+              </div>
+              <div
+                style={{ cursor: 'pointer', fontSize: '20px', color: '#858585' }}
+                title="Source Control"
+              >
+                🌿
+              </div>
             </div>
-          )}
 
-          {/* Monaco Editor Container */}
-          <div style={{ flex: 1, position: 'relative' }}>
-            {activeTab ? (
-              <Editor
-                height="100%"
-                path={activeTab.path}
-                language={getLanguage(activeTab.name)}
-                value={activeTab.content}
-                theme="vs-dark"
-                onChange={handleContentChange}
-                onMount={(editor) => {
-                  editorRef.current = editor;
-                  editor.onDidChangeCursorPosition((e) => {
-                    setCursorPos({ line: e.position.lineNumber, col: e.position.column });
-                  });
-                }}
-                options={{
-                  fontSize: 14,
-                  minimap: { enabled: true },
-                  scrollBeyondLastLine: false,
-                  automaticLayout: true,
-                  tabSize: 2,
-                  wordWrap: 'on',
-                  smoothScrolling: true,
-                  cursorBlinking: 'smooth',
-                  fontFamily: '"Fira Code", Menlo, Monaco, "Courier New", monospace',
-                }}
-              />
-            ) : (
+            {/* Sidebar File Explorer */}
+            <div
+              style={{
+                width: '260px',
+                backgroundColor: '#252526',
+                borderRight: '1px solid #1E1E1E',
+                display: 'flex',
+                flexDirection: 'column',
+                overflow: 'hidden',
+              }}
+            >
               <div
                 style={{
+                  padding: '10px 14px',
+                  fontSize: '11px',
+                  fontWeight: 700,
+                  letterSpacing: '0.08em',
+                  textTransform: 'uppercase',
+                  color: '#BBBBBB',
                   display: 'flex',
-                  flexDirection: 'column',
+                  justifyContent: 'space-between',
                   alignItems: 'center',
-                  justifyContent: 'center',
-                  height: '100%',
-                  color: '#858585',
                 }}
               >
-                <span style={{ fontSize: '48px', marginBottom: '16px' }}>✈️</span>
-                <span style={{ fontSize: '16px', fontWeight: 600 }}>
-                  Chọn một tệp từ Explorer để chỉnh sửa
-                </span>
-                <span style={{ fontSize: '13px', marginTop: '6px' }}>
-                  Nhấn Cmd+S để lưu tệp và cập nhật giao diện trực tiếp
+                <span>EXPLORER: VIETJET-APP</span>
+                <span
+                  style={{ cursor: 'pointer', fontSize: '14px' }}
+                  onClick={loadTree}
+                  title="Làm mới"
+                >
+                  ↻
                 </span>
               </div>
-            )}
-          </div>
-        </div>
 
-        {showPi && (
-          <div
-            style={{
-              width: '340px',
-              backgroundColor: '#252526',
-              borderLeft: '1px solid #3C3C3C',
-              display: 'flex',
-              flexDirection: 'column',
-              flexShrink: 0,
-            }}
-          >
-            <div
-              style={{
-                height: '35px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                padding: '0 12px',
-                borderBottom: '1px solid #3C3C3C',
-                color: '#F3F4F6',
-                fontSize: '12px',
-                fontWeight: 700,
-              }}
-            >
-              <span>✦ CODING PI — NVIDIA NEMOTRON</span>
-              <button
-                onClick={() => setPiMessages([])}
-                style={{
-                  background: 'transparent',
-                  border: 'none',
-                  color: '#9CA3AF',
-                  cursor: 'pointer',
-                  fontSize: '11px',
-                }}
-                title="Xóa hội thoại"
-              >
-                Xóa
-              </button>
+              <div style={{ padding: '0 10px 8px' }}>
+                <input
+                  type="text"
+                  placeholder="Tìm kiếm tệp..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  style={{
+                    width: '100%',
+                    backgroundColor: '#3C3C3C',
+                    border: '1px solid #3C3C3C',
+                    borderRadius: '4px',
+                    padding: '4px 8px',
+                    color: '#FFF',
+                    fontSize: '12px',
+                    outline: 'none',
+                  }}
+                />
+              </div>
+
+              <div style={{ flex: 1, overflowY: 'auto', padding: '4px 0' }}>
+                {isLoading ? (
+                  <div style={{ padding: '16px', fontSize: '12px', color: '#858585' }}>
+                    Đang tải danh sách file...
+                  </div>
+                ) : (
+                  renderTree(fileTree)
+                )}
+              </div>
             </div>
 
+            {/* Code Editor Area */}
             <div
               style={{
                 flex: 1,
-                overflowY: 'auto',
-                padding: '12px',
                 display: 'flex',
                 flexDirection: 'column',
-                gap: '10px',
+                overflow: 'hidden',
+                backgroundColor: '#1E1E1E',
               }}
             >
-              {piMessages.length === 0 && (
-                <div style={{ color: '#9CA3AF', fontSize: '12px', lineHeight: 1.5 }}>
-                  Hỏi Coding Pi về tệp đang mở, lỗi TypeScript hoặc cách cải thiện code.
-                </div>
-              )}
-              {piMessages.map((message, index) => (
-                <div
-                  key={`${message.role}-${index}`}
-                  style={{
-                    alignSelf: message.role === 'user' ? 'flex-end' : 'stretch',
-                    maxWidth: '100%',
-                  }}
-                >
-                  <div
-                    style={{
-                      color: message.role === 'user' ? '#FDE68A' : '#D1D5DB',
-                      fontSize: '10px',
-                      marginBottom: '3px',
-                    }}
-                  >
-                    {message.role === 'user' ? 'Bạn' : 'Coding Pi'}
-                  </div>
-                  {message.role === 'assistant' && message.reasoning && (
-                    <details style={{ marginBottom: '6px' }}>
-                      <summary
-                        style={{
-                          color: '#9CA3AF',
-                          fontSize: '10px',
-                          cursor: 'pointer',
-                        }}
-                      >
-                        Suy nghĩ của Coding Pi
-                      </summary>
-                      <div
-                        style={{
-                          color: '#9CA3AF',
-                          fontSize: '11px',
-                          lineHeight: 1.5,
-                          whiteSpace: 'pre-wrap',
-                          overflowWrap: 'anywhere',
-                          marginTop: '4px',
-                        }}
-                      >
-                        {message.reasoning}
-                      </div>
-                    </details>
-                  )}
-                  {(message.content || message.role === 'user') && (
+              {/* Tabs Bar */}
+              <div
+                style={{
+                  height: '35px',
+                  backgroundColor: '#252526',
+                  display: 'flex',
+                  alignItems: 'center',
+                  overflowX: 'auto',
+                  borderBottom: '1px solid #1E1E1E',
+                }}
+              >
+                {openTabs.map((tab) => {
+                  const isActive = tab.path === activeTabPath;
+                  return (
                     <div
+                      key={tab.path}
+                      onClick={() => setActiveTabPath(tab.path)}
                       style={{
-                        backgroundColor: message.role === 'user' ? '#5B4210' : '#1E1E1E',
-                        color: '#E5E7EB',
-                        borderRadius: '4px',
-                        padding: '8px',
-                        fontSize: '12px',
-                        lineHeight: 1.5,
-                        whiteSpace: 'pre-wrap',
-                        overflowWrap: 'anywhere',
+                        height: '100%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        padding: '0 14px',
+                        fontSize: '13px',
+                        backgroundColor: isActive ? '#1E1E1E' : '#2D2D2D',
+                        color: isActive ? '#FFFFFF' : '#969696',
+                        borderRight: '1px solid #252526',
+                        borderTop: isActive ? '2px solid #EC2029' : '2px solid transparent',
+                        cursor: 'pointer',
+                        userSelect: 'none',
                       }}
                     >
-                      {message.content}
+                      <span>{tab.name}</span>
+                      {tab.isDirty && (
+                        <span style={{ color: '#EC2029', fontSize: '14px', fontWeight: 'bold' }}>
+                          ●
+                        </span>
+                      )}
+                      <span
+                        onClick={(e) => closeTab(e, tab.path)}
+                        style={{
+                          fontSize: '12px',
+                          borderRadius: '4px',
+                          padding: '0 2px',
+                          marginLeft: '4px',
+                        }}
+                        className="hover:bg-[#444444]"
+                      >
+                        ✕
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Breadcrumb Bar */}
+              {activeTab && (
+                <div
+                  style={{
+                    height: '22px',
+                    backgroundColor: '#1E1E1E',
+                    padding: '0 16px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    fontSize: '11px',
+                    color: '#858585',
+                    borderBottom: '1px solid #282828',
+                  }}
+                >
+                  <span>vietjet-air &gt; {activeTab.path.replace(/\//g, ' > ')}</span>
+                </div>
+              )}
+
+              {/* Monaco Editor Container */}
+              <div style={{ flex: 1, position: 'relative' }}>
+                {activeTab ? (
+                  <Editor
+                    height="100%"
+                    path={activeTab.path}
+                    language={getLanguage(activeTab.name)}
+                    value={activeTab.content}
+                    theme="vs-dark"
+                    onChange={handleContentChange}
+                    onMount={(editor) => {
+                      editorRef.current = editor;
+                      editor.onDidChangeCursorPosition((e) => {
+                        setCursorPos({ line: e.position.lineNumber, col: e.position.column });
+                      });
+                    }}
+                    options={{
+                      fontSize: 14,
+                      minimap: { enabled: true },
+                      scrollBeyondLastLine: false,
+                      automaticLayout: true,
+                      tabSize: 2,
+                      wordWrap: 'on',
+                      smoothScrolling: true,
+                      cursorBlinking: 'smooth',
+                      fontFamily: '"Fira Code", Menlo, Monaco, "Courier New", monospace',
+                    }}
+                  />
+                ) : (
+                  <div
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      height: '100%',
+                      color: '#858585',
+                    }}
+                  >
+                    <span style={{ fontSize: '48px', marginBottom: '16px' }}>✈️</span>
+                    <span style={{ fontSize: '16px', fontWeight: 600 }}>
+                      Chọn một tệp từ Explorer để chỉnh sửa
+                    </span>
+                    <span style={{ fontSize: '13px', marginTop: '6px' }}>
+                      Nhấn Cmd+S để lưu tệp và cập nhật giao diện trực tiếp
+                    </span>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {showPi && (
+              <div
+                style={{
+                  width: '340px',
+                  backgroundColor: '#252526',
+                  borderLeft: '1px solid #3C3C3C',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  flexShrink: 0,
+                }}
+              >
+                <div
+                  style={{
+                    height: '35px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    padding: '0 12px',
+                    borderBottom: '1px solid #3C3C3C',
+                    color: '#F3F4F6',
+                    fontSize: '12px',
+                    fontWeight: 700,
+                  }}
+                >
+                  <span>✦ CODING PI — NVIDIA NEMOTRON</span>
+                  <button
+                    onClick={() => setPiMessages([])}
+                    style={{
+                      background: 'transparent',
+                      border: 'none',
+                      color: '#9CA3AF',
+                      cursor: 'pointer',
+                      fontSize: '11px',
+                    }}
+                    title="Xóa hội thoại"
+                  >
+                    Xóa
+                  </button>
+                </div>
+
+                <div
+                  style={{
+                    flex: 1,
+                    overflowY: 'auto',
+                    padding: '12px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '10px',
+                  }}
+                >
+                  {piMessages.length === 0 && (
+                    <div style={{ color: '#9CA3AF', fontSize: '12px', lineHeight: 1.5 }}>
+                      Hỏi Coding Pi về tệp đang mở, lỗi TypeScript hoặc cách cải thiện code.
+                    </div>
+                  )}
+                  {piMessages.map((message, index) => (
+                    <div
+                      key={`${message.role}-${index}`}
+                      style={{
+                        alignSelf: message.role === 'user' ? 'flex-end' : 'stretch',
+                        maxWidth: '100%',
+                      }}
+                    >
+                      <div
+                        style={{
+                          color: message.role === 'user' ? '#FDE68A' : '#D1D5DB',
+                          fontSize: '10px',
+                          marginBottom: '3px',
+                        }}
+                      >
+                        {message.role === 'user' ? 'Bạn' : 'Coding Pi'}
+                      </div>
+                      {message.role === 'assistant' && message.reasoning && (
+                        <details style={{ marginBottom: '6px' }}>
+                          <summary
+                            style={{
+                              color: '#9CA3AF',
+                              fontSize: '10px',
+                              cursor: 'pointer',
+                            }}
+                          >
+                            Suy nghĩ của Coding Pi
+                          </summary>
+                          <div
+                            style={{
+                              color: '#9CA3AF',
+                              fontSize: '11px',
+                              lineHeight: 1.5,
+                              whiteSpace: 'pre-wrap',
+                              overflowWrap: 'anywhere',
+                              marginTop: '4px',
+                            }}
+                          >
+                            {message.reasoning}
+                          </div>
+                        </details>
+                      )}
+                      {(message.content || message.role === 'user') && (
+                        <div
+                          style={{
+                            backgroundColor: message.role === 'user' ? '#5B4210' : '#1E1E1E',
+                            color: '#E5E7EB',
+                            borderRadius: '4px',
+                            padding: '8px',
+                            fontSize: '12px',
+                            lineHeight: 1.5,
+                            whiteSpace: 'pre-wrap',
+                            overflowWrap: 'anywhere',
+                          }}
+                        >
+                          {message.content}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                  {isPiSending && (
+                    <div style={{ color: '#76B900', fontSize: '12px' }}>
+                      {piMessages[piMessages.length - 1]?.content
+                        ? 'Coding Pi đang trả lời...'
+                        : 'Coding Pi đang suy nghĩ...'}
                     </div>
                   )}
                 </div>
-              ))}
-              {isPiSending && (
-                <div style={{ color: '#76B900', fontSize: '12px' }}>
-                  {piMessages[piMessages.length - 1]?.content
-                    ? 'Coding Pi đang trả lời...'
-                    : 'Coding Pi đang suy nghĩ...'}
+
+                <div style={{ padding: '10px', borderTop: '1px solid #3C3C3C' }}>
+                  <textarea
+                    value={piInput}
+                    onChange={(event) => setPiInput(event.target.value)}
+                    onKeyDown={(event) => {
+                      if (event.key === 'Enter' && !event.shiftKey) {
+                        event.preventDefault();
+                        askCodingPi();
+                      }
+                    }}
+                    placeholder={activeTab ? `Hỏi về ${activeTab.name}...` : 'Hỏi Coding Pi...'}
+                    disabled={isPiSending}
+                    rows={3}
+                    style={{
+                      width: '100%',
+                      resize: 'none',
+                      boxSizing: 'border-box',
+                      backgroundColor: '#1E1E1E',
+                      border: '1px solid #454545',
+                      borderRadius: '4px',
+                      color: '#F3F4F6',
+                      padding: '8px',
+                      fontSize: '12px',
+                      outline: 'none',
+                    }}
+                  />
+                  <button
+                    onClick={askCodingPi}
+                    disabled={!piInput.trim() || isPiSending}
+                    style={{
+                      marginTop: '8px',
+                      width: '100%',
+                      backgroundColor: '#76B900',
+                      color: '#FFF',
+                      border: 'none',
+                      borderRadius: '4px',
+                      padding: '7px',
+                      fontSize: '12px',
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                      opacity: !piInput.trim() || isPiSending ? 0.5 : 1,
+                    }}
+                  >
+                    {isPiSending ? 'Đang gửi...' : 'Gửi cho Coding Pi'}
+                  </button>
                 </div>
-              )}
-            </div>
-
-            <div style={{ padding: '10px', borderTop: '1px solid #3C3C3C' }}>
-              <textarea
-                value={piInput}
-                onChange={(event) => setPiInput(event.target.value)}
-                onKeyDown={(event) => {
-                  if (event.key === 'Enter' && !event.shiftKey) {
-                    event.preventDefault();
-                    askCodingPi();
-                  }
-                }}
-                placeholder={activeTab ? `Hỏi về ${activeTab.name}...` : 'Hỏi Coding Pi...'}
-                disabled={isPiSending}
-                rows={3}
-                style={{
-                  width: '100%',
-                  resize: 'none',
-                  boxSizing: 'border-box',
-                  backgroundColor: '#1E1E1E',
-                  border: '1px solid #454545',
-                  borderRadius: '4px',
-                  color: '#F3F4F6',
-                  padding: '8px',
-                  fontSize: '12px',
-                  outline: 'none',
-                }}
-              />
-              <button
-                onClick={askCodingPi}
-                disabled={!piInput.trim() || isPiSending}
-                style={{
-                  marginTop: '8px',
-                  width: '100%',
-                  backgroundColor: '#76B900',
-                  color: '#FFF',
-                  border: 'none',
-                  borderRadius: '4px',
-                  padding: '7px',
-                  fontSize: '12px',
-                  fontWeight: 700,
-                  cursor: 'pointer',
-                  opacity: !piInput.trim() || isPiSending ? 0.5 : 1,
-                }}
-              >
-                {isPiSending ? 'Đang gửi...' : 'Gửi cho Coding Pi'}
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* Live Preview Split Pane */}
-        {showLivePreview && (
-          <div
-            style={{
-              width: '48%',
-              backgroundColor: '#0F1216',
-              borderLeft: '2px solid #333333',
-              display: 'flex',
-              flexDirection: 'column',
-            }}
-          >
-            <div
-              style={{
-                height: '35px',
-                backgroundColor: '#252526',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                padding: '0 12px',
-                borderBottom: '1px solid #1E1E1E',
-              }}
-            >
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <span style={{ fontSize: '12px', fontWeight: 700, color: '#FFED00' }}>
-                  🌐 Live Website:
-                </span>
-                <span style={{ fontSize: '12px', color: '#969696' }}>
-                  http://localhost:4028/trang-chu
-                </span>
               </div>
-              <button
-                onClick={() => setPreviewKey((k) => k + 1)}
-                style={{
-                  background: 'transparent',
-                  border: 'none',
-                  color: '#CCCCCC',
-                  fontSize: '14px',
-                  cursor: 'pointer',
-                }}
-                title="Làm mới trang"
-              >
-                ↻
-              </button>
-            </div>
+            )}
 
-            <iframe
-              key={previewKey}
-              src="/trang-chu"
-              style={{
-                flex: 1,
-                width: '100%',
-                height: '100%',
-                border: 'none',
-                backgroundColor: '#FFFFFF',
-              }}
-              title="Live Preview"
-            />
-          </div>
-        )}
+            {/* Live Preview Split Pane */}
+            {showLivePreview && (
+              <div
+                style={{
+                  width: '48%',
+                  backgroundColor: '#0F1216',
+                  borderLeft: '2px solid #333333',
+                  display: 'flex',
+                  flexDirection: 'column',
+                }}
+              >
+                <div
+                  style={{
+                    height: '35px',
+                    backgroundColor: '#252526',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    padding: '0 12px',
+                    borderBottom: '1px solid #1E1E1E',
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span style={{ fontSize: '12px', fontWeight: 700, color: '#FFED00' }}>
+                      🌐 Live Website:
+                    </span>
+                    <span style={{ fontSize: '12px', color: '#969696' }}>
+                      http://localhost:4028/trang-chu
+                    </span>
+                  </div>
+                  <button
+                    onClick={() => setPreviewKey((k) => k + 1)}
+                    style={{
+                      background: 'transparent',
+                      border: 'none',
+                      color: '#CCCCCC',
+                      fontSize: '14px',
+                      cursor: 'pointer',
+                    }}
+                    title="Làm mới trang"
+                  >
+                    ↻
+                  </button>
+                </div>
+
+                <iframe
+                  key={previewKey}
+                  src="/trang-chu"
+                  style={{
+                    flex: 1,
+                    width: '100%',
+                    height: '100%',
+                    border: 'none',
+                    backgroundColor: '#FFFFFF',
+                  }}
+                  title="Live Preview"
+                />
+              </div>
+            )}
           </>
         )}
       </div>

@@ -111,13 +111,7 @@ export default function HomepageSections({
  * dụng — `position`, `z-index` và mọi thứ khác không có đường vào đây, nên
  * một layout tùy ý không thể phá bố cục của cả trang.
  */
-function SectionFrame({
-  style,
-  children,
-}: {
-  style: SectionStyle;
-  children: React.ReactNode;
-}) {
+function SectionFrame({ style, children }: { style: SectionStyle; children: React.ReactNode }) {
   if (style.hidden) return null;
 
   const css: React.CSSProperties = {};

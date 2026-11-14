@@ -2,11 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import grapesjs, { type Component, type Editor } from 'grapesjs';
-import {
-  HOMEPAGE_SECTION_CATALOG,
-  type PageLayout,
-  type SectionStyle,
-} from '../types';
+import { HOMEPAGE_SECTION_CATALOG, type PageLayout, type SectionStyle } from '../types';
 
 interface VisualEditorCanvasProps {
   layout: PageLayout;
@@ -196,8 +192,6 @@ export default function VisualEditorCanvas({
 
   return (
     <div className="relative h-full w-full overflow-hidden bg-[#f4f5f7]">
-      {/* CSS của canvas nạp riêng, không đụng tới global CSS của app. */}
-      <link rel="stylesheet" href="/editor/canvas.css" />
       <div ref={containerRef} className="h-full w-full" />
     </div>
   );
@@ -284,9 +278,7 @@ function findComponent(editor: Editor, sectionId: string): Component | undefined
   const wrapper = editor.getWrapper();
   if (!wrapper) return undefined;
 
-  return childComponents(wrapper).find(
-    (component) => readSectionId(component) === sectionId
-  );
+  return childComponents(wrapper).find((component) => readSectionId(component) === sectionId);
 }
 
 /**

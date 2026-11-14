@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   HOMEPAGE_SECTION_CATALOG,
   type PageLayout,
@@ -108,7 +108,11 @@ export default function VisualEditorPanel({ pagePath, initialLayout }: VisualEdi
   const handleReset = () => {
     setLayout({
       version: 1,
-      sections: HOMEPAGE_SECTION_CATALOG.map((entry) => ({ id: entry.id, visible: true, style: {} })),
+      sections: HOMEPAGE_SECTION_CATALOG.map((entry) => ({
+        id: entry.id,
+        visible: true,
+        style: {},
+      })),
     });
     setIsDirty(true);
     setStatus('idle');
@@ -153,9 +157,7 @@ export default function VisualEditorPanel({ pagePath, initialLayout }: VisualEdi
       {message && (
         <div
           className={`shrink-0 px-4 py-2 text-xs ${
-            status === 'error'
-              ? 'bg-[#450a0a] text-[#fca5a5]'
-              : 'bg-[#052e16] text-[#86efac]'
+            status === 'error' ? 'bg-[#450a0a] text-[#fca5a5]' : 'bg-[#052e16] text-[#86efac]'
           }`}
         >
           {message}
@@ -198,9 +200,7 @@ export default function VisualEditorPanel({ pagePath, initialLayout }: VisualEdi
                       isSelected ? 'bg-[#3a3d3e]' : 'hover:bg-[#2a2d2e]'
                     }`}
                   >
-                    <span className="mt-0.5 text-[10px] font-bold text-[#6b7280]">
-                      {index + 1}
-                    </span>
+                    <span className="mt-0.5 text-[10px] font-bold text-[#6b7280]">{index + 1}</span>
                     <span className="min-w-0 flex-1">
                       <span className="flex items-center gap-2">
                         <span className="truncate text-xs font-bold text-[#f3f4f6]">
@@ -316,9 +316,9 @@ export default function VisualEditorPanel({ pagePath, initialLayout }: VisualEdi
           </ul>
 
           <div className="mt-auto border-t border-[#3c3c3c] px-4 py-3 text-[11px] leading-relaxed text-[#6b7280]">
-            Bố cục chỉ điều khiển <strong className="text-[#9ca3af]">thứ tự và style</strong>{' '}
-            của các section. Nội dung bên trong mỗi section vẫn là component React
-            gốc nên không mất hành vi.
+            Bố cục chỉ điều khiển <strong className="text-[#9ca3af]">thứ tự và style</strong> của
+            các section. Nội dung bên trong mỗi section vẫn là component React gốc nên không mất
+            hành vi.
           </div>
         </aside>
       </div>

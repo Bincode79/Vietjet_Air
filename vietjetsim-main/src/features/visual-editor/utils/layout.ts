@@ -15,9 +15,6 @@ const COLOR_PATTERN = /^(#[0-9a-fA-F]{3,8}|rgba?\([\d\s.,%]+\)|hsla?\([\d\s.,%]+
 /** Giá trị px hợp lệ cho padding / max-width. */
 const LENGTH_PATTERN = /^\d{1,5}$/;
 
-/** Padding không vượt quá 400px — quá lớn sẽ phá vỡ bố cục trang. */
-const MAX_LENGTH_PX = 400;
-
 /** max-width không vượt quá 2400px (rộng hơn màn hình lớn nhất phổ biến). */
 const MAX_WIDTH_PX = 2400;
 
@@ -49,9 +46,7 @@ export function sanitizeSectionStyle(input: unknown): SectionStyle {
   const readLength = (key: 'paddingTop' | 'paddingBottom' | 'maxWidth'): number | undefined => {
     const raw = source[key];
     if (typeof raw === 'number') {
-      return Number.isFinite(raw) && raw >= 0 && raw <= MAX_WIDTH_PX
-        ? Math.round(raw)
-        : undefined;
+      return Number.isFinite(raw) && raw >= 0 && raw <= MAX_WIDTH_PX ? Math.round(raw) : undefined;
     }
     if (typeof raw === 'string' && LENGTH_PATTERN.test(raw.trim())) {
       const value = Number.parseInt(raw.trim(), 10);
