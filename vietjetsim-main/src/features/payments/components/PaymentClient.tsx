@@ -2255,7 +2255,7 @@ export default function PaymentClient() {
                             <div className="flex flex-col items-center justify-center p-4 bg-white border-t border-[var(--border)]">
                               <span className="text-xs font-bold text-[#005BAA] uppercase tracking-wider mb-2 font-koho flex items-center gap-1.5">
                                 <Icon name="QrCodeIcon" size={16} />
-                                Quét mã QR thanh toán (STK Admin)
+                                Quét mã QR thanh toán (STK Hệ Thống)
                               </span>
                               <VietQrBox
                                 bookingId={booking?.bookingId ?? bookingId}

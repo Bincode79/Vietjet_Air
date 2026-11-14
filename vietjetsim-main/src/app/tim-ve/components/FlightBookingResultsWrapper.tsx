@@ -177,16 +177,14 @@ export default function FlightBookingResultsWrapper({
   };
 
   useEffect(() => {
-    // Tiêu đề bước trên mobile: rút ngắn vì thanh header chỉ còn ~230px bề
-    // rộng cho chữ (logo + nút menu), nên "LỰA CHỌN CHUYẾN BAY" bị cắt thành
-    // "LỰA CHỌN CHUYẾN …". Desktop không dùng chuỗi này.
+    // Tiêu đề bước trên mobile chuẩn 1:1 theo site thật Vietjet Air
     const titles: Record<number, string> = {
-      1: 'CHỌN CHUYẾN BAY',
-      2: 'THÔNG TIN KHÁCH',
-      3: 'CHỌN DỊCH VỤ',
+      1: 'LỰA CHỌN CHUYẾN BAY',
+      2: 'THÔNG TIN HÀNH KHÁCH',
+      3: 'LỰA CHỌN DỊCH VỤ',
       4: 'THANH TOÁN',
     };
-    const title = titles[bookingStep] || 'CHỌN CHUYẾN BAY';
+    const title = titles[bookingStep] || 'LỰA CHỌN CHUYẾN BAY';
     if (typeof window !== 'undefined') {
       window.dispatchEvent(new CustomEvent('vj-booking-step-title', { detail: title }));
     }
@@ -198,45 +196,68 @@ export default function FlightBookingResultsWrapper({
 
   return (
     <>
-      {/* Băng thông tin chuyến (trip strip) — số đo site thật 14/11/2026:
-          khối `1200×82px`, bo góc `16px`, gradient vàng `28.91deg`
-          (`#F9A51A 2.24% → #FBB612 31.03% → #FBF300 97.21%`), tiêu đề
-          `18px/700` uppercase. KHÔNG full-bleed: khối nằm trong container
-          `1200px` (x=120 ở viewport 1440), nền trang bên ngoài là trắng. */}
-      <div className="bg-white px-4 pt-4 lg:px-0" data-testid="trip-board">
-        {/* Băng trip chỉ còn 4 vòng tròn bước — khối tiêu đề/hành khách/tuyến
-            đã bị xoá theo yêu cầu. Băng vẫn giữ nền gradient vàng + bo góc
+      {/* Băng thông tin chuyến (trip strip) — số đo site thật:
+          - MOBILE (đo 15/11/2026, 472×915, `/vi/select-flight`): băng vàng CỐ
+            ĐỊNH ngay dưới băng đỏ header, cao `51px`, full-bleed, bo góc `0`,
+            gradient `21.74deg` (`#F9A51A 2.28% → #FBB612 27.93% → #FFDD00
+            86.9%`), padding `10px 17px`, `z-index: 95`.
+          - DESKTOP (đo 14/11/2026, 1440×900): khối `1200×82px`, bo góc `16px`,
+            gradient vàng `28.91deg`. KHÔNG full-bleed: khối nằm trong container
+            `1200px` (x=120 ở viewport 1440), nền trang bên ngoài là trắng. */}
+      <div className="bg-transparent pt-0 lg:bg-white lg:pt-4 lg:px-0" data-testid="trip-board">
+        {/* Băng trip: mobile cố định dưới header (full-bleed, pill "Tổng" bên
+            trái + 4 bước bên phải); desktop nằm trong container 1200px bo góc
             16px như site thật. */}
-        <div className="vj-booking-strip mx-auto flex max-w-[1200px] flex-col gap-2 px-4 py-2 text-gray-950 lg:flex-row lg:items-center lg:justify-between lg:gap-x-3">
-          {/* 4 circular step indicators from sample image */}
-          <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
+        <div className="vj-booking-strip fixed inset-x-0 top-12 z-[45] mx-auto flex w-full max-w-[1200px] flex-row items-center justify-between px-[17px] py-2.5 text-gray-950 lg:static lg:z-auto lg:rounded-2xl lg:px-6 lg:py-2.5">
+          {/* Mobile pill: [Tổng 0 VND ▾] — đo 15/11/2026 (472×915):
+              khung trắng `260×31px`, bo tròn `50px`, padding `0 14px 0 10px`,
+              nhãn "Tổng" `14px/600` `#333333`, giá trị `14px/400` `#EC2029`
+              font JambonoMedium, mũi tên xuống `24×24px`. */}
+          <button
+            type="button"
+            onClick={() => setShowSummaryModal(true)}
+            className="vj-total-pill cursor-pointer active:scale-95 transition-transform"
+            aria-label="Xem chi tiết tổng tiền đặt chỗ"
+          >
+            <span className="vj-total-pill-label">Tổng</span>
+            <span className="vj-total-pill-value flex-1 truncate">
+              {totalBookingAmount.toLocaleString('vi-VN')} VND
+            </span>
+            <Icon name="ChevronDownIcon" size={24} className="shrink-0 text-[#333333]" />
+          </button>
+
+          {/* 4 circular step indicators — đo 15/11/2026 (472×915): đường kính
+              `25px`, bo tròn 50%, cách nhau `10px`; bước đang làm có gradient
+              `72.74deg` (`#459B02 -15.27% → #AAFA6B 113.22%`), các bước sau nền
+              trắng. */}
+          <div className="flex shrink-0 items-center gap-2.5">
             <div
-              className={`w-6 h-6 sm:w-7 sm:h-7 rounded-full flex items-center justify-center shadow-xs text-white font-bold transition-all ${
-                bookingStep === 1 ? 'bg-vj-step-green' : 'bg-vj-amber'
+              className={`vj-step-dot ${
+                bookingStep >= 1 ? 'vj-step-dot--active' : 'vj-step-dot--idle'
               }`}
               title="Chọn chuyến bay"
             >
-              <Icon name="PaperAirplaneIcon" size={12} className="rotate-45" />
+              <Icon name="PaperAirplaneIcon" size={16} className="rotate-45" />
             </div>
             <div
-              className={`w-6 h-6 sm:w-7 sm:h-7 rounded-full flex items-center justify-center shadow-xs text-white font-bold transition-all ${
-                bookingStep === 2 ? 'bg-vj-step-green' : 'bg-vj-amber'
+              className={`vj-step-dot ${
+                bookingStep >= 2 ? 'vj-step-dot--active' : 'vj-step-dot--idle'
               }`}
               title="Thông tin hành khách"
             >
-              <Icon name="UserIcon" size={12} />
+              <Icon name="UserIcon" size={14} />
             </div>
             <div
-              className={`w-6 h-6 sm:w-7 sm:h-7 rounded-full flex items-center justify-center shadow-xs text-white font-bold transition-all ${
-                bookingStep === 3 ? 'bg-vj-step-green' : 'bg-vj-amber'
+              className={`vj-step-dot ${
+                bookingStep >= 3 ? 'vj-step-dot--active' : 'vj-step-dot--idle'
               }`}
               title="Dịch vụ bổ sung"
             >
-              <Icon name="ShoppingCartIcon" size={12} />
+              <Icon name="ShoppingCartIcon" size={14} />
             </div>
             <div
-              className={`w-6 h-6 sm:w-7 sm:h-7 rounded-full flex items-center justify-center shadow-xs text-white font-bold transition-all ${
-                bookingStep === 4 ? 'bg-vj-step-green' : 'bg-vj-amber'
+              className={`vj-step-dot ${
+                bookingStep >= 4 ? 'vj-step-dot--active' : 'vj-step-dot--idle'
               }`}
               title="Thanh toán"
             >
@@ -250,8 +271,13 @@ export default function FlightBookingResultsWrapper({
           vùng nội dung `1200px` (x=120…1320 ở viewport 1440) = cột trái `820px`
           (padding trong `15px`) + panel phải `380px` (x=940…1320).
           Vì vậy container là `max-w-[1200px]` không padding ngang ở desktop
-          (padding ngang chỉ dành cho mobile). */}
-      <div className="mx-auto w-full max-w-[1200px] px-[15px] lg:px-0 pt-3 sm:pt-5 pb-24 sm:pb-28 overflow-x-hidden">
+          (padding ngang chỉ dành cho mobile).
+
+          Ở MOBILE băng vàng được CỐ ĐỊNH ngay dưới header đỏ nên nội dung
+          phải chừa `48px` (header) + `51px` (băng vàng) — site thật dùng
+          `padding-top: 48px` trên lớp phủ header và băng vàng `position:
+          fixed` bù lên trên. */}
+      <div className="mx-auto w-full max-w-[1200px] px-[15px] lg:px-0 pt-[51px] lg:pt-5 pb-24 sm:pb-28 overflow-x-hidden">
         <div className="flex flex-col lg:flex-row items-start w-full">
           {/* Cột trái: danh sách chuyến bay (ô 820px ở desktop) */}
           {/* `w-full` là bắt buộc ở mobile: parent dùng `items-start`, nên cột
@@ -366,20 +392,22 @@ export default function FlightBookingResultsWrapper({
             </div>
           </div>
 
-          {/* Mobile Floating "Đi tiếp" button matching Screenshot */}
-          <div className="sm:hidden fixed bottom-5 left-0 right-0 z-[60] flex justify-center pointer-events-none px-4">
+          {/* Nút nổi "Đi tiếp" ở MOBILE — đo 15/11/2026 (472×915, site thật):
+              nút `157×40px`, bo góc `10px`, gradient vàng `26.73deg`
+              (`#F9A51A 13.7% → #FBB612 29.8% → #FFDD00 66.81%`), nằm cố định
+              ở `y=850` (cách mép dưới `25px`), CĂN GIỮA màn hình
+              (`x=158`), chữ `14px/500` KoHo màu `rgba(0,0,0,.87)`, shadow 3 tầng
+              của MUI. */}
+          <div className="sm:hidden fixed bottom-[25px] left-0 right-0 z-[60] flex justify-center pointer-events-none">
             <button
               type="button"
               onClick={handleContinue}
               disabled={!bookings.outbound}
-              className="vj-cta pointer-events-auto disabled:opacity-50 disabled:cursor-not-allowed text-base px-16 py-3 rounded-vj shadow-[0_8px_20px_rgba(0,0,0,0.2)] border border-yellow-400 active:scale-95 transition-all cursor-pointer"
+              className="vj-cta vj-cta--booking pointer-events-auto h-[40px] w-[157px] min-w-[157px] max-w-[157px] disabled:opacity-50 disabled:cursor-not-allowed active:scale-95 transition-all cursor-pointer"
             >
               Đi tiếp
             </button>
           </div>
-
-          {/* Red bottom accent stripe matching sample image */}
-          <div className="sm:hidden fixed bottom-0 left-0 right-0 h-2 bg-primary-dark z-50 pointer-events-none" />
         </>
       )}
 

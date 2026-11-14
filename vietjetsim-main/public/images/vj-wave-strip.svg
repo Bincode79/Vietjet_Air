@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 140" preserveAspectRatio="none" role="img" aria-label="D£i l°ãn sóng 3 màu th°¡ng hiÇu Vietjet: Ï, vàng, xanh lá">
+  <defs>
+    <linearGradient id="waveRed" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#B31018"/>
+      <stop offset="0.5" stop-color="#E3212A"/>
+      <stop offset="1" stop-color="#B31018"/>
+    </linearGradient>
+    <linearGradient id="waveYellow" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#F5B700"/>
+      <stop offset="0.5" stop-color="#FFD100"/>
+      <stop offset="1" stop-color="#F5B700"/>
+    </linearGradient>
+    <linearGradient id="waveGreen" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#3D9E38"/>
+      <stop offset="0.5" stop-color="#6FC043"/>
+      <stop offset="1" stop-color="#3D9E38"/>
+    </linearGradient>
+  </defs>
+
+  <g fill="none" stroke-linecap="round" preserveAspectRatio="none">
+    <!-- Ï -->
+    <path d="M0 34C120 8 240 60 360 34C480 8 600 60 720 34C840 8 960 60 1080 34C1200 8 1320 60 1440 34"
+      stroke="url(#waveRed)" stroke-width="26"/>
+    <path d="M0 34C120 8 240 60 360 34C480 8 600 60 720 34C840 8 960 60 1080 34C1200 8 1320 60 1440 34"
+      stroke="#FFFFFF" stroke-width="6" opacity="0.18"/>
+
+    <!-- Vàng -->
+    <path d="M0 74C120 48 240 100 360 74C480 48 600 100 720 74C840 48 960 100 1080 74C1200 48 1320 100 1440 74"
+      stroke="url(#waveYellow)" stroke-width="26"/>
+    <path d="M0 74C120 48 240 100 360 74C480 48 600 100 720 74C840 48 960 100 1080 74C1200 48 1320 100 1440 74"
+      stroke="#FFFFFF" stroke-width="6" opacity="0.2"/>
+
+    <!-- Xanh lá -->
+    <path d="M0 114C120 88 240 140 360 114C480 88 600 140 720 114C840 88 960 140 1080 114C1200 88 1320 140 1440 114"
+      stroke="url(#waveGreen)" stroke-width="26"/>
+    <path d="M0 114C120 88 240 140 360 114C480 88 600 140 720 114C840 88 960 140 1080 114C1200 88 1320 140 1440 114"
+      stroke="#FFFFFF" stroke-width="6" opacity="0.18"/>
+  </g>
+</svg>

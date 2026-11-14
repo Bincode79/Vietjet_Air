@@ -176,7 +176,7 @@ export async function POST(request: NextRequest) {
         userAgent: request.headers.get('user-agent') || undefined,
       });
 
-      return NextResponse.json({ success: true, message: 'Đã xóa role admin của user' });
+      return NextResponse.json({ success: true, message: 'Đã xóa vai trò hệ thống của người dùng' });
     }
 
     // ─── Action: set_config ────────────────────────────────────────────

@@ -47,7 +47,7 @@ export async function POST(request: NextRequest) {
 
     if (isAccountLocked(lockedUntil)) {
       const lockedResponse = NextResponse.json(
-        { error: 'Tài khoản đã bị khoá. Vui lòng liên hệ quản trị viên.' },
+        { error: 'Tài khoản đã bị khoá. Vui lòng liên hệ hệ thống hỗ trợ.' },
         { status: 403 }
       );
       clearAuthCookiesOnResponse(lockedResponse);

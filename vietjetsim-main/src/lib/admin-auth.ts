@@ -96,7 +96,7 @@ export async function verifyAdminRequest(
       payload,
       error: 'Forbidden',
       response: NextResponse.json(
-        { error: 'Forbidden', message: 'Admin access required' },
+        { error: 'Forbidden', message: 'Yêu cầu quyền truy cập hệ thống' },
         { status: 403 }
       ),
     };

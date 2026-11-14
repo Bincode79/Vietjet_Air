@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
 
     if (isAccountLocked(account.locked_until)) {
       return NextResponse.json(
-        { error: 'Tài khoản đã bị khoá. Vui lòng liên hệ quản trị viên.' },
+        { error: 'Tài khoản đã bị khoá. Vui lòng liên hệ hệ thống hỗ trợ.' },
         { status: 403 }
       );
     }

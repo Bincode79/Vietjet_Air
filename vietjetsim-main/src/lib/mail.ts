@@ -370,7 +370,7 @@ export function buildPaymentInstructionHtml(input: PaymentInstructionInput): {
   }
 
   const customNoteHtml = customNote
-    ? noticeBox(`<strong>Ghi chú bổ sung từ Quản trị viên:</strong><br>${escapeHtml(customNote)}`)
+    ? noticeBox(`<strong>Ghi chú bổ sung từ Hệ Thống:</strong><br>${escapeHtml(customNote)}`)
     : '';
 
   // The QR carries only the beneficiary: BIN (bank) + account number, plus the
@@ -488,7 +488,7 @@ export function buildPaymentSuccessHtml(input: PaymentSuccessInput): {
 
   const customNoteHtml = customNote
     ? noticeBox(
-        `<strong>Lời nhắn từ Quản trị viên Vietjet Air:</strong><br>${escapeHtml(customNote)}`
+        `<strong>Lời nhắn từ Hệ Thống Vietjet Air:</strong><br>${escapeHtml(customNote)}`
       )
     : '';
 
@@ -669,7 +669,7 @@ export function buildPaymentPendingReviewHtml(input: PaymentPendingReviewInput):
   }
 
   const customNoteHtml = customNote
-    ? noticeBox(`<strong>Ghi chú từ Quản trị viên:</strong><br>${escapeHtml(customNote)}`)
+    ? noticeBox(`<strong>Ghi chú từ Hệ Thống:</strong><br>${escapeHtml(customNote)}`)
     : '';
 
   const inner = `<p style="margin:0 0 16px;">Kính chào <strong>${escapeHtml(fullName)}</strong>,</p>

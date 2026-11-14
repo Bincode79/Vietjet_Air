@@ -51,7 +51,7 @@ const TABS: readonly Tab[] = [
  * Highlight class for the tab matching the current route.
  * Chuẩn Vietjet live: active color #EC2029.
  */
-const ACTIVE_CLASS = 'text-[var(--vj-red)]';
+const ACTIVE_CLASS = 'text-[#EC2029] text-[var(--vj-red)] font-medium';
 
 /** Paths where a bottom bar would fight the page's own sticky footer. */
 const HIDDEN_ON = ['/quan-tri', '/dang-nhap', '/dat-lai-mat-khau', '/quen-mat-khau', '/tim-ve'];
@@ -88,7 +88,7 @@ export default function MobileBottomNav() {
               <Link
                 href={tab.href}
                 aria-current={active ? 'page' : undefined}
-                className={`flex h-[56px] w-[87px] flex-col items-center justify-center gap-[6px] px-[2px] text-[13px] font-medium leading-[16px] transition-colors ${
+                className={`flex h-[56px] min-h-[56px] w-[87px] flex-col items-center justify-center gap-[6px] px-[2px] text-[13px] font-medium leading-[16px] transition-colors ${
                   active ? ACTIVE_CLASS : 'text-[#1f2a33]'
                 }`}
               >

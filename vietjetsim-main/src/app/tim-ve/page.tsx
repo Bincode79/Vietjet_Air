@@ -34,7 +34,18 @@ export default async function FlightBookingPage({
     : '--/--/----';
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-vj-blue-tint-5 via-vj-blue-tint-4 to-vj-blue-tint-3 relative overflow-x-hidden w-full max-w-full">
+    <div className="min-h-screen bg-gradient-to-b from-vj-blue-tint-5 via-vj-blue-tint-4 to-vj-blue-tint-3 relative overflow-x-clip w-full max-w-full">
+      {/* Nền trời mây ở MOBILE — site thật `/vi/select-flight` dùng nền ảnh
+          `bg_booking_mb.webp` (trời xanh nhạt + mây trắng) phủ toàn trang.
+          Repo không tải asset của site thật về (quy tắc trong AGENTS.md) nên
+          dùng asset SẴN CÓ: `/images/vj-sky-clouds.svg` — trời xanh da trời
+          nhạt + các cụm mây trắng mờ (CURSOR_TASK.md Hạng mục 5). Chỉ hiện ở
+          `< lg` — desktop giữ nền gradient xanh như site thật. */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 z-0 bg-[url('/images/vj-sky-clouds.svg')] bg-cover bg-top bg-no-repeat lg:hidden"
+      />
+
       {/* Header trắng 74px — đo được ở site thật (newweb.vietjetair.com
           /vi/pages/booking-search, 1440×900): nền #FFFFFF, viền dưới 2px
           #E31E24, bo góc dưới 16px, shadow rgba(0,0,0,.08) 0 8px 24px.
@@ -42,7 +53,7 @@ export default async function FlightBookingPage({
           16px/700 — nên `mobileRed` bật băng đỏ + logo đảo màu. */}
       <Header variant="subpage" mobileTitle="LỰA CHỌN CHUYẾN BAY" mobileRed />
 
-      <main id="main-content">
+      <main id="main-content" className="relative z-10">
         <ErrorBoundary variant="booking">
           <FlightBookingResultsWrapper trip={trip} date={date} />
         </ErrorBoundary>

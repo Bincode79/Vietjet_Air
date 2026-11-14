@@ -113,7 +113,7 @@ export const PERMISSION_LABELS: Record<Permission, string> = {
   'sstk:view_logs': 'Xem nhật ký SSTK',
   'rbac:manage': 'Quản lý RBAC',
   'rbac:audit_log': 'Xem nhật ký RBAC',
-  'admin:invite': 'Mời admin mới',
+  'admin:invite': 'Mời tài khoản hệ thống mới',
   'discount:list': 'Xem danh sách mã giảm giá',
   'discount:view': 'Xem chi tiết mã giảm giá',
   'discount:create': 'Tạo mã giảm giá',
@@ -322,8 +322,8 @@ export function getRoleInfo(role: AllRoles): {
 } {
   if (role === 'admin') {
     return {
-      label: 'Quản trị viên',
-      description: 'Quản trị viên toàn quyền',
+      label: 'Hệ Thống',
+      description: 'Tài khoản hệ thống toàn quyền',
       color: 'text-primary',
       bgColor: 'bg-primary/10',
       level: ROLE_LEVELS.admin,
@@ -474,8 +474,8 @@ export const SYSTEM_ROLES: Record<
 > = {
   admin: {
     name: 'admin',
-    label: 'Quản trị viên',
-    description: 'Quản trị viên toàn quyền',
+    label: 'Hệ Thống',
+    description: 'Tài khoản hệ thống toàn quyền',
     color: 'text-red-600',
     bgColor: 'bg-red-50',
     level: 1,

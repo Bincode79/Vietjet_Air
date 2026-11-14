@@ -514,7 +514,7 @@ export default function SendBookingEmailModal({
 
                   {customNote && (
                     <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl text-2xs text-amber-900">
-                      <strong>Lời nhắn từ Quản trị viên:</strong>
+                      <strong>Lời nhắn từ Hệ Thống:</strong>
                       <p className="mt-0.5">{customNote}</p>
                     </div>
                   )}

@@ -56,7 +56,7 @@ describe('PopupFrame', () => {
 });
 
 describe('MobileBottomNav hiện trên 2 route tra cứu', () => {
-  it('chiều cao 62px theo site thật', () => {
-    expect(BOTTOM_NAV_HEIGHT).toBe(62);
+  it('chiều cao 88px theo site thật', () => {
+    expect(BOTTOM_NAV_HEIGHT).toBe(88);
   });
 });

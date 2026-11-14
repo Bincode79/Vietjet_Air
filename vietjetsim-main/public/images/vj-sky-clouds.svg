@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 472 915" preserveAspectRatio="xMidYMid slice" role="img" aria-label="NÁn trÝi xanh da trÝi nh¡t vÛi các cåm mây tr¯ng mÝ">
+  <defs>
+    <linearGradient id="vjsky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#BFE4F9"/>
+      <stop offset="0.35" stop-color="#D4EDFC"/>
+      <stop offset="0.7" stop-color="#E6F4FD"/>
+      <stop offset="1" stop-color="#F2FAFF"/>
+    </linearGradient>
+    <radialGradient id="vjskyGlow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.55"/>
+      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="vjcloudSoft" x="-30%" y="-40%" width="160%" height="180%">
+      <feGaussianBlur stdDeviation="2.2"/>
+    </filter>
+  </defs>
+
+  <rect width="472" height="915" fill="url(#vjsky)"/>
+  <ellipse cx="236" cy="120" rx="300" ry="220" fill="url(#vjskyGlow)"/>
+
+  <g fill="#FFFFFF" filter="url(#vjcloudSoft)">
+    <!-- Cåm mây 1  góc trên trái -->
+    <g opacity="0.72">
+      <ellipse cx="60" cy="110" rx="52" ry="26"/>
+      <ellipse cx="98" cy="92" rx="38" ry="30"/>
+      <ellipse cx="136" cy="112" rx="46" ry="24"/>
+      <ellipse cx="24" cy="132" rx="36" ry="20"/>
+    </g>
+
+    <!-- Cåm mây 2  góc trên ph£i -->
+    <g opacity="0.6">
+      <ellipse cx="404" cy="70" rx="58" ry="24"/>
+      <ellipse cx="452" cy="96" rx="40" ry="26"/>
+      <ellipse cx="356" cy="96" rx="36" ry="20"/>
+    </g>
+
+    <!-- Cåm mây 3  giïa trên -->
+    <g opacity="0.5">
+      <ellipse cx="250" cy="200" rx="66" ry="22"/>
+      <ellipse cx="212" cy="186" rx="34" ry="18"/>
+      <ellipse cx="296" cy="188" rx="30" ry="16"/>
+    </g>
+
+    <!-- Cåm mây 4  giïa trái -->
+    <g opacity="0.46">
+      <ellipse cx="70" cy="392" rx="70" ry="26"/>
+      <ellipse cx="120" cy="374" rx="38" ry="22"/>
+      <ellipse cx="26" cy="380" rx="34" ry="18"/>
+    </g>
+
+    <!-- Cåm mây 5  giïa ph£i -->
+    <g opacity="0.42">
+      <ellipse cx="392" cy="520" rx="64" ry="24"/>
+      <ellipse cx="344" cy="504" rx="32" ry="18"/>
+      <ellipse cx="438" cy="506" rx="30" ry="17"/>
+    </g>
+
+    <!-- Cåm mây 6  d°Ûi trái -->
+    <g opacity="0.4">
+      <ellipse cx="110" cy="676" rx="76" ry="26"/>
+      <ellipse cx="166" cy="658" rx="36" ry="20"/>
+      <ellipse cx="52" cy="662" rx="34" ry="18"/>
+    </g>
+
+    <!-- Cåm mây 7  d°Ûi ph£i -->
+    <g opacity="0.36">
+      <ellipse cx="352" cy="828" rx="82" ry="26"/>
+      <ellipse cx="410" cy="810" rx="38" ry="20"/>
+      <ellipse cx="296" cy="812" rx="34" ry="17"/>
+    </g>
+  </g>
+</svg>

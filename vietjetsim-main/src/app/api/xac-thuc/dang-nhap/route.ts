@@ -66,7 +66,7 @@ export async function POST(request: NextRequest) {
     if (isAccountLocked(userRecord.locked_until)) {
       console.warn(`[AUTH] Login blocked: account locked for identifier: ${identifier}`);
       return NextResponse.json(
-        { error: 'Tài khoản đã bị khoá. Vui lòng liên hệ quản trị viên.' },
+        { error: 'Tài khoản đã bị khoá. Vui lòng liên hệ hệ thống hỗ trợ.' },
         { status: 403 }
       );
     }

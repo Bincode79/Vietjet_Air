@@ -1651,14 +1651,105 @@ h6 {
 .vj-booking-strip {
   width: 100%;
   max-width: 1200px;
-  min-height: 82px;
-  border-radius: 16px;
+  min-height: 48px;
+  border-radius: 0px;
+  /* MOBILE (đo 15/11/2026, 472×915, `/vi/select-flight`): băng vàng CỐ ĐỊNH
+     ngay dưới băng đỏ, cao `51px`, gradient `21.74deg`
+     (`#F9A51A 2.28% → #FBB612 27.93% → #FFDD00 86.9%`), bo góc `0`,
+     padding `10px 17px`. Gradient khác hẳn bản desktop (`28.91deg`) —
+     site thật dùng hai góc khác nhau cho hai breakpoint. */
   background-image: linear-gradient(
-    28.91deg,
-    var(--vj-grad-gold-from) 2.24%,
-    var(--vj-grad-gold-mid) 31.03%,
-    #fbf300 97.21%
+    21.74deg,
+    var(--vj-grad-gold-from) 2.28%,
+    var(--vj-grad-gold-mid) 27.93%,
+    var(--vj-grad-gold-to) 86.9%
   );
+}
+
+@media (min-width: 1024px) {
+  .vj-booking-strip {
+    min-height: 82px;
+    border-radius: 16px;
+    /* Desktop (đo 14/11/2026, 1440×900): gradient `28.91deg`
+       (`#F9A51A 2.24% → #FBB612 31.03% → #FBF300 97.21%`). */
+    background-image: linear-gradient(
+      28.91deg,
+      var(--vj-grad-gold-from) 2.24%,
+      var(--vj-grad-gold-mid) 31.03%,
+      #fbf300 97.21%
+    );
+  }
+}
+
+/* Pill "Tổng … VND" trong băng vàng (đo 15/11/2026, 472×915):
+ *   - Khung trắng `260×31px`, bo tròn `50px`, padding `0 14px 0 10px`.
+ *   - Nhãn "Tổng" `14px/600` `#333333`, cách giá trị `8px`.
+ *   - Giá trị `14px/400` màu `#EC2029`, font `JambonoMedium`.
+ *   - Mũi tên xuống `24×24px` ở cuối pill.
+ *
+ *   Bề rộng `260px` là CỐ ĐỊNH (không co theo nội dung) ở mobile: site thật
+ *   dùng một ô nhập `165px` bên trong pill, nên pill luôn rộng `260px` bất kể
+ *   số tiền dài hay ngắn. Ở desktop pill nằm trong băng `1200px` nên được
+ *   bỏ chiều rộng cố định. */
+.vj-total-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 31px;
+  padding: 0 14px 0 10px;
+  border-radius: 50px;
+  background-color: #ffffff;
+}
+
+@media (max-width: 1023px) {
+  .vj-total-pill {
+    width: 260px;
+  }
+}
+
+.vj-total-pill-label {
+  font-family: var(--vj-font-body, 'KoHo');
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 19px;
+  color: #333333;
+}
+
+.vj-total-pill-value {
+  font-family: var(--vj-font-cta, 'JambonoMedium');
+  font-size: 14px;
+  /* CURSOR_TASK.md Hạng mục 1: số tiền màu đỏ đậm `#C4121A` in đậm. */
+  font-weight: 700;
+  line-height: 19px;
+  color: #c4121a;
+}
+
+/* Vòng tròn bước trong băng vàng (đo 15/11/2026, 472×915):
+ *   - Đường kính `25px`, bo tròn `50%`.
+ *   - Bước đang làm: gradient `72.74deg`
+ *     (`#459B02 -15.27% → #AAFA6B 113.22%`), icon TRẮNG.
+ *   - Các bước sau: nền trắng, icon màu vàng `#F9A51A`. */
+.vj-step-dot {
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.vj-step-dot--active {
+  background-image: linear-gradient(
+    72.74deg,
+    rgb(69, 155, 2) -15.27%,
+    rgb(170, 250, 107) 113.22%
+  );
+  color: #ffffff;
+}
+
+.vj-step-dot--idle {
+  background-color: #ffffff;
+  color: #f9a51a;
 }
 
 .vj-booking-strip-title {
@@ -2733,7 +2824,12 @@ h6 {
 .page-transition-wrapper {
   position: relative;
   width: 100%;
-  overflow-x: hidden;
+  /* `clip` thay vì `hidden`: `hidden` biến phần tử thành scroll container
+     (overflow-y bị ép thành `auto`), và mọi `position: sticky` bên trong —
+     ví dụ header `.vj-subheader` — sẽ dính vào scroll container đó chứ không
+     dính vào viewport, nên header trôi mất khi cuộn. `clip` không tạo scroll
+     container nên sticky vẫn hoạt động, mà tràn ngang vẫn bị cắt. */
+  overflow-x: clip;
   min-height: 100vh;
 }
 
@@ -3275,6 +3371,7 @@ h6 {
   width: 100%;
   height: 32px;
   border: 0;
+  border-bottom: 1px solid var(--vj-underline-border);
   border-radius: 0;
   background: transparent;
   padding: 6px 0 7px;
@@ -3287,6 +3384,7 @@ h6 {
 
 .vj-lookup-field .vj-lookup-input:focus {
   outline: none;
+  border-bottom: 2px solid var(--primary);
 }
 
 .vj-lookup-field .vj-lookup-input:focus-visible {

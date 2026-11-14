@@ -80,7 +80,7 @@ export async function PATCH(request: NextRequest) {
     // their own thread to escape the support queue.
     if (!isAdminRole(user.role)) {
       return NextResponse.json(
-        { error: 'Forbidden', message: 'Admin access required' },
+        { error: 'Forbidden', message: 'Yêu cầu quyền truy cập hệ thống' },
         { status: 403 }
       );
     }

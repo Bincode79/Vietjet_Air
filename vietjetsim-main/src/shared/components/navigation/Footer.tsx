@@ -352,6 +352,15 @@ export default function Footer() {
           </div>
         </div>
       </div>
+
+      {/* Dải lượn sóng 3 màu thương hiệu Vietjet (Đỏ – Vàng – Xanh lá) ở
+          chân trang — CURSOR_TASK.md Hạng mục 5. Asset tự vẽ trong repo
+          (`/images/vj-wave-strip.svg`) nên không phụ thuộc asset site thật. */}
+      <div
+        aria-hidden="true"
+        data-testid="vj-wave-strip"
+        className="pointer-events-none h-[54px] w-full bg-[url('/images/vj-wave-strip.svg')] bg-cover bg-bottom bg-no-repeat sm:h-[72px]"
+      />
     </footer>
   );
 }

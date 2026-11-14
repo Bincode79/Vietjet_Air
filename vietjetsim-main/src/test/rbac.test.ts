@@ -195,7 +195,7 @@ describe('RBAC Module', () => {
   describe('getRoleInfo', () => {
     it('should return correct info for admin', () => {
       const info = getRoleInfo('admin');
-      expect(info.label).toBe('Quản trị viên');
+      expect(info.label).toBe('Hệ Thống');
       expect(info.level).toBe(1);
     });
 

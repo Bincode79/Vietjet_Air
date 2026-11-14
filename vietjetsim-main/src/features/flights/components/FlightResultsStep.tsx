@@ -263,27 +263,58 @@ function DateStrip({ value, onSelect }: { value?: string; onSelect?: (iso: strin
           const isOuterDay = idx === 0 || idx === 4;
 
           if (isSelected) {
-            // Ô ngày active trên site thật là pill vàng #FFDD32, chữ nâu
-            // rgb(115 62 10) — không phải cloud scalloped. Đo 13/11/2026.
-            // Kích thước: `156×95px`. Cỡ chữ HAI LOẠI (đo site thật 14/11/2026):
-            // weekday `13px/500`, ngày `16px/500` — không đồng loạt 13px.
             return (
               <button
                 key={iso}
                 type="button"
                 onClick={() => onSelect?.(iso)}
                 aria-current="date"
-                className="flex h-[95px] w-[156px] shrink-0 flex-col items-center justify-center text-center rounded-vj bg-[var(--vj-yellow-tab)] text-[var(--vj-tab-ink)] border border-transparent cursor-pointer focus:outline-none focus:ring-0"
+                className="relative flex h-[82px] sm:h-[95px] w-[114px] sm:w-[156px] shrink-0 flex-col items-center justify-center text-center cursor-pointer focus:outline-none focus:ring-0 z-10 transition-transform active:scale-95"
               >
-                <span className="block text-sm2 font-medium leading-tight">
-                  {WEEKDAY_LABELS[day.getDay()]}
-                </span>
-                <span className="block text-base font-medium leading-tight my-0.5">
-                  {day.getDate()} tháng {day.getMonth() + 1}
-                </span>
-                <span className="block text-sm2 font-bold leading-tight">
-                  Từ <span className="font-bold">{price}</span> VND
-                </span>
+                {/* Bông hoa vàng — viền đỏ cam, lớp trong vàng. */}
+                <svg
+                  viewBox="0 0 140 100"
+                  className="w-[72px] h-[56px] self-center mb-1 drop-shadow-[0_4px_10px_rgba(245,130,32,0.45)]"
+                  aria-hidden="true"
+                >
+                  {/* Lớp viền đỏ cam. */}
+                  <g fill="#F58220">
+                    <circle cx="70" cy="50" r="26" />
+                    <circle cx="70" cy="24" r="12" />
+                    <circle cx="70" cy="76" r="12" />
+                    <circle cx="45" cy="50" r="12" />
+                    <circle cx="95" cy="50" r="12" />
+                    <circle cx="50" cy="34" r="12" />
+                    <circle cx="90" cy="34" r="12" />
+                    <circle cx="50" cy="66" r="12" />
+                    <circle cx="90" cy="66" r="12" />
+                  </g>
+                  {/* Lớp nền vàng. */}
+                  <g fill="#FFD200">
+                    <circle cx="70" cy="50" r="22" />
+                    <circle cx="70" cy="24" r="10" />
+                    <circle cx="70" cy="76" r="10" />
+                    <circle cx="45" cy="50" r="10" />
+                    <circle cx="95" cy="50" r="10" />
+                    <circle cx="50" cy="34" r="10" />
+                    <circle cx="90" cy="34" r="10" />
+                    <circle cx="50" cy="66" r="10" />
+                    <circle cx="90" cy="66" r="10" />
+                  </g>
+                </svg>
+
+                <div className="relative z-10 flex flex-col items-center justify-center px-1">
+                  <span className="block text-2xs sm:text-sm2 font-bold text-[#733E0A] leading-tight">
+                    {WEEKDAY_LABELS[day.getDay()]}
+                  </span>
+                  <span className="block text-xs sm:text-base font-black text-gray-950 leading-tight my-0.5">
+                    {day.getDate()} tháng {day.getMonth() + 1}
+                  </span>
+                  <span className="block text-3xs sm:text-sm2 font-medium text-gray-800 leading-tight">
+                    Từ <span className="font-bold text-[#C4121A]">{price.split(' ')[0]}</span>{' '}
+                    <span className="italic text-gray-700">000 VND</span>
+                  </span>
+                </div>
               </button>
             );
           }
@@ -293,16 +324,19 @@ function DateStrip({ value, onSelect }: { value?: string; onSelect?: (iso: strin
               key={iso}
               type="button"
               onClick={() => onSelect?.(iso)}
-              className={`${isOuterDay ? 'hidden sm:flex' : 'flex'} h-[95px] w-[156px] shrink-0 flex-col items-center justify-center text-center border border-gray-200/90 bg-white cursor-pointer focus:outline-none focus:ring-0 rounded-vj`}
+              className={`${
+                isOuterDay ? 'hidden sm:flex' : 'flex'
+              } h-[76px] sm:h-[95px] w-[95px] sm:w-[156px] shrink-0 flex-col items-center justify-center text-center border border-gray-200/90 bg-white cursor-pointer focus:outline-none focus:ring-0 rounded-xl shadow-xs hover:border-amber-300 transition-all`}
             >
-              <span className="text-sm2 font-medium text-vj-text leading-tight">
+              <span className="text-2xs sm:text-sm2 font-medium text-gray-600 leading-tight">
                 {WEEKDAY_LABELS[day.getDay()]}
               </span>
-              <span className="text-base font-medium text-vj-text leading-tight my-0.5">
+              <span className="text-xs sm:text-base font-bold text-gray-900 leading-tight my-0.5">
                 {day.getDate()} tháng {day.getMonth() + 1}
               </span>
-              <span className="text-sm2 font-medium text-vj-text leading-tight">
-                Từ <span className="font-bold">{price}</span> VND
+              <span className="text-3xs sm:text-sm2 font-medium text-gray-700 leading-tight">
+                Từ <span className="font-bold text-gray-900">{price.split(' ')[0]}</span>{' '}
+                <span className="italic text-gray-500">000 VND</span>
               </span>
             </button>
           );
@@ -980,7 +1014,7 @@ export default function FlightResultsStep({
       <div className="w-full min-w-0 space-y-4">
         {/* Route board — clean white card with opposing red and gray arrows matching sample */}
         {search?.from && search?.to && (
-          <div className="rounded-vj bg-white border border-gray-100 shadow-xs px-2.5 py-2 sm:px-8 sm:py-3.5 mb-2 mx-auto w-full max-w-lg">
+          <div className="rounded-vj bg-white border border-gray-100 shadow-xs px-2.5 py-2 sm:px-8 sm:py-3.5 mb-2 mx-auto w-full max-w-xs sm:max-w-lg">
             <div className="flex items-center justify-between sm:justify-center gap-1 sm:gap-14">
               <div className="text-center min-w-0 flex-1 sm:flex-initial">
                 <div className="text-xl sm:text-3xl font-black text-gray-950 font-koho leading-none tracking-tight">
@@ -1039,8 +1073,9 @@ export default function FlightResultsStep({
             hàng này là "chip 4 màu" mà quy ước của dự án đã loại bỏ. */}
         {!isLoading && filtered.length > 0 && (
           <div className="flex flex-row items-stretch gap-0 mt-3 mb-1">
-            {/* Khoảng trống khớp với ô thông tin chuyến bay bên trái (226px). */}
-            <div className="w-[100px] sm:w-[28%] lg:w-[226px] shrink-0" />
+            {/* Khoảng trống khớp với ô thông tin chuyến bay bên trái
+                (mobile 105px, desktop 226px). */}
+            <div className="w-[105px] sm:w-[28%] lg:w-[226px] shrink-0" />
             {/* 4 Fare Headers aligned with flight card columns — màu chuẩn theo site thật vietjetair.com */}
             <div className="flex-1 min-w-0 grid grid-cols-4 gap-0 lg:grid-cols-[repeat(4,minmax(0,1fr))]">
               <div
@@ -1230,7 +1265,7 @@ export default function FlightResultsStep({
                       setExpandedFlightNo(flight.flightNo);
                     }
                   }}
-                  className="w-[105px] sm:w-[28%] lg:w-[226px] shrink-0 bg-vj-fare-gold p-1.5 sm:p-3 lg:p-4 border-r border-yellow-400 flex flex-col items-center justify-between sm:justify-center text-center relative select-none cursor-pointer hover:bg-yellow-400 transition-colors focus:outline-none focus:ring-0"
+                  className="w-[105px] sm:w-[28%] lg:w-[226px] shrink-0 bg-gradient-to-b from-[#FFDD55] via-vj-fare-gold to-[#F0B000] p-1.5 sm:p-3 lg:p-4 border-r border-yellow-400 flex flex-col items-center justify-between sm:justify-center text-center relative select-none cursor-pointer hover:brightness-[0.97] transition-colors focus:outline-none focus:ring-0"
                 >
                   <div className="flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-2.5">
                     <div className="flex items-center gap-1">
@@ -1269,7 +1304,9 @@ export default function FlightResultsStep({
                     <span className="text-red-700 font-bold inline">Bay thẳng</span>
                   </div>
 
-                  <span className="hidden sm:block text-3xs sm:text-xs text-gray-700 mt-0.5 leading-none">
+                  {/* Mũi tên chỉ xuống `v` — trên site thật hiện ở CẢ mobile
+                      (cột trái hẹp 105px, nên ký tự `v` nhỏ thay vì icon). */}
+                  <span className="text-3xs sm:text-xs text-gray-700 mt-0.5 leading-none">
                     ∨
                   </span>
                 </div>
@@ -1341,22 +1378,17 @@ export default function FlightResultsStep({
 
                         {isSoldOut ? (
                           <div className="flex-1 flex flex-col items-center justify-center p-1 sm:p-2 text-center select-none min-h-[56px] sm:min-h-[78px]">
-                            {/* Mobile: vẫn phải ghi tên hạng */}
-                            <span
-                              className={`sm:hidden mb-0.5 inline-flex items-center rounded-full px-1 py-0.5 text-5xs font-bold uppercase tracking-wider leading-none ${
-                                FARE_BADGE_CLASS[fc.id] ?? 'bg-gray-500'
-                              }`}
-                            >
-                              {fc.name}
-                            </span>
-                            <div className="w-4 h-4 sm:w-7 sm:h-7 rounded-full border border-gray-400/50 flex items-center justify-center text-gray-400 mb-0.5 sm:mb-1">
+                            <div className="w-5 h-5 sm:w-7 sm:h-7 rounded-full border border-gray-400/50 flex items-center justify-center text-gray-400 mb-0.5 sm:mb-1 relative">
                               <Icon
                                 name="PaperAirplaneIcon"
-                                size={10}
-                                className="rotate-45 opacity-60"
+                                size={12}
+                                className="rotate-45 opacity-60 text-gray-400"
                               />
+                              <div className="absolute inset-0 flex items-center justify-center">
+                                <div className="w-full h-0.5 bg-gray-400 rotate-45" />
+                              </div>
                             </div>
-                            <span className="text-sm font-semibold text-vj-sold-out leading-tight">
+                            <span className="text-2xs sm:text-xs font-semibold text-vj-sold-out leading-tight text-gray-400">
                               Hết chỗ
                             </span>
                             <button
@@ -1399,27 +1431,13 @@ export default function FlightResultsStep({
                               });
                               onFlightSelect?.(flight.flightNo, fc.id, fc.price, fares, flight);
                             }}
-                            className={`group w-full h-full py-1 sm:py-2.5 px-0.5 sm:px-1 flex flex-col items-center justify-center text-center cursor-pointer transition-transform active:scale-[0.98] min-h-[56px] sm:min-h-[78px] focus:outline-none focus:ring-0 ${
-                              isSelected ? 'pt-5 sm:pt-4' : ''
+                            className={`group w-full h-full py-1.5 sm:py-2.5 px-0.5 sm:px-1 flex flex-col items-center justify-center text-center cursor-pointer transition-transform active:scale-[0.98] min-h-[56px] sm:min-h-[78px] focus:outline-none focus:ring-0 ${
+                              isSelected ? 'pt-4 sm:pt-4 bg-amber-50/40' : ''
                             }`}
                           >
-                            {/* Mobile: nhãn hạng vé */}
+                            {/* Giá vé: số tiền hàng trên in đậm, hàng dưới 000 VND in nghiêng giống site thật */}
                             <span
-                              className={`sm:hidden mb-1 inline-flex items-center rounded-full px-1.5 py-0.5 text-3xs font-bold uppercase tracking-wider leading-none text-white shadow-2xs ${
-                                fc.id === 'business'
-                                  ? 'bg-[#8E7022]'
-                                  : fc.id === 'skyboss'
-                                  ? 'bg-[#D71920]'
-                                  : fc.id === 'deluxe'
-                                  ? 'bg-[#FF8800]'
-                                  : 'bg-[#EC2029]'
-                              }`}
-                            >
-                              {fc.name}
-                            </span>
-                            {/* Giá vé: số tiền rõ ràng, font KoHo đậm, tương phản cao */}
-                            <span
-                              className={`text-sm sm:text-base lg:text-xl font-bold font-koho leading-none whitespace-nowrap transition-colors ${
+                              className={`text-xs sm:text-base lg:text-xl font-bold font-koho leading-none whitespace-nowrap transition-colors ${
                                 isSelected
                                   ? fc.id === 'business'
                                     ? 'text-[#8E7022]'
@@ -1428,16 +1446,16 @@ export default function FlightResultsStep({
                                     : fc.id === 'deluxe'
                                     ? 'text-[#FF8800]'
                                     : 'text-primary'
-                                  : 'text-gray-900 group-hover:text-primary'
+                                  : 'text-gray-950 group-hover:text-primary'
                               }`}
                             >
-                              {fc.price.toLocaleString('vi-VN')}
-                              <span className="hidden sm:inline text-2xs sm:text-xs font-semibold text-gray-500 ml-0.5 sm:ml-1">
-                                VND
-                              </span>
+                              {Math.floor(fc.price / 1000).toLocaleString('vi-VN')}
+                            </span>
+                            <span className="text-[10px] sm:text-xs italic text-gray-500 font-medium leading-tight mt-0.5 whitespace-nowrap">
+                              000 VND
                             </span>
                             <svg
-                              className={`w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 text-gray-400 mt-1 transition-transform duration-200 ${
+                              className={`w-2 h-2 sm:w-3 sm:h-3 text-gray-400 mt-0.5 transition-transform duration-200 ${
                                 isSelected ? 'rotate-180 text-primary' : 'group-hover:text-gray-600'
                               }`}
                               viewBox="0 0 20 20"
