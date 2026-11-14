@@ -1074,13 +1074,30 @@ return response;` narrows correctly and avoids returning `undefined` from a hand
   `getTripById` / `getTripByCodeOrId` (`src/lib/db.ts`), never by assuming two
   legs sit next to each other in a listing. A PNR lookup must return **both**
   legs — the customer does not remember which leg they booked.
-- **Check-in is per leg and opens 24 hours before that leg departs.**
+- **Check-in is per leg, and the window is 24h→60min around *that* leg's departure.**
   `POST /api/checkin` takes `leg: 'outbound' | 'inbound'` and checks the window
   against *that leg's* departure time; the inbound leg is refused with 409
   until the outbound leg is `confirmed`. The window can be disabled for admins
   through `system_config.checkin_window_enforced`, and it is **enforced by
   default**. Seats are assigned per passenger (`body.seats[]`), never one seat
   for the whole booking.
+  **Both ends of the window are enforced, and they are two different rules.**
+  `CHECKIN_WINDOW_HOURS = 24` is the opening edge (409 `Check-in window not
+  open`) and `CHECKIN_CLOSE_MINUTES = 60` is the closing edge (409 `Check-in
+  window closed`, carrying `closesAt`). Each leg computes its own pair from its
+  own `departTime` — an inbound leg's window is the inbound leg's.
+  The reason the closing edge is 60 minutes and not "whenever the airport
+  closes" is the trap that produced the earlier bug: the airport counter closes
+  at 40 minutes (domestic) or 50 minutes (international), but that is **the
+  counter**, not online check-in. Online check-in closes at 60 minutes on every
+  route. A rule that only has an opening edge lets a customer collect a
+  boarding pass the gate cannot scan.
+  **The chatbot states this window to customers, so the two must not drift.**
+  `src/lib/chatbot-ai.ts` says "24 tiếng đến 60 phút"; that sentence is a
+  promise, and the server has to honour it or the customer reads one rule and
+  meets another. `src/test/ai-chatbot-policy.test.ts` reads both constants out
+  of `src/app/api/checkin/route.ts` and asserts the chatbot's own numbers, so
+  changing either side turns the other red.
 - **`passengers.seat_number` is the only mapping from passenger to seat.**
   Before migration 046 the seat lived on the booking row in `seats`, so a
   boarding pass could not name a seat per traveller. `seats` still holds the

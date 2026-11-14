@@ -27,6 +27,22 @@ Bốn năng lực được yêu cầu, mức độ khả thi và vị trí thự
 - PDF vé điện tử: **một file** gồm cả 2 chặng (mỗi chặng 1 trang A4).
 - Chặng về giữ **PNR riêng**, tra cứu theo `trip_id` (một PNR tra ra cả trip).
 
+> **Ghi chú 15/11/2026 — mốc đóng 60 phút đã được thực thi.** Code trước đó chỉ
+> chặn mốc **mở** 24h, với lý do ghi trong comment là "giờ đóng cửa sổ thay đổi
+> theo sân bay và theo tuyến quốc tế". Lý do đó **mô tả quầy làm thủ tục tại
+> sân bay** (đóng quầy 40 phút nội địa / 50 phút quốc tế), không phải check-in
+> trực tuyến — check-in trực tuyến đóng 60 phút ở **mọi** tuyến. Nếu cửa sổ
+> còn mở, khách lấy được vé điện tử mà quầy không quét được.
+>
+> Đã thực thi: `CHECKIN_CLOSE_MINUTES = 60` chặn ở `POST /api/checkin` (409
+> `Check-in window closed`, kèm `closesAt`), `describeCheckInWindow` trả thêm
+> `closesAt` + `isClosed`, UI `/lam-thu-tuc` hiện thông báo mốc đóng, và
+> `src/test/ai-chatbot-policy.test.ts` ghim hai hằng số server vào câu trả lời
+> chatbot (chatbot là thứ khách đọc — nó nói "24 tiếng đến 60 phút", nên server
+> phải làm đúng như vậy).
+>
+> **Trạng thái M2.5b: ✅ hoàn tất.**
+
 **Ba phụ thuộc bên ngoài phải xử lý trước M3/M5 (nếu không, cả hai mốc đều chặn):**
 
 1. **Font KoHo chưa có file cục bộ.** `public/fonts/` chỉ có 3 file Jambono. KoHo đang được nạp bằng `<link>` Google Fonts trong `src/app/layout.tsx` ⇒ **không nhúng được vào PDF** (PDF cần TTF nhúng). Phải commit file `.ttf` KoHo vào `public/fonts/`.
@@ -205,7 +221,7 @@ CREATE TABLE IF NOT EXISTS booking_seat_changes (
 | Quy tắc | Nơi thực thi |
 |---------|--------------|
 | Chặng về không được check-in trước chặng đi | `POST /api/checkin` kiểm tra trạng thái chặng đi (đã `confirmed`) |
-| **Cửa sổ check-in: mở 24h trước giờ bay, đóng 60 phút trước giờ bay — BẮT BUỘC** | `POST /api/checkin` — mốc thời gian lấy theo **giờ bay của từng chặng** (chặng về có cửa sổ 24h riêng theo giờ bay chặng về). Vượt trước → `422` + thông điệp "Check-in mở từ {mốc}"; quá muộn → `422` + "Đã đóng check-in từ {mốc}" |
+| **Cửa sổ check-in: mở 24h trước giờ bay, đóng 60 phút trước giờ bay — BẮT BUỘC** | `POST /api/checkin` — mốc thời gian lấy theo **giờ bay của từng chặng** (chặng về có cửa sổ 24h riêng theo giờ bay chặng về). Vượt trước → `409` + thông điệp "Check-in chỉ mở từ {mốc}"; quá muộn → `409` + "Check-in đã đóng từ {mốc}" |
 | Cửa sổ tính theo **giờ bay thực tế của chặng**, theo lịch Việt Nam | `toVietnamWallClock` + so sánh với `scheduled_departure` (không dùng `new Date()`) |
 | 1 hành khách = 1 dòng `check_in` | Unique index `(booking_id, passenger_id) WHERE passenger_id IS NOT NULL` |
 | Không check-in lại 2 lần | `POST /api/checkin` trả 409 + `checkInNumber` sẵn có (hiện trả 400 — đổi sang 409 để client phân biệt "đã check-in" với "lỗi") |
@@ -341,7 +357,7 @@ CREATE TABLE IF NOT EXISTS booking_seat_changes (
 - [ ] Tra cứu được PNR của **cả 2 chặng** khứ hồi bằng một mã (không phải biết chặng nào trước)
 - [ ] Chọn được: chỉ chặng đi / chỉ chặng về / cả 2 chặng; check-in **riêng lẻ** hoạt động độc lập
 - [ ] Check-in chặng về bị từ chối có thông điệp rõ ràng khi chặng đi chưa hoàn tất
-- [ ] **Cửa sổ check-in bắt buộc**: chặn check-in sớm hơn 24h hoặc quá muộn hơn 60 phút trước giờ bay; **mỗi chặng tính riêng** theo giờ bay của chặng đó; thông báo lỗi nêu rõ mốc mở/đóng cửa sổ
+- [ ] **Cửa sổ check-in bắt buộc**: chặn check-in sớm hơn 24h hoặc quá muộn hơn 60 phút trước giờ bay; **mỗi chặng tính riêng** theo giờ bay của chặng đó; thông báo lỗi nêu rõ mốc mở/đóng cửa sổ ✅ *(đã thực hiện 15/11/2026 — `CHECKIN_WINDOW_HOURS = 24` + `CHECKIN_CLOSE_MINUTES = 60` trong `src/app/api/checkin/route.ts`; cả hai mốc trả `409` kèm `opensAt`/`closesAt`)*
 - [ ] Ghế được **ghi vào DB** (`seats` + `passengers.seat_number`), không chỉ state client
 - [ ] Thẻ lên máy bay hiển thị **QR thật** (quét ra đúng PNR/chặng/ghế) + **mã vạch Code 39**
 - [ ] Tải được vé về điện thoại: PDF **hoặc** ảnh PNG **hoặc** chia sẻ (Web Share)

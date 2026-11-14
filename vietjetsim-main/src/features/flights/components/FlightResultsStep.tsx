@@ -1236,7 +1236,9 @@ export default function FlightResultsStep({
                   role="button"
                   tabIndex={0}
                   onClick={() => {
-                    setExpandedFlightNo((prev) => (prev === flight.flightNo ? null : flight.flightNo));
+                    setExpandedFlightNo((prev) =>
+                      prev === flight.flightNo ? null : flight.flightNo
+                    );
                     setSelectedFareClassMap((prev) => ({
                       ...prev,
                       [flight.flightNo]: activeFareClass,
@@ -1306,9 +1308,7 @@ export default function FlightResultsStep({
 
                   {/* Mũi tên chỉ xuống `v` — trên site thật hiện ở CẢ mobile
                       (cột trái hẹp 105px, nên ký tự `v` nhỏ thay vì icon). */}
-                  <span className="text-3xs sm:text-xs text-gray-700 mt-0.5 leading-none">
-                    ∨
-                  </span>
+                  <span className="text-3xs sm:text-xs text-gray-700 mt-0.5 leading-none">∨</span>
                 </div>
 
                 {/* Right: Fare Classes — 4 cột 1 hàng ngang trên cả mobile và desktop.
@@ -1337,10 +1337,10 @@ export default function FlightResultsStep({
                               ? fc.id === 'business'
                                 ? 'bg-amber-50/90 ring-2 ring-inset ring-[#8E7022] shadow-xs'
                                 : fc.id === 'skyboss'
-                                ? 'bg-red-50/90 ring-2 ring-inset ring-[#D71920] shadow-xs'
-                                : fc.id === 'deluxe'
-                                ? 'bg-orange-50/90 ring-2 ring-inset ring-[#FF8800] shadow-xs'
-                                : 'bg-red-50/90 ring-2 ring-inset ring-primary shadow-xs'
+                                  ? 'bg-red-50/90 ring-2 ring-inset ring-[#D71920] shadow-xs'
+                                  : fc.id === 'deluxe'
+                                    ? 'bg-orange-50/90 ring-2 ring-inset ring-[#FF8800] shadow-xs'
+                                    : 'bg-red-50/90 ring-2 ring-inset ring-primary shadow-xs'
                               : 'bg-vj-surface-fare hover:bg-vj-surface-fare/70'
                         }`}
                       >
@@ -1354,10 +1354,10 @@ export default function FlightResultsStep({
                                 fc.id === 'business'
                                   ? 'bg-[#8E7022]'
                                   : fc.id === 'skyboss'
-                                  ? 'bg-[#D71920]'
-                                  : fc.id === 'deluxe'
-                                  ? 'bg-[#FF8800]'
-                                  : 'bg-[#EC2029]'
+                                    ? 'bg-[#D71920]'
+                                    : fc.id === 'deluxe'
+                                      ? 'bg-[#FF8800]'
+                                      : 'bg-[#EC2029]'
                               }`}
                             >
                               <svg
@@ -1442,10 +1442,10 @@ export default function FlightResultsStep({
                                   ? fc.id === 'business'
                                     ? 'text-[#8E7022]'
                                     : fc.id === 'skyboss'
-                                    ? 'text-[#D71920]'
-                                    : fc.id === 'deluxe'
-                                    ? 'text-[#FF8800]'
-                                    : 'text-primary'
+                                      ? 'text-[#D71920]'
+                                      : fc.id === 'deluxe'
+                                        ? 'text-[#FF8800]'
+                                        : 'text-primary'
                                   : 'text-gray-950 group-hover:text-primary'
                               }`}
                             >

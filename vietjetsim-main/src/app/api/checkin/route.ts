@@ -16,14 +16,22 @@ import { rateLimit } from '@/lib/rate-limit';
 import { getApiErrorMessage } from '@/shared/services';
 
 /**
- * Cửa sổ check-in: mở 24 giờ trước giờ bay.
+ * Cửa sổ check-in: mở 24 giờ trước giờ bay, đóng 60 phút trước giờ bay.
  *
- * Quy định thật của Vietjet là "từ 24 giờ đến 60 phút trước giờ bay", nhưng
- * giờ đóng cửa sổ thay đổi theo sân bay và theo tuyến quốc tế, nên chỉ dùng
- * mốc mở 24 giờ (điều khách đã yêu cầu rõ) và không chặn ở mốc đóng — chặn
- * sớm sẽ hỏng luồng của khách đã thanh toán nhưng chưa tới giờ.
+ * Cả hai mốc là quy định của Vietjet và là BẮT BUỘC — mỗi chặng có cửa sổ
+ * riêng theo giờ bay của chính chặng đó (chặng về có cửa sổ 24h riêng theo
+ * giờ bay chặng về), và không có cờ bypass.
+ *
+ * Trước đây chỉ chặn mốc mở. Lý do bỏ mốc đóng từng được ghi trong comment
+ * ở đây ("giờ đóng cửa sổ thay đổi theo sân bay và theo tuyến quốc tế"):
+ * điều đó mô tả quầy làm thủ tục tại sân bay, KHÔNG phải check-in trực tuyến.
+ * Check-in trực tuyến đóng đúng 60 phút trước giờ bay ở mọi tuyến — nếu còn
+ * mở, khách lấy được vé điện tử quá muộn và quầy không quét được.
  */
 const CHECKIN_WINDOW_HOURS = 24;
+
+/** Cửa sổ đóng 60 phút trước giờ bay. */
+const CHECKIN_CLOSE_MINUTES = 60;
 
 /** Cờ bật/tắt trong `system_config`, để admin tắt khi cần (mặc định bật). */
 async function isCheckInWindowEnforced(): Promise<boolean> {
@@ -76,13 +84,23 @@ function normalizeName(name: string): string {
 function describeCheckInWindow(leg: TripLegRecord, enforced: boolean) {
   const minutes = minutesUntilDeparture(leg.departTime);
   const opensAt = new Date(new Date(leg.departTime).getTime() - CHECKIN_WINDOW_HOURS * 3600_000);
+  const closesAt = new Date(new Date(leg.departTime).getTime() - CHECKIN_CLOSE_MINUTES * 60_000);
   const isOpen = !enforced || minutes <= CHECKIN_WINDOW_HOURS * 60;
+  // Đã quá mốc đóng: phút còn lại âm (chuyến bay đi) hoặc nằm trong 60 phút
+  // cuối trước giờ bay.
+  const isClosed = enforced && minutes < CHECKIN_CLOSE_MINUTES;
   return {
     enforced,
     opensAt: opensAt.toISOString(),
+    closesAt: closesAt.toISOString(),
     minutesUntilDeparture: Number.isFinite(minutes) ? minutes : null,
     isOpen,
-    reason: isOpen ? null : `Check-in mở từ ${CHECKIN_WINDOW_HOURS} giờ trước giờ bay.`,
+    isClosed,
+    reason: isClosed
+      ? `Check-in đã đóng từ ${CHECKIN_CLOSE_MINUTES} phút trước giờ bay.`
+      : isOpen
+        ? null
+        : `Check-in mở từ ${CHECKIN_WINDOW_HOURS} giờ trước giờ bay.`,
   };
 }
 
@@ -272,7 +290,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Cửa sổ 24 giờ trước giờ bay.
+    // Cửa sổ 24 giờ trước giờ bay (mở) và 60 phút trước giờ bay (đóng).
     if (await isCheckInWindowEnforced()) {
       const minutes = minutesUntilDeparture(legRecord.departTime);
       if (minutes > CHECKIN_WINDOW_HOURS * 60) {
@@ -282,6 +300,18 @@ export async function POST(request: NextRequest) {
             message: `Check-in chỉ mở từ ${CHECKIN_WINDOW_HOURS} giờ trước giờ bay. Chặng ${leg === 'inbound' ? 'về' : 'đi'} khởi hành lúc ${new Date(legRecord.departTime).toLocaleString('vi-VN')}.`,
             opensAt: new Date(
               new Date(legRecord.departTime).getTime() - CHECKIN_WINDOW_HOURS * 3600_000
+            ).toISOString(),
+          },
+          { status: 409 }
+        );
+      }
+      if (minutes < CHECKIN_CLOSE_MINUTES) {
+        return NextResponse.json(
+          {
+            error: 'Check-in window closed',
+            message: `Check-in đã đóng từ ${CHECKIN_CLOSE_MINUTES} phút trước giờ bay. Chặng ${leg === 'inbound' ? 'về' : 'đi'} khởi hành lúc ${new Date(legRecord.departTime).toLocaleString('vi-VN')}.`,
+            closesAt: new Date(
+              new Date(legRecord.departTime).getTime() - CHECKIN_CLOSE_MINUTES * 60_000
             ).toISOString(),
           },
           { status: 409 }

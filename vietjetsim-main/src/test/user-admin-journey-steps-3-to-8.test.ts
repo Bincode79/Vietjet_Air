@@ -45,6 +45,21 @@ const { POST: paymentPost } = await import('@/app/api/thanh-toan/route');
 const { GET: checkInGet, POST: checkInPost } = await import('@/app/api/checkin/route');
 const { GET: adminBookingsGet } = await import('@/app/api/quan-tri/dat-ve/route');
 
+/**
+ * Giờ bay của chuyến trong fixture, tính TƯƠNG ĐỐI so với lúc test chạy.
+ *
+ * Trước đây fixture hardcode `2026-10-25T08:00:00Z`. Ngày đó nằm trong quá
+ * khứ, nên khi cửa sổ check-in có mốc đóng 60 phút, `minutesUntilDeparture`
+ * trả số âm và mọi check-in bị từ chối với 409 — test fail vì lý do sai.
+ *
+ * Fixture phải nằm trong CỬA SỔ HỢP LỆ của chuyến bay: sau mốc mở 24h và
+ * trước mốc đóng 60 phút. Ghim ngày cố định là tự đặt bẫy cho chính mình:
+ * test chỉ còn xanh cho tới đúng ngày đó.
+ */
+const DEPARTURE_MS = Date.now() + 6 * 3600_000; // 6 giờ nữa
+const DEPARTURE_ISO = new Date(DEPARTURE_MS).toISOString();
+const ARRIVAL_ISO = new Date(DEPARTURE_MS + 2 * 3600_000 + 15 * 60_000).toISOString();
+
 describe('Full Real-world User & Admin Journey (Steps 3 to 8)', () => {
   const CSRF_TOKEN = 'test-journey-csrf-token-32-chars!';
 
@@ -72,8 +87,8 @@ describe('Full Real-world User & Admin Journey (Steps 3 to 8)', () => {
       flight_no: 'VJ128',
       from_code: 'SGN',
       to_code: 'HAN',
-      depart_time: '2026-10-25T08:00:00Z',
-      arrive_time: '2026-10-25T10:15:00Z',
+      depart_time: DEPARTURE_ISO,
+      arrive_time: ARRIVAL_ISO,
       price: 1000000,
       economy_price: 1000000,
       deluxe_price: 1800000,
@@ -119,8 +134,8 @@ describe('Full Real-world User & Admin Journey (Steps 3 to 8)', () => {
         flight_no: 'VJ128',
         from_code: 'SGN',
         to_code: 'HAN',
-        depart_time: '2026-10-25T08:00:00Z',
-        arrive_time: '2026-10-25T10:15:00Z',
+        depart_time: DEPARTURE_ISO,
+        arrive_time: ARRIVAL_ISO,
         status: 'confirmed',
       },
       checkIn: null,
@@ -185,8 +200,8 @@ describe('Full Real-world User & Admin Journey (Steps 3 to 8)', () => {
           toCode: 'HAN',
           fromCity: 'TP. Hồ Chí Minh',
           toCity: 'Hà Nội',
-          departTime: '2026-10-25T08:00:00Z',
-          arriveTime: '2026-10-25T10:15:00Z',
+          departTime: DEPARTURE_ISO,
+          arriveTime: ARRIVAL_ISO,
           flightStatus: 'on_time' as const,
           gate: '04',
           terminal: 'T1',
@@ -380,7 +395,7 @@ describe('Full Real-world User & Admin Journey (Steps 3 to 8)', () => {
         flightNo: 'VJ128',
         fromCode: 'SGN',
         toCode: 'HAN',
-        departTime: '2026-10-25T08:00:00Z',
+        departTime: DEPARTURE_ISO,
         passengerName: 'NGUYEN VAN A',
       }),
     });

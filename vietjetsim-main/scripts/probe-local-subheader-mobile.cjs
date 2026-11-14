@@ -71,7 +71,12 @@ async function main() {
         imgs: header.querySelectorAll('img').length,
         buttons: [...header.querySelectorAll('button')].map((b) => {
           const br = b.getBoundingClientRect();
-          return { x: Math.round(br.x), y: Math.round(br.y), w: Math.round(br.width), h: Math.round(br.height) };
+          return {
+            x: Math.round(br.x),
+            y: Math.round(br.y),
+            w: Math.round(br.width),
+            h: Math.round(br.height),
+          };
         }),
       };
     });

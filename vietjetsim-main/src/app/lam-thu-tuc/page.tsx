@@ -43,12 +43,14 @@ interface LegCheckIn {
   terminal: string | null;
 }
 
-/** Thông tin cửa sổ check-in 24h do server tính sẵn. */
+/** Thông tin cửa sổ check-in 24h–60p do server tính sẵn. */
 interface CheckInWindow {
   enforced: boolean;
   opensAt: string;
+  closesAt: string;
   minutesUntilDeparture: number | null;
   isOpen: boolean;
+  isClosed: boolean;
   reason: string | null;
 }
 
@@ -180,6 +182,17 @@ function CheckInContent({ prefillBookingId }: { prefillBookingId: string }) {
       return;
     }
     if (!trip || selectedLegs.length === 0) return;
+
+    // Cửa sổ đã đóng (60 phút trước giờ bay) — server cũng chặn ở POST, nhưng
+    // chặn sớm ở client để khách không bấm nút rồi mới thấy lỗi.
+    const closedLeg = selectedLegs.find((leg) => leg.checkInWindow?.isClosed);
+    if (closedLeg) {
+      toast.error(
+        'Check-in đã đóng',
+        `Check-in chặng ${closedLeg.legRole === 'inbound' ? 'về' : 'đi'} đã đóng từ 60 phút trước giờ bay.`
+      );
+      return;
+    }
 
     setLoading(true);
     const succeeded: Array<{ leg: 'outbound' | 'inbound'; legData: LegData }> = [];
@@ -728,16 +741,23 @@ function CheckInContent({ prefillBookingId }: { prefillBookingId: string }) {
                           </div>
                         </div>
 
-                        {/* Cửa sổ check-in 24h — server đã tính sẵn. */}
+                        {/* Cửa sổ check-in 24h–60p — server đã tính sẵn. */}
                         {window && (
                           <div
                             className={`mt-3 rounded-vj border px-3 py-2 text-2xs leading-relaxed ${
-                              window.isOpen
-                                ? 'border-emerald-200 bg-emerald-50 text-emerald-800'
-                                : 'border-amber-200 bg-amber-50 text-amber-800'
+                              window.isClosed
+                                ? 'border-rose-200 bg-rose-50 text-rose-800'
+                                : window.isOpen
+                                  ? 'border-emerald-200 bg-emerald-50 text-emerald-800'
+                                  : 'border-amber-200 bg-amber-50 text-amber-800'
                             }`}
                           >
-                            {window.isOpen ? (
+                            {window.isClosed ? (
+                              <>
+                                Check-in đã đóng từ 60 phút trước giờ bay (
+                                {new Date(window.closesAt).toLocaleString('vi-VN')}).
+                              </>
+                            ) : window.isOpen ? (
                               window.minutesUntilDeparture !== null &&
                               window.minutesUntilDeparture > 0 ? (
                                 <>

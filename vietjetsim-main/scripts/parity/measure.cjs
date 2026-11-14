@@ -54,9 +54,7 @@ async function run() {
     args: ['--no-sandbox', '--disable-dev-shm-usage', '--disable-gpu'],
   });
 
-  const routes = ONLY
-    ? ROUTES.filter((r) => ONLY.split(',').includes(r.slug))
-    : ROUTES;
+  const routes = ONLY ? ROUTES.filter((r) => ONLY.split(',').includes(r.slug)) : ROUTES;
 
   let done = 0;
   for (const route of routes) {
@@ -94,7 +92,9 @@ async function run() {
       };
       fs.writeFileSync(file, `${JSON.stringify(payload, null, 2)}\n`);
       done += 1;
-      console.log(`${error ? '⚠️ ' : '✅ '} ${PREFIX}-${route.slug}-${vp.name}${error ? ` — ${error}` : ''}`);
+      console.log(
+        `${error ? '⚠️ ' : '✅ '} ${PREFIX}-${route.slug}-${vp.name}${error ? ` — ${error}` : ''}`
+      );
     }
   }
 

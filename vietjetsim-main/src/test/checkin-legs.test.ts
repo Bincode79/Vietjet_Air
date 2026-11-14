@@ -17,15 +17,23 @@ import { join } from 'node:path';
  */
 const CHECKIN_ROUTE = join(process.cwd(), 'src/app/api/checkin/route.ts');
 
-describe('quy tắc cửa sổ check-in 24 giờ', () => {
+describe('quy tắc cửa sổ check-in 24 giờ / 60 phút', () => {
   const source = readFileSync(CHECKIN_ROUTE, 'utf8');
 
   it('hằng số cửa sổ là 24 giờ', () => {
     expect(source).toMatch(/const CHECKIN_WINDOW_HOURS = 24;/);
   });
 
+  it('hằng số đóng cửa sổ là 60 phút', () => {
+    expect(source).toMatch(/const CHECKIN_CLOSE_MINUTES = 60;/);
+  });
+
   it('chặn check-in khi còn quá 24 giờ trước giờ bay', () => {
     expect(source).toMatch(/minutes > CHECKIN_WINDOW_HOURS \* 60/);
+  });
+
+  it('chặn check-in khi đã quá mốc đóng 60 phút trước giờ bay', () => {
+    expect(source).toMatch(/minutes < CHECKIN_CLOSE_MINUTES/);
   });
 
   it('cửa sổ có thể tắt qua system_config nhưng mặc định là BẬT', () => {
@@ -37,6 +45,17 @@ describe('quy tắc cửa sổ check-in 24 giờ', () => {
   it('trả lỗi 409 khi cửa sổ chưa mở', () => {
     expect(source).toMatch(/status: 409/);
     expect(source).toMatch(/Check-in chỉ mở từ/);
+  });
+
+  it('trả lỗi 409 khi cửa sổ đã đóng, kèm mốc đóng', () => {
+    expect(source).toMatch(/Check-in window closed/);
+    expect(source).toMatch(/Check-in đã đóng từ/);
+    expect(source).toMatch(/closesAt:/);
+  });
+
+  it('mô tả cửa sổ trả cả mốc mở, mốc đóng và cờ đã đóng', () => {
+    expect(source).toMatch(/closesAt: closesAt\.toISOString\(\)/);
+    expect(source).toMatch(/isClosed/);
   });
 });
 

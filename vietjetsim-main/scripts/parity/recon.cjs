@@ -35,9 +35,7 @@ const DUMP = () => {
     const c = getComputedStyle(e);
     return {
       tag: e.tagName.toLowerCase(),
-      cls: (e.className && typeof e.className === 'string' ? e.className : '')
-        .slice(0, 60)
-        .trim(),
+      cls: (e.className && typeof e.className === 'string' ? e.className : '').slice(0, 60).trim(),
       role: e.getAttribute('role') || '',
       aria: e.getAttribute('aria-label') || '',
       text: (e.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 70),

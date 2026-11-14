@@ -1,4 +1,6 @@
 import { describe, it, expect } from 'vitest';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { getVietjetAiPolicyResponse } from '@/lib/chatbot-ai';
 
 describe('Tác vụ 5.2: Chatbot AI giải đáp chính sách Vietjet Air', () => {
@@ -57,6 +59,27 @@ describe('Tác vụ 5.2: Chatbot AI giải đáp chính sách Vietjet Air', () =
       expect(res.category).toBe('documents');
       expect(res.reply).toContain('24 tiếng');
       expect(res.reply).toContain('60 phút');
+    });
+
+    /**
+     * Chatbot là thứ khách ĐỌC, nên nó phải nói đúng những gì server làm.
+     *
+     * Lỗi đã xảy ra: chatbot hứa "24 tiếng đến 60 phút" trong khi server chỉ
+     * chặn mốc mở 24h — khách đọc câu trả lời của chatbot rồi ra quầy thấy
+     * hệ thống từ chối. Test này ghim hai con số của server vào hai con số
+     * chatbot, để một trong hai bên đổi là bên kia đỏ.
+     */
+    it('nói đúng cửa sổ mà server thực thi (24 tiếng mở, 60 phút đóng)', () => {
+      const route = readFileSync(join(process.cwd(), 'src/app/api/checkin/route.ts'), 'utf8');
+      const openHours = route.match(/const CHECKIN_WINDOW_HOURS = (\d+);/)?.[1];
+      const closeMinutes = route.match(/const CHECKIN_CLOSE_MINUTES = (\d+);/)?.[1];
+
+      expect(openHours).toBe('24');
+      expect(closeMinutes).toBe('60');
+
+      const res = getVietjetAiPolicyResponse('Check-in trực tuyến mở lúc nào và đóng lúc nào?');
+      expect(res.reply).toContain(`${openHours} tiếng`);
+      expect(res.reply).toContain(`${closeMinutes} phút`);
     });
   });
 

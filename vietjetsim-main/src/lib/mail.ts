@@ -487,9 +487,7 @@ export function buildPaymentSuccessHtml(input: PaymentSuccessInput): {
   }
 
   const customNoteHtml = customNote
-    ? noticeBox(
-        `<strong>Lời nhắn từ Hệ Thống Vietjet Air:</strong><br>${escapeHtml(customNote)}`
-      )
+    ? noticeBox(`<strong>Lời nhắn từ Hệ Thống Vietjet Air:</strong><br>${escapeHtml(customNote)}`)
     : '';
 
   const inner = `<p style="margin:0 0 16px;">Kính chào <strong>${escapeHtml(fullName)}</strong>,</p>

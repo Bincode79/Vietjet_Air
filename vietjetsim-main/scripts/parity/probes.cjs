@@ -337,10 +337,12 @@ function inBrowser() {
         const cands = Array.from(
           document.querySelectorAll('main a, main li, main article, section a, section li')
         ).filter(visible);
-        return cands.find((el) => {
-          const r = el.getBoundingClientRect();
-          return r.width > 150 && r.width < 400 && r.height > 80 && r.height < 400;
-        }) || null;
+        return (
+          cands.find((el) => {
+            const r = el.getBoundingClientRect();
+            return r.width > 150 && r.width < 400 && r.height > 80 && r.height < 400;
+          }) || null
+        );
       },
     },
 
@@ -354,10 +356,7 @@ function inBrowser() {
           const r = el.getBoundingClientRect();
           const cs = getComputedStyle(el);
           return (
-            r.height >= 30 &&
-            r.height <= 42 &&
-            r.width >= 120 &&
-            parseFloat(cs.borderRadius) >= 12
+            r.height >= 30 && r.height <= 42 && r.width >= 120 && parseFloat(cs.borderRadius) >= 12
           );
         });
         return cands[0] || null;
@@ -419,16 +418,15 @@ function inBrowser() {
       key: 'popup-frame',
       label: 'Popup đăng nhập — khung',
       resolve: () =>
-        document.querySelector('.vj-popup-frame') ||
-        firstVisible('[role="dialog"]') ||
-        null,
+        document.querySelector('.vj-popup-frame') || firstVisible('[role="dialog"]') || null,
     },
     {
       key: 'popup-header',
       label: 'Popup đăng nhập — băng tiêu đề',
       resolve: () =>
         document.querySelector('.vj-popup-header') ||
-        (document.querySelector('[role="dialog"]')?.querySelector('header') || null),
+        document.querySelector('[role="dialog"]')?.querySelector('header') ||
+        null,
     },
     {
       key: 'popup-nav',
@@ -564,7 +562,8 @@ const ROUTES = [
     slug: 'booking-search',
     label: 'Tìm chuyến bay',
     local: '/tim-ve?from=HAN&to=SGN&depart=2026-11-20&adult=1',
-    official: '/vi/pages/booking-search?departAirport=HAN&arrivalAirport=SGN&departDate=2026-11-20&adult=1&child=0&infant=0',
+    official:
+      '/vi/pages/booking-search?departAirport=HAN&arrivalAirport=SGN&departDate=2026-11-20&adult=1&child=0&infant=0',
   },
   {
     slug: 'signin',

@@ -2,7 +2,8 @@ const puppeteer = require('puppeteer-core');
 const fs = require('node:fs');
 const path = require('node:path');
 
-const URL = process.argv[2] || 'https://vietjet.shop/tim-ve?from=HAN&to=SGN&depart=2026-11-20&adult=1';
+const URL =
+  process.argv[2] || 'https://vietjet.shop/tim-ve?from=HAN&to=SGN&depart=2026-11-20&adult=1';
 const CHROME = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
 
 (async () => {
@@ -31,26 +32,35 @@ const CHROME = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
   const initialCheck = await page.evaluate(() => {
     const cards = document.querySelectorAll('[data-testid="flight-result-card"]');
     // Kiểm tra xem có chi tiết accordion đang mở không:
-    const openAccordions = Array.from(document.querySelectorAll('.animate-fadeIn, .space-y-3\\.5')).filter(el => {
+    const openAccordions = Array.from(
+      document.querySelectorAll('.animate-fadeIn, .space-y-3\\.5')
+    ).filter((el) => {
       return el.textContent && el.textContent.includes('Bao gồm');
     });
 
     // Kiểm tra 4 header hạng vé:
-    const fareHeaders = Array.from(document.querySelectorAll('[role="button"]')).filter(el => {
-      const t = el.textContent || '';
-      return t.includes('BUSINESS') || t.includes('skyBOSS') || t.includes('Deluxe') || t.includes('Eco');
-    }).map(el => {
-      const style = window.getComputedStyle(el);
-      const img = el.querySelector('img');
-      return {
-        text: (el.textContent || '').trim(),
-        bg: style.backgroundColor,
-        color: style.color,
-        hasImg: !!img,
-        imgSrc: img ? img.src : null,
-        imgVisible: img ? (img.offsetWidth > 0 && img.offsetHeight > 0) : false,
-      };
-    });
+    const fareHeaders = Array.from(document.querySelectorAll('[role="button"]'))
+      .filter((el) => {
+        const t = el.textContent || '';
+        return (
+          t.includes('BUSINESS') ||
+          t.includes('skyBOSS') ||
+          t.includes('Deluxe') ||
+          t.includes('Eco')
+        );
+      })
+      .map((el) => {
+        const style = window.getComputedStyle(el);
+        const img = el.querySelector('img');
+        return {
+          text: (el.textContent || '').trim(),
+          bg: style.backgroundColor,
+          color: style.color,
+          hasImg: !!img,
+          imgSrc: img ? img.src : null,
+          imgVisible: img ? img.offsetWidth > 0 && img.offsetHeight > 0 : false,
+        };
+      });
 
     return {
       cardCount: cards.length,
@@ -61,7 +71,9 @@ const CHROME = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
 
   console.log('=== KẾT QUẢ KIỂM TRA BAN ĐẦU ===');
   console.log(`Số chuyến bay hiển thị: ${initialCheck.cardCount}`);
-  console.log(`Số accordion chi tiết mở ban đầu: ${initialCheck.accordionsOpenInitially} (kỳ vọng: 0)`);
+  console.log(
+    `Số accordion chi tiết mở ban đầu: ${initialCheck.accordionsOpenInitially} (kỳ vọng: 0)`
+  );
   console.log('Các cột header hạng vé:');
   console.log(JSON.stringify(initialCheck.fareHeaders, null, 2));
 
@@ -90,20 +102,26 @@ const CHROME = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
 
   // Kiểm tra sau khi bấm chọn:
   const afterClickCheck = await page.evaluate(() => {
-    const openAccordions = Array.from(document.querySelectorAll('div')).filter(el => {
-      return el.textContent && el.textContent.includes('Bao gồm:') && el.textContent.includes('Chưa bao gồm');
+    const openAccordions = Array.from(document.querySelectorAll('div')).filter((el) => {
+      return (
+        el.textContent &&
+        el.textContent.includes('Bao gồm:') &&
+        el.textContent.includes('Chưa bao gồm')
+      );
     });
 
-    const selectedBadges = Array.from(document.querySelectorAll('span')).filter(el => {
-      return (el.textContent || '').trim() === 'Đã chọn';
-    }).map(el => {
-      const style = window.getComputedStyle(el.parentElement || el);
-      return {
-        text: el.textContent.trim(),
-        bg: style.backgroundColor,
-        color: style.color,
-      };
-    });
+    const selectedBadges = Array.from(document.querySelectorAll('span'))
+      .filter((el) => {
+        return (el.textContent || '').trim() === 'Đã chọn';
+      })
+      .map((el) => {
+        const style = window.getComputedStyle(el.parentElement || el);
+        return {
+          text: el.textContent.trim(),
+          bg: style.backgroundColor,
+          color: style.color,
+        };
+      });
 
     return {
       accordionsOpenAfterClick: openAccordions.length,
@@ -112,7 +130,9 @@ const CHROME = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
   });
 
   console.log('=== KẾT QUẢ SAU KHI CLICK ===');
-  console.log(`Số accordion chi tiết mở ra: ${afterClickCheck.accordionsOpenAfterClick} (kỳ vọng: >= 1)`);
+  console.log(
+    `Số accordion chi tiết mở ra: ${afterClickCheck.accordionsOpenAfterClick} (kỳ vọng: >= 1)`
+  );
   console.log('Badges đã chọn:', afterClickCheck.selectedBadges);
 
   const desktopAfterClickPath = path.join(screenshotDir, 'live-desktop-after-click.png');
@@ -128,7 +148,9 @@ const CHROME = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
 
   const mobileCheck = await mPage.evaluate(() => {
     const cards = document.querySelectorAll('[data-testid="flight-result-card"]');
-    const fareBadges = Array.from(document.querySelectorAll('[data-testid="select-fare"] span.sm\\:hidden')).map(el => {
+    const fareBadges = Array.from(
+      document.querySelectorAll('[data-testid="select-fare"] span.sm\\:hidden')
+    ).map((el) => {
       const style = window.getComputedStyle(el);
       return {
         text: el.textContent.trim(),
