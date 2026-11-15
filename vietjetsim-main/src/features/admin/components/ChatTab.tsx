@@ -15,6 +15,8 @@ import {
   rejectChatCall,
   endChatCall,
   type ChatCall,
+  type ChatConversation,
+  type ChatMessage,
 } from '@/features/chat/services';
 import { playNewMessageChime } from '@/features/chat/services/callSounds';
 import VoiceCallModal from '@/features/chat/components/VoiceCallModal';
@@ -27,34 +29,21 @@ const QUICK_ADMIN_RESPONSES = [
   'Vé của Quý khách đã được xác nhận thành công. Chúc Quý khách có chuyến bay an toàn và vui vẻ!',
 ];
 
-interface Conversation {
-  id: string;
-  user_id: string;
-  user_email: string;
-  user_name: string;
-  status?: 'active' | 'closed';
-  last_message: string | null;
-  /**
-   * The `chat_conversations` table has no `last_message_at` column (see
-   * migrations/010_chat.sql), so the API only ever returns `updated_at` /
-   * `created_at`. Treat the newer fields as optional and nullable.
-   */
+/**
+ * The tab's view of a conversation row.
+ *
+ * The service already declares the row shape (`ChatConversation`), so the
+ * tab re-declared it — and cast the whole array with `as unknown as
+ * Conversation[]` to bridge the two. The cast is what let a renamed field
+ * reach the screen as `undefined`: nothing checked that the two
+ * declarations agreed.
+ */
+type Conversation = ChatConversation & {
+  /** The table has no `last_message_at` column (migrations/010_chat.sql). */
   last_message_at?: string | null;
-  updated_at?: string | null;
-  unread_by_admin: number;
-  unread_by_user: number;
-  created_at: string;
-}
+};
 
-interface Message {
-  id: string;
-  conversation_id: string;
-  sender_id: string;
-  sender_role: string;
-  content: string;
-  created_at: string;
-  read_at: string | null;
-}
+type Message = ChatMessage;
 
 const CONVS_PER_PAGE = 10;
 
@@ -129,7 +118,7 @@ export default function ChatTab() {
     setLoadingConvs(true);
     try {
       const json = await listConversations();
-      setConversations((json.conversations || []) as unknown as Conversation[]);
+      setConversations(json.conversations || []);
     } catch (err) {
       console.error('Load conversations error:', err);
     } finally {
@@ -142,7 +131,7 @@ export default function ChatTab() {
     if (!isPoll) setLoadingMsgs(true);
     try {
       const json = await getConversationMessages(convId);
-      const newMsgs = (json.messages || []) as unknown as Message[];
+      const newMsgs = json.messages || [];
       setMessages(newMsgs);
       if (isPoll && newMsgs.length > lastMsgCountRef.current && lastMsgCountRef.current > 0) {
         const lastUserMsg = newMsgs[newMsgs.length - 1];
@@ -272,7 +261,7 @@ export default function ChatTab() {
       const json = await sendChatMessage(selectedConv.id, text);
       // Optimistically add the returned message to local state
       if (json.message) {
-        setMessages((prev) => [...prev, json.message as unknown as Message]);
+        setMessages((prev) => [...prev, json.message]);
       }
     } catch (err) {
       console.error('Send error:', err);

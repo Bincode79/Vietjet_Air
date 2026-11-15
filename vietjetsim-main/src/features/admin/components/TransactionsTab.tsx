@@ -4,24 +4,33 @@ import { Icon } from '@/shared/components/ui';
 import { Pagination } from '@/shared/components/ui';
 import { RiImageLine } from 'react-icons/ri';
 import { listTransactions, confirmTransaction } from '@/features/admin';
+import type { AdminTransaction } from '@/features/admin/types';
 import { getApiErrorMessage } from '@/shared/services';
 import SendBookingEmailModal from './SendBookingEmailModal';
 
-interface Transaction {
-  id: string;
-  paymentId?: string;
+/**
+ * The tab's view of a transaction row.
+ *
+ * It is `AdminTransaction` with the fields the table renders tightened: the
+ * endpoint always returns them, but the shared type marks them optional
+ * because it also describes rows from other endpoints. The local interface
+ * used to be standalone, which is why the fetch had to cast the whole array
+ * with `as unknown as Transaction[]` — a renamed alias on the server reached
+ * the screen as `undefined` with the compiler unable to say so.
+ */
+type Transaction = Omit<
+  AdminTransaction,
+  'status' | 'amount' | 'method' | 'createdAt' | 'bookingId' | 'userEmail' | 'userName'
+> & {
   amount: number;
+  /** The endpoint always projects a method (`COALESCE(p.method, 'vietqr')`). */
   method: string;
   status: 'pending' | 'completed' | 'failed' | 'refunded';
   createdAt: string;
   bookingId: string;
-  bookingCode?: string;
-  bookingStatus?: string;
   userEmail: string;
   userName: string;
-  receiptImage?: string;
-  transferNote?: string;
-}
+};
 
 interface ToastAPI {
   success: (title: string, message?: string) => void;
@@ -50,7 +59,11 @@ export default function TransactionsTab({ onToast }: { onToast?: ToastAPI }) {
       const data = await listTransactions(
         filterStatus && filterStatus !== 'all' ? { status: filterStatus } : {}
       );
-      setTransactions((data ?? []) as unknown as Transaction[]);
+      // The endpoint always returns the fields the table renders, so the rows
+      // go in as they are. The cast this replaced (`as unknown as
+      // Transaction[]`) hid any renamed alias: a field the server stopped
+      // sending arrived as `undefined` and rendered as an empty cell.
+      setTransactions((data ?? []) as Transaction[]);
     } catch (error) {
       onToast?.error('Lỗi tải dữ liệu', getApiErrorMessage(error, 'Không thể tải giao dịch'));
     } finally {

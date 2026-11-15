@@ -214,6 +214,16 @@ export interface AdminRefund {
   reviewed_by?: string | null;
 }
 
+/**
+ * Row shape of `GET /api/quan-tri/giao-dich`.
+ *
+ * These are the query's aliases, not the underlying columns: the endpoint
+ * projects `payments`/`bookings` into camelCase (`"paymentId"`,
+ * `"bookingCode"`, …). The list tab renders all of them, so every field it
+ * reads has to be declared here — the tab used to cast the whole array with
+ * `as unknown as Transaction[]`, which let a renamed alias reach the screen
+ * as `undefined` with nothing complaining.
+ */
 export interface AdminTransaction {
   id: string;
   amount: number;
@@ -225,17 +235,47 @@ export interface AdminTransaction {
   userEmail?: string;
   userName?: string;
   created_at?: string;
+  /** The `payments.id` behind the row, empty when the booking has no payment row yet. */
+  paymentId?: string;
+  /** The booking's own status, which the payment status is derived from. */
+  bookingStatus?: string;
+  /** Transfer receipt uploaded by the customer. */
+  receiptImage?: string | null;
+  /** The transfer reference the customer typed. */
+  transferNote?: string | null;
 }
 
+/**
+ * Row shape of `GET /api/quan-tri/nhat-ky-kiem-toan`.
+ *
+ * These are the endpoint's aliases, not the `audit_logs` columns: the query
+ * renames `target_type` → `resource` and `target_id` → `resource_id` because
+ * the list column is headed "Tài nguyên", and it joins the acting admin's
+ * profile in as `user_email` / `user_name` / `user_role`.
+ *
+ * The previous declaration named the raw columns (`actor_email`,
+ * `target_type`, …), which no query returns — so the tab had to cast the
+ * whole array with `as unknown as AuditLog[]` and any renamed alias reached
+ * the screen as `undefined`.
+ */
 export interface AdminAuditLog {
   id: string;
   action: string;
-  actor_email?: string;
-  actor_name?: string;
-  target_type?: string;
-  target_id?: string;
-  details?: unknown;
+  /** The audited object type (`audit_logs.target_type`). */
+  resource: string;
+  /** The audited object's id (`audit_logs.target_id`). */
+  resource_id: string | null;
+  /** The JSON payload, as stored in `audit_logs.details_json`. */
+  details: string | null;
+  ip_address: string | null;
+  user_agent: string | null;
   created_at: string;
+  /** The acting admin's email, joined from `user_profiles`. */
+  user_email: string | null;
+  /** The acting admin's display name. */
+  user_name: string | null;
+  /** The acting admin's role. */
+  user_role: string | null;
 }
 
 /** Row shape returned by `?section=roles` on the RBAC endpoint. */

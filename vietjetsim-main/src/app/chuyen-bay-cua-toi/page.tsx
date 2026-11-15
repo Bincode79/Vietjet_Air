@@ -21,6 +21,7 @@ import { ToastContainer } from '@/shared/components/feedback';
 import { AppImage } from '@/shared/components/ui';
 import { MyFlightsStats, TripCard, type Trip, type TripLeg } from '@/features/bookings';
 import { listBookings } from '@/features/bookings/services';
+import type { BookingListItem } from '@/features/bookings/types';
 import { apiRequest, getApiErrorMessage } from '@/shared/services';
 import { getAirportCity } from '@/features/flights';
 
@@ -38,61 +39,31 @@ interface FlightInfo {
 }
 
 /**
- * Một booking trong danh sách, đã gộp sẵn check-in từ query danh sách.
+ * A booking in the list, with the check-in already merged in by the query.
  *
- * `trip_id` + `leg_role` (migration 045) là thứ nhóm hai chặng của một chuyến
- * khứ hồi thành MỘT thẻ trip.
+ * `trip_id` + `leg_role` (migration 045) are what group the two legs of a
+ * round trip into ONE trip card.
+ *
+ * This used to be a locally-declared interface listing thirty-odd optional
+ * fields — most of which the API never sends. The list endpoint returns
+ * `BookingListItem`, which already declares the nested `flight`, the
+ * `passengers` and the `check_ins`; the page re-declared them and cast the
+ * whole array with `as unknown as RecentBooking[]`, so a renamed field could
+ * not be caught by the compiler. The extra top-level fields (`has_check_in`,
+ * `check_in_number`, `boarding_pass_number`, …) were never read at all —
+ * the check-in data comes from the `check_ins` array.
  */
-interface RecentBooking {
-  id: string;
-  booking_code?: string | null;
-  trip_id?: string | null;
-  leg_role?: 'outbound' | 'inbound';
-  flight_no?: string;
-  from_code?: string;
-  to_code?: string;
-  depart_time?: string;
-  arrive_time?: string;
-  flight?: FlightInfo | null;
-  flights?: FlightInfo[] | null;
-  passengers?: Array<{ id?: string; name?: string; seat_number?: string | null }> | null;
-  total_price: number;
-  status: 'pending' | 'confirmed' | 'completed' | 'cancelled' | 'refunded';
-  created_at: string;
-  flight_id?: string;
-  flight_status?: string;
-  gate?: string | null;
-  terminal?: string | null;
-  check_ins?: Array<{
-    id: string;
-    passenger_id: string | null;
-    passenger_name: string;
-    seat_number: string;
-    check_in_number: string;
-    boarding_pass_number: string | null;
-    gate: string | null;
-    terminal: string | null;
-    check_in_time?: string | null;
-  }>;
-  has_check_in?: boolean;
-  check_in_number?: string | null;
-  check_in_status?: string | null;
-  boarding_pass_number?: string | null;
-  seat_number?: string | null;
-  check_in_time?: string | null;
-}
+type RecentBooking = BookingListItem;
 
-// Flatten nested flight data (API may return flight object)
+/**
+ * The flight of a booking.
+ *
+ * The list endpoint nests it as `flight` (see `BookingListItem`); the older
+ * flat columns (`flight_no`, `from_code`, …) are not part of the row any
+ * more, so there is no second shape to fall back to.
+ */
 function getFlight(b: RecentBooking): FlightInfo {
-  if (b.flight) return b.flight;
-  if (b.flights && b.flights.length > 0) return b.flights[0];
-  return {
-    flight_no: b.flight_no,
-    from_code: b.from_code,
-    to_code: b.to_code,
-    depart_time: b.depart_time,
-    arrive_time: b.arrive_time,
-  };
+  return b.flight;
 }
 
 const STATUS_LABELS: Record<RecentBooking['status'], { label: string; color: string; bg: string }> =
@@ -152,7 +123,7 @@ export default function MyFlightsPage() {
       // Không còn gọi `/api/checkin/status/<id>` cho TỪNG booking: check-in đã
       // được gộp vào query danh sách (`getBookingsByUserId` join `check_in`),
       // nên 100 đặt chỗ vẫn chỉ là 1 request thay vì 101.
-      setBookings((records || []) as unknown as RecentBooking[]);
+      setBookings(records || []);
       if ((records || []).length > 0 && !viewPinned.current) setView('list');
     } catch {
       setBookings([]);

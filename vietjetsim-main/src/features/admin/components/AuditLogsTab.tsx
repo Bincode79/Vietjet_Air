@@ -3,21 +3,18 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Icon } from '@/shared/components/ui';
 import { Pagination } from '@/shared/components/ui';
 import { listAuditLogs } from '@/features/admin';
+import type { AdminAuditLog } from '@/features/admin/types';
 import { AdminTabHeader, ADMIN_CARD_STYLE, ADMIN_ACTION_BTN } from './AdminSection';
 
-interface AuditLog {
-  id: string;
-  action: string;
-  resource: string;
-  resource_id: string | null;
-  details: unknown;
-  ip_address: string | null;
-  user_agent: string | null;
-  created_at: string;
-  user_email: string | null;
-  user_name: string | null;
-  user_role: string | null;
-}
+/**
+ * The tab's view of an audit-log row.
+ *
+ * `AdminAuditLog` already names the endpoint's aliases exactly, so the tab
+ * does not need its own interface — and casting the whole array with
+ * `as unknown as AuditLog[]` is what let a renamed alias reach the screen as
+ * `undefined` without the compiler objecting.
+ */
+type AuditLog = AdminAuditLog;
 
 interface ToastAPI {
   success: (title: string, message?: string, options?: object) => void;
@@ -64,7 +61,7 @@ export default function AuditLogsTab({ onToast }: { onToast?: ToastAPI }) {
           date_to: dateTo || undefined,
         });
 
-        setLogs((data.logs || []) as unknown as AuditLog[]);
+        setLogs(data.logs || []);
         setTotalCount(data.pagination?.total || 0);
         setCurrentPage(page);
         if (data.filters?.actions) {
