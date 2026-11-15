@@ -42,11 +42,6 @@
         "status": "OK"
       }
     ],
-    "errors": [
-      "Failed to load wallet balance: ApiRequestError: Authentication required",
-      "Failed to load SkyPoint balance: ApiRequestError: Authentication required",
-      "Failed to load wallet balance: ApiRequestError: Authentication required",
-      "Failed to load SkyPoint balance: ApiRequestError: Authentication required"
-    ]
+    "errors": []
   }
 }
