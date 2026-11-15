@@ -330,17 +330,37 @@ async function waitForStable(cdp, { maxMs = 15000, quietMs = 800 } = {}) {
   return { snapshot: last, stable: false };
 }
 
+/**
+ * Đặt viewport, có thử lại.
+ *
+ * `Emulation.setDeviceMetricsOverride` là lệnh ĐẦU TIÊN sau khi target mở, và
+ * trên máy đang tải (nhiều target cũ còn giữ DOM trong RAM) nó từng treo quá
+ * 120s rồi giết cả lượt chạy — dù chỉ một màn hình hỏng. Không có lý do gì để
+ * một lệnh thiết lập viewport làm mất 67 ảnh còn lại: thử lại ngắn, và giữa
+ * hai lần thử thì xoá override (một session đang kẹt override có thể từ chối
+ * lệnh mới).
+ */
+async function setViewport(cdp, { width, height, mobile }) {
+  let lastError;
+  for (let attempt = 1; attempt <= 3; attempt += 1) {
+    try {
+      await cdp.send(
+        'Emulation.setDeviceMetricsOverride',
+        { width, height, deviceScaleFactor: 2, mobile },
+        30000
+      );
+      return;
+    } catch (err) {
+      lastError = err;
+      await cdp.send('Emulation.clearDeviceMetricsOverride', {}, 10000).catch(() => {});
+      await sleep(500 * attempt);
+    }
+  }
+  throw lastError;
+}
+
 async function goto(cdp, url, { width = 1440, height = 900, mobile = false } = {}) {
-  await cdp.send(
-    'Emulation.setDeviceMetricsOverride',
-    {
-      width,
-      height,
-      deviceScaleFactor: 2,
-      mobile,
-    },
-    120000
-  );
+  await setViewport(cdp, { width, height, mobile });
   // `Page.loadEventFired` là tín hiệu "đã xong" LÝ LẼ nhưng không phải tín hiệu
   // "đã sẵn sàng": Chrome có thể bắn nó trước lúc tài nguyên con (script
   // chunk) kịp tải, và ở một số route (route có `useSearchParams`, hay trang

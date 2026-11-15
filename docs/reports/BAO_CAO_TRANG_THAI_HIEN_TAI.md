@@ -1,23 +1,34 @@
 # BÁO CÁO TRẠNG THÁI HIỆN TẠI — Vietjet Air
 
-**Cập nhật:** 25/09/2026 · Nguồn: source hiện tại + kết quả chạy thật
-(`type-check`, `lint`, `test`, `build`, `test:smoke`)
+**Cập nhật số liệu:** 15/11/2026 · chạy thật trên máy dev
+(`type-check`, `lint`, `vitest run`).
 
-Tài liệu này thay thế các con số cũ trong `SUMMARY.txt`, `BUILD_VERIFICATION.md`
-và `BAO_CAO_KIEM_THU_UI.md` (bản ghi ngày 23/09).
+Các số liệu cũ trong `SUMMARY.txt`, `BUILD_VERIFICATION.md` và
+`BAO_CAO_KIEM_THU_UI.md` (bản 23/09) không còn đúng — xem §1.
+
+> **Đọc kèm:** những mục từ §2 trở xuống được viết ngày **25/09/2026**. Chúng còn
+> đúng về *quyết định thiết kế* (RBAC, hoàn tiền, tra cứu PNR), nhưng các con số
+> và phần "còn tồn đọng" đã lệch với source hiện tại. Chỗ nào lệch đã ghi rõ.
 
 ---
 
 ## 1. Chất lượng mã nguồn
 
-| Hạng mục | Kết quả |
+| Hạng mục | Kết quả (15/11/2026) |
 |---|---|
 | `npm run type-check` | ✅ 0 lỗi |
 | `npm run lint` | ✅ 0 error, 0 warning |
-| `npm test` | ✅ 37 file / **367 test** pass |
-| `npm run build` | ✅ exit 0 |
+| `npm test` | ✅ **135 file / 1189 test** pass (~4 phút) |
+| `npm run build` | ✅ exit 0 (lần chạy gần nhất 14/11) |
 | `npm run test:smoke` | ✅ pass toàn bộ assertion |
+| `npm run lint:tailwind-classes` | ✅ 0 class không tồn tại |
+| `npm run lint:css-debt` | ✅ 0 nợ CSS (baseline ratchet 0/0/0/0/0) |
 | TODO/FIXME trong `src/` | 0 |
+| Quy mô | 553 file TS/TSX · 90 API route · 51 migration · 129 script |
+
+**Vì sao số test tăng từ 367 → 1189:** các đợt bổ sung test cho admin dashboard,
+ví dụ thanh toán, PDF pipeline, RBAC và mobile parity. Con số 37 file ở §4.4 là
+bản cũ.
 
 ---
 
@@ -90,19 +101,30 @@ phải dữ liệu.
 `api/dat-ve/route.ts:8,41` gọi `verifyAuthRequest` bắt buộc. Cần
 `bookings.user_id` nullable + sửa luồng UI — thay đổi lớn về schema.
 
-### 4.4 Chưa có kiểm thử e2e
+### 4.4 Kiểm thử e2e — **có spec nhưng chưa chạy được**
 
-- Không có Playwright (`npm ls @playwright/test` → rỗng); 37 file test đều là
-  unit/component.
-- Chưa kiểm thử responsive mobile/tablet.
-- Chưa kiểm thử các luồng phát sinh dữ liệu: thanh toán, nạp/rút ví, đổi mật khẩu,
-  bật 2FA.
-- Chưa test biên ngày sinh (tháng 2, năm nhuận).
+*Cập nhật 15/11/2026:* khác với bản 25/09, repo đã có `playwright.config.ts` và
+**3 spec** trong `e2e/` (`booking-vietqr`, `checkin-seat-change`,
+`admin-flight-delay-sse`). Nhưng `@playwright/test` **không** có trong
+`package.json` lẫn `node_modules`, nên `npx playwright test` không chạy được và
+không spec nào được thực thi trong CI.
+
+Thực tế đang dùng để kiểm tra giao diện là **script CDP tự viết**
+(`npm run test:ui` + `scripts/ui-check.cjs`, và `scripts/run-ui-check.sh`): 68
+màn hình × 3 viewport, chụp ảnh + dò chồng lấn/tràn khung. Bộ này bắt lỗi layout
+tốt, nhưng không phải e2e theo nghĩa "bấm và kiểm tra nghiệp vụ".
+
+Vẫn chưa có:
+
+- Kiểm thử luồng phát sinh dữ liệu: thanh toán, nạp/rút ví, đổi mật khẩu, 2FA.
+- Kiểm thử biên ngày sinh (tháng 2, năm nhuận).
 
 ### 4.5 Git
 
-Các commit đã push, `main` đồng bộ với `origin/main`. Git identity đặt cục bộ cho
-repo là `Cline <cline@localhost>` — đổi được nếu muốn commit dưới tên khác.
+*Cập nhật 15/11/2026:* `main` và `origin/main` từng đồng bộ, nhưng hiện có **12
+nhánh `cursor/*` chưa gộp** và một nhánh đang làm dở
+(`cursor/audit-fixes-and-pdf-pipeline-tests`). Git identity đặt cục bộ là
+`Cline <cline@localhost>`.
 
 ---
 

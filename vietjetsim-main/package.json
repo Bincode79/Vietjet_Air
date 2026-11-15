@@ -18,6 +18,7 @@
     "test:smoke": "node scripts/smoke-test.cjs",
     "test:pdf-pipeline": "node scripts/verify-pdf-pipeline.cjs",
     "test:ui": "node scripts/ui-check.cjs",
+    "test:ui:full": "bash scripts/run-ui-check.sh",
     "test:perf": "node scripts/perf-check.cjs",
     "test:visual": "node scripts/visual-diff.cjs",
     "test:mail": "node scripts/test-mail.cjs",

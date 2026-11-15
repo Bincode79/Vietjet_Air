@@ -6,15 +6,15 @@ Repository memory for Vietjet Air (Next.js 16 / React 19 / TypeScript / Tailwind
 
 ```bash
 npm run dev        # next dev --turbo -p 4028
-npm run build      # next build (runs its own TS type check ‚Äî a tsc error fails the build)
+npm run build      # next build (runs its own TS type check — a tsc error fails the build)
 npm run type-check # tsc --noEmit
 npm test           # vitest run
-npm run lint       # eslint .   (NOT `next lint` ‚Äî that is removed in Next 16)
+npm run lint       # eslint .   (NOT `next lint` — that is removed in Next 16)
 npm run lint:fix   # eslint . --fix
 npm run lint:tailwind-classes # asserts every className token exists in the generated CSS
 npm run test:migrations # 4 migration passes on throwaway Docker Postgres (needs Docker)
 npm run test:smoke # post-build HTTP assertions against a running server
-npm run test:ui    # headless Chrome render check of 35 screens + auth-public/post-login (3 viewports; needs build + start + Chrome)
+npm run test:ui    # headless Chrome render check of 56 captures (18 routes × 3 viewports + 2 single-viewport; needs build + start + Chrome)
 ```
 
 Lint/format rules live in `eslint.config.mjs` (flat config, prettier printWidth 100,
@@ -60,7 +60,7 @@ Shared infrastructure lives in `src/shared/` (`services/apiClient.ts`, `constant
 `components/ui`).
 
 Neon Postgres via `src/lib/neon.ts` (`sql` template tag) is the only datastore. When
-`DATABASE_URL` is unset, that module falls back to an in-memory mock for local dev/CI ‚Äî
+`DATABASE_URL` is unset, that module falls back to an in-memory mock for local dev/CI —
 tests rely on it, so keep the fallback intact. There is no Supabase dependency: the auth
 layer is custom JWT (`src/lib/auth.ts`) and data isolation comes from `user_id`-scoped
 queries plus RBAC guards, not database-level policies.
@@ -971,7 +971,7 @@ add an explicit `::text` cast.
 
 To run the app against a local database without a Neon account, note that
 `@neondatabase/serverless` speaks Neon's HTTP `/sql` protocol, not the Postgres wire
-protocol ‚Äî raw `DATABASE_URL=postgresql://localhost/...` fails with
+protocol — raw `DATABASE_URL=postgresql://localhost/...` fails with
 `Failed to parse URL from https://api.<host>/sql`. Point `DATABASE_URL` at a
 `<db>.<project>.neon.tech`-style host and run a small HTTP proxy that translates
 `{query, params}` calls to real Postgres, or use a real Neon branch.
@@ -990,7 +990,7 @@ protocol ‚Äî raw `DATABASE_URL=postgresql://localhost/...` fails with
   `getCsrfHeaders()` always has a value to echo back. When adding enforcement,
   migrate the client to `apiRequest` in the same change or the UI breaks with 403.
   The password-reset routes do not use the auth helpers, so they call
-  `validateCsrfOrReject` themselves ‚Äî keep that call when editing them.
+  `validateCsrfOrReject` themselves — keep that call when editing them.
 - **`verifyAdminRequest` returns a discriminated union.** Failure always carries
   `response`, so `const { error, response } = await verifyAdminRequest(...); if (error)
 return response;` narrows correctly and avoids returning `undefined` from a handler.
@@ -1019,7 +1019,7 @@ return response;` narrows correctly and avoids returning `undefined` from a hand
   use a data-modifying CTE and have the child inserts `SELECT nb.id FROM new_booking nb`
   (see `createBooking`). Bulk rows go in via `jsonb_to_recordset`, which needs the
   `::jsonb` cast and a column list whose types match the target columns (`dob date`,
-  not `text` ‚Äî there is no implicit text‚Üídate cast in a recordset definition).
+  not `text` — there is no implicit text→date cast in a recordset definition).
 - **`json_agg(...) FILTER (WHERE ...)` returns SQL `NULL`, not `[]`, when nothing
   matches.** Map it with `Array.isArray(x) ? x : []` before indexing; `x[0]` throws
   on a booking with no passengers or payments.
@@ -1130,7 +1130,7 @@ with services in `src/features/chat/services` and APIs under `src/app/api/tro-ch
   `AuthProvider`). Each widget gates itself: `UserChat` renders only for a signed-in
   user and returns `null` on `/quan-tri`; `OpenClawAssistant` renders only when
   `isAdmin && pathname.startsWith('/quan-tri')`. Do not re-mount `UserChat` on an
-  individual page ‚Äî that renders two floating buttons.
+  individual page — that renders two floating buttons.
 - **Presence (`/api/tro-chuyen/truc-tuyen`) is conversation-scoped.** Both GET and
   POST require the caller to own the conversation (`userOwnsConversation`) unless they
   are an admin. GET previously accepted a `role` query param that overrode the token's
@@ -1163,7 +1163,7 @@ with services in `src/features/chat/services` and APIs under `src/app/api/tro-ch
   plus a `.query` method that mirrors the SQL `src/lib/db.ts` issues through
   `sql.query`, so chat works without `DATABASE_URL`. New chat SQL must be mirrored
   there or it silently no-ops in mock mode. Restart `next dev` after editing
-  `neon.ts` ‚Äî a stale server serves the old mock and looks like a 404 on new queries.
+  `neon.ts` — a stale server serves the old mock and looks like a 404 on new queries.
 
 ## Coding Pi (NVIDIA NIM)
 
@@ -1215,7 +1215,7 @@ mock rather than wrapping individual tests in a router provider.
 `npm run test:smoke` (`scripts/smoke-test.cjs`) is a dependency-free HTTP smoke test
 against a running server; CI runs it in the `smoke` job on port 4028 with no
 `DATABASE_URL`, so it exercises the mock DB path. It asserts routing, redirects, the CSRF
-handshake and auth guards, not happy-path writes ‚Äî the mock DB cannot register users, so
+handshake and auth guards, not happy-path writes — the mock DB cannot register users, so
 persistence flows are out of scope. Point it elsewhere with `SMOKE_BASE_URL`.
 
 `npm run test:ui` (`scripts/ui-check.cjs`) drives real headless Chrome over the DevTools
@@ -1227,7 +1227,8 @@ exactly one `#main-content`, no `<main>` nested in another, and the target _afte
 `<header>` in document order — because that is the only place it can be seen: three routes
 (`/dang-nhap`, `/dat-lai-mat-khau`, `/lam-thu-tuc`) read `useSearchParams` and serve only
 an empty `Suspense` fallback in the raw HTML, so a `curl | grep <main` says zero on pages
-that are correct. It screenshots 35 screens plus the auth-public and post-login captures (plus the OpenClaw widget) and exits non-zero if any
+that are correct. It screenshots 56 captures — 18 routes × 3 canonical viewports plus the
+post-login console and the OpenClaw widget — and exits non-zero if any
 screen has a flag, so it works as a gate. **Run it against a production build** (`npm run
 build && npm start`) — this is where the difference is load-bearing: `next dev` does not
 prefetch, so `router.prefetch('/dat-ve')` for a non-existent route (only `/dat-ve/[id]`
@@ -1235,8 +1236,16 @@ exists) produced a 404 on every page in `next start` and nowhere in dev, and the
 server compiles routes on demand, so a fixed sleep photographs skeletons. It needs Chrome
 on the machine and the demo logins (`admin@vietjetair.vn` / `user@vietjetair.vn`, see the
 README); login status is printed but does not gate, since a fresh DB has no such accounts.
-Override with `UI_CHECK_BASE_URL`, `CHROME_PATH` and `UI_CHECK_SHOTS_DIR` (screenshots
-default to a temp dir so a repo run does not leave artifacts behind).
+Override with `UI_CHECK_BASE_URL`, `CHROME_PATH` (every probe/shoot script now honours it
+in `chromePath()`) and `UI_CHECK_SHOTS_DIR` (screenshots default to a temp dir so a repo
+run does not leave artifacts behind).
+
+**One command for the whole gate:** `scripts/run-ui-check.sh` builds into
+`.next-uicheck`, starts `next start` on 4029, runs `ui-check.cjs`, then restores
+`next-env.d.ts`/`tsconfig.json` and kills the server — so it can run beside a live
+`next dev` (see below). `UI_CHECK_SKIP_BUILD=1` reuses an existing build. If a screen's
+`Emulation.setDeviceMetricsOverride` hangs, `setViewport()` retries three times and clears
+the stale override between attempts instead of aborting the remaining screenshots.
 
 **`next start` needs `.next`, and a running `next dev` is using it — so build a second
 copy instead of stopping the dev server.** `next.config.mjs` reads `DIST_DIR`, so the
@@ -1284,7 +1293,7 @@ the proxy bounces every non-public path to `/dang-nhap` before routing and seeds
 
 Brand red is `#EC2029` (hover `#D91A21`, dark `#6F0000`); the CTA/action yellow is
 `#FFDD00` with the deeper `#F9A51A`/`#FBB612` accents. Theme values live in
-`tailwind.config.js` and `src/styles/tailwind.css`. Keep pages on these tokens ‚Äî a
+`tailwind.config.js` and `src/styles/tailwind.css`. Keep pages on these tokens — a
 past palette (`#ED1D23`, `#E30613`, `#FFD400`, `#FFC400`) was removed, so reintroducing
 one of those hexes is a regression, not a neutral choice. The same applies to off-brand
 neutrals that ignore the tokens: `/chuyen-bay-cua-toi` and `/lam-thu-tuc` once used
@@ -1321,7 +1330,7 @@ The auth screens do **not** use `vj-btn-primary`. Their submit buttons use
 copied from the real SkyID login theme. That theme lives on
 `skyjoy-authen.vietjetair.com`, which fronts a Keycloak realm on
 `skyjoy-id.vietjetair.com`; both answer a VPN/proxy block page to this sandbox, so the
-values above come from the theme's own leaked stylesheet ‚Äî don't "correct" them to red.
+values above come from the theme's own leaked stylesheet — don't "correct" them to red.
 Keep auth CTAs on that one utility rather than reintroducing `.vj-btn`.
 
 **The auth screens are a 1-column SkyID clone, not a modal.** `SkyIdShell`
@@ -1361,7 +1370,7 @@ there would show a white notch over the input.
 
 Public information pages share `<PageHero>` (`@/shared/components/navigation`), which
 renders the brand red sweep via `.vj-page-hero`. Do not re-add an inline
-`linear-gradient(20.12deg, ‚Ä¶)` hero ‚Äî `gioi-thieu`, `hoi-dap`, `lien-he` and `dich-vu`
+`linear-gradient(20.12deg, …)` hero — `gioi-thieu`, `hoi-dap`, `lien-he` and `dich-vu`
 were consolidated onto it. `/hanh-ly` is a pure `redirect()` and correctly has no
 chrome.
 
@@ -1372,7 +1381,7 @@ component (phone → password / OTP / register). `/dang-nhap` still accepts
 path); `/dang-ky` opens straight into the register flow. The terms/privacy links in
 the registration form point at `/gioi-thieu`, matching `Footer.tsx`; they were
 previously `href="#"`, which silently made a legally-required consent link a no-op.
-Password recovery is `/quen-mat-khau` (request a link) ‚Üí `/dat-lai-mat-khau?token=‚Ä¶`
+Password recovery is `/quen-mat-khau` (request a link) → `/dat-lai-mat-khau?token=…`
 (consume it). Tokens are single-use and hashed in `account_recovery` via
 `src/lib/password-reset.ts`; a successful reset revokes refresh tokens and sessions.
 There is no mail transport, so the request endpoint echoes `resetUrl` only outside
@@ -1384,7 +1393,7 @@ preselect a panel. Link services as `/dich-vu?service=<id>` rather than as subpa
 `/dich-vu/hanh-ly`, which do not exist and 404.
 
 `/lam-thu-tuc-truc-tuyen` is a legacy alias that 307s to `/lam-thu-tuc`; it forwards the
-whole query string, so `?code=` survives. Both are in `PUBLIC_ROUTES` ‚Äî the check-in
+whole query string, so `?code=` survives. Both are in `PUBLIC_ROUTES` — the check-in
 lookup is anonymous (booking code + surname are the credentials). `/chuyen-bay-cua-toi`
 is public too, but it reads `/api/checkin/status/[bookingId]`, which is _not_ in
 `PUBLIC_API_ROUTES`, so a signed-out visitor sees the booking-code lookup and an empty
@@ -1412,17 +1421,17 @@ silently swallows every toast.
 
 - **`[var(--x)]/N` silently compiles to nothing.** Tailwind 3.4's `/opacity` modifier
   cannot resolve a plain CSS variable, so `bg-[var(--vj-red)]/10` produces _no rule at
-  all_ ‚Äî no error, no warning. Use channel variables and wrap in `rgb()`:
+  all_ — no error, no warning. Use channel variables and wrap in `rgb()`:
   `bg-[rgb(var(--vj-red-rgb))]/10`. Channel tokens (`--vj-red-rgb: 236 32 41`) live in
   `:root` in `tailwind.css`; add one whenever you add a translucent tint.
 - **Only `src/styles/tailwind.css` is imported** (by `src/app/layout.tsx`). A stylesheet
-  under `src/styles/` that nothing imports is dead code ‚Äî dark mode once shipped a second
+  under `src/styles/` that nothing imports is dead code — dark mode once shipped a second
   `[data-theme="dark"]` mechanism that way while `ThemeContext` toggles a `dark` class.
   `darkMode: 'class'` with a `.dark` selector is the only supported mechanism.
 - **Use the token for brand red**: `hover:bg-primary-dark` / `var(--primary-dark)`
   (`#D91A21`), not a bespoke `#C41017`/`#D0021B`. One-off hexes for a specific UI accent
   are fine, but a button hover is not a place to invent a shade.
-- **Page roots share the canvas token** ‚Äî `min-h-screen bg-[var(--surface)]` for content
+- **Page roots share the canvas token** — `min-h-screen bg-[var(--surface)]` for content
   pages, `bg-[var(--background)]` where the page must stay white in light mode. Avoid
   `bg-gray-50`/`bg-stone-50`/raw hex, which ignore dark mode.
 
