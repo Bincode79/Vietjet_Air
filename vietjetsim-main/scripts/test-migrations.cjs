@@ -244,6 +244,29 @@ function checkInvariants() {
       ) === '1'
     );
   }
+
+  // Migration 049: chống double-charge ở tầng database.
+  //
+  // Trước 049, `payments` không có ràng buộc nào chặn hai giao dịch
+  // `completed` cho cùng một đặt chỗ — chống double-charge chỉ nằm ở tầng
+  // route, dạng read-then-write, nên hai request song song có thể cùng vượt
+  // qua. `getBookingCashPaid` cộng mọi giao dịch `completed` vào trần hoàn
+  // tiền, nên một khoản thu trùng làm trần hoàn vượt số tiền đã thu.
+  //
+  // Đây là index, không phải constraint, nên phải kiểm tra bằng `pg_indexes`.
+  // `indexprs`/`indpred` phải khớp để index là partial trên `status =
+  // 'completed'` — một index UNIQUE đầy đủ trên `booking_id` sẽ chặn cả
+  // những giao dịch `failed` thứ hai, tức là chặn luồng "khách thử thanh
+  // toán lại", vốn là hợp lệ.
+  check(
+    'payments_one_settled_charge_per_booking exists and is partial on status',
+    psql(
+      'SELECT count(*) FROM pg_indexes ' +
+        "WHERE indexname = 'payments_one_settled_charge_per_booking' " +
+        "AND indexdef LIKE '%UNIQUE%' " +
+        "AND indexdef LIKE '%completed%';"
+    ) === '1'
+  );
 }
 
 /**

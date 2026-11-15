@@ -46,6 +46,22 @@ jobs:
       - name: Run TypeScript type check
         run: npm run type-check
 
+      # Ratchet nợ CSS: chặn `text-[Npx]`, `[#rrggbb]`, `p-[Npx]`,
+      # `rounded-[Npx]` và `shadow-[…]` MỚI phát sinh. Baseline nằm ở
+      # `scripts/css-debt-baseline.json` và chỉ được hạ, không được nâng.
+      #
+      # Vì sao phải chạy trong CI: đây là RATCHET, không phải luật — nó đỏ khi
+      # con số TĂNG so với baseline. Chạy một lần rồi không chạy lại thì nó
+      # không làm gì cả: người viết code mới thêm `p-[13px]` sẽ không bị chặn
+      # cho tới lần chạy kế tiếp — tức là quá muộn.
+      - name: Check CSS debt ratchet
+        run: npm run lint:css-debt
+
+      # Chặn class Tailwind không tồn tại (typo, hoặc class bị "dính" khi thay
+      # thế hàng loạt). Class không sinh ra CSS thì im lặng — không ai thấy.
+      - name: Check Tailwind classes exist
+        run: npm run lint:tailwind-classes
+
   test:
     name: Unit Tests
     runs-on: ubuntu-latest

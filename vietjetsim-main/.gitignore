@@ -60,6 +60,8 @@ jest-test-results.json
 .qa-out/
 .screenshots-hero/
 .screenshots-mobile/
+# Ảnh chụp màn hình của pipeline UI check (scripts/ui-check.cjs).
+.screenshots-qa/
 
 # Optional: if using TurboRepo or monorepo
 turbo/
