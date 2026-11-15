@@ -30,6 +30,23 @@ Các số liệu cũ trong `SUMMARY.txt`, `BUILD_VERIFICATION.md` và
 ví dụ thanh toán, PDF pipeline, RBAC và mobile parity. Con số 37 file ở §4.4 là
 bản cũ.
 
+### 1.1 CI đang không chạy được — lỗi thanh toán của tài khoản, không phải code
+
+Kiểm tra ngày 15/11/2026 bằng API: **49/49 run của workflow `CI` đều fail sau
+~2 giây, 0 step, không có log**. Annotation của job nói thẳng lý do:
+
+> `The job was not started because your account is locked due to a billing issue.`
+
+Run đầu tiên là 13/11/2026 03:50 và chưa từng có run nào chạy được step nào (run
+"success" duy nhất trong danh sách là của Dependabot, không phải CI). Vì vậy mọi
+trạng thái đỏ trên GitHub hiện tại **không** nói gì về chất lượng nhánh — cần vào
+GitHub → Settings → Billing & plans xử lý phương thức thanh toán/spending limit
+trước, rồi chạy lại workflow.
+
+Cho tới lúc đó, các cổng dưới đây được chạy tay và đều xanh (bảng §1). Riêng
+`npm run test:migrations` cần Docker — máy dev hiện không có Docker nên cổng này
+chưa được xác nhận lại sau migration 049.
+
 ---
 
 ## 2. Đã đóng trong các đợt gần đây
