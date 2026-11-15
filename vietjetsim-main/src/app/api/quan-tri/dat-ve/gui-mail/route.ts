@@ -44,7 +44,18 @@ export async function POST(request: NextRequest) {
     }
 
     // 1. Fetch booking with flight and user details
-    const bRes = await sql`
+    const bRes = await sql<{
+      id: string;
+      booking_code: string | null;
+      total_price: number | null;
+      depart_time?: string | null;
+      flight_no?: string | null;
+      from_code?: string | null;
+      to_code?: string | null;
+      account_email?: string | null;
+      account_name?: string | null;
+      [key: string]: unknown;
+    }>`
       SELECT b.*,
              f.flight_no, f.from_code, f.to_code, f.depart_time, f.arrive_time,
              u.email as account_email, u.full_name as account_name
@@ -55,7 +66,7 @@ export async function POST(request: NextRequest) {
       LIMIT 1
     `;
 
-    const booking = (bRes as any[])[0];
+    const booking = bRes[0];
     if (!booking) {
       return NextResponse.json(
         { error: 'Not Found', message: 'Không tìm thấy thông tin đơn đặt vé' },
@@ -68,12 +79,12 @@ export async function POST(request: NextRequest) {
     // Cột là `seat_number` (thêm ở migration 046), KHÔNG phải `seat_code` —
     // cột `seat_code` không tồn tại trong schema ⇒ query này ném lỗi Postgres
     // và route trả 500 cho admin.
-    const pRes = await sql`
+    const pRes = await sql<{ name: string; email: string | null; seat_number: string | null }>`
       SELECT name, email, seat_number
       FROM passengers
       WHERE booking_id = ${booking.id}
     `;
-    const passengersList = (pRes as any[]) || [];
+    const passengersList = pRes || [];
 
     // 3. Resolve customer name & total amount
     const customerName =
@@ -93,10 +104,14 @@ export async function POST(request: NextRequest) {
 
     if (type === 'payment_instruction') {
       // Fetch default bank account
-      const bankRes = await sql`
+      const bankRes = await sql<{
+        bank_name: string | null;
+        account_number: string | null;
+        account_holder: string | null;
+      }>`
         SELECT * FROM bank_accounts WHERE is_default = true LIMIT 1
       `;
-      const bank = (bankRes as any[])[0] || null;
+      const bank = bankRes[0] || null;
 
       const bankName = bank?.bank_name || 'Ngân hàng Quốc tế Việt Nam (VIB)';
       const accountNumber = bank?.account_number || '876922729';
@@ -144,7 +159,7 @@ export async function POST(request: NextRequest) {
         bookingId: booking.id,
         amount: totalAmount,
         method: 'vietqr',
-        flightNumber: booking.flight_no,
+        flightNumber: booking.flight_no ?? undefined,
         route: routeStr,
         departureTime: departureFormatted,
         ticketUrl: `${siteUrl()}/tai-khoan?bookingId=${booking.id}`,
@@ -164,10 +179,10 @@ export async function POST(request: NextRequest) {
         `;
 
         // Check if payment already exists
-        const pCheck = await sql`
+        const pCheck = await sql<{ id: string }>`
           SELECT id FROM payments WHERE booking_id = ${booking.id} LIMIT 1
         `;
-        if ((pCheck as any[]).length > 0) {
+        if (pCheck.length > 0) {
           await sql`
             UPDATE payments
             SET status = 'completed', updated_at = NOW()

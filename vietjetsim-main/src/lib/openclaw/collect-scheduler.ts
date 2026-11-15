@@ -125,8 +125,8 @@ export async function runAutoSync(force = false): Promise<AutoSyncRunReport> {
     try {
       const net = await collectVietjetNetwork();
       // Đọc các sân bay hiện có
-      const existingRows = await sql`SELECT UPPER(code) as code FROM airports`;
-      const existingCodes = new Set(existingRows.map((r: { code: string }) => r.code));
+      const existingRows = await sql<{ code: string }>`SELECT UPPER(code) as code FROM airports`;
+      const existingCodes = new Set(existingRows.map((r) => r.code));
       let added = 0;
 
       for (const ap of net.airports) {

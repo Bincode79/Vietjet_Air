@@ -462,6 +462,8 @@ describe('3. Tính năng áp mã giảm giá cho khách thanh toán', () => {
     vi.spyOn(db, 'getBookingByCodeOrId').mockResolvedValue(booking as any);
     vi.spyOn(db, 'getDiscountCodeByCode').mockResolvedValue(mockDiscount as any);
     vi.spyOn(db, 'getDiscountCodeById').mockResolvedValue(mockDiscount as any);
+    vi.spyOn(db, 'claimDiscountUsage').mockResolvedValue(true as any);
+    vi.spyOn(db, 'releaseDiscountUsage').mockResolvedValue(undefined as any);
 
     const createPaymentSpy = vi.spyOn(db, 'createPaymentAndConfirmBooking').mockResolvedValue({
       payment: {

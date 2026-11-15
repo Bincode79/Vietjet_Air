@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
     const { error, response } = await verifyAdminRequest(request, 'system:config');
     if (error) return response;
 
-    const settings = await sql`
+    const settings = await sql<SystemConfigRow>`
       SELECT id, key, value, description, updated_at
       FROM system_config
       ORDER BY key ASC
@@ -26,7 +26,7 @@ export async function GET(request: NextRequest) {
 
     // Transform to key-value object for easier frontend consumption
     const settingsObject: Record<string, { value: string; description?: string }> = {};
-    settings.forEach((setting: SystemConfigRow) => {
+    settings.forEach((setting) => {
       settingsObject[setting.key] = {
         value: setting.value || '',
         description: setting.description ?? undefined,
@@ -67,16 +67,19 @@ export async function PATCH(request: NextRequest) {
 
     // Process each setting
     for (const [key, valueObj] of Object.entries(settings)) {
-      const value = (valueObj as SystemConfigRow).value;
+      // `valueObj` là `{ value: string }` theo hợp đồng của body, không phải
+      // hàng SQL — nên ép sang shape riêng chứ không dùng `SystemConfigRow`
+      // (row có `id`/`updated_at` mà body không có).
+      const value = (valueObj as { value?: string }).value;
 
       if (value === undefined) continue;
 
       // Upsert each setting
-      const [setting] = await sql`
+      const [setting] = await sql<{ key: string; value: string }>`
         INSERT INTO system_config (key, value, updated_at)
         VALUES (${key}, ${String(value)}, NOW())
-        ON CONFLICT (key) 
-        DO UPDATE SET 
+        ON CONFLICT (key)
+        DO UPDATE SET
           value = EXCLUDED.value,
           updated_at = NOW()
         RETURNING *

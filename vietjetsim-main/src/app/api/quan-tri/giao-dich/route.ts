@@ -5,6 +5,50 @@ import { sendPaymentFailedEmail } from '@/lib/mail';
 import { sendAutomaticPaymentInvoiceEmail } from '@/lib/payment-invoice';
 import { writeAuditLog, awardBookingLoyaltyPoints } from '@/lib/db';
 
+/**
+ * Hàng giao dịch mà trang "Quản trị → Giao dịch" hiển thị.
+ *
+ * Đây là hình chiếu SQL (SELECT có bí danh), không phải bảng gốc — nên tên
+ * cột ở đây là bí danh trong query, ghi camelCase để khớp với JSON trả về.
+ */
+type TransactionRow = {
+  id: string;
+  paymentId: string;
+  bookingId: string;
+  bookingCode: string | null;
+  amount: number | null;
+  method: string;
+  status: string;
+  bookingStatus: string;
+  receiptImage: string | null;
+  transferNote: string | null;
+  createdAt: string;
+  userEmail: string;
+  userName: string;
+};
+
+/** Hàng booking đầy đủ — route PATCH đọc nhiều cột từ bảng `bookings`. */
+type TargetBookingRow = {
+  id: string;
+  user_id: string | null;
+  flight_id: string | null;
+  trip_id: string | null;
+  status: string;
+  total_price: number | null;
+  booking_code: string | null;
+  [key: string]: unknown;
+};
+
+/** Hàng payment — route PATCH đọc từ bảng `payments`. */
+type TargetPaymentRow = {
+  id: string;
+  booking_id: string;
+  method: string;
+  amount: number | null;
+  status: string;
+  [key: string]: unknown;
+};
+
 export async function GET(request: NextRequest) {
   try {
     const { error, response } = await verifyAdminRequest(request, 'payment:view');
@@ -15,9 +59,9 @@ export async function GET(request: NextRequest) {
     const search = searchParams.get('search')?.trim().toLowerCase();
 
     // Query transactions joining payments, bookings, user_profiles, and primary passenger info
-    let result: any[];
+    let result: TransactionRow[];
     if (status && status !== 'all') {
-      result = await sql`
+      result = await sql<TransactionRow>`
         SELECT 
           COALESCE(p.id::text, 'bk-' || b.id::text) as id,
           COALESCE(p.id::text, '') as "paymentId",
@@ -44,7 +88,7 @@ export async function GET(request: NextRequest) {
         LIMIT 100
       `;
     } else {
-      result = await sql`
+      result = await sql<TransactionRow>`
         SELECT 
           COALESCE(p.id::text, 'bk-' || b.id::text) as id,
           COALESCE(p.id::text, '') as "paymentId",
@@ -72,7 +116,7 @@ export async function GET(request: NextRequest) {
     }
 
     if (search) {
-      result = (result as any[]).filter(
+      result = result.filter(
         (t) =>
           String(t.id).toLowerCase().includes(search) ||
           String(t.bookingCode || '')
@@ -120,35 +164,38 @@ export async function PATCH(request: NextRequest) {
     }
 
     // Resolve target booking and payment
-    let targetBooking: any = null;
-    let targetPayment: any = null;
+    let targetBooking: TargetBookingRow | null = null;
+    let targetPayment: TargetPaymentRow | null = null;
 
     if (bookingId) {
-      const bRes = await sql`SELECT * FROM bookings WHERE id = ${bookingId} LIMIT 1`;
-      targetBooking = (bRes as any[])[0] || null;
+      const bRes =
+        await sql<TargetBookingRow>`SELECT * FROM bookings WHERE id = ${bookingId} LIMIT 1`;
+      targetBooking = bRes[0] || null;
       if (targetBooking) {
         const pRes =
-          await sql`SELECT * FROM payments WHERE booking_id = ${bookingId} ORDER BY created_at DESC LIMIT 1`;
-        targetPayment = (pRes as any[])[0] || null;
+          await sql<TargetPaymentRow>`SELECT * FROM payments WHERE booking_id = ${bookingId} ORDER BY created_at DESC LIMIT 1`;
+        targetPayment = pRes[0] || null;
       }
     } else if (transactionId) {
       // If transactionId is prefixed with 'bk-', it refers to a booking
       if (transactionId.startsWith('bk-')) {
         const actualBookingId = transactionId.slice(3);
-        const bRes = await sql`SELECT * FROM bookings WHERE id = ${actualBookingId} LIMIT 1`;
-        targetBooking = (bRes as any[])[0] || null;
+        const bRes =
+          await sql<TargetBookingRow>`SELECT * FROM bookings WHERE id = ${actualBookingId} LIMIT 1`;
+        targetBooking = bRes[0] || null;
         if (targetBooking) {
           const pRes =
-            await sql`SELECT * FROM payments WHERE booking_id = ${actualBookingId} ORDER BY created_at DESC LIMIT 1`;
-          targetPayment = (pRes as any[])[0] || null;
+            await sql<TargetPaymentRow>`SELECT * FROM payments WHERE booking_id = ${actualBookingId} ORDER BY created_at DESC LIMIT 1`;
+          targetPayment = pRes[0] || null;
         }
       } else {
-        const pRes = await sql`SELECT * FROM payments WHERE id = ${transactionId} LIMIT 1`;
-        targetPayment = (pRes as any[])[0] || null;
+        const pRes =
+          await sql<TargetPaymentRow>`SELECT * FROM payments WHERE id = ${transactionId} LIMIT 1`;
+        targetPayment = pRes[0] || null;
         if (targetPayment) {
           const bRes =
-            await sql`SELECT * FROM bookings WHERE id = ${targetPayment.booking_id} LIMIT 1`;
-          targetBooking = (bRes as any[])[0] || null;
+            await sql<TargetBookingRow>`SELECT * FROM bookings WHERE id = ${targetPayment.booking_id} LIMIT 1`;
+          targetBooking = bRes[0] || null;
         }
       }
     }
@@ -217,12 +264,12 @@ export async function PATCH(request: NextRequest) {
           0,
           Number(targetBooking.total_price || 0) - Number(targetBooking.discount_amount || 0)
         );
-        const createdP = await sql`
+        const createdP = await sql<TargetPaymentRow>`
           INSERT INTO payments (booking_id, method, status, amount)
           VALUES (${targetBooking.id}, 'vietqr', 'completed', ${discountedAmount})
           RETURNING *
         `;
-        targetPayment = (createdP as any[])[0];
+        targetPayment = createdP[0] ?? null;
       }
 
       // 2. Tích lũy điểm SkyJoy khi admin đối soát thành công. Nếu bỏ qua,
@@ -336,12 +383,12 @@ export async function PATCH(request: NextRequest) {
       await sql`DELETE FROM seats WHERE booking_id = ${targetBooking.id}`;
 
       // Restore seats on flight
-      const countRes = await sql`
-        SELECT COUNT(*) as count 
-        FROM passengers 
+      const countRes = await sql<{ count: string | number }>`
+        SELECT COUNT(*) as count
+        FROM passengers
         WHERE booking_id = ${targetBooking.id} AND passenger_type != 'infant'
       `;
-      const seatedCount = Number((countRes as any[])[0]?.count || 1);
+      const seatedCount = Number(countRes[0]?.count || 1);
       if (targetBooking.flight_id && seatedCount > 0) {
         await sql`
           UPDATE flights 
@@ -355,9 +402,11 @@ export async function PATCH(request: NextRequest) {
       let rejectName: string = 'Quý khách';
 
       if (targetBooking.user_id) {
-        const uRes =
-          await sql`SELECT email, full_name FROM user_profiles WHERE id = ${targetBooking.user_id} LIMIT 1`;
-        const userRow = (uRes as any[])[0];
+        const uRes = await sql<{
+          email: string;
+          full_name: string | null;
+        }>`SELECT email, full_name FROM user_profiles WHERE id = ${targetBooking.user_id} LIMIT 1`;
+        const userRow = uRes[0];
         if (userRow?.email) {
           rejectEmail = userRow.email;
           rejectName = userRow.full_name || rejectName;
@@ -365,9 +414,11 @@ export async function PATCH(request: NextRequest) {
       }
 
       if (!rejectEmail) {
-        const pRes =
-          await sql`SELECT name, email FROM passengers WHERE booking_id = ${targetBooking.id} AND email IS NOT NULL LIMIT 1`;
-        const pRow = (pRes as any[])[0];
+        const pRes = await sql<{
+          name: string;
+          email: string;
+        }>`SELECT name, email FROM passengers WHERE booking_id = ${targetBooking.id} AND email IS NOT NULL LIMIT 1`;
+        const pRow = pRes[0];
         if (pRow?.email) {
           rejectEmail = pRow.email;
           rejectName = pRow.name || rejectName;
@@ -380,7 +431,7 @@ export async function PATCH(request: NextRequest) {
           fullName: rejectName,
           bookingCode: targetBooking.booking_code,
           bookingId: targetBooking.id,
-          amount: targetBooking.total_price,
+          amount: targetBooking.total_price ?? 0,
           reason:
             note ||
             'Biên lai giao dịch không hợp lệ hoặc không nhận được khoản thanh toán đối soát',

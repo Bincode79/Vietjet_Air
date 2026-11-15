@@ -47,13 +47,39 @@ function resolveBaseUrl(): string {
  * Kiểm tra xem hệ thống có đang bật tự động gửi hoá đơn thanh toán qua email hay không.
  * Mặc định trả về true trừ khi quản trị viên chủ động tắt trong Cài đặt hệ thống.
  */
+/**
+ * Hàng booking mà module này đọc.
+ *
+ * Tên cột có hai dạng: cột thật trong DB (`booking_code`, `total_price`) và
+ * bí danh mà các mock/test từng dùng (`bookingCode`, `userName`, `userEmail`,
+ * `user_email`). Cả hai đều được đọc ở đây, nên cả hai đều khai báo.
+ */
+type InvoiceBookingRow = {
+  id: string;
+  trip_id?: string | null;
+  total_price?: number | null;
+  amount?: number | null;
+  booking_code?: string | null;
+  bookingCode?: string | null;
+  flight_no?: string | null;
+  from_code?: string | null;
+  to_code?: string | null;
+  depart_time?: string | null;
+  account_name?: string | null;
+  account_email?: string | null;
+  user_name?: string | null;
+  userName?: string | null;
+  user_email?: string | null;
+  userEmail?: string | null;
+};
+
 export async function isAutoSendInvoiceEnabled(): Promise<boolean> {
   try {
-    const rows = await sql`
+    const rows = await sql<{ key: string; value: string }>`
       SELECT key, value FROM system_config
       WHERE key IN ('auto_send_payment_invoice_email', 'email_notifications')
     `;
-    const list = (rows as any[]) || [];
+    const list = rows || [];
     const invoiceCfg = list.find((r) => r.key === 'auto_send_payment_invoice_email');
     const notifCfg = list.find((r) => r.key === 'email_notifications');
 
@@ -209,7 +235,7 @@ export async function sendAutomaticPaymentInvoiceEmail(
     }
 
     // 2. Truy vấn thông tin đơn đặt vé, chuyến bay và người đặt
-    const bRes = await sql`
+    const bRes = await sql<InvoiceBookingRow>`
       SELECT b.*,
              f.flight_no, f.from_code, f.to_code, f.depart_time, f.arrive_time,
              u.email as account_email, u.full_name as account_name
@@ -220,35 +246,36 @@ export async function sendAutomaticPaymentInvoiceEmail(
       LIMIT 1
     `;
 
-    const booking = (bRes as any[])[0];
+    const booking = bRes[0];
     if (!booking) {
       return { sent: false, reason: 'Không tìm thấy thông tin đặt vé' };
     }
 
     // 3. Truy vấn danh sách hành khách
-    let passengersList: any[] = [];
+    let passengersList: Array<{ name: string; email: string | null; seat_number: string | null }> =
+      [];
     try {
-      const pRes = await sql`
+      const pRes = await sql<{ name: string; email: string | null; seat_number: string | null }>`
         SELECT name, email, seat_number
         FROM passengers
         WHERE booking_id = ${booking.id}
       `;
-      passengersList = (pRes as any[]) || [];
+      passengersList = pRes || [];
     } catch {
       passengersList = [];
     }
 
     // 4. Truy vấn thông tin thanh toán mới nhất
-    let payment: any = null;
+    let payment: { id: string; method: string; amount: number; status: string } | null = null;
     try {
-      const payRes = await sql`
+      const payRes = await sql<{ id: string; method: string; amount: number; status: string }>`
         SELECT id, method, amount, status
         FROM payments
         WHERE booking_id = ${booking.id}
         ORDER BY created_at DESC
         LIMIT 1
       `;
-      payment = (payRes as any[])[0] || null;
+      payment = payRes[0] || null;
     } catch {
       payment = null;
     }
@@ -349,9 +376,9 @@ export async function sendAutomaticPaymentInvoiceEmail(
     // 7. Sinh PDF vé điện tử (CẢ HAI chặng nếu là khứ hồi) để đính kèm.
     const pdf = await buildTicketPdf({
       id: booking.id,
-      trip_id: booking.trip_id,
-      total_price: booking.total_price,
-      booking_code: booking.booking_code,
+      trip_id: booking.trip_id ?? undefined,
+      total_price: booking.total_price ?? undefined,
+      booking_code: booking.booking_code ?? undefined,
     });
 
     const attachments: MailAttachment[] = pdf
@@ -372,7 +399,7 @@ export async function sendAutomaticPaymentInvoiceEmail(
       bookingId: booking.id,
       amount: totalAmount,
       method: paymentMethod,
-      flightNumber: booking.flight_no,
+      flightNumber: booking.flight_no ?? undefined,
       route: routeStr,
       departureTime: departureFormatted,
       ticketUrl: `${baseUrl}/tai-khoan?bookingId=${booking.id}`,

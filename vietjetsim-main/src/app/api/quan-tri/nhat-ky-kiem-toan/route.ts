@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import { sql } from '@/lib/neon';
 import { verifyAdminRequest } from '@/lib/admin-auth';
 import { parsePaginationParams, getOffset } from '@/lib/pagination';
-import type { AuditLogRecord } from '@/lib/db';
 
 // ─── GET: Get audit logs with filters ─────────────────────────────────────────
 
@@ -191,8 +190,12 @@ export async function GET(request: NextRequest) {
     }
 
     // Get unique actions and resources for filter options
-    const actions = await sql`SELECT DISTINCT action FROM audit_logs ORDER BY action`;
-    const resources = await sql`SELECT DISTINCT target_type FROM audit_logs ORDER BY target_type`;
+    const actions = await sql<{
+      action: string;
+    }>`SELECT DISTINCT action FROM audit_logs ORDER BY action`;
+    const resources = await sql<{
+      target_type: string;
+    }>`SELECT DISTINCT target_type FROM audit_logs ORDER BY target_type`;
 
     return NextResponse.json({
       logs,
@@ -203,8 +206,8 @@ export async function GET(request: NextRequest) {
         totalPages: Math.ceil(total / limit),
       },
       filters: {
-        actions: actions.map((a: AuditLogRecord) => a.action),
-        resources: resources.map((r: AuditLogRecord) => r.target_type),
+        actions: actions.map((a) => a.action),
+        resources: resources.map((r) => r.target_type),
       },
     });
   } catch (error) {
