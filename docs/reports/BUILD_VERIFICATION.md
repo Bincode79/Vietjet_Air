@@ -1,5 +1,8 @@
 # 📊 Báo Cáo Xác Minh Build - Vietjet Air
 
+> ⚠️ **Tài liệu lịch sử (02/09/2026).** Số liệu build bên dưới đã cũ; trạng thái
+> hiện tại ở `BAO_CAO_TRANG_THAI_HIEN_TAI.md` (15/11/2026).
+
 **Ngày**: 2026-09-02  
 **Trạng thái**: ✅ SẴN SÀNG BUILD
 

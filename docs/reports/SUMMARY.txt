@@ -2,6 +2,11 @@
 ║         VIETJETSIM - RESTRUCTURING PROJECT COMPLETION SUMMARY             ║
 ╚═══════════════════════════════════════════════════════════════════════════╝
 
+⚠️  LƯU Ý: số liệu trong tệp này là ảnh chụp cuối giai đoạn tái cấu trúc
+    (2026-09). Con số hiện tại nằm ở docs/reports/BAO_CAO_TRANG_THAI_HIEN_TAI.md
+    (cập nhật 15/11/2026: 136 file / 1193 test, 90 API route, 52 migration).
+    Đừng trích số ở đây cho báo cáo mới.
+
 📊 PROJECT STATUS: Phase 1-6 COMPLETE ✅
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 

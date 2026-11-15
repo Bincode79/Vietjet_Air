@@ -1,5 +1,9 @@
 # BÁO CÁO KIỂM THỬ UI THỰC TẾ — Vietjet Air
 
+> ⚠️ **Tài liệu lịch sử (23/09/2026).** Kết quả UI dưới đây chụp trước đợt sweep
+> token CSS và các bản vá tháng 11; cổng UI hiện tại là `npm run test:ui:full`.
+> Trạng thái tổng hợp ở `BAO_CAO_TRANG_THAI_HIEN_TAI.md`.
+
 **Ngày kiểm thử:** 23/09/2026
 **Môi trường:** `vietjetsim-main/` — Next.js 16.3.4 (Turbopack, dev), cổng **4028**, PostgreSQL Docker (`vietjet-pg`, cổng 5433) qua Neon HTTP proxy (5444)
 **Phương pháp:** thao tác trên trình duyệt thật như người dùng cuối (mở trang, điền form, bấm nút, đăng nhập, đặt vé, thanh toán, duyệt trang quản trị), quan sát DOM/console/network và đối chiếu source code cho từng lỗi
