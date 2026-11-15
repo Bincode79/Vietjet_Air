@@ -39,83 +39,6 @@ interface User {
   address?: string;
 }
 
-const INITIAL_USERS: User[] = [
-  {
-    id: '1',
-    name: 'Nguyễn Văn An',
-    email: 'user@Vietjet Air.vn',
-    phone: '0901 234 567',
-    role: 'user',
-    status: 'active',
-    bookings: 5,
-    spent: 4820000,
-    joinDate: '2026-01-10',
-    operatorNotes: 'Khách hàng thân thiết, thường xuyên đặt vé đi Đà Nẵng.',
-    lastLogin: '2026-04-01 14:30',
-    address: 'Quận 1, TP. Hồ Chí Minh',
-  },
-  {
-    id: '2',
-    name: 'Trần Thị Bích',
-    email: 'bich.tran@gmail.com',
-    phone: '0912 345 678',
-    role: 'user',
-    status: 'active',
-    bookings: 3,
-    spent: 2150000,
-    joinDate: '2026-01-15',
-    lastLogin: '2026-03-28 09:15',
-  },
-  {
-    id: '3',
-    name: 'Lê Minh Tuấn',
-    email: 'tuan.le@outlook.com',
-    phone: '0923 456 789',
-    role: 'user',
-    status: 'active',
-    bookings: 8,
-    spent: 7340000,
-    joinDate: '2026-01-20',
-    operatorNotes: 'Cần hỗ trợ về hóa đơn đỏ.',
-    lastLogin: '2026-04-03 18:45',
-  },
-  {
-    id: '4',
-    name: 'Phạm Thu Hà',
-    email: 'ha.pham@yahoo.com',
-    phone: '0934 567 890',
-    role: 'user',
-    status: 'locked',
-    bookings: 2,
-    spent: 980000,
-    joinDate: '2026-01-25',
-    operatorNotes: 'Tài khoản tạm khóa do nghi ngờ gian lận thanh toán.',
-  },
-  {
-    id: '5',
-    name: 'Hoàng Văn Dũng',
-    email: 'dung.hoang@gmail.com',
-    phone: '0945 678 901',
-    role: 'user',
-    status: 'active',
-    bookings: 12,
-    spent: 11200000,
-    joinDate: '2026-02-01',
-    lastLogin: '2026-04-05 10:00',
-  },
-  {
-    id: '7',
-    name: 'Hệ Thống Vietjet Air',
-    email: 'admin@Vietjet Air.vn',
-    phone: '0900 000 000',
-    role: 'admin',
-    status: 'active',
-    bookings: 0,
-    spent: 0,
-    joinDate: '2026-01-01',
-  },
-];
-
 const STATUS_TABS: { value: 'all' | UserStatus; label: string; activeColor: string }[] = [
   { value: 'all', label: 'Tất cả', activeColor: 'text-stone-700 bg-stone-100' },
   { value: 'active', label: 'Hoạt động', activeColor: 'text-green-700 bg-green-100' },
@@ -147,7 +70,7 @@ interface UserApiRow {
 }
 
 export default function UsersTab({ onToast }: { onToast?: ToastAPI }) {
-  const [users, setUsers] = useState<User[]>(INITIAL_USERS);
+  const [users, setUsers] = useState<User[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterRole, setFilterRole] = useState<'all' | UserRole>('all');
   const [filterStatus, setFilterStatus] = useState<'all' | UserStatus>('all');
@@ -179,6 +102,8 @@ export default function UsersTab({ onToast }: { onToast?: ToastAPI }) {
     setHasError(false);
     try {
       const data = await listUsers({ limit: 100 });
+      // An empty result is a real answer — there are no customers. It renders
+      // the empty state; it must never render the demo rows.
       if (data.users && Array.isArray(data.users)) {
         const mapped = data.users.map((u: UserApiRow) => ({
           id: u.id,
@@ -197,7 +122,7 @@ export default function UsersTab({ onToast }: { onToast?: ToastAPI }) {
           lastLogin: u.last_login ? new Date(u.last_login).toLocaleString('vi-VN') : undefined,
           address: u.address ?? undefined,
         }));
-        setUsers(mapped.length > 0 ? mapped : INITIAL_USERS);
+        setUsers(mapped);
       }
     } catch (_err) {
       setHasError(true);

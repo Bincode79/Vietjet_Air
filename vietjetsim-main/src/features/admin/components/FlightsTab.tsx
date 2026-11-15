@@ -54,114 +54,6 @@ interface Flight {
   aircraft?: string;
 }
 
-const INITIAL_FLIGHTS: Flight[] = [
-  {
-    id: '1',
-    flightNo: 'VJ 101',
-    from: 'HAN',
-    to: 'SGN',
-    departTime: '06:00',
-    arriveTime: '08:10',
-    date: '2026-03-20',
-    price: 899000,
-    economyPrice: 899000,
-    businessPrice: 2490000,
-    capacity: 180,
-    booked: 138,
-    status: 'active',
-  },
-  {
-    id: '2',
-    flightNo: 'VJ 103',
-    from: 'HAN',
-    to: 'SGN',
-    departTime: '09:30',
-    arriveTime: '11:40',
-    date: '2026-03-20',
-    price: 1299000,
-    economyPrice: 1299000,
-    businessPrice: 3597000,
-    capacity: 180,
-    booked: 165,
-    status: 'active',
-  },
-  {
-    id: '3',
-    flightNo: 'VJ 105',
-    from: 'HAN',
-    to: 'SGN',
-    departTime: '12:15',
-    arriveTime: '14:25',
-    date: '2026-03-20',
-    price: 749000,
-    economyPrice: 749000,
-    businessPrice: 2075000,
-    capacity: 180,
-    booked: 112,
-    status: 'active',
-  },
-  {
-    id: '4',
-    flightNo: 'VJ 107',
-    from: 'HAN',
-    to: 'SGN',
-    departTime: '15:00',
-    arriveTime: '17:10',
-    date: '2026-03-20',
-    price: 2899000,
-    economyPrice: 2899000,
-    businessPrice: 8029000,
-    capacity: 30,
-    booked: 22,
-    status: 'active',
-  },
-  {
-    id: '5',
-    flightNo: 'VJ 109',
-    from: 'HAN',
-    to: 'SGN',
-    departTime: '18:45',
-    arriveTime: '20:55',
-    date: '2026-03-20',
-    price: 599000,
-    economyPrice: 599000,
-    businessPrice: 1659000,
-    capacity: 180,
-    booked: 177,
-    status: 'delayed',
-  },
-  {
-    id: '6',
-    flightNo: 'VJ 201',
-    from: 'SGN',
-    to: 'PQC',
-    departTime: '07:30',
-    arriveTime: '08:45',
-    date: '2026-03-21',
-    price: 499000,
-    economyPrice: 499000,
-    businessPrice: 1382000,
-    capacity: 150,
-    booked: 95,
-    status: 'active',
-  },
-  {
-    id: '7',
-    flightNo: 'VJ 301',
-    from: 'HAN',
-    to: 'DAD',
-    departTime: '07:00',
-    arriveTime: '08:20',
-    date: '2026-03-21',
-    price: 449000,
-    economyPrice: 449000,
-    businessPrice: 1244000,
-    capacity: 150,
-    booked: 120,
-    status: 'cancelled',
-  },
-];
-
 const STATUS_MAP: Record<FlightStatus, { label: string; cls: string }> = {
   active: { label: 'Hoạt động', cls: 'bg-emerald-500/15 text-emerald-400' },
   cancelled: { label: 'Đã huỷ', cls: 'bg-red-500/15 text-red-400' },
@@ -200,7 +92,7 @@ function toFlightRow(f: AdminFlight): Flight {
 }
 
 export default function FlightsTab({ onToast }: { onToast?: ToastAPI }) {
-  const [flights, setFlights] = useState<Flight[]>(INITIAL_FLIGHTS);
+  const [flights, setFlights] = useState<Flight[]>([]);
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingFlight, setEditingFlight] = useState<Flight | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -382,10 +274,9 @@ export default function FlightsTab({ onToast }: { onToast?: ToastAPI }) {
     setHasError(false);
     try {
       const data = await listAdminFlights({ limit: 100 });
-      if (data.flights && Array.isArray(data.flights)) {
-        const mapped = data.flights.map(toFlightRow);
-        setFlights(mapped.length > 0 ? mapped : INITIAL_FLIGHTS);
-      }
+      // An empty result is a real answer — there are no flights. It renders
+      // the empty state; it must never render the demo rows.
+      setFlights(Array.isArray(data.flights) ? data.flights.map(toFlightRow) : []);
     } catch (_err) {
       setHasError(true);
     } finally {
@@ -688,7 +579,10 @@ export default function FlightsTab({ onToast }: { onToast?: ToastAPI }) {
       // Refresh flight list from server
       try {
         const listData = await listAdminFlights({ limit: 100 });
-        if (listData.flights && Array.isArray(listData.flights)) {
+        if (Array.isArray(listData.flights)) {
+          // The write already succeeded and came back with the updated row, so
+          // an empty refresh is a glitch rather than "the table is empty" —
+          // keep what is on screen rather than blanking it.
           const mapped = listData.flights.map(toFlightRow);
           setFlights((prev) => (mapped.length > 0 ? mapped : prev));
         }
