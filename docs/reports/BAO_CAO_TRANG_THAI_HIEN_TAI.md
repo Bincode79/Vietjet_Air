@@ -18,13 +18,13 @@ Các số liệu cũ trong `SUMMARY.txt`, `BUILD_VERIFICATION.md` và
 |---|---|
 | `npm run type-check` | ✅ 0 lỗi |
 | `npm run lint` | ✅ 0 error, 0 warning |
-| `npm test` | ✅ **135 file / 1189 test** pass (~4 phút) |
+| `npm test` | ✅ **136 file / 1193 test** pass |
 | `npm run build` | ✅ exit 0 (lần chạy gần nhất 14/11) |
 | `npm run test:smoke` | ✅ pass toàn bộ assertion |
 | `npm run lint:tailwind-classes` | ✅ 0 class không tồn tại |
 | `npm run lint:css-debt` | ✅ 0 nợ CSS (baseline ratchet 0/0/0/0/0) |
 | TODO/FIXME trong `src/` | 0 |
-| Quy mô | 553 file TS/TSX · 90 API route · 51 migration · 129 script |
+| Quy mô | 554 file TS/TSX · 90 API route · 52 migration · 129 script |
 
 **Vì sao số test tăng từ 367 → 1189:** các đợt bổ sung test cho admin dashboard,
 ví dụ thanh toán, PDF pipeline, RBAC và mobile parity. Con số 37 file ở §4.4 là
