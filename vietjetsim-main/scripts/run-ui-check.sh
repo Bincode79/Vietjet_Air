@@ -27,8 +27,16 @@ export JWT_SECRET="${JWT_SECRET:-ci-ui-check-secret}"
 export JWT_REFRESH_SECRET="${JWT_REFRESH_SECRET:-ci-ui-check-refresh-secret}"
 
 # Mock in-memory database — không cần DB thật cho kiểm tra giao diện.
+#
+# `next start` chạy NODE_ENV=production, và `src/lib/neon.ts` CỐ Ý ném lỗi khi
+# production mà thiếu `DATABASE_URL` — để không ai lỡ phục vụ dữ liệu in-memory
+# thay cho DB thật. `ALLOW_MOCK_DB=1` là ngoại lệ duy nhất, dành riêng cho cổng
+# này: thiếu nó thì mọi API trả 500 và 42/68 ảnh bị đánh lỗi, trông như hồi quy
+# giao diện trong khi thật ra chỉ là thiếu database. Chỉ script này export biến
+# đó; KHÔNG đặt nó trên server.
 export DATABASE_URL=""
 export NEON_FETCH_ENDPOINT=""
+export ALLOW_MOCK_DB=1
 
 if [ "${UI_CHECK_SKIP_BUILD:-0}" != "1" ]; then
   echo "▸ Đang build production (DIST_DIR=$DIST_DIR)…"

@@ -1273,6 +1273,13 @@ run does not leave artifacts behind).
 `Emulation.setDeviceMetricsOverride` hangs, `setViewport()` retries three times and clears
 the stale override between attempts instead of aborting the remaining screenshots.
 
+**The gate needs `ALLOW_MOCK_DB=1`, and that is not a loophole.** `next start` runs with
+`NODE_ENV=production`, where `lib/neon.ts` deliberately throws
+`DATABASE_URL is required in production` rather than silently serving in-memory data. With
+no database and no flag, every API answers 500 and 42 of 68 captures get flagged — which
+reads as a UI regression when it is only a missing database. The script exports the flag;
+it is the only place that should. Never set it on a server.
+
 **`next start` needs `.next`, and a running `next dev` is using it — so build a second
 copy instead of stopping the dev server.** `next.config.mjs` reads `DIST_DIR`, so the
 whole gate can run beside a live dev server on another port:

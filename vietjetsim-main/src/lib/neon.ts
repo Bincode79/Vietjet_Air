@@ -174,10 +174,20 @@ if (hasRealDb) {
   }
   const mock = createMockSql();
   sqlFn = createResilientSql(rawNeon, mock);
-} else if (process.env.NODE_ENV === 'production') {
+} else if (process.env.NODE_ENV === 'production' && process.env.ALLOW_MOCK_DB !== '1') {
   // Never fall back to the mock database in production: that would silently
   // serve in-memory data instead of the real store.
-  throw new Error('DATABASE_URL is required in production');
+  //
+  // `ALLOW_MOCK_DB=1` is the single exception, and it exists for one caller:
+  // `scripts/run-ui-check.sh` runs `next start` (the UI gate must measure a
+  // production build — see AGENTS.md) with no database, and the whole point of
+  // that gate is the rendered markup. Without the flag every API on every screen
+  // answered 500 "DATABASE_URL is required in production" and 42 of 68 captures
+  // were flagged, which reads as a UI regression rather than a missing database.
+  // The flag is only ever exported by that script; never set it on a server.
+  console.warn('⚠️  ALLOW_MOCK_DB=1 in production: serving the in-memory mock. QA gate only.');
+  const mock = createMockSql();
+  sqlFn = createResilientSql(null, mock);
 } else {
   // Mock implementation for development without DB
   console.warn('⚠️  DATABASE_URL not set. Using mock database. Do not use in production.');
