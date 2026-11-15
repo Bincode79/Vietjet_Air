@@ -1261,8 +1261,15 @@ prefetch, so `router.prefetch('/dat-ve')` for a non-existent route (only `/dat-v
 exists) produced a 404 on every page in `next start` and nowhere in dev, and the dev
 server compiles routes on demand, so a fixed sleep photographs skeletons. It needs Chrome
 on the machine and the demo logins (`admin@vietjetair.vn` / `user@vietjetair.vn`, see the
-README); login status is printed but does not gate, since a fresh DB has no such accounts.
-Override with `UI_CHECK_BASE_URL`, `CHROME_PATH` (every probe/shoot script now honours it
+README). **Login now gates the run**: a failed sign-in is a gate failure, not a line in the
+report. It used to be printed-but-ignored, because a fresh database has no such accounts and
+the helper reported `ok: true` for every response that did not throw — a 401 included. That
+made the gate announce a green run while `/tai-khoan`, `/thanh-toan`, `/quan-tri` and
+`/dat-ve/[id]` were all being captured as an anonymous visitor, so every assertion about
+those four screens was vacuous. The mock DB now seeds the two demo accounts (bcrypt hashes
+are pre-generated, so `lib/neon.ts` takes no new dependency) and `login()` reads `res.ok`
+instead of assuming success. Override with `UI_CHECK_BASE_URL`, `CHROME_PATH` (every
+probe/shoot script now honours it
 in `chromePath()`) and `UI_CHECK_SHOTS_DIR` (screenshots default to a temp dir so a repo
 run does not leave artifacts behind).
 
@@ -1272,6 +1279,15 @@ run does not leave artifacts behind).
 `next dev` (see below). `UI_CHECK_SKIP_BUILD=1` reuses an existing build. If a screen's
 `Emulation.setDeviceMetricsOverride` hangs, `setViewport()` retries three times and clears
 the stale override between attempts instead of aborting the remaining screenshots.
+
+**`Page.captureScreenshot` needs the viewport-bounded form first.** A full-page capture has
+Chrome rasterize the whole DOM tree, and `/tim-ve` is taller than 5000px — the screenshot
+outlived its timeout and killed the run mid-way, leaving 42 of 68 captures and no report.
+`shot()` now asks for the viewport-bounded capture first (fast, always has an image), falls
+back to the full-page one for the report, and falls back again to a clipped capture if even
+that times out. The comment in `shot()` described this order for a long time while the code
+called `Page.captureScreenshot` twice with identical parameters — the second attempt just
+repeated the command that had already timed out.
 
 **The gate needs `ALLOW_MOCK_DB=1`, and that is not a loophole.** `next start` runs with
 `NODE_ENV=production`, where `lib/neon.ts` deliberately throws

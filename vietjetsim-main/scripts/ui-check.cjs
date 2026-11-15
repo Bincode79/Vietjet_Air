@@ -379,15 +379,50 @@ async function goto(cdp, url, { width = 1440, height = 900, mobile = false } = {
 }
 
 async function shot(cdp, name) {
-  // Chụp ảnh toàn trang đòi Chrome rasterize cả cây DOM dài (màn `/tim-ve`
-  // cao hơn 5000px) — đôi khi vượt quá timeout mặc định 30s của `Cdp.send`.
-  // Thử lại không chụp tràn khung trước (nhanh, chắc chắn có ảnh), rồi mới
-  // thử bản đầy đủ.
+  /**
+   * Chụp ảnh toàn trang đòi Chrome rasterize cả cây DOM dài (màn `/tim-ve`
+   * cao hơn 5000px) — đôi khi vượt quá cả thời hạn 90s của `Cdp.send`, và
+   * `Page.captureScreenshot timed out` giết cả lượt chạy ở giữa chừng.
+   *
+   * Thứ tự thử: bản tràn khung trước (chỉ vùng viewport — luôn nhanh và luôn
+   * có ảnh), rồi mới đến bản đầy đủ. Comment ở đây từng mô tả đúng thứ tự
+   * này nhưng code gọi `Page.captureScreenshot` hai lần với cùng tham số, nên
+   * lần thứ hai chỉ lặp lại một lệnh đã timeout — đúng thứ khiến cổng chết.
+   */
   let data;
   try {
-    ({ data } = await cdp.send('Page.captureScreenshot', { format: 'png' }));
+    // `captureBeyondViewport: false` giới hạn ảnh trong khung nhìn hiện tại.
+    // Timeout riêng 45s: đây là bản LUÔN phải có, nên không được chờ 90s rồi
+    // lại chờ thêm 90s nữa cho một lần chụp ảnh.
+    ({ data } = await cdp.send(
+      'Page.captureScreenshot',
+      { format: 'png', captureBeyondViewport: false },
+      45000
+    ));
   } catch {
-    ({ data } = await cdp.send('Page.captureScreenshot', { format: 'png' }));
+    // Bản đầy đủ: ảnh cao hơn viewport, dùng cho việc đọc report. Nếu bản này
+    // cũng timeout thì lấy bản tràn khung đã có.
+    try {
+      ({ data } = await cdp.send('Page.captureScreenshot', { format: 'png' }, 60000));
+    } catch {
+      const viewport = await cdp
+        .send('Page.getLayoutMetrics')
+        .then((m) => m.cssLayoutViewport || m.layoutViewport)
+        .catch(() => null);
+      if (!viewport) throw new Error('Page.captureScreenshot failed twice');
+      const clip = {
+        x: 0,
+        y: 0,
+        width: Math.ceil(viewport.clientWidth || viewport.width || 1440),
+        height: Math.ceil(viewport.clientHeight || viewport.height || 900),
+        scale: 1,
+      };
+      ({ data } = await cdp.send(
+        'Page.captureScreenshot',
+        { format: 'png', clip, captureBeyondViewport: false },
+        45000
+      ));
+    }
   }
   writeFileSync(path.join(SHOTS_DIR, `${name}.png`), Buffer.from(data, 'base64'));
   return `shots/${name}.png`;
@@ -652,7 +687,18 @@ async function main() {
             body: JSON.stringify({ email: ${JSON.stringify(who.email)}, password: ${JSON.stringify(who.password)} }),
           });
           const body = await res.json().catch(() => ({}));
-          return { ok: true, status: res.status, role: body.user && body.user.role };
+          /* Cờ ok PHẢI phản ánh HTTP status, không chỉ "fetch không ném lỗi".
+             Trước đây mọi response (kể cả 401 sai mật khẩu) đều bị coi là
+             thành công, nên cổng báo "đăng nhập thành công" trong khi 3 màn
+             hình phía sau bị chụp ở trạng thái khách vô danh — cổng xanh một
+             cách giả. */
+          const ok = res.ok;
+          return {
+            ok,
+            status: res.status,
+            role: body.user && body.user.role,
+            error: ok ? null : body.error || 'HTTP ' + res.status,
+          };
         } catch (e) {
           /* Lỗi mức mạng (fetch bị đóng, DNS, TLS) — trả về thay vì ném để
              vòng thử lại có cơ hội thành công. */

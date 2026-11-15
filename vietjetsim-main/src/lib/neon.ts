@@ -258,9 +258,71 @@ function createMockSql(): SqlClient {
   const chatCalls: MockResult[] = [];
   const userProfiles: MockResult[] = [];
 
+  /**
+   * Ví và loyalty.
+   *
+   * `/api/vi` và `/api/thanh-vien` chỉ được gọi khi đã đăng nhập, nên trước
+   * khi cổng ui-check thật sự đăng nhập được, hai route này chưa từng được
+   * kiểm tra lần nào — và chúng đang trả 500:
+   *
+   *   - `getOrCreateWallet` INSERT rồi đọc `result[0]`; mock không có
+   *     handler cho `user_wallets` nên `result` rỗng ⇒ `wallet` là
+   *     `undefined` ⇒ `wallet.balance` ném TypeError ⇒ 500.
+   *   - `getOrEnrollLoyalty` ném "No active loyalty program found" khi bảng
+   *     `loyalty_programs` rỗng ⇒ 500.
+   *
+   * Hai điều trên không phải lỗi của UI mà là lỗi của mock DB, nhưng chúng
+   * che mất trạng thái thật của màn `/thanh-toan`, nên mock phải trả lời
+   * được chứ không trả 500.
+   */
+  const userWallets: MockResult[] = [];
+  const walletTransactions: MockResult[] = [];
+  const savedPaymentMethods: MockResult[] = [];
+  const loyaltyPrograms: MockResult[] = [];
+  const userLoyalty: MockResult[] = [];
+  const loyaltyTiers: MockResult[] = [];
+
   const nowIso = () => new Date().toISOString();
   let chatSeq = 0;
   const nextChatId = (prefix: string) => `${prefix}-mock-${++chatSeq}`;
+
+  /**
+   * Tài khoản demo cho UI check.
+   *
+   * Không có tài khoản này thì `scripts/ui-check.cjs` đăng nhập luôn nhận 401,
+   * và 3 màn hình phía sau (`/tai-khoan`, `/thanh-toan`, `/quan-tri`) bị chụp
+   * ở trạng thái khách vô danh — tức là cổng nghiệm thu "xanh" trong khi
+   * thực tế chưa hề kiểm tra được bất kỳ màn nào cần đăng nhập nào.
+   *
+   * Hash bcrypt sinh sẵn (salt 12) cho `admin123` / `user123` — không import
+   * bcrypt ở đây để `neon.ts` không kéo thêm phụ thuộc nặng vào môi trường
+   * mock. Hash tĩnh là an toàn vì tài khoản này chỉ tồn tại trong bộ nhớ
+   * của tiến trình dev/CI, không bao giờ chạm vào database thật.
+   */
+  userProfiles.push(
+    {
+      id: 'mock-user-admin',
+      email: 'admin@vietjetair.vn',
+      password_hash: '$2b$12$vmah6wetUddJaC2aWrEfCuwP5cZ6Y0wBmihKmLPobqez3dxkGfUDq',
+      full_name: 'Quản trị viên',
+      role: 'admin',
+      phone: null,
+      avatar_url: null,
+      created_at: nowIso(),
+      updated_at: nowIso(),
+    },
+    {
+      id: 'mock-user-support',
+      email: 'user@vietjetair.vn',
+      password_hash: '$2b$12$PK98dPc58uzUvxnVoaUbweE7HSkvZzVr3UTtrwy7d8JD68cZpPh6e',
+      full_name: 'Khách hàng',
+      role: 'user',
+      phone: null,
+      avatar_url: null,
+      created_at: nowIso(),
+      updated_at: nowIso(),
+    }
+  );
 
   const seedConversationId = 'conv-mock-support';
   chatConversations.push({
@@ -296,6 +358,58 @@ function createMockSql(): SqlClient {
     }
   );
 
+  // Chương trình loyalty và các bậc điểm — `getOrEnrollLoyalty` ném lỗi nếu
+  // không có chương trình nào đang hoạt động.
+  loyaltyPrograms.push({
+    id: 'mock-loyalty-program',
+    name: 'Vietjet SkyJoy',
+    description: 'Chương trình thành viên Vietjet Air',
+    points_per_1000_vnd: 1,
+    min_points_to_redeem: 10000,
+    points_expiry_months: 24,
+    start_date: '2020-01-01',
+    end_date: null,
+    is_active: true,
+  });
+  loyaltyTiers.push(
+    {
+      id: 'mock-tier-red',
+      program_id: 'mock-loyalty-program',
+      name: 'Red',
+      min_lifetime_points: 0,
+      points_multiplier: 1,
+      benefits: null,
+      tier_order: 1,
+    },
+    {
+      id: 'mock-tier-silver',
+      program_id: 'mock-loyalty-program',
+      name: 'Silver',
+      min_lifetime_points: 50000,
+      points_multiplier: 1.2,
+      benefits: null,
+      tier_order: 2,
+    },
+    {
+      id: 'mock-tier-gold',
+      program_id: 'mock-loyalty-program',
+      name: 'Gold',
+      min_lifetime_points: 100000,
+      points_multiplier: 1.5,
+      benefits: null,
+      tier_order: 3,
+    },
+    {
+      id: 'mock-tier-platinum',
+      program_id: 'mock-loyalty-program',
+      name: 'Platinum',
+      min_lifetime_points: 250000,
+      points_multiplier: 2,
+      benefits: null,
+      tier_order: 4,
+    }
+  );
+
   const normalizeSql = (text: string) => text.replace(/\s+/g, ' ').trim().toLowerCase();
 
   /** Handles user_profiles query for dev/test */
@@ -323,15 +437,139 @@ function createMockSql(): SqlClient {
       userProfiles.push(row);
       return [row];
     }
-    if (q.includes('from user_profiles where email = ?')) {
-      return userProfiles.filter((u) => u.email === values[0]);
+    if (q.includes('from user_profiles where')) {
+      // `findAccountByIdentifier` dùng `LOWER(email) = LOWER(?)` nên email
+      // phải so khớp không phân biệt hoa thường — nếu so chính xác thì việc
+      // đăng nhập bằng email viết hoa sẽ trượt trong dev nhưng chạy đúng trên
+      // DB thật (một loại lệch chỉ xuất hiện ở môi trường mock).
+      const wanted = String(values[0] ?? '').toLowerCase();
+      const matched = userProfiles.filter(
+        (u) =>
+          String(u.email ?? '').toLowerCase() === wanted ||
+          String(u.phone ?? '') === wanted ||
+          String(u.id ?? '') === wanted
+      );
+      if (matched.length) return matched;
     }
-    if (q.includes('from user_profiles where id = ?')) {
-      return userProfiles.filter((u) => u.id === values[0]);
+    return null;
+  }
+
+  /**
+   * Handles the wallet and loyalty queries, or returns null when the text is
+   * not one of them.
+   *
+   * `getOrCreateWallet` does an INSERT and then reads `result[0]` — so the
+   * INSERT branch has to return the created row, not an empty array. Without
+   * it the wallet is `undefined` and the caller dereferences `wallet.balance`,
+   * which is a 500 rather than the empty wallet the screen expects.
+   */
+  function runWalletAndLoyaltyQuery(text: string, values: unknown[]): MockResult[] | null {
+    const q = normalizeSql(text);
+
+    // ── Wallets ─────────────────────────────────────────────────────────────
+    if (q.includes('insert into user_wallets')) {
+      const [userId, accountNumber] = values as [string, string];
+      const row: MockResult = {
+        id: nextChatId('wlt'),
+        user_id: userId,
+        balance: 0,
+        currency: 'VND',
+        account_number: accountNumber,
+        created_at: nowIso(),
+        updated_at: nowIso(),
+      };
+      userWallets.push(row);
+      return [row];
     }
-    if (q.includes('from user_profiles where phone = ?')) {
-      return userProfiles.filter((u) => u.phone === values[0]);
+    if (q.includes('from user_wallets where user_id = ?')) {
+      return userWallets.filter((w) => w.user_id === values[0]);
     }
+    if (q.includes('from user_wallets where id = ?')) {
+      return userWallets.filter((w) => w.id === values[0]);
+    }
+    if (q.includes('update user_wallets')) {
+      // `applyWalletDelta` dùng `SET balance = balance + $delta` — delta là
+      // SỐ TƯƠNG ĐỐI, không phải số dư tuyệt đối. Thứ tự bound values là
+      // [delta, userId] vì `delta` xuất hiện trong `SET` trước `WHERE`, nên
+      // handler phải đọc theo vị trí đó chứ không theo tên.
+      const [delta, userId] = values as [number, string];
+      const wallet = userWallets.find((w) => w.user_id === userId);
+      if (!wallet) return [];
+      const next = Number(wallet.balance ?? 0) + Number(delta ?? 0);
+      if (next < 0) return []; // không đủ tiền — `WHERE balance + delta >= 0` không match
+      wallet.balance = next;
+      wallet.updated_at = nowIso();
+      return [wallet];
+    }
+
+    // ── Saved payment methods ──────────────────────────────────────────────
+    if (q.includes('from saved_payment_methods where user_id = ?')) {
+      return savedPaymentMethods.filter((m) => m.user_id === values[0]);
+    }
+
+    // ── Wallet transactions ────────────────────────────────────────────────
+    // `getWalletTransactions` lọc theo `wallet_id` (không phải `user_id`).
+    if (q.includes('count(*) as total from wallet_transactions')) {
+      return [{ total: walletTransactions.filter((t) => t.wallet_id === values[0]).length }];
+    }
+    if (q.includes('from wallet_transactions where wallet_id = ?')) {
+      const rows = walletTransactions.filter((t) => t.wallet_id === values[0]);
+      // The query carries LIMIT/OFFSET as bound values.
+      const limit = Number(values[1]);
+      const offset = Number(values[2]);
+      if (Number.isFinite(limit) && Number.isFinite(offset)) {
+        return rows.slice(offset, offset + limit);
+      }
+      return rows;
+    }
+    if (q.includes('insert into wallet_transactions')) {
+      const row: MockResult = {
+        id: nextChatId('wtx'),
+        wallet_id: values[0],
+        type: values[1],
+        amount: values[2],
+        balance_before: values[3] ?? null,
+        balance_after: values[4] ?? null,
+        description: values[5] ?? null,
+        payment_method_id: values[6] ?? null,
+        reference_id: values[7] ?? null,
+        status: 'completed',
+        created_at: nowIso(),
+      };
+      walletTransactions.push(row);
+      return [row];
+    }
+
+    // ── Loyalty ─────────────────────────────────────────────────────────────
+    if (q.includes('from loyalty_programs where is_active = true')) {
+      return loyaltyPrograms.filter((p) => p.is_active);
+    }
+    if (q.includes('from loyalty_programs where id = ?')) {
+      return loyaltyPrograms.filter((p) => p.id === values[0]);
+    }
+    if (q.includes('from loyalty_tiers where program_id = ?')) {
+      return loyaltyTiers.filter((t) => t.program_id === values[0]);
+    }
+    if (q.includes('insert into user_loyalty')) {
+      const [userId, programId] = values as [string, string];
+      const row: MockResult = {
+        id: nextChatId('loy'),
+        user_id: userId,
+        program_id: programId,
+        total_points: 0,
+        available_points: 0,
+        lifetime_points: 0,
+        tier: 'Red',
+        tier_qualified_at: null,
+        joined_at: nowIso(),
+      };
+      userLoyalty.push(row);
+      return [row];
+    }
+    if (q.includes('from user_loyalty where user_id = ?')) {
+      return userLoyalty.filter((l) => l.user_id === values[0]);
+    }
+
     return null;
   }
 
@@ -966,6 +1204,9 @@ function createMockSql(): SqlClient {
 
       const rolePermissionResult = runRolePermissionQuery(query, values);
       if (rolePermissionResult) return rolePermissionResult as T[];
+
+      const walletLoyaltyResult = runWalletAndLoyaltyQuery(query, values);
+      if (walletLoyaltyResult) return walletLoyaltyResult as T[];
 
       const flightSeatResult = runFlightAndSeatQuery(query, values);
       if (flightSeatResult) return flightSeatResult as T[];
