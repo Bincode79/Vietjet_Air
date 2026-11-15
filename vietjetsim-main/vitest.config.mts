@@ -19,8 +19,15 @@ export default defineConfig({
     // respond" — lỗi hạ tầng, không phải lỗi test. `maxWorkers` giới hạn số
     // worker song song.
     //
-    // Máy dev nhiều nhân có thể nâng bằng biến môi trường, CI giữ mặc định 4:
-    // `VITEST_MAX_WORKERS=8 npm test`.
+    // Đã đo trên máy dev 15/11/2026 (135 file):
+    //   4 worker  → 256s, worker khởi động 5.5s/file, 0 lỗi
+    //   8 worker  → 567s, worker khởi động 22.4s/file, 2 test timeout ở
+    //               `auth.test.ts` (bcrypt là CPU-bound, 8 worker tranh CPU
+    //               làm mỗi lượt hash vượt 20s)
+    // Tức là tăng worker KHÔNG nhanh hơn: chi phí dựng jsdom + transform tăng
+    // theo mức tranh chấp CPU nhanh hơn phần song song hoá tiết kiệm được. Chỉ
+    // nâng khi máy có nhiều nhân thực và không chạy gì khác:
+    //   VITEST_MAX_WORKERS=6 npm test
     pool: 'forks',
     maxWorkers: Number(process.env.VITEST_MAX_WORKERS) || 4,
     minWorkers: 1,
