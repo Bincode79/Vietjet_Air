@@ -81,8 +81,17 @@ export default function GlobalSearch({ isOpen, onClose, onSelectResult }: Global
         newResults.push({
           type: 'booking',
           id: booking.id,
-          title: booking.id || 'Unknown',
-          subtitle: booking.flight_no || booking.user_email || '',
+          // The PNR, not the row id. The global search showed a 36-character
+          // UUID where the operator expects the six-character reference the
+          // customer quotes — and the AGENTS.md rule is explicit: never print a
+          // row id where a reference is shown.
+          title: booking.booking_code || booking.id,
+          subtitle:
+            (booking.from_code && booking.to_code
+              ? `${booking.from_code} → ${booking.to_code}`
+              : booking.flight_no) ||
+            booking.user_email ||
+            '',
           status: booking.status,
         });
       });

@@ -121,6 +121,13 @@ export interface AdminBooking {
   user_email?: string;
   user_name?: string;
   flight_no?: string;
+  /** Route of the booked flight. */
+  from_code?: string;
+  to_code?: string;
+  /** Passenger seats of the booking, comma-separated. Empty when unassigned. */
+  seats?: string;
+  /** Payment method of the settled charge. Empty when the booking has none. */
+  payment_method?: string;
 }
 
 export interface AdminDiscount {

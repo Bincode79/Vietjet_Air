@@ -1310,13 +1310,39 @@ export async function updateBookingStatus(
   return booking;
 }
 
+/**
+ * The shape the admin bookings table renders.
+ *
+ * Every field here is read by `BookingsTab` — and each one used to be a
+ * fallback: the query returned `flight_no` but not `from_code`/`to_code`, and
+ * nothing at all for the seat or the payment method. The UI then showed
+ * `HAN → SGN` and `VJ 101` for EVERY booking, `—` for every seat, and
+ * "Chuyển khoản" for every payment — a table that looked populated and was
+ * wrong in four columns at once.
+ *
+ * The seat is per PASSENGER (migration 046), so a booking with three
+ * travellers has three seats. The table has one column, so the seats are
+ * aggregated into one readable string.
+ */
+export interface AdminBookingRow extends BookingRecord {
+  user_email: string;
+  user_name: string;
+  flight_no: string;
+  from_code: string;
+  to_code: string;
+  /** Comma-separated seats of the booking's passengers, empty when unassigned. */
+  seats: string;
+  /** Payment method of the settled charge, empty when the booking has none. */
+  payment_method: string;
+}
+
 export async function getAllBookings(params?: {
   page?: number;
   limit?: number;
   status?: string;
   search?: string;
 }): Promise<{
-  bookings: Array<BookingRecord & { user_email: string; user_name: string; flight_no: string }>;
+  bookings: AdminBookingRow[];
   total: number;
 }> {
   const page = params?.page || 1;
@@ -1335,8 +1361,35 @@ export async function getAllBookings(params?: {
     whereClause += ` AND (b.id::text ILIKE $${filterValues.length} OR b.booking_code ILIKE $${filterValues.length} OR u.email ILIKE $${filterValues.length} OR u.full_name ILIKE $${filterValues.length} OR f.flight_no ILIKE $${filterValues.length})`;
   }
 
+  // `passengers` and `payments` are LEFT JOINs: a booking with no passenger
+  // row yet, or with no charge, must still appear in the list — an INNER JOIN
+  // would silently hide it, and the operator's table would look short.
+  //
+  // The seat list and the payment method are aggregated in SQL rather than in
+  // the client: one booking can have several passengers and several payment
+  // attempts, so a plain JOIN would multiply the booking row once per
+  // combination — the classic duplicate-row bug.
   const bookingsQuery = `
-    SELECT b.*, u.email as user_email, u.full_name as user_name, f.flight_no
+    SELECT b.*,
+           u.email as user_email,
+           u.full_name as user_name,
+           f.flight_no,
+           f.from_code,
+           f.to_code,
+           COALESCE(
+             (SELECT STRING_AGG(p.seat_number, ', ' ORDER BY p.seat_number)
+              FROM passengers p
+              WHERE p.booking_id = b.id AND p.seat_number IS NOT NULL),
+             ''
+           ) as seats,
+           COALESCE(
+             (SELECT pay.method
+              FROM payments pay
+              WHERE pay.booking_id = b.id
+              ORDER BY pay.created_at DESC
+              LIMIT 1),
+             ''
+           ) as payment_method
     FROM bookings b
     JOIN user_profiles u ON b.user_id = u.id
     JOIN flights f ON b.flight_id = f.id
@@ -1359,11 +1412,7 @@ export async function getAllBookings(params?: {
   const total = totalOf(countResult);
 
   return {
-    bookings: bookingsResult as (BookingRecord & {
-      user_email: string;
-      user_name: string;
-      flight_no: string;
-    })[],
+    bookings: bookingsResult as AdminBookingRow[],
     total,
   };
 }

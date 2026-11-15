@@ -195,22 +195,20 @@ export default function BookingsTab({ onToast }: BookingsTabProps = {}) {
       const res = await listAdminBookings({ limit: 100 });
       if (res && res.bookings && res.bookings.length > 0) {
         const mapped: Booking[] = res.bookings.map((b) => {
-          const raw = b as unknown as Record<string, unknown>;
           return {
             id: b.booking_code || b.id.slice(0, 8).toUpperCase(),
             userId: b.user_id || '0',
-            userName: (raw.user_name as string) || (raw.contact_name as string) || 'Khách hàng',
-            userEmail: (raw.user_email as string) || undefined,
-            flightNo: (raw.flight_no as string) || 'VJ 101',
-            route:
-              (raw.from_code && raw.to_code
-                ? `${raw.from_code} → ${raw.to_code}`
-                : (raw.route as string)) || 'HAN → SGN',
+            userName: b.user_name || 'Khách hàng',
+            userEmail: b.user_email || undefined,
+            flightNo: b.flight_no || '—',
+            route: b.from_code && b.to_code ? `${b.from_code} → ${b.to_code}` : '—',
             date: b.created_at ? new Date(b.created_at).toLocaleDateString('vi-VN') : '—',
-            seat: (raw.seat as string) || '—',
+            // The seats are the passenger rows' `seat_number` values, joined by
+            // the query. There is no seat on the booking row itself.
+            seat: b.seats || '—',
             amount: Number(b.total_price) || 0,
             status: (b.status as BookingStatus) || 'confirmed',
-            payMethod: (raw.payment_method as string) || 'Chuyển khoản',
+            payMethod: b.payment_method || '—',
             createdAt: b.created_at ? new Date(b.created_at).toLocaleString('vi-VN') : '—',
           };
         });
@@ -219,6 +217,11 @@ export default function BookingsTab({ onToast }: BookingsTabProps = {}) {
         setBookings(BOOKINGS);
       }
     } catch {
+      // The error flag has to be raised here. `setHasError(false)` at the top
+      // of this function means the error branch was unreachable: a failed
+      // request fell through to the demo rows below and the operator saw five
+      // fabricated bookings under a table that looked live.
+      setHasError(true);
       setBookings(BOOKINGS);
     } finally {
       setIsLoading(false);
