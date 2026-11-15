@@ -401,8 +401,8 @@ export default function MyFlightsPage() {
                 ngang — site thật: `x=120`, `w=1200`). Ở MOBILE site thật dải rộng
                 `360px` tại `x=15` (padding ngang 15px của trang), cao `61px`,
                 bo góc `12px`, margin-bottom `16px`. */}
-            <div className="mx-auto w-full max-w-[1200px] px-[15px] sm:px-0">
-              <div className="pt-[10px] sm:pt-4">
+            <div className="mx-auto w-full max-w-[1200px] px-3.75 sm:px-0">
+              <div className="pt-2.5 sm:pt-4">
                 {/* Dải pill "Dịch vụ tra cứu" — 2 pill 164×36 bo 18px
                     (ở mobile: 160×36, padding 0 10px, dải bo góc 12px). */}
                 <nav aria-label="Dịch vụ tra cứu" className="vj-pill-tabs">
@@ -443,7 +443,7 @@ export default function MyFlightsPage() {
                       </p>
 
                       <form onSubmit={handleSearchBooking} noValidate>
-                        <div className="mx-auto w-[290px] space-y-[20px]">
+                        <div className="mx-auto w-[290px] space-y-5">
                           <div className="vj-lookup-field">
                             <input
                               id="mobi-booking-code"
@@ -494,7 +494,7 @@ export default function MyFlightsPage() {
                           </div>
                         </div>
 
-                        <div className="mt-[30px] flex flex-col">
+                        <div className="mt-7.5 flex flex-col">
                           <button
                             type="submit"
                             disabled={loading}
@@ -503,7 +503,7 @@ export default function MyFlightsPage() {
                             {loading ? 'Đang tìm…' : 'Tìm kiếm'}
                           </button>
 
-                          <div className="mt-[26px] flex flex-col">
+                          <div className="mt-6.5 flex flex-col">
                             <button
                               type="button"
                               onClick={() =>
@@ -550,7 +550,7 @@ export default function MyFlightsPage() {
                       {/* Cột trái: tiêu đề + mô tả + ba trường nhập.
                           Cột bắt đầu tại `x=120`; H2 lệch `+105px`, khối ô nhập
                           lệch thêm `+15px` (site thật `x=240`). */}
-                      <div className="flex flex-col pt-[42px] xl:pl-[105px]">
+                      <div className="flex flex-col pt-10.5 xl:pl-26.25">
                         <h2 className="text-xl font-semibold uppercase tracking-tight text-gray-900">
                           CHUYẾN BAY CỦA TÔI
                         </h2>
@@ -559,7 +559,7 @@ export default function MyFlightsPage() {
                           hành lý, chỗ ngồi, suất ăn..., vui lòng điền thông tin bên dưới:
                         </p>
 
-                        <div className="mt-[28px] w-[360px] space-y-[17px] xl:ml-[15px]">
+                        <div className="mt-7 w-[360px] space-y-4.25 xl:ml-3.75">
                           <div className="vj-lookup-field">
                             <input
                               id="booking-code"
@@ -610,7 +610,7 @@ export default function MyFlightsPage() {
                           </div>
                         </div>
 
-                        <div className="mt-[30px] flex flex-col xl:ml-[15px] xl:w-[360px]">
+                        <div className="mt-7.5 flex flex-col xl:ml-3.75 xl:w-[360px]">
                           <button
                             type="submit"
                             disabled={loading}
@@ -621,7 +621,7 @@ export default function MyFlightsPage() {
 
                           {/* "Đăng nhập" 137×48 bo 12px (căn giữa cột ô nhập)
                               + "Đăng ký ngay" 84×20 lề trái tại `x=240`. */}
-                          <div className="mt-[26px] flex flex-col">
+                          <div className="mt-6.5 flex flex-col">
                             <button
                               type="button"
                               onClick={() =>
@@ -643,8 +643,8 @@ export default function MyFlightsPage() {
 
                       {/* Cột phải: banner `570×496` bo `5px` — đo được ở site thật
                           (`x=735`, tức lệch `+15px` so với mép cột `x=720`). */}
-                      <div className="flex items-start pt-[42px] xl:pl-[15px]">
-                        <div className="relative h-[496px] w-[570px] overflow-hidden rounded-[5px] shadow-[0_12px_32px_rgba(36,73,120,0.16)]">
+                      <div className="flex items-start pt-10.5 xl:pl-3.75">
+                        <div className="relative h-[496px] w-[570px] overflow-hidden rounded-5xs shadow-vj-blue-lg">
                           <AppImage
                             src="/images/hero/banner-chuyenbay-ngoai-te.jpg"
                             alt="Mua ngoại tệ dễ dàng khi đặt vé"
@@ -661,8 +661,8 @@ export default function MyFlightsPage() {
 
                 {/* Tab 2: Chuyến bay sắp tới (khi khách chưa đăng nhập -> hiển thị form đăng nhập theo Ảnh 2 & 4) */}
                 {view === 'list' && !authUser && (
-                  <div className="rounded-[12px] bg-[rgba(248,251,255,0.95)] px-4 pb-8 pt-6 shadow-[0_18px_50px_rgba(36,73,120,0.14)] ring-1 ring-white/70 backdrop-blur-[2px] sm:px-6 xl:rounded-l-[12px] xl:pb-[39px] xl:pl-[46px] xl:pr-[3px] xl:pt-[34px] animate-fadeIn">
-                    <div className="grid grid-cols-1 gap-8 xl:grid-cols-[458px_minmax(0,1fr)] xl:gap-[60px]">
+                  <div className="rounded-xl bg-[rgba(248,251,255,0.95)] px-4 pb-8 pt-6 shadow-vj-blue-xl ring-1 ring-white/70 backdrop-blur-[2px] sm:px-6 xl:rounded-l-xl xl:pb-9.75 xl:pl-11.5 xl:pr-0.75 xl:pt-8.5 animate-fadeIn">
+                    <div className="grid grid-cols-1 gap-8 xl:grid-cols-[458px_minmax(0,1fr)] xl:gap-15">
                       {/* Cột trái: Đăng nhập bằng số điện thoại / SkyJoy ID */}
                       <div className="flex flex-col justify-center py-6">
                         <h2 className="text-center text-base sm:text-lg font-black uppercase tracking-wide text-gray-900">
@@ -730,7 +730,7 @@ export default function MyFlightsPage() {
 
                       {/* Cột phải: cùng banner quảng cáo ngoại tệ như Ảnh 2 & Ảnh 4 */}
                       <div className="flex items-center justify-center">
-                        <div className="relative aspect-[480/648] w-full max-w-[420px] overflow-hidden rounded-[6px] shadow-[0_12px_32px_rgba(36,73,120,0.16)] sm:max-w-[460px] xl:max-w-[505px]">
+                        <div className="relative aspect-[480/648] w-full max-w-[420px] overflow-hidden rounded-md shadow-vj-blue-lg sm:max-w-[460px] xl:max-w-[505px]">
                           <AppImage
                             src="/images/hero/banner-chuyenbay-ngoai-te.jpg"
                             alt="Mua ngoại tệ dễ dàng khi đặt vé"

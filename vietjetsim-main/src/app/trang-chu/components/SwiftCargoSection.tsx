@@ -15,7 +15,7 @@ export default function SwiftCargoSection() {
         <div className="grid grid-cols-1 items-center gap-8 lg:grid-cols-2 lg:gap-16">
           {/* Ảnh bên trái */}
           <div className="relative">
-            <div className="relative h-[320px] overflow-hidden rounded-[24px] sm:h-[420px] lg:h-[520px]">
+            <div className="relative h-[320px] overflow-hidden rounded-vj-hero sm:h-[420px] lg:h-[520px]">
               <AppImage
                 src="/images/hero/hero-skyboss-cabin.jpg"
                 alt="Swift 247 — gửi hàng nhanh chóng"

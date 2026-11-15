@@ -192,7 +192,7 @@ function ToastNotification({ toast, onDismiss }: ToastProps) {
 
   return (
     <div
-      className={`relative w-[360px] max-w-[calc(100vw-32px)] rounded-xl shadow-[0_8px_32px_rgba(0,0,0,0.14)] overflow-hidden cursor-pointer transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${config.bg}
+      className={`relative w-[360px] max-w-[calc(100vw-32px)] rounded-xl shadow-vj-toast overflow-hidden cursor-pointer transition-all duration-300 ease-vj ${config.bg}
         ${visible && !exiting ? 'opacity-100 translate-x-0 scale-100' : 'opacity-0 translate-x-8 scale-95'}
       `}
       onMouseEnter={() => setPaused(true)}

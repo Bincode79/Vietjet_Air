@@ -90,7 +90,7 @@ export default function HeroSection() {
     // Lưu ý: `section` KHÔNG dùng `overflow-hidden` — popover lịch 630px mở ra
     // ngoài khung panel và sẽ bị cắt mất nếu khối cha cắt tràn. Ảnh nền vẫn
     // được cắt riêng trong lớp bọc của nó.
-    <section className="relative w-full bg-sky-100 pb-[268px] lg:pb-0">
+    <section className="relative w-full bg-sky-100 pb-67 lg:pb-0">
       <h1 className="sr-only">Vietjet Air - Thông báo quan trọng Nhà ga T3 Jakarta</h1>
 
       <div className="relative h-[422px] sm:h-[560px] lg:h-[725px]">
@@ -119,7 +119,7 @@ export default function HeroSection() {
         {/* Chấm điều hướng slider — site thật: absolute tại top 589px tính từ đỉnh hero */}
         <ul
           data-testid="hero-slider-dots"
-          className="pointer-events-none absolute inset-x-0 top-[297px] z-20 flex justify-center pt-[6px] lg:top-[589px] lg:pt-0"
+          className="pointer-events-none absolute inset-x-0 top-[297px] z-20 flex justify-center pt-1.5 lg:top-[589px] lg:pt-0"
         >
           {HERO_BANNERS.map((_, idx) => (
             <li key={idx} className="relative inline-block h-5 w-5">
@@ -128,7 +128,7 @@ export default function HeroSection() {
                 aria-label={`Chuyển sang banner ${idx + 1}`}
                 aria-current={idx === currentBannerIndex ? 'true' : undefined}
                 onClick={() => setCurrentBannerIndex(idx)}
-                className="pointer-events-auto block h-5 w-5 cursor-pointer p-[5px] text-xs leading-none transition-colors before:block before:h-auto before:w-auto before:content-['•']"
+                className="pointer-events-auto block h-5 w-5 cursor-pointer p-1.25 text-xs leading-none transition-colors before:block before:h-auto before:w-auto before:content-['•']"
                 style={{ color: idx === currentBannerIndex ? '#EC2029' : '#FFFFFF' }}
               />
             </li>

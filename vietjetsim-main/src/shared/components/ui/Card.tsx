@@ -15,9 +15,7 @@ export default function Card({ children, className = '', hover = true }: CardPro
   return (
     <div
       className={`relative border border-[var(--border)] rounded-vj bg-[var(--background)] shadow-sm transition-all duration-160 ${
-        hover
-          ? 'hover:border-[rgba(236,32,41,0.28)] hover:shadow-[0_12px_30px_rgba(26,41,72,0.12)] hover:-translate-y-1'
-          : ''
+        hover ? 'hover:border-[rgba(236,32,41,0.28)] hover:shadow-vj-navy hover:-translate-y-1' : ''
       } ${className}`}
     >
       {children}

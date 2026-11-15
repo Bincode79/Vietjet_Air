@@ -171,7 +171,7 @@ export default function SubpageHeader({
                   <HiOutlineChevronDown aria-hidden="true" className="text-xs" />
                 </button>
                 {accountOpen && (
-                  <div className="absolute right-0 top-[calc(100%+8px)] w-60 overflow-hidden rounded-xl border border-gray-200 bg-white py-1.5 shadow-[0_16px_40px_rgba(0,0,0,0.12)]">
+                  <div className="absolute right-0 top-[calc(100%+8px)] w-60 overflow-hidden rounded-xl border border-gray-200 bg-white py-1.5 shadow-vj-header">
                     <div className="border-b border-gray-100 bg-gray-50/50 px-4 py-2.5">
                       <p className="truncate text-xs font-bold text-gray-900">
                         {(user.fullName || user.email)?.replace(/\s*\(CCCD:.*?\)/gi, '')}
@@ -230,7 +230,7 @@ export default function SubpageHeader({
             Trước đây thanh cao 56px (`h-14`) và có logo bên trái — lệch với
             site thật ở cả chiều cao lẫn bố cục. */}
         <div
-          className={`flex h-12 items-center justify-between px-[17px] lg:hidden ${
+          className={`flex h-12 items-center justify-between px-4.25 lg:hidden ${
             mobileRed
               ? 'bg-[linear-gradient(rgb(217,26,33)_34.8%,rgb(171,3,3)_182.34%)] text-white'
               : ''

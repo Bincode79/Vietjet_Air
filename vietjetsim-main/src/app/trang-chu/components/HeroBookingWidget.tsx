@@ -3,13 +3,7 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import {
-  MdArrowOutward,
-  MdConfirmationNumber,
-  MdExpandMore,
-  MdSwapHoriz,
-  MdOutlinePerson,
-} from 'react-icons/md';
+import { MdArrowOutward, MdConfirmationNumber, MdExpandMore, MdSwapHoriz } from 'react-icons/md';
 import AirportPicker, { type Airport } from './AirportPicker';
 import { ALL_AIRPORTS } from './airports';
 import PassengerPicker, { type PaxCounts } from './PassengerPicker';
@@ -216,7 +210,7 @@ export default function HeroBookingWidget() {
         <div className="vj-booking-panel">
           {/* Hàng 1 — loại hành trình (radio 18px) + tiền tệ.
               Cao 58px, padding 16.5px 15px, justify-between. */}
-          <div className="flex h-[58px] items-center justify-between px-[15px]">
+          <div className="flex h-[58px] items-center justify-between px-3.75">
             <div className="flex items-center" role="group" aria-label="Loại hành trình">
               {TRIP_TYPES.map(({ value, label }) => (
                 <label
@@ -262,10 +256,10 @@ export default function HeroBookingWidget() {
           </div>
 
           {/* Hàng 2 — các ô nhập, padding ngang 19px, cao 273px. */}
-          <div className="px-[19px]">
+          <div className="px-4.75">
             {/* Ô 1: Điểm khởi hành + Ngày đi (một hộp trắng 342×48px).
-                Vỏ ô không cộng thêm `pl-[48px]`: nút `AirportPicker` đã tự
-                đặt icon ở `left-[14px]` và chữ ở `pl-[48px]` — tính từ mép
+                Vỏ ô không cộng thêm `pl-12`: nút `AirportPicker` đã tự
+                đặt icon ở `left-[14px]` và chữ ở `pl-12` — tính từ mép
                 hộp trắng. Trước đây vỏ lại cộng một lần nữa nên chữ lệch
                 sang x=+96, lệch hẳn nhãn "Hành khách"/"Mã khuyến mại" (+48)
                 và tràn 7px vào cột ngày. */}
@@ -298,7 +292,7 @@ export default function HeroBookingWidget() {
             </div>
 
             {/* Ô 2: Điểm đến + Ngày về — cùng cách căn lề như Ô 1. */}
-            <div className={`mt-[11px] ${fieldBoxClass}`}>
+            <div className={`mt-2.75 ${fieldBoxClass}`}>
               <div className="relative flex min-w-0 flex-1 items-center pr-2">
                 <AirportPicker
                   label="Điểm đến"
@@ -347,12 +341,12 @@ export default function HeroBookingWidget() {
               value={pax}
               onChange={setPax}
               variant="hero"
-              className="mt-[11px] hidden h-[48px] w-full lg:block"
+              className="mt-2.75 hidden h-[48px] w-full lg:block"
             />
 
             {/* Ô 4: Mã khuyến mại — hộp trắng 342×48px, bo góc 10px.
                 MOBILE: site thật không hiện → ẩn ở dưới `lg`. */}
-            <label className="relative mt-[11px] hidden h-[48px] items-center gap-2 rounded-vj bg-white pl-[48px] pr-2 lg:flex">
+            <label className="relative mt-2.75 hidden h-[48px] items-center gap-2 rounded-vj bg-white pl-12 pr-2 lg:flex">
               <MdConfirmationNumber
                 aria-hidden="true"
                 className="absolute left-[19px] top-1/2 -translate-y-1/2 text-xl2 text-[var(--foreground)]"
@@ -398,7 +392,7 @@ export default function HeroBookingWidget() {
               10px, còn 29px từ đáy nút xuống đáy panel (panel cao 409px).
               MOBILE (390×844): hàng này cao 129px — padding trên 30px, dưới
               60px; nút nằm ở y=625 (panel bắt đầu ở y=420). */}
-          <div className="mt-[11px] flex flex-col items-center justify-center pt-[30px] pb-[60px] lg:mt-0 lg:pt-[10px] lg:pb-[29px]">
+          <div className="mt-2.75 flex flex-col items-center justify-center pt-7.5 pb-15 lg:mt-0 lg:pt-2.5 lg:pb-7.25">
             <button
               type="submit"
               className="vj-cta vj-cta--hero hover:brightness-105 active:translate-y-[1px] transition-all duration-150 cursor-pointer"
@@ -408,7 +402,7 @@ export default function HeroBookingWidget() {
           </div>
 
           {searchError && (
-            <div className="mx-[19px] mb-3 rounded-vj bg-white/95 px-3 py-1.5 text-center text-xs font-bold text-vjred shadow-sm">
+            <div className="mx-4.75 mb-3 rounded-vj bg-white/95 px-3 py-1.5 text-center text-xs font-bold text-vjred shadow-sm">
               {searchError}
             </div>
           )}

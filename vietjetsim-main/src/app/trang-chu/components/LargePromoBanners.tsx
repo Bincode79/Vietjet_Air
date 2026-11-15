@@ -45,7 +45,7 @@ export default function LargePromoBanners() {
             <Link
               key={banner.title}
               href={banner.href}
-              className="group relative rounded-[24px] overflow-hidden border border-[var(--border)] bg-white shadow-sm aspect-[16/9] transition-transform hover:-translate-y-1 hover:shadow-[0_20px_40px_rgba(0,0,0,0.12)]"
+              className="group relative rounded-vj-hero overflow-hidden border border-[var(--border)] bg-white shadow-sm aspect-[16/9] transition-transform hover:-translate-y-1 hover:shadow-vj-elev-2xl"
             >
               <AppImage
                 src={banner.image}
@@ -69,7 +69,7 @@ export default function LargePromoBanners() {
         </div>
 
         {/* Banner Vikki Digital Bank / Mua ngoại tệ toàn chiều rộng */}
-        <div className="mt-8 sm:mt-10 lg:mt-12 relative rounded-[32px] overflow-hidden border border-[var(--border)] bg-white shadow-lg aspect-[16/6] sm:aspect-[16/5] lg:aspect-[5/2]">
+        <div className="mt-8 sm:mt-10 lg:mt-12 relative rounded-vj-modal overflow-hidden border border-[var(--border)] bg-white shadow-lg aspect-[16/6] sm:aspect-[16/5] lg:aspect-[5/2]">
           <AppImage
             src={VIKKI_BANNER.image}
             alt={VIKKI_BANNER.title}

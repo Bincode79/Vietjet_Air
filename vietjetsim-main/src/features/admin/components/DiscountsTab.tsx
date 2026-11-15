@@ -301,7 +301,7 @@ export default function DiscountsTab({ onToast }: { onToast?: ToastAPI }) {
                           }`}
                         >
                           <div
-                            className={`w-1.5 h-1.5 rounded-full ${isExpired ? 'bg-slate-600' : discount.is_active ? 'bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.5)]' : 'bg-amber-400'}`}
+                            className={`w-1.5 h-1.5 rounded-full ${isExpired ? 'bg-slate-600' : discount.is_active ? 'bg-emerald-400 shadow-glow-emerald-400' : 'bg-amber-400'}`}
                           />
                           {isExpired ? 'Hết hạn' : discount.is_active ? 'Active' : 'Paused'}
                         </button>
@@ -348,7 +348,7 @@ export default function DiscountsTab({ onToast }: { onToast?: ToastAPI }) {
       {viewingDiscount && (
         <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[100] flex items-center justify-center p-4 animate-in fade-in duration-300">
           <div
-            className="w-full max-w-lg flex max-h-[90vh] flex-col bg-slate-900 border border-white/10 rounded-[40px] overflow-hidden shadow-2xl relative animate-in zoom-in-95 duration-300"
+            className="w-full max-w-lg flex max-h-[90vh] flex-col bg-slate-900 border border-white/10 rounded-vj-oval overflow-hidden shadow-2xl relative animate-in zoom-in-95 duration-300"
             style={{
               background:
                 'linear-gradient(135deg, rgba(30, 41, 59, 1) 0%, rgba(15, 23, 42, 1) 100%)',

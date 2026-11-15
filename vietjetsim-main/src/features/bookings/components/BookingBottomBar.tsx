@@ -49,7 +49,7 @@ export default function BookingBottomBar({
 
   return (
     <div
-      className="fixed inset-x-0 bottom-0 z-30 border-t border-[var(--border)] bg-[var(--surface)] shadow-[0_-2px_12px_rgba(0,0,0,0.08)]"
+      className="fixed inset-x-0 bottom-0 z-30 border-t border-[var(--border)] bg-[var(--surface)] shadow-vj-up-xs"
       data-testid={testId}
     >
       {/* Container 1200px — khớp số đo site thật (13/11/2026) */}
@@ -59,7 +59,7 @@ export default function BookingBottomBar({
           <button
             type="button"
             onClick={onBack}
-            className="rounded-[5px] border border-[var(--vj-border-back)] bg-white h-[39px] px-4 text-sm font-medium text-vj-text transition-colors hover:bg-gray-50"
+            className="rounded-5xs border border-[var(--vj-border-back)] bg-white h-[39px] px-4 text-sm font-medium text-vj-text transition-colors hover:bg-gray-50"
           >
             Quay lại
           </button>

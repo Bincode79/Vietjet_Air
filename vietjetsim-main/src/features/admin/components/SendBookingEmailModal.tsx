@@ -105,7 +105,7 @@ export default function SendBookingEmailModal({
   return (
     <div className="fixed inset-0 z-[120] flex items-center justify-center p-3 sm:p-5 bg-slate-950/85 backdrop-blur-md animate-in fade-in duration-200">
       <div
-        className="bg-slate-900 border border-white/10 rounded-[28px] sm:rounded-[32px] w-full max-w-2xl overflow-hidden shadow-2xl flex flex-col max-h-[92vh] animate-in zoom-in-95 duration-200"
+        className="bg-slate-900 border border-white/10 rounded-vj-sheet sm:rounded-vj-modal w-full max-w-2xl overflow-hidden shadow-2xl flex flex-col max-h-[92vh] animate-in zoom-in-95 duration-200"
         style={{ background: 'linear-gradient(145deg, #131b2e 0%, #0a0f1d 100%)' }}
       >
         {/* Header */}

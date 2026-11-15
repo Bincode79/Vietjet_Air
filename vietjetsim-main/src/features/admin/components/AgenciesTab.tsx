@@ -230,7 +230,7 @@ export default function AgenciesTab({ onToast }: { onToast?: ToastAPI }) {
                         }`}
                       >
                         <div
-                          className={`w-1.5 h-1.5 rounded-full ${agency.is_active ? 'bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.5)]' : 'bg-amber-400'}`}
+                          className={`w-1.5 h-1.5 rounded-full ${agency.is_active ? 'bg-emerald-400 shadow-glow-emerald-400' : 'bg-amber-400'}`}
                         />
                         {agency.is_active ? 'Active' : 'Paused'}
                       </button>
@@ -337,7 +337,7 @@ function AgencyModal({
 
   return (
     <div className="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-[110] flex items-center justify-center p-4 animate-in fade-in duration-300">
-      <div className="w-full max-w-xl max-h-[90vh] overflow-y-auto bg-slate-900 border border-white/10 rounded-[40px] shadow-2xl relative animate-in zoom-in-95 duration-300">
+      <div className="w-full max-w-xl max-h-[90vh] overflow-y-auto bg-slate-900 border border-white/10 rounded-vj-oval shadow-2xl relative animate-in zoom-in-95 duration-300">
         <div className="px-8 py-8 border-b border-white/5 bg-white/[0.02] flex items-center justify-between sticky top-0">
           <h3 className="text-lg font-black text-white uppercase tracking-tight">
             {agency ? 'Chỉnh sửa đại lý' : 'Thêm đại lý mới'}

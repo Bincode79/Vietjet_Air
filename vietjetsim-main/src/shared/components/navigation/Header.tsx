@@ -272,7 +272,7 @@ export default function Header({
       <header
         className={`transition-all duration-200 ${
           compactMode
-            ? 'sticky top-0 z-40 bg-primary-dark text-white shadow-[0_2px_10px_rgba(0,0,0,0.18)]'
+            ? 'sticky top-0 z-40 bg-primary-dark text-white shadow-vj-elev-xs'
             : isHomepage
               ? // Trang chủ: header là lớp PHỦ (absolute) nằm trên ảnh hero —
                 // đúng như site thật, nơi `jss120` có `position:absolute;
@@ -286,7 +286,7 @@ export default function Header({
                 // và nút menu. Hàng này neo ngay dưới thanh thông báo nên dùng
                 // biến `--vj-announce-h` (35px, 0px khi đóng thanh).
                 'absolute inset-x-0 top-[var(--vj-announce-h,35px)] z-40 h-[56px] lg:inset-x-0 lg:top-[50px] lg:z-[1300] lg:h-[72px] lg:shadow-none'
-              : 'sticky top-0 z-40 bg-white/95 backdrop-blur-md shadow-[0_4px_20px_rgba(0,0,0,0.08)]'
+              : 'sticky top-0 z-40 bg-white/95 backdrop-blur-md shadow-vj-elev-sm'
         }`}
       >
         {/* Hàng điều hướng MOBILE của trang chủ — lớp phủ 56px trên ảnh hero.
@@ -299,7 +299,7 @@ export default function Header({
               - Nút "vi" 38×20px, viền trắng 1px, bo góc 3px, chữ 14px/500.
               - Nút menu 12×14px sát mép phải (x=365). */}
         {!compactMode && isHomepage && (
-          <div className="flex h-full items-start px-[13px] pt-[13px] lg:hidden">
+          <div className="flex h-full items-start px-3.25 pt-3.25 lg:hidden">
             {/* Hàng nội dung cao 20px — logo (15px) canh giữa trong hàng nên
                 nằm ở y=51, đúng như site thật. */}
             <div className="flex h-[20px] w-full items-center">
@@ -360,7 +360,7 @@ export default function Header({
                     onClick={() => setLangMenuOpen((open) => !open)}
                     aria-expanded={langMenuOpen}
                     aria-label="Đổi ngôn ngữ"
-                    className="flex h-[20px] w-[38px] items-center justify-center rounded-[3px] border border-white bg-transparent text-sm font-medium text-white transition hover:bg-white/15"
+                    className="flex h-[20px] w-[38px] items-center justify-center rounded-3xs border border-white bg-transparent text-sm font-medium text-white transition hover:bg-white/15"
                   >
                     vi
                   </button>
@@ -470,7 +470,7 @@ export default function Header({
                 {/* Cột phải — rộng 935px (1200 − 265), hai hàng dồn xuống mép phải.
                     Site thật: hàng tiện ích BẮT ĐẦU ngay dưới padding-top 10px
                     của lớp phủ (y=60 tuyệt đối), cách hàng menu 15px. */}
-                <div className="ml-auto flex w-[935px] flex-col items-end self-start gap-[15px]">
+                <div className="ml-auto flex w-[935px] flex-col items-end self-start gap-3.75">
                   {/* Hàng tiện ích — cao 20px. */}
                   <div className="flex h-[20px] items-center justify-end gap-3 pr-2.5 text-white">
                     {/* 🎧 Hỗ trợ */}
@@ -508,9 +508,9 @@ export default function Header({
                         type="button"
                         onClick={() => setLangMenuOpen((open) => !open)}
                         aria-expanded={langMenuOpen}
-                        className="flex h-[20px] items-center gap-1 rounded-[3px] border border-white bg-transparent px-[5px] text-sm font-medium text-white transition hover:bg-white/15"
+                        className="flex h-[20px] items-center gap-1 rounded-3xs border border-white bg-transparent px-1.25 text-sm font-medium text-white transition hover:bg-white/15"
                       >
-                        <span className="pl-[5px] text-base font-bold">{currentLang}</span>
+                        <span className="pl-1.25 text-base font-bold">{currentLang}</span>
                         <HiOutlineChevronDown aria-hidden="true" className="text-xs" />
                       </button>
 
@@ -591,7 +591,7 @@ export default function Header({
                     {/* Mega Menu Dropdown */}
                     {megaMenu && (
                       <div
-                        className="absolute right-0 top-full mt-1.5 w-[640px] rounded-2xl bg-white p-5 shadow-[0_20px_50px_rgba(0,0,0,0.18)] border border-gray-100 z-50 text-gray-800 animate-fadeIn"
+                        className="absolute right-0 top-full mt-1.5 w-[640px] rounded-2xl bg-white p-5 shadow-vj-popover border border-gray-100 z-50 text-gray-800 animate-fadeIn"
                         onMouseEnter={() => {}}
                       >
                         <div className="grid grid-cols-2 gap-5 divide-x divide-gray-100">
@@ -666,7 +666,7 @@ export default function Header({
               {/* Tầng 3 — Dải dịch vụ phụ, cao 35px, nền gradient đen → trong suốt.
                   Site thật: dải bắt đầu 5px dưới hàng menu (y=133 tuyệt đối)
                   và căn PHẢI trong container 1200px (mục cuối kết thúc ở x=1320). */}
-              <div className="vj-quick-rail-wrap mt-[5px]">
+              <div className="vj-quick-rail-wrap mt-1.25">
                 <ul className="vj-quick-rail mx-auto max-w-[1200px]">
                   {QUICK_SERVICES.map((item) => (
                     <li key={item.label} className={item.highlight ? 'active' : undefined}>
@@ -774,7 +774,7 @@ export default function Header({
                     </button>
 
                     {accountMenuOpen && (
-                      <div className="absolute right-0 top-[calc(100%+8px)] w-60 overflow-hidden rounded-xl border border-gray-200 bg-white py-1.5 shadow-[0_16px_40px_rgba(0,0,0,0.12)]">
+                      <div className="absolute right-0 top-[calc(100%+8px)] w-60 overflow-hidden rounded-xl border border-gray-200 bg-white py-1.5 shadow-vj-header">
                         <div className="border-b border-gray-100 px-4 py-2.5 bg-gray-50/50">
                           <p className="truncate text-xs font-bold text-gray-900">
                             {(user.fullName || user.email)?.replace(/\s*\(CCCD:.*?\)/gi, '')}
@@ -1041,7 +1041,7 @@ export default function Header({
                 {/* Mega Menu Dropdown */}
                 {megaMenu && (
                   <div
-                    className="absolute right-0 top-full mt-1.5 w-[640px] rounded-2xl bg-white p-5 shadow-[0_20px_50px_rgba(0,0,0,0.18)] border border-gray-100 z-50 text-gray-800 animate-fadeIn"
+                    className="absolute right-0 top-full mt-1.5 w-[640px] rounded-2xl bg-white p-5 shadow-vj-popover border border-gray-100 z-50 text-gray-800 animate-fadeIn"
                     onMouseEnter={() => {}}
                   >
                     <div className="grid grid-cols-2 gap-5 divide-x divide-gray-100">

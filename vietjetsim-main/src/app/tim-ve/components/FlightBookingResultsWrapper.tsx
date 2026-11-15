@@ -208,7 +208,7 @@ export default function FlightBookingResultsWrapper({
         {/* Băng trip: mobile cố định dưới header (full-bleed, pill "Tổng" bên
             trái + 4 bước bên phải); desktop nằm trong container 1200px bo góc
             16px như site thật. */}
-        <div className="vj-booking-strip fixed inset-x-0 top-12 z-[45] mx-auto flex w-full max-w-[1200px] flex-row items-center justify-between px-[17px] py-2.5 text-gray-950 lg:static lg:z-auto lg:rounded-2xl lg:px-6 lg:py-2.5">
+        <div className="vj-booking-strip fixed inset-x-0 top-12 z-[45] mx-auto flex w-full max-w-[1200px] flex-row items-center justify-between px-4.25 py-2.5 text-gray-950 lg:static lg:z-auto lg:rounded-2xl lg:px-6 lg:py-2.5">
           {/* Mobile pill: [Tổng 0 VND ▾] — đo 15/11/2026 (472×915):
               khung trắng `260×31px`, bo tròn `50px`, padding `0 14px 0 10px`,
               nhãn "Tổng" `14px/600` `#333333`, giá trị `14px/400` `#EC2029`
@@ -277,7 +277,7 @@ export default function FlightBookingResultsWrapper({
           phải chừa `48px` (header) + `51px` (băng vàng) — site thật dùng
           `padding-top: 48px` trên lớp phủ header và băng vàng `position:
           fixed` bù lên trên. */}
-      <div className="mx-auto w-full max-w-[1200px] px-[15px] lg:px-0 pt-[51px] lg:pt-5 pb-24 sm:pb-28 overflow-x-hidden">
+      <div className="mx-auto w-full max-w-[1200px] px-3.75 lg:px-0 pt-12.75 lg:pt-5 pb-24 sm:pb-28 overflow-x-hidden">
         <div className="flex flex-col lg:flex-row items-start w-full">
           {/* Cột trái: danh sách chuyến bay (ô 820px ở desktop) */}
           {/* `w-full` là bắt buộc ở mobile: parent dùng `items-start`, nên cột
@@ -294,7 +294,7 @@ export default function FlightBookingResultsWrapper({
             <h1 className="hidden lg:block mb-2 rounded-vj bg-primary px-4 py-2.5 text-base font-bold font-jambono uppercase text-white tracking-normal">
               Lựa chọn chuyến bay
             </h1>
-            <div className="lg:px-[15px]">
+            <div className="lg:px-3.75">
               <FlightBookingClient
                 continueSignal={continueSignal}
                 onFlightSelect={handleFlightSelect}
@@ -360,10 +360,10 @@ export default function FlightBookingResultsWrapper({
               "Chi tiết" nằm ở x=842 nhờ `padding-right: 291.547px` của
               khối giữa — tức nó thẳng hàng với dòng "Tổng tiền", lệch
               phải ~73px, KHÔNG nằm giữa hai khối. */}
-          <div className="vj-total-bar hidden sm:block fixed bottom-0 left-0 right-0 z-[60] border-t border-gray-200 shadow-[0_-4px_20px_rgba(0,0,0,0.08)]">
+          <div className="vj-total-bar hidden sm:block fixed bottom-0 left-0 right-0 z-[60] border-t border-gray-200 shadow-vj-up-sm">
             {/* Site thật: container 1200px (x=120), padding trong `10px`, lề phải
                 `20px` → cụm "Tổng tiền" tại x=769, nút "Đi tiếp" 127×39 tại x=1173. */}
-            <div className="vj-total-bar-inner mx-auto max-w-[1200px] pl-[10px] pr-[20px]">
+            <div className="vj-total-bar-inner mx-auto max-w-[1200px] pl-2.5 pr-5">
               {/* Thanh trống giữ layout 3 cột như site thật */}
               <div aria-hidden="true" className="flex-1" />
               <div className="relative w-[405px] shrink-0">

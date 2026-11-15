@@ -3007,7 +3007,7 @@ export default function PaymentClient() {
       />
 
       {/* Mobile Sticky Bottom Bar matching Screenshots 3 & 4 */}
-      <div className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200 px-4 py-3 shadow-[0_-4px_20px_rgba(0,0,0,0.12)] flex items-center gap-3 sm:hidden">
+      <div className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200 px-4 py-3 shadow-vj-up-md flex items-center gap-3 sm:hidden">
         <button
           type="button"
           onClick={() => router.push('/tim-ve')}

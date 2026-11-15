@@ -58,7 +58,7 @@ export default function AttractiveDestinationsSection() {
           {/* Thẻ chính 680×439, nền #DCE0F2, bo góc 16px. */}
           <Link
             href={`/tim-ve?to=${encodeURIComponent(FEATURED.code)}`}
-            className="group relative block h-[439px] overflow-hidden rounded-[16px] bg-[var(--vj-sky-card)]"
+            className="group relative block h-[439px] overflow-hidden rounded-2xl bg-[var(--vj-sky-card)]"
           >
             <AppImage
               src={FEATURED.image}
@@ -83,9 +83,9 @@ export default function AttractiveDestinationsSection() {
               <Link
                 key={dest.code}
                 href={`/tim-ve?to=${encodeURIComponent(dest.code)}`}
-                className="group flex h-[126px] items-center gap-4 overflow-hidden rounded-[16px] bg-[var(--vj-sky-card)] px-4 py-3 transition-transform duration-300 hover:-translate-y-1"
+                className="group flex h-[126px] items-center gap-4 overflow-hidden rounded-2xl bg-[var(--vj-sky-card)] px-4 py-3 transition-transform duration-300 hover:-translate-y-1"
               >
-                <div className="relative h-[100px] w-[100px] shrink-0 overflow-hidden rounded-[12px]">
+                <div className="relative h-[100px] w-[100px] shrink-0 overflow-hidden rounded-xl">
                   <AppImage
                     src={dest.image}
                     alt={dest.alt}

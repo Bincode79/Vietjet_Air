@@ -679,7 +679,7 @@ export default function UserChat() {
           </span>
         ) : (
           <span className="flex items-end gap-2">
-            <span className="mb-7 hidden sm:inline-block whitespace-nowrap rounded-[8px] bg-white px-3.5 py-2 text-base2 font-bold text-[var(--foreground)] shadow-[0_6px_18px_rgba(0,0,0,0.16)] ring-1 ring-black/5">
+            <span className="mb-7 hidden sm:inline-block whitespace-nowrap rounded-lg bg-white px-3.5 py-2 text-base2 font-bold text-[var(--foreground)] shadow-vj-elev-md ring-1 ring-black/5">
               Xin chào!
             </span>
             <img
@@ -737,7 +737,7 @@ export default function UserChat() {
 
       {/* Chat Window */}
       {isOpen && (
-        <div className="fixed inset-x-0 bottom-[calc(62px+env(safe-area-inset-bottom))] z-50 flex h-[min(580px,calc(100dvh-72px))] flex-col overflow-hidden rounded-t-[24px] border border-gray-200 bg-white shadow-2xl sm:inset-x-auto sm:bottom-24 sm:right-6 sm:h-[620px] sm:w-[400px] sm:rounded-[24px]">
+        <div className="fixed inset-x-0 bottom-[calc(62px+env(safe-area-inset-bottom))] z-50 flex h-[min(580px,calc(100dvh-72px))] flex-col overflow-hidden rounded-t-vj-hero border border-gray-200 bg-white shadow-2xl sm:inset-x-auto sm:bottom-24 sm:right-6 sm:h-[620px] sm:w-[400px] sm:rounded-vj-hero">
           {/* Header chuẩn Trợ lý ảo Amy */}
           <div className="relative flex flex-shrink-0 items-center justify-between border-b border-gray-100 bg-white px-4 py-3 shadow-xs">
             <div className="flex items-center gap-2.5">

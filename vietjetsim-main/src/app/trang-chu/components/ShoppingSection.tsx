@@ -33,7 +33,7 @@ export default function ShoppingSection() {
         <h2 className="vj-headline mb-12">Mua sắm trực tuyến, nhận hàng trên máy bay</h2>
 
         <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-2 lg:gap-16">
-          <div className="relative h-[300px] overflow-hidden rounded-[24px] sm:h-[380px] lg:h-[440px]">
+          <div className="relative h-[300px] overflow-hidden rounded-vj-hero sm:h-[380px] lg:h-[440px]">
             <AppImage
               src={PRODUCTS[0].image}
               alt={PRODUCTS[0].alt}

@@ -338,7 +338,7 @@ export default function AirportsTab({ onToast }: { onToast?: ToastAPI }) {
       {viewingAirport && (
         <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[100] flex items-center justify-center p-4 animate-in fade-in duration-300">
           <div
-            className="w-full max-w-lg bg-slate-900 border border-white/10 rounded-[40px] overflow-hidden shadow-2xl relative animate-in zoom-in-95 duration-300"
+            className="w-full max-w-lg bg-slate-900 border border-white/10 rounded-vj-oval overflow-hidden shadow-2xl relative animate-in zoom-in-95 duration-300"
             style={{
               background:
                 'linear-gradient(135deg, rgba(30, 41, 59, 1) 0%, rgba(15, 23, 42, 1) 100%)',
@@ -457,7 +457,7 @@ function AirportModal({
 }) {
   return (
     <div className="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-[120] flex items-center justify-center p-4 animate-in fade-in duration-300">
-      <div className="bg-slate-900 border border-white/10 rounded-[40px] shadow-2xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-300">
+      <div className="bg-slate-900 border border-white/10 rounded-vj-oval shadow-2xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-300">
         <div className="flex items-center justify-between p-8 border-b border-white/5 bg-white/[0.02]">
           <h3 className="text-lg font-black text-white uppercase tracking-tight">{title}</h3>
           <button

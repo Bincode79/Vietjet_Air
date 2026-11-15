@@ -72,13 +72,13 @@ export default function MobileBottomNav() {
     <nav
       aria-label="Điều hướng nhanh"
       data-testid="mobile-bottom-nav"
-      className="fixed inset-x-0 bottom-0 z-30 bg-white pt-[8px] pb-[10px] lg:hidden"
+      className="fixed inset-x-0 bottom-0 z-30 bg-white pt-2 pb-2.5 lg:hidden"
       style={{
         height: BOTTOM_NAV_HEIGHT,
         paddingBottom: 'calc(10px + env(safe-area-inset-bottom))',
       }}
     >
-      <ul className="mx-auto flex h-full max-w-lg items-center justify-center px-[12px]">
+      <ul className="mx-auto flex h-full max-w-lg items-center justify-center px-3">
         {TABS.map((tab) => {
           const base = tab.href.split('#')[0].split('?')[0];
           const active =
@@ -88,7 +88,7 @@ export default function MobileBottomNav() {
               <Link
                 href={tab.href}
                 aria-current={active ? 'page' : undefined}
-                className={`flex h-[56px] min-h-[56px] w-[87px] flex-col items-center justify-center gap-[6px] px-[2px] text-sm2 font-medium leading-[16px] transition-colors ${
+                className={`flex h-[56px] min-h-[56px] w-[87px] flex-col items-center justify-center gap-1.5 px-0.2 text-sm2 font-medium leading-[16px] transition-colors ${
                   active ? ACTIVE_CLASS : 'text-vj-mobile-nav-ink'
                 }`}
               >

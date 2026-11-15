@@ -1739,11 +1739,7 @@ h6 {
 }
 
 .vj-step-dot--active {
-  background-image: linear-gradient(
-    72.74deg,
-    rgb(69, 155, 2) -15.27%,
-    rgb(170, 250, 107) 113.22%
-  );
+  background-image: linear-gradient(72.74deg, rgb(69, 155, 2) -15.27%, rgb(170, 250, 107) 113.22%);
   color: #ffffff;
 }
 
@@ -4674,7 +4670,11 @@ select option {
   border: 2px dashed #c3c8d4;
   border-radius: 10px;
   background: #ffffff;
-  font-family: 'Be Vietnam Pro', system-ui, -apple-system, sans-serif;
+  font-family:
+    'Be Vietnam Pro',
+    system-ui,
+    -apple-system,
+    sans-serif;
   transition:
     border-color 0.15s ease,
     box-shadow 0.15s ease;
@@ -4695,13 +4695,7 @@ select option {
 .vjs-section.vjs-section--hidden {
   opacity: 0.55;
   border-style: dotted;
-  background: repeating-linear-gradient(
-    45deg,
-    #f7f8fa,
-    #f7f8fa 10px,
-    #eef0f4 10px,
-    #eef0f4 20px
-  );
+  background: repeating-linear-gradient(45deg, #f7f8fa, #f7f8fa 10px, #eef0f4 10px, #eef0f4 20px);
 }
 
 .vjs-section__label {

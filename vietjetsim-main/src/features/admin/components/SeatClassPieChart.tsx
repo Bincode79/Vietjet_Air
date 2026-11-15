@@ -106,7 +106,7 @@ export default function SeatClassPieChart({
                 align="center"
                 iconType="circle"
                 wrapperStyle={{ paddingTop: 10, fontSize: 12 }}
-                formatter={(value: string, entry) => {
+                formatter={(value: string) => {
                   const item = data.find((d) => (d.name || d.class) === value);
                   return (
                     <span className="text-slate-300 text-xs font-medium ml-1 mr-3">

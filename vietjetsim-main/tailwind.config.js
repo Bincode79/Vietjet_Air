@@ -68,9 +68,37 @@ module.exports = {
         // Bậc lẻ từng được dùng ở component public nhưng Tailwind chỉ có
         // bậc chẵn (0.5rem, 0.75rem…) -> `py-0.2`, `sm:p-4.5` không sinh CSS.
         0.2: '0.125rem', // 2px
+        // `p-0.75` (3px) và `p-7.5` (30px) cũng không có ở Tailwind mặc định.
+        0.75: '0.1875rem', // 3px
+        1.25: '0.3125rem', // 5px
         4.5: '1.125rem', // 18px
+        6.25: '1.5625rem', // 25px
+        7.5: '1.875rem', // 30px
+        // `p-15` (60px) không có sẵn trong Tailwind.
+        15: '3.75rem', // 60px
         // `h-13` / `w-13` không có sẵn trong Tailwind (bậc chẵn).
         13: '3.25rem', // 52px
+        // ─── Bậc lẻ còn lại, đang tồn tại dưới dạng `p-[Npx]` ────────────
+        // Mỗi giá trị ở đây thay đúng một class arbitrary đang lẻ trong
+        // codebase. Chỉ thêm khi giá trị đó thực sự được dùng — token thừa
+        // cũng là nợ.
+        2.75: '0.6875rem', // 11px
+        3.25: '0.8125rem', // 13px
+        3.35: '0.8375rem', // 13.4px — đo từ DOM sống vietjetair.com
+        3.75: '0.9375rem', // 15px
+        4.25: '1.0625rem', // 17px
+        4.75: '1.1875rem', // 19px
+        6.5: '1.625rem', // 26px
+        7.25: '1.8125rem', // 29px
+        8.5: '2.125rem', // 34px
+        9.75: '2.4375rem', // 39px
+        10.25: '2.5625rem', // 41px
+        10.5: '2.625rem', // 42px
+        11.5: '2.875rem', // 46px
+        12.75: '3.1875rem', // 51px
+        25: '6.25rem', // 100px
+        26.25: '6.5625rem', // 105px
+        67: '16.75rem', // 268px
         // Container nội dung chuẩn của vietjetair.com: 1200px, margin 120px mỗi
         // bên trên viewport 1440px (đo được từ DOM sống).
         'container-vj': '75rem', // 1200px
@@ -98,6 +126,14 @@ module.exports = {
       // `duration-250` và `scale-98` cũng không có sẵn trong Tailwind 3.4.
       transitionDuration: {
         250: '250ms',
+      },
+      // Easing của toast: `ease-[cubic-bezier(0.16,1,0.3,1)]` làm Tailwind báo
+      // "ambiguous class — matches multiple utilities" ở MỌI lần build, vì
+      // dấu phẩy trong arbitrary value khiến Tailwind không phân biệt được
+      // với selector khác. Đặt nó thành token có tên để cảnh báo biến mất mà
+      // hình ảnh không đổi một pixel.
+      transitionTimingFunction: {
+        vj: 'cubic-bezier(0.16, 1, 0.3, 1)',
       },
       scale: {
         98: '0.98',
@@ -457,6 +493,34 @@ module.exports = {
         'vj-bottomnav': '15px',
         // Header trang con (my/search-booking, checkin): trắng, bo góc dưới.
         'vj-header': '0 0 16px 16px',
+        // ─── Bo góc còn lại đang dùng dạng arbitrary ───────────────────────
+        // Ratchet css-debt (`scripts/css-debt.cjs`) chặn `rounded-[Npx]` mới,
+        // nên các bo góc đang dùng phải có tên ở đây. Tên đặt theo GÓC để
+        // đọc được trong markup: `rounded-t-vj-hero` là bo trên 24px.
+        // Giá trị giữ nguyên pixel để không xê dịch layout.
+        '3xs': '3px',
+        '5xs': '5px',
+        '7xs': '7px',
+        '9xs': '9px',
+        '11xs': '11px',
+        '13xs': '13px',
+        '14xs': '14px',
+        'vj-hero': '24px',
+        'vj-lg': '20px',
+        'vj-pill': '22px',
+        'vj-sheet': '28px',
+        'vj-modal': '32px',
+        'vj-oval': '40px',
+        // Biến thể theo cạnh cho các token tròn.
+        //
+        // GIÁ TRỊ ĐƠN, không phải 4 giá trị: Tailwind sinh
+        // `rounded-t-<token>` thành `border-top-left-radius: <value>;
+        // border-top-right-radius: <value>` — nếu value là '24px 24px 0 0' thì
+        // góc dưới bị ghi đè bằng 0, đổi hình ảnh so với `rounded-t-[24px]`.
+        't-vj-hero': '24px',
+        'b-vj-hero': '24px',
+        // Bo góc phải-dưới 5px (nhãn bong bóng thoại).
+        'br-vj-bubble': '5px',
       },
       boxShadow: {
         'vj-sm': '0 2px 8px rgba(0,0,0,0.07)',
@@ -470,6 +534,53 @@ module.exports = {
         // Tailwind 3.4 chỉ có `shadow-sm` trở lên -> class không sinh CSS.
         xs: '0 1px 2px 0 rgba(0,0,0,0.05)',
         '2xs': '0 1px 1px 0 rgba(0,0,0,0.04)',
+        // ─── Đổ bóng còn lại, đang tồn tại dưới dạng `shadow-[…]` ─────────
+        // Ratchet css-debt (`scripts/css-debt.cjs`) chặn `shadow-[…]` mới,
+        // nên mọi đổ bóng đang dùng phải có tên ở đây. Tên đặt theo VAI TRÒ
+        // (`vj-toast`, `vj-header`) chứ không phải theo số, để đọc trong
+        // markup là biết dùng để làm gì.
+        // Giá trị giữ nguyên — đổi tên không được đổi hình ảnh.
+        //
+        // Nhóm đổ bóng hướng lên trên (thanh cố định dưới màn hình).
+        'vj-up-xs': '0 -2px 12px rgba(0,0,0,0.08)',
+        'vj-up-sm': '0 -4px 20px rgba(0,0,0,0.08)',
+        'vj-up-md': '0 -4px 20px rgba(0,0,0,0.12)',
+        // Nhóm đổ bóng hướng xuống (panel, popover, thẻ nổi).
+        'vj-soft': '0 4px 16px rgba(0,0,0,0.06)',
+        'vj-elev-xs': '0 2px 10px rgba(0,0,0,0.18)',
+        'vj-elev-sm': '0 4px 20px rgba(0,0,0,0.08)',
+        'vj-elev-md': '0 6px 18px rgba(0,0,0,0.16)',
+        'vj-elev-strong': '0 6px 14px rgba(0,0,0,0.22)',
+        'vj-elev-lg': '0 12px 24px rgba(0,0,0,0.1)',
+        'vj-elev-xl': '0 12px 28px rgba(0,0,0,0.12)',
+        'vj-elev-2xl': '0 20px 40px rgba(0,0,0,0.12)',
+        'vj-elev-ink': '0 8px 24px rgba(36,36,36,0.1)',
+        'vj-elev-lg-ink': '0 14px 30px rgba(36,36,36,0.16)',
+        'vj-blue-lg': '0 12px 32px rgba(36,73,120,0.16)',
+        'vj-blue-xl': '0 18px 50px rgba(36,73,120,0.14)',
+        'vj-navy': '0 12px 30px rgba(26,41,72,0.12)',
+        'vj-header': '0 16px 40px rgba(0,0,0,0.12)',
+        'vj-popover': '0 20px 50px rgba(0,0,0,0.18)',
+        'vj-modal': '0 16px 50px rgba(0,0,0,0.22)',
+        'vj-toast': '0 8px 32px rgba(0,0,0,0.14)',
+        'vj-mascot': '0 10px 18px rgba(0,0,0,0.18)',
+        'vj-overlay': '0 12px 32px rgba(0,0,0,0.28)',
+        'vj-focus-red': '0 24px 48px rgba(120,0,0,0.35)',
+        // Nhóm quầng sáng — trạng thái và nút thương hiệu.
+        // `glow-emerald` (rgba(52,211,153)) và `glow-emerald-500` (#10b981) là
+        // HAI màu khác nhau cùng họ — không gộp được.
+        'glow-emerald': '0 0 8px rgba(16,185,129,0.6)',
+        'glow-emerald-400': '0 0 8px rgba(52,211,153,0.5)',
+        'glow-emerald-500': '0 0 8px #10b981',
+        'glow-emerald-soft': '0 0 15px rgba(16,185,129,0.1)',
+        'glow-amber-500': '0 0 8px #f59e0b',
+        'glow-amber-soft': '0 0 15px rgba(245,158,11,0.1)',
+        'glow-rose-500': '0 0 8px #f43f5e',
+        'glow-rose-soft': '0 0 15px rgba(244,63,94,0.1)',
+        'glow-indigo-500': '0 0 8px #6366f1',
+        'glow-yellow-sm': '0 4px 12px rgba(255,221,0,0.35)',
+        'glow-yellow': '0 8px 20px rgba(255,221,0,0.45)',
+        'glow-orange': '0 4px 10px rgba(245,130,32,0.45)',
       },
       // `drop-shadow-2xs` / `backdrop-blur-xs` cũng không tồn tại trong
       // Tailwind 3.4 nhưng được tham chiếu ở component public.

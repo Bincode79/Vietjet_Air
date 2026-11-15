@@ -141,7 +141,7 @@ export default function PromotionalBannersSection() {
             <Link
               key={promotion.title}
               href={promotion.href}
-              className="group flex min-h-[330px] overflow-hidden rounded-vj bg-white shadow-[0_8px_24px_rgba(36,36,36,.10)] transition-transform duration-200 hover:-translate-y-1 hover:shadow-[0_14px_30px_rgba(36,36,36,.16)] focus-within:ring-2 focus-within:ring-[var(--primary)] focus-within:ring-offset-2"
+              className="group flex min-h-[330px] overflow-hidden rounded-vj bg-white shadow-vj-elev-ink transition-transform duration-200 hover:-translate-y-1 hover:shadow-vj-elev-lg-ink focus-within:ring-2 focus-within:ring-[var(--primary)] focus-within:ring-offset-2"
             >
               <div className="relative flex flex-1 flex-col justify-end overflow-hidden">
                 <AppImage

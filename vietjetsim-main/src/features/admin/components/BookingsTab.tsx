@@ -520,19 +520,19 @@ export default function BookingsTab({ onToast }: BookingsTabProps = {}) {
             label: 'Xác nhận',
             value: bookings.filter((b) => b.status === 'confirmed').length,
             color:
-              'from-emerald-500/10 to-emerald-600/10 text-emerald-400 border-emerald-500/20 shadow-[0_0_15px_rgba(16,185,129,0.1)]',
+              'from-emerald-500/10 to-emerald-600/10 text-emerald-400 border-emerald-500/20 shadow-glow-emerald-soft',
           },
           {
             label: 'Chờ duyệt',
             value: bookings.filter((b) => b.status === 'pending').length,
             color:
-              'from-amber-500/10 to-amber-600/10 text-amber-400 border-amber-500/20 shadow-[0_0_15px_rgba(245,158,11,0.1)]',
+              'from-amber-500/10 to-amber-600/10 text-amber-400 border-amber-500/20 shadow-glow-amber-soft',
           },
           {
             label: 'Đã huỷ',
             value: bookings.filter((b) => b.status === 'cancelled').length,
             color:
-              'from-rose-500/10 to-rose-600/10 text-rose-400 border-rose-500/20 shadow-[0_0_15px_rgba(244,63,94,0.1)]',
+              'from-rose-500/10 to-rose-600/10 text-rose-400 border-rose-500/20 shadow-glow-rose-soft',
           },
         ].map((stat) => (
           <div
@@ -1061,7 +1061,7 @@ export default function BookingsTab({ onToast }: BookingsTabProps = {}) {
       {selectedBooking && (
         <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[100] flex items-center justify-center p-4 animate-in fade-in duration-300">
           <div
-            className="w-full max-w-2xl bg-slate-900 border border-white/10 rounded-[32px] overflow-hidden shadow-2xl relative animate-in zoom-in-95 duration-300"
+            className="w-full max-w-2xl bg-slate-900 border border-white/10 rounded-vj-modal overflow-hidden shadow-2xl relative animate-in zoom-in-95 duration-300"
             style={{
               background:
                 'linear-gradient(135deg, rgba(30, 41, 59, 0.95) 0%, rgba(15, 23, 42, 0.95) 100%)',
@@ -1333,7 +1333,7 @@ export default function BookingsTab({ onToast }: BookingsTabProps = {}) {
                           </div>
                           <div className="flex items-center gap-2 relative z-10">
                             <div
-                              className={`w-2 h-2 rounded-full ${selectedBooking.status === 'confirmed' ? 'bg-emerald-500 shadow-[0_0_8px_#10b981]' : selectedBooking.status === 'pending' ? 'bg-amber-500 shadow-[0_0_8px_#f59e0b]' : 'bg-rose-500 shadow-[0_0_8px_#f43f5e]'}`}
+                              className={`w-2 h-2 rounded-full ${selectedBooking.status === 'confirmed' ? 'bg-emerald-500 shadow-glow-emerald-500' : selectedBooking.status === 'pending' ? 'bg-amber-500 shadow-glow-amber-500' : 'bg-rose-500 shadow-glow-rose-500'}`}
                             />
                             <span
                               className={`text-2xs font-black uppercase tracking-widest ${selectedBooking.status === 'confirmed' ? 'text-emerald-400' : selectedBooking.status === 'pending' ? 'text-amber-400' : 'text-rose-400'}`}
@@ -1369,7 +1369,7 @@ export default function BookingsTab({ onToast }: BookingsTabProps = {}) {
                             <div className="absolute left-[7px] top-[18px] w-[2px] h-full bg-white/5" />
                           )}
                           <div
-                            className={`w-4 h-4 rounded-full mt-0.5 relative z-10 border-2 ${item.status === 'done' ? 'bg-indigo-500 border-indigo-400 shadow-[0_0_8px_#6366f1]' : item.status === 'pending' ? 'bg-slate-800 border-indigo-500/50' : 'bg-slate-800 border-slate-700'}`}
+                            className={`w-4 h-4 rounded-full mt-0.5 relative z-10 border-2 ${item.status === 'done' ? 'bg-indigo-500 border-indigo-400 shadow-glow-indigo-500' : item.status === 'pending' ? 'bg-slate-800 border-indigo-500/50' : 'bg-slate-800 border-slate-700'}`}
                           />
                           <div>
                             <p className="text-xs2 font-bold text-slate-200">{item.event}</p>
@@ -1462,7 +1462,7 @@ export default function BookingsTab({ onToast }: BookingsTabProps = {}) {
       {showInvoiceModal && selectedBooking && (
         <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
           <div
-            className="bg-slate-900 border border-white/10 rounded-[32px] w-full max-w-sm overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200"
+            className="bg-slate-900 border border-white/10 rounded-vj-modal w-full max-w-sm overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200"
             style={{ background: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)' }}
           >
             <div className="px-8 py-6 border-b border-white/5 flex justify-between items-center bg-white/[0.02]">

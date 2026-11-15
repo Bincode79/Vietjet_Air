@@ -321,7 +321,7 @@ function CheckInContent({ prefillBookingId }: { prefillBookingId: string }) {
                 (đo: không tồn tại `nav[aria-label="Dịch vụ tra cứu"]`) — nên
                 dải pill đã bị bỏ khỏi trang này. */}
               {step === 'search' && (
-                <div className="vj-lookup-card mt-4 grid w-full grid-cols-1 overflow-hidden lg:grid-cols-[410px_649px] lg:gap-[41px] lg:px-[25px]">
+                <div className="vj-lookup-card mt-4 grid w-full grid-cols-1 overflow-hidden lg:grid-cols-[410px_649px] lg:gap-10.25 lg:px-25">
                   {/* Cột trái: CHECK-IN form.
                       Site thật: cột trái `x=170` rộng `410`; ô nhập `x=190` rộng
                       `370`; nút "Tìm kiếm" `x=312` và "Đăng nhập" `x=307` đều
@@ -332,7 +332,7 @@ function CheckInContent({ prefillBookingId }: { prefillBookingId: string }) {
                       Ở MOBILE (390×844) site thật: mô tả `x=15` rộng `360`
                       (`16px/500`), ô nhập `x=35` rộng `320` (lệch `+20px` so với
                       mép cột `x=15`), nhãn `14px/600`. */}
-                  <div className="flex flex-col justify-start px-[15px] pb-8 pt-[13.4px] lg:border-r lg:border-[var(--vj-field-border)] lg:px-0">
+                  <div className="flex flex-col justify-start px-3.75 pb-8 pt-3.35 lg:border-r lg:border-[var(--vj-field-border)] lg:px-0">
                     <div>
                       <h1 className="hidden text-xl font-semibold uppercase leading-[26px] text-[var(--vj-text)] lg:block">
                         LÀM THỦ TỤC
@@ -350,7 +350,7 @@ function CheckInContent({ prefillBookingId }: { prefillBookingId: string }) {
                         (mobile). */}
                     <form onSubmit={handleSearch} className="mx-5 mt-4 lg:mt-5 lg:max-w-[370px]">
                       {/* Hai ô nhập, cách nhau `10px` (site thật: `y=292` → `y=342`). */}
-                      <div className="flex w-full flex-col gap-[10px]">
+                      <div className="flex w-full flex-col gap-2.5">
                         {/* Ô nhập 1: Mã đặt chỗ — cao 40px, rộng 370px
                           (320px ở mobile, đo được trên site thật). */}
                         <div className="vj-lookup-field w-full max-w-[320px] lg:max-w-[370px]">
@@ -389,7 +389,7 @@ function CheckInContent({ prefillBookingId }: { prefillBookingId: string }) {
 
                       {/* Nút "Tìm kiếm": 127×39px, bo góc 10px, gradient 26.73deg.
                           Cảnh giữa theo cột ô nhập 370px (site thật `x=312`). */}
-                      <div className="mt-[10px] flex justify-center">
+                      <div className="mt-2.5 flex justify-center">
                         <button type="submit" disabled={loading} className="vj-lookup-btn">
                           {loading ? 'Đang tìm…' : 'Tìm kiếm'}
                         </button>
@@ -403,7 +403,7 @@ function CheckInContent({ prefillBookingId }: { prefillBookingId: string }) {
                         Cả hai CĂN GIỮA theo CỘT (410px ở desktop, 360px ở
                         mobile) — KHÔNG theo cột ô nhập: nút desktop `x=307`
                         (= 170 + (410-137)/2), mobile `x=127` (= 15 + (360-137)/2). */}
-                    <div className="mt-[40px] flex flex-col">
+                    <div className="mt-10 flex flex-col">
                       <button
                         type="button"
                         onClick={() => openAuthModal('login', { redirectTo: '/lam-thu-tuc' })}

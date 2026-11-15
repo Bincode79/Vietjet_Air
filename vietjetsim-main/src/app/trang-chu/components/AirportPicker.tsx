@@ -326,7 +326,7 @@ export default function AirportPicker({
           aria-haspopup="listbox"
           aria-expanded={open}
           aria-label={ariaLabel ?? label}
-          className="relative flex h-full w-full min-w-0 cursor-pointer flex-col items-start justify-center gap-0.5 bg-transparent pl-[48px] text-left"
+          className="relative flex h-full w-full min-w-0 cursor-pointer flex-col items-start justify-center gap-0.5 bg-transparent pl-12 text-left"
         >
           <Icon
             aria-hidden="true"

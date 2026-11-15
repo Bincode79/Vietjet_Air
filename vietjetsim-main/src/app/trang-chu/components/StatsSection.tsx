@@ -165,7 +165,7 @@ export default function StatsSection() {
                 background: 'rgba(255,255,255,0.10)',
                 backdropFilter: 'blur(8px)',
               }}
-              className="group text-center rounded-vj p-5 border border-white/15 hover:border-white/30 hover:-translate-y-2 hover:shadow-[0_12px_32px_rgba(0,0,0,0.28)] transition-all duration-300 cursor-default reveal-up"
+              className="group text-center rounded-vj p-5 border border-white/15 hover:border-white/30 hover:-translate-y-2 hover:shadow-vj-overlay transition-all duration-300 cursor-default reveal-up"
               onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,0.18)')}
               onMouseLeave={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,0.10)')}
             >

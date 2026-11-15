@@ -329,7 +329,7 @@ export function FlightDatePickerPopover({
   return (
     <div
       ref={popoverRef}
-      className={`absolute right-0 top-[112px] z-50 w-[630px] max-w-[calc(100vw-28px)] bg-white rounded-vj shadow-[0_20px_50px_rgba(0,0,0,0.18)] border border-gray-100 p-3 sm:p-5 select-none text-gray-800 animate-fadeIn ${className}`}
+      className={`absolute right-0 top-[112px] z-50 w-[630px] max-w-[calc(100vw-28px)] bg-white rounded-vj shadow-vj-popover border border-gray-100 p-3 sm:p-5 select-none text-gray-800 animate-fadeIn ${className}`}
     >
       {/* Loại hành trình — dải pill bo tròn 999px, đúng site thật:
           track nền #F3F1F1 padding 3px, item active nền trắng + bóng nhẹ,

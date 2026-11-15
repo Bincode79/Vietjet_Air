@@ -141,7 +141,7 @@ export default function PassengerPicker({
         isBar
           ? (className ?? '')
           : isHero
-            ? (className ?? 'mt-[11px] hidden h-[48px] w-full lg:block')
+            ? (className ?? 'mt-2.75 hidden h-[48px] w-full lg:block')
             : (className ?? 'mt-2.5')
       }`}
     >
@@ -186,7 +186,7 @@ export default function PassengerPicker({
           aria-haspopup="dialog"
           aria-expanded={open}
           aria-label="Số hành khách"
-          className="relative flex h-full w-full min-w-0 items-center gap-2 rounded-vj bg-white pl-[48px] pr-1 text-left transition-colors cursor-pointer border-0 outline-none"
+          className="relative flex h-full w-full min-w-0 items-center gap-2 rounded-vj bg-white pl-12 pr-1 text-left transition-colors cursor-pointer border-0 outline-none"
         >
           <MdOutlinePerson
             aria-hidden="true"
@@ -235,7 +235,7 @@ export default function PassengerPicker({
         <div
           role="dialog"
           aria-label="Chọn số hành khách"
-          className="absolute left-0 top-full z-50 mt-1 w-full max-w-[calc(100vw-28px)] min-w-[280px] sm:min-w-[340px] rounded-vj border border-vj-border bg-white p-3.5 sm:p-4 shadow-[0_16px_50px_rgba(0,0,0,0.22)] animate-fadeIn text-[var(--foreground)]"
+          className="absolute left-0 top-full z-50 mt-1 w-full max-w-[calc(100vw-28px)] min-w-[280px] sm:min-w-[340px] rounded-vj border border-vj-border bg-white p-3.5 sm:p-4 shadow-vj-modal animate-fadeIn text-[var(--foreground)]"
         >
           {/* Top Row: Yêu cầu trợ giúp đặc biệt */}
           <div className="flex justify-end mb-3">

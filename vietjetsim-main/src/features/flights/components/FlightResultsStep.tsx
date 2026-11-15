@@ -45,19 +45,6 @@ const FARE_CLASS_CONFIG: Record<
   },
 };
 
-/**
- * Nhãn hạng vé trong card kết quả. Quy ước "một bảng màu" của dự án: mọi hạng
- * dùng chung nền trung tính `#F8F8F8` + chữ `#333333`; hạng đang chọn được
- * đánh dấu bằng viền/nền đỏ thương hiệu. Bốn chip xanh/cam/nâu của site thật
- * đã đo được nhưng cố ý không sao chép (xem AGENTS.md).
- */
-const FARE_BADGE_CLASS: Record<string, string> = {
-  business: 'bg-vj-surface-fare text-vj-text',
-  skyboss: 'bg-vj-surface-fare text-vj-text',
-  deluxe: 'bg-vj-surface-fare text-vj-text',
-  eco: 'bg-vj-surface-fare text-vj-text',
-};
-
 const DEPARTURE_TIME_SLOTS = [
   { label: 'Sáng sớm', sublabel: '00:00 – 06:00', start: 0, end: 6 },
   { label: 'Buổi sáng', sublabel: '06:00 – 12:00', start: 6, end: 12 },

@@ -499,7 +499,7 @@ export default function AdminDashboardClient() {
                   {profile?.fullName || user?.email?.split('@')[0] || 'Hệ Thống'}
                 </div>
                 <div className="text-2xs text-indigo-400/90 font-bold flex items-center gap-1.5 mt-0.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.6)] animate-pulse"></span>
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-glow-emerald animate-pulse"></span>
                   {roleLabel}
                 </div>
               </div>

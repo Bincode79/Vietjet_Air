@@ -62,7 +62,7 @@ export default function DealsSection() {
             <Link
               key={deal.from}
               href={`/tim-ve?from=${deal.from}`}
-              className="group block overflow-hidden rounded-[20px] bg-[var(--vj-card-beige)] transition-transform duration-300 hover:-translate-y-1"
+              className="group block overflow-hidden rounded-vj-lg bg-[var(--vj-card-beige)] transition-transform duration-300 hover:-translate-y-1"
             >
               <div className="relative h-[191px] overflow-hidden">
                 <AppImage
@@ -82,7 +82,7 @@ export default function DealsSection() {
                 <p className="mt-3 text-xl font-bold text-[var(--primary)]">
                   {formatVND(deal.price)}
                 </p>
-                <span className="mt-4 inline-flex items-center justify-center rounded-[10px] border-2 border-[var(--accent)] bg-[var(--accent)] px-4 py-2 text-sm font-bold text-[var(--foreground)] transition-colors group-hover:border-[var(--primary)] group-hover:bg-[var(--primary)] group-hover:text-white">
+                <span className="mt-4 inline-flex items-center justify-center rounded-vj border-2 border-[var(--accent)] bg-[var(--accent)] px-4 py-2 text-sm font-bold text-[var(--foreground)] transition-colors group-hover:border-[var(--primary)] group-hover:bg-[var(--primary)] group-hover:text-white">
                   Chọn chuyến <span className="ml-1">→</span>
                 </span>
               </div>

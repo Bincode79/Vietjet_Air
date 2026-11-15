@@ -111,7 +111,7 @@ export default function HotDealsSection() {
           {HOT_DEALS.map((deal, i) => (
             <div
               key={i}
-              className="group flex items-center gap-4 bg-white rounded-vj p-4 border border-gray-100 shadow-sm hover:-translate-y-1 hover:shadow-[0_12px_24px_rgba(0,0,0,0.1)] transition-all duration-250"
+              className="group flex items-center gap-4 bg-white rounded-vj p-4 border border-gray-100 shadow-sm hover:-translate-y-1 hover:shadow-vj-elev-lg transition-all duration-250"
             >
               <div className="relative w-20 h-20 sm:w-24 sm:h-24 flex-shrink-0 rounded-vj overflow-hidden">
                 <img

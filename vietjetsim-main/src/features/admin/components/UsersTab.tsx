@@ -403,11 +403,11 @@ export default function UsersTab({ onToast }: { onToast?: ToastAPI }) {
               setCurrentPage(1);
             }}
             placeholder="Tìm theo tên, email hoặc số điện thoại..."
-            className="w-full pl-14 pr-6 py-4 bg-slate-800/40 border border-white/5 rounded-[22px] text-sm font-semibold text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500/50 transition-all focus:bg-slate-800/60"
+            className="w-full pl-14 pr-6 py-4 bg-slate-800/40 border border-white/5 rounded-vj-pill text-sm font-semibold text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500/50 transition-all focus:bg-slate-800/60"
           />
         </div>
 
-        <div className="xl:col-span-4 flex items-center bg-slate-800/20 border border-white/5 rounded-[22px] p-1.5 gap-1">
+        <div className="xl:col-span-4 flex items-center bg-slate-800/20 border border-white/5 rounded-vj-pill p-1.5 gap-1">
           <div className="relative flex-1">
             <input
               type="date"
@@ -814,7 +814,7 @@ export default function UsersTab({ onToast }: { onToast?: ToastAPI }) {
       {selectedUser && (
         <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[100] flex items-center justify-center p-4 animate-in fade-in duration-300">
           <div
-            className="w-full max-w-2xl bg-slate-900 border border-white/10 rounded-[40px] overflow-hidden shadow-2xl relative animate-in zoom-in-95 duration-300"
+            className="w-full max-w-2xl bg-slate-900 border border-white/10 rounded-vj-oval overflow-hidden shadow-2xl relative animate-in zoom-in-95 duration-300"
             style={{
               background:
                 'linear-gradient(135deg, rgba(30, 41, 59, 0.98) 0%, rgba(15, 23, 42, 0.98) 100%)',

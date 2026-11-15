@@ -22,8 +22,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const variantClasses: Record<string, string> = {
-  primary:
-    'bg-[var(--primary)] text-white hover:bg-[var(--primary-dark)] hover:shadow-[0_0_20px_rgba(236,32,41,0.35)]',
+  primary: 'bg-[var(--primary)] text-white hover:bg-[var(--primary-dark)] hover:shadow-glow-red',
   // CTA vàng của site thật: gradient 26.73deg, chữ đen, font 500, uppercase.
   gold: 'vj-cta',
   outline:

@@ -120,7 +120,7 @@ export default function ServiceIconsSection() {
               <Link
                 key={service.label}
                 href={service.href}
-                className="group relative flex flex-col justify-between rounded-[20px] p-4 sm:p-5 shadow-[0_4px_16px_rgba(0,0,0,0.06)] border border-white bg-white/90 transition-all duration-300 hover:shadow-[0_12px_28px_rgba(0,0,0,0.12)] hover:-translate-y-1 hover:border-[rgb(var(--primary-rgb))]/30"
+                className="group relative flex flex-col justify-between rounded-vj-lg p-4 sm:p-5 shadow-vj-soft border border-white bg-white/90 transition-all duration-300 hover:shadow-vj-elev-xl hover:-translate-y-1 hover:border-[rgb(var(--primary-rgb))]/30"
               >
                 {/* Badge if present */}
                 {'badge' in service && service.badge && (
@@ -131,7 +131,7 @@ export default function ServiceIconsSection() {
 
                 <div>
                   <div
-                    className="flex h-14 w-14 items-center justify-center rounded-[14px] shadow-sm mb-3 transition-all duration-300 group-hover:scale-110"
+                    className="flex h-14 w-14 items-center justify-center rounded-14xs shadow-sm mb-3 transition-all duration-300 group-hover:scale-110"
                     style={{
                       backgroundColor: `${service.color}18`,
                       border: `1.5px solid ${service.color}33`,

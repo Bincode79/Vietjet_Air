@@ -271,7 +271,7 @@ export function RevenueTabSkeleton() {
 // ─── Payment Page Skeleton ────────────────────────────────────────────────────
 export function PaymentSkeleton() {
   return (
-    <div className="pt-[100px] pb-12">
+    <div className="pt-25 pb-12">
       <div className="max-w-5xl mx-auto px-4 sm:px-6">
         <Skeleton className="h-8 w-36 mb-6" rounded="lg" />
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
