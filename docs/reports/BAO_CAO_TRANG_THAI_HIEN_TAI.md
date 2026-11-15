@@ -18,13 +18,21 @@ Các số liệu cũ trong `SUMMARY.txt`, `BUILD_VERIFICATION.md` và
 |---|---|
 | `npm run type-check` | ✅ 0 lỗi |
 | `npm run lint` | ✅ 0 error, 0 warning |
-| `npm test` | ✅ **136 file / 1193 test** pass |
+| `npm test` | ✅ **145 file / 1242 test** pass |
 | `npm run build` | ✅ exit 0 (lần chạy gần nhất 14/11) |
 | `npm run test:smoke` | ✅ pass toàn bộ assertion |
+| `npm run test:ui:full` | ✅ **68/68 màn hình sạch** (15/11, production build + mock DB) |
 | `npm run lint:tailwind-classes` | ✅ 0 class không tồn tại |
 | `npm run lint:css-debt` | ✅ 0 nợ CSS (baseline ratchet 0/0/0/0/0) |
 | TODO/FIXME trong `src/` | 0 |
 | Quy mô | 554 file TS/TSX · 90 API route · 52 migration · 129 script |
+
+**Lưu ý về `test:ui:full`:** từ 15/11 cổng này mới thực sự đăng nhập được. Trước đó
+`login()` coi mọi HTTP response (kể cả 401) là thành công, nên bốn màn hình cần
+phiên (`/tai-khoan`, `/thanh-toan`, `/quan-tri`, `/dat-ve/[id]`) bị chụp ở trạng thái
+khách vô danh mà cổng vẫn báo xanh. Nay đăng nhập hỏng là lỗi của cổng, mock DB
+có seed hai tài khoản demo, và con số 68/68 là của các màn hình đã qua đăng nhập
+thật.
 
 **Vì sao số test tăng từ 367 → 1189:** các đợt bổ sung test cho admin dashboard,
 ví dụ thanh toán, PDF pipeline, RBAC và mobile parity. Con số 37 file ở §4.4 là
