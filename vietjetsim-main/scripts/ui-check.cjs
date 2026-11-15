@@ -78,7 +78,7 @@ const SHOTS_DIR =
 // Hồ sơ Chrome luôn nằm ở thư mục tạm, KHÔNG suy ra từ UI_CHECK_SHOTS_DIR: nếu
 // người dùng trỏ ảnh vào trong repo (ví dụ `docs/qa/...`) thì một profile Chrome
 // trong đó là rác không ai muốn commit.
-const PROFILE_DIR =
+let PROFILE_DIR =
   process.env.CHROME_PROFILE_DIR || path.join(os.tmpdir(), 'vietjet-ui-check', 'chrome-profile');
 const TOMORROW = new Date(Date.now() + 86400000).toISOString().slice(0, 10);
 const resultsUrl = () => `${BASE}/tim-ve?from=HAN&to=SGN&depart=${TOMORROW}`;
@@ -467,7 +467,16 @@ async function main() {
   // Hồ sơ Chrome dùng lại từ lần trước vẫn giữ cookie phiên, và `/dang-nhap` của
   // một phiên admin bị proxy đưa thẳng sang `/quan-tri` — nên ảnh "trang đăng
   // nhập" hoá ra là console. Mỗi lần chạy phải là khách mới.
-  rmSync(PROFILE_DIR, { recursive: true, force: true });
+  //
+  // `force: true` KHÔNG đủ: nếu Chrome còn giữ file trong thư mục profile (do
+  // lần chạy trước bị kill giữa chừng), `rmSync` ném ENOTEMPTY và cả lượt
+  // chạy chết — đúng cái lỗi đã gặp. Vì vậy: thử xoá, nếu vẫn lỗi thì đổi
+  // sang một thư mục profile mới (Chrome chấp nhận bất kỳ đường dẫn nào).
+  try {
+    rmSync(PROFILE_DIR, { recursive: true, force: true });
+  } catch {
+    PROFILE_DIR = `${PROFILE_DIR}-${process.pid}`;
+  }
 
   const chrome = spawn(CHROME, [
     `--remote-debugging-port=${PORT}`,

@@ -18,10 +18,12 @@ const OUT = path.resolve(
   'official-booking-bar-rail.json'
 );
 const URL_OFFICIAL = process.argv[2] || 'https://newweb.vietjetair.com/vi/';
-const CHROME =
-  process.env.CHROME_PATH || '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
 
 function chromePath() {
+  // CHROME_PATH do nguoi chay dat — uu tien hon mac dinh, de chay duoc tren
+  // may khong cai Google Chrome mac dinh (CI, Chromium portable).
+  const fromEnv = process.env.CHROME_PATH;
+  if (fromEnv && fs.existsSync(fromEnv)) return fromEnv;
   const candidates = [
     '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
     '/Applications/Chromium.app/Contents/MacOS/Chromium',
@@ -73,7 +75,6 @@ function chromePath() {
     const out = { viewport: 'desktop-1440' };
 
     // ── Rail: 4 nút dịch vụ, dò bên trong từng nút ───────────────────────
-    const railBtn = all('button').find((b) => (b.innerText || '').trim() === 'Đặt vé');
     out.railButtons = all('button')
       .filter((b) => {
         const r = b.getBoundingClientRect();

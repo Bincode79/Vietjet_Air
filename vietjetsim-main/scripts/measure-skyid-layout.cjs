@@ -74,11 +74,6 @@ class Cdp {
   }
 }
 
-async function httpJson(url) {
-  const res = await fetch(url);
-  return res.json();
-}
-
 /** Chrome cần vài trăm ms để mở cổng debug — chờ thay vì đoán. */
 async function waitForChrome() {
   for (let attempt = 0; attempt < 40; attempt += 1) {

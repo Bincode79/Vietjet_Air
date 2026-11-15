@@ -3,10 +3,11 @@
 const puppeteer = require('puppeteer-core');
 const fs = require('node:fs');
 
-const CHROME =
-  process.env.CHROME_PATH || '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
-
 function chromePath() {
+  // CHROME_PATH do nguoi chay dat — uu tien hon mac dinh, de chay duoc tren
+  // may khong cai Google Chrome mac dinh (CI, Chromium portable).
+  const fromEnv = process.env.CHROME_PATH;
+  if (fromEnv && fs.existsSync(fromEnv)) return fromEnv;
   const candidates = [
     '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
     '/Applications/Chromium.app/Contents/MacOS/Chromium',

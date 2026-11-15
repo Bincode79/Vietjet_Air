@@ -53,8 +53,6 @@ const BASE = (process.env.VISUAL_BASE_URL || 'http://127.0.0.1:4028').replace(/\
 const BASELINE_DIR =
   process.env.VISUAL_BASELINE_DIR || path.resolve(__dirname, '..', 'docs', 'qa', 'visual-baseline');
 const OUT_DIR = process.env.VISUAL_OUT_DIR || path.join(os.tmpdir(), 'vietjet-visual-diff');
-const CHROME =
-  process.env.CHROME_PATH || '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
 
 const UPDATE = process.argv.includes('--update');
 const MAX_DIFF_PERCENT = Number(process.env.VISUAL_MAX_DIFF_PERCENT || 0.1);
@@ -104,6 +102,10 @@ const SCREENS = [
 ];
 
 function chromePath() {
+  // CHROME_PATH do nguoi chay dat — uu tien hon mac dinh, de chay duoc tren
+  // may khong cai Google Chrome mac dinh (CI, Chromium portable).
+  const fromEnv = process.env.CHROME_PATH;
+  if (fromEnv && fs.existsSync(fromEnv)) return fromEnv;
   const candidates = [
     '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
     '/Applications/Chromium.app/Contents/MacOS/Chromium',
@@ -163,18 +165,14 @@ async function shoot(browser, screen, viewport) {
       for (const box of boxes) {
         if (!box) continue;
         await page
-          .evaluate(
-            (sel, b) => {
-              const el = document.querySelector(sel);
-              if (!el) return;
-              el.style.background = '#c8c8c8';
-              el.querySelectorAll('img').forEach((i) => {
-                i.style.visibility = 'hidden';
-              });
-            },
-            selector,
-            box
-          )
+          .evaluate((sel) => {
+            const el = document.querySelector(sel);
+            if (!el) return;
+            el.style.background = '#c8c8c8';
+            el.querySelectorAll('img').forEach((i) => {
+              i.style.visibility = 'hidden';
+            });
+          }, selector)
           .catch(() => {});
       }
     }
