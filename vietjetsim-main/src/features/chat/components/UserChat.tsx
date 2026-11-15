@@ -632,8 +632,8 @@ export default function UserChat() {
     return d.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
   };
 
-  // The admin console has its own chat surface (ChatTab) plus the AI assistant
-  // widget — never stack the user widget on top of it.
+  // The admin console has its own chat surface (ChatTab) — never stack the
+  // user widget on top of it.
   if (pathname?.startsWith('/quan-tri')) return null;
 
   // Signed-out visitors get the same launcher vietjetair.com shows to everyone;

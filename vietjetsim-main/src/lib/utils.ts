@@ -138,9 +138,8 @@ export function toVietnamInstant(date: string, time: string): string {
  * Cộng/trừ ngày trên một ngày tháng thuần `YYYY-MM-DD`.
  *
  * Tính trên lịch UTC, không qua `Asia/Ho_Chi_Minh`, nên kết quả không phụ thuộc
- * múi giờ nơi chạy — một hàm thuần để cả `parseFlightDate` ("ngày mai") và
- * `getFlightDatesNear` (cửa sổ ±3 ngày) dùng chung thay vì mỗi bên tự dựng một
- * `Date` và tự trừ.
+ * múi giờ nơi chạy — một hàm thuần để `parseFlightDate` ("ngày mai") dùng chung
+ * thay vì mỗi bên tự dựng một `Date` và tự trừ.
  */
 export function addDateDays(date: string, days: number): string {
   const base = new Date(`${date}T00:00:00Z`);

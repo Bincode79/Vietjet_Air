@@ -5,7 +5,7 @@ import {
   DEFAULT_VIETJET_DISCOUNT_VND,
   MIN_TICKET_PRICE_FLOOR,
   FARE_LADDER_RATIO,
-} from '@/lib/openclaw/web-collection';
+} from '@/lib/flight-pricing-constants';
 import { computeAdjustedPrices, type BulkPriceAdjustPayload } from '@/lib/flight-bulk-price';
 
 export async function POST(req: NextRequest) {

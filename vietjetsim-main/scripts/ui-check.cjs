@@ -736,86 +736,15 @@ async function main() {
   // /editor là standalone route, admin-only (giống /quan-tri).
   await captureAll('20-editor', `${BASE}/editor`);
 
-  // Trở lại bảng quản trị để kiểm tra widget OpenClaw.
-  // `cdp` ở scope này phải là target RIÊNG: mỗi `capture()` đã đóng target của
-  // nó, nên không có biến `cdp` nào tồn tại ở scope `main()`. Dùng lại biến của
-  // lần capture gần nhất sẽ là "ReferenceError: cdp is not defined".
-  const widgetTarget = await attach();
-  const widgetCdp = widgetTarget.cdp;
-  // `widget` và `skip` được khai báo NGOÀI try: phần báo cáo cuối cùng đọc chúng
-  // sau khi target đã đóng.
-  let widget = {};
-  let skip = {};
-  try {
-    await goto(widgetCdp, `${BASE}/quan-tri`);
-    await sleep(1000);
-
-    // ── Widget OpenClaw: mở panel, đọc nhãn backend và thử gửi một câu ─────────
-    const widgetLauncher = `[...document.querySelectorAll('button')].find((b) => (b.getAttribute('aria-label') || '').includes('OpenClaw'))`;
-    widget = { launcherFound: await evaluate(widgetCdp, `!!${widgetLauncher}`) };
-    if (widget.launcherFound) {
-      await evaluate(widgetCdp, `(() => { (${widgetLauncher}).click(); return true; })()`);
-      await sleep(2000);
-      widget.panel = await evaluate(
-        widgetCdp,
-        `(() => {
-        const label = [...document.querySelectorAll('div, p, span')]
-          .map((e) => (e.innerText || '').trim())
-          .find((t) => t.startsWith('Đang trực tuyến') || t.startsWith('Ollama') || t.startsWith('OpenClaw Gateway'));
-        const input = document.getElementById('openclaw-input');
-        return {
-          statusLabel: label ? label.split('\\n')[0].slice(0, 80) : null,
-          hasInput: !!input,
-          inputPlaceholder: input ? input.getAttribute('placeholder') : null,
-        };
-      })()`
-      );
-      widget.file = await shot(widgetCdp, '16-openclaw-widget');
-
-      // Gửi thử một câu để xem luồng chat thật (Ollama ngoại tuyến ⇒ phải trả lời
-      // lịch sự, không được hiện khung trống hay lỗi).
-      if (widget.panel?.hasInput) {
-        widget.send = await evaluate(
-          widgetCdp,
-          `(async () => {
-          const input = document.getElementById('openclaw-input');
-          const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set;
-          setter.call(input, 'Cập nhật chuyến bay HAN-SGN hôm nay');
-          input.dispatchEvent(new Event('input', { bubbles: true }));
-          await new Promise((r) => setTimeout(r, 200));
-          const button = input.parentElement.querySelector('button');
-          if (button && !button.disabled) button.click();
-          return { typed: true, clicked: !!button && !button.disabled };
-        })()`
-        );
-        await sleep(3000);
-        widget.afterSend = await evaluate(
-          widgetCdp,
-          `(() => {
-          const text = document.body.innerText || '';
-          return {
-            hasOfflineNotice: /ngoại tuyến|Ngoại tuyến/.test(text),
-            hasErrorBubble: /Lỗi|error|Error/.test(text),
-            tail: text.replace(/\\s+/g, ' ').slice(-220),
-          };
-        })()`
-        );
-        widget.afterSendFile = await shot(widgetCdp, '17-openclaw-sau-khi-gui');
-      }
-    }
-  } catch (e) {
-    // Lỗi ở bước kiểm tra widget không được phép giết cả lượt chạy — các màn
-    // hình đã chụp và phép thử skip link vẫn phải ra báo cáo.
-    widget.error = e && e.message ? e.message : String(e);
-  } finally {
-    await closeTarget(widgetTarget.targetId);
-  }
-
   // ── Skip link: hành vi thật, không chỉ cấu trúc DOM ────────────────────────
   // Cấu trúc mà PROBE kiểm (một `#main-content`, nằm sau `<header>`) là điều kiện
   // cần, không phải điều kiện đủ — nó không cho biết bàn phím có thật sự đi qua
   // thanh điều hướng. Ở đây: Tab đầu tiên phải rơi vào đúng skip link, Enter phải
   // đặt đích về `#main-content`, và Tab kế tiếp phải nằm *trong* `#main-content`.
+  //
+  // `skip` được khai báo NGOÀI try: phần báo cáo cuối cùng đọc nó sau khi target
+  // đã đóng.
+  let skip = {};
   const skipTarget = await attach();
   const skipCdp = skipTarget.cdp;
   try {
@@ -867,7 +796,6 @@ async function main() {
         base: BASE,
         devServer: DEV_SERVER,
         results,
-        widget,
         skip,
         logins: { user: userLogin, admin: adminLogin },
       },
@@ -954,10 +882,6 @@ async function main() {
       `Tab kế tiếp trong #main-content: ${skip.nextTabInMain} (${skip.nextTabTag})` +
       (skipFlags.length ? `\n      → ${skipFlags.join(' · ')}` : '')
   );
-  console.log(`\nWidget OpenClaw: launcher=${widget.launcherFound}`);
-  if (widget.panel) console.log(`   nhãn trạng thái: ${widget.panel.statusLabel}`);
-  if (widget.send) console.log(`   gửi thử: ${JSON.stringify(widget.send)}`);
-  if (widget.afterSend) console.log(`   sau khi gửi: ${JSON.stringify(widget.afterSend)}`);
   console.log(`\nĐăng nhập: user=${JSON.stringify(userLogin)} admin=${JSON.stringify(adminLogin)}`);
 
   if (failed > 0) {

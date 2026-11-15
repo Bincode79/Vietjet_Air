@@ -1147,44 +1147,36 @@ return response;` narrows correctly and avoids returning `undefined` from a hand
   as distinct and the "no payment id yet" case would slip through and send
   twice. Admin resends pass `skipIdempotency: true` on purpose.
 
-## Chat (h·ªó tr·ª£ kh√°ch h√Ýng + tr·ª£ l√Ω AI)
+## Chat (h·ªó tr·ª£ kh√°ch h√Ùng)
 
-Chat lives in `src/features/chat` (`UserChat`, `OpenClawAssistant`, `ChatWidgets`)
-with services in `src/features/chat/services` and APIs under `src/app/api/tro-chuyen/*`.
+Chat lives in `src/features/chat` (`UserChat`, `ChatWidgets`) with services in
+`src/features/chat/services` and APIs under `src/app/api/tro-chuyen/*`.
 
-- **Both widgets mount once, from the root layout** via `<ChatWidgets />` (inside
-  `AuthProvider`). Each widget gates itself: `UserChat` renders only for a signed-in
-  user and returns `null` on `/quan-tri`; `OpenClawAssistant` renders only when
-  `isAdmin && pathname.startsWith('/quan-tri')`. Do not re-mount `UserChat` on an
-  individual page — that renders two floating buttons.
+- **The OpenClaw integration was removed.** The assistant widget, the
+  `/api/tro-ly-ai/tro-chuyen` route, `src/lib/openclaw/*` (Ollama/OpenClaw
+  gateway, the web collector, the WAF solver, the flight researcher and the
+  flight-command parser), the five `/api/quan-tri/thu-thap-*` collection routes
+  and the admin "Thu thập dữ liệu web" panel are all gone. The admin console
+  has no AI chat surface. Do not reintroduce them without a decision to restore
+  the feature — the collector was not working against vietjetair.com.
+- **The pricing constants that lived in the collector were kept.** The fare
+  ladder ratio, the default Vietjet discount and the minimum fare floor now
+  live in `src/lib/flight-pricing-constants.ts`, because the bulk price-adjust
+  endpoint (`/api/quan-tri/chuyen-bay/dieu-chinh-gia`) needs them and must not
+  depend on a collector that no longer exists.
+- **The chat widget mounts once, from the root layout** via `<ChatWidgets />`
+  (inside `AuthProvider`). `UserChat` renders only for a signed-in user and
+  returns `null` on `/quan-tri`. Do not re-mount `UserChat` on an individual
+  page — that renders two floating buttons.
 - **Presence (`/api/tro-chuyen/truc-tuyen`) is conversation-scoped.** Both GET and
   POST require the caller to own the conversation (`userOwnsConversation`) unless they
   are an admin. GET previously accepted a `role` query param that overrode the token's
   role; never reintroduce a client-supplied role. The viewer's own role is derived with
   `isAdminRole(payload.role)`.
-- **`/api/tro-ly-ai/tro-chuyen` is admin-only** and gated by `verifyAdminRequest`, which
-  enforces CSRF before auth. Its sole caller is the Admin console widget; call it through
-  `askAssistant()` rather than raw fetch.
-- **The assistant has two backends; Ollama is only picked when it is configured.**
-  `resolveAssistantProvider` (`src/lib/openclaw/ollama.ts`) answers `ollama` as soon as any
-  `OLLAMA_*` variable exists (`OPENCLAW_PROVIDER` overrides the guess) and `openclaw`
-  otherwise, so an environment without Ollama config keeps calling the gateway exactly as
-  before — that default is pinned in `src/test/ollama-provider.test.ts`. The chosen backend
-  is tried first and the other only when it is configured (`getProviderAttempts`), so one
-  dead backend does not fail the turn while the other is alive. A `GET` on the same route
-  reports which backend is live and what `GET /api/tags` offers, which is also what the
-  widget prints under "Đang trực tuyến".
-- **The new question travels as the last `user` message, not only in `history`.**
-  The widget sends the typed text in `message` and only the _previous_ turns in `history`,
-  so a turn assembled from `history` alone answers the previous question — measured against
-  a stub Ollama before `ollamaMessages = [...context, question]` existed. Two details came
-  with the fix: a duplicate-tail guard (a client that also puts the question at the end of
-  `history` must not send it twice) and `OLLAMA_THINK` only forwarded when set, because
-  older Ollama builds do not know the `think` field.
 - **Archiving is a real `status` column**, not a UI-only flag. `PATCH
 /api/tro-chuyen/cuoc-hoi-thoai` is admin-only, rejects any status other than
-  `active`/`closed`, and backs the Admin `ChatTab` "L∆∞u tr·ªØ" filter and its
-  archive/reopen button (`setConversationStatus`).
+`active`/`closed`, and backs the Admin `ChatTab` "L∆∞u tr·ªØ" filter and its
+archive/reopen button (`setConversationStatus`).
 - **The mock DB models chat in memory.** `src/lib/neon.ts` has a `runChatQuery` branch
   plus a `.query` method that mirrors the SQL `src/lib/db.ts` issues through
   `sql.query`, so chat works without `DATABASE_URL`. New chat SQL must be mirrored
@@ -1253,8 +1245,8 @@ exactly one `#main-content`, no `<main>` nested in another, and the target _afte
 `<header>` in document order — because that is the only place it can be seen: three routes
 (`/dang-nhap`, `/dat-lai-mat-khau`, `/lam-thu-tuc`) read `useSearchParams` and serve only
 an empty `Suspense` fallback in the raw HTML, so a `curl | grep <main` says zero on pages
-that are correct. It screenshots 56 captures — 18 routes × 3 canonical viewports plus the
-post-login console and the OpenClaw widget — and exits non-zero if any
+that are correct. It screenshots 55 captures — 18 routes × 3 canonical viewports plus the
+post-login console — and exits non-zero if any
 screen has a flag, so it works as a gate. **Run it against a production build** (`npm run
 build && npm start`) — this is where the difference is load-bearing: `next dev` does not
 prefetch, so `router.prefetch('/dat-ve')` for a non-existent route (only `/dat-ve/[id]`

@@ -14,7 +14,7 @@
  * is imported from here.
  */
 
-import { MIN_TICKET_PRICE_FLOOR, FARE_LADDER_RATIO } from '@/lib/openclaw/web-collection';
+import { MIN_TICKET_PRICE_FLOOR, FARE_LADDER_RATIO } from '@/lib/flight-pricing-constants';
 
 export type PriceAdjustAction =
   | 'discount_fixed'

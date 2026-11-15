@@ -12,7 +12,6 @@ import { GET as getMessages, POST as postMessage } from '@/app/api/tro-chuyen/ro
 import { GET as getConversations } from '@/app/api/tro-chuyen/cuoc-hoi-thoai/route';
 import { POST as markRead } from '@/app/api/tro-chuyen/danh-dau-da-doc/route';
 import { GET as getPresence, POST as postPresence } from '@/app/api/tro-chuyen/truc-tuyen/route';
-import { POST as postAi } from '@/app/api/tro-ly-ai/tro-chuyen/route';
 import * as db from '@/lib/db';
 
 vi.mock('@/lib/neon', () => {
@@ -309,46 +308,6 @@ describe('Chat API security', () => {
       expect(updateSpy).toHaveBeenCalledWith('user-1', 'c1', 'user', {
         is_online: true,
       });
-    });
-  });
-
-  describe('POST /api/tro-ly-ai/tro-chuyen (AI assistant)', () => {
-    it('rejects an unauthenticated request with 401', async () => {
-      const req = new NextRequest('http://localhost:4028/api/tro-ly-ai/tro-chuyen', {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ message: 'hi' }),
-      });
-      const res = await postAi(req);
-      expect(res.status).toBe(401);
-    });
-
-    it('rejects a non-admin user with 403', async () => {
-      const req = new NextRequest('http://localhost:4028/api/tro-ly-ai/tro-chuyen', {
-        method: 'POST',
-        headers: withCsrf(userToken()),
-        body: JSON.stringify({ message: 'hi' }),
-      });
-      const res = await postAi(req);
-      expect(res.status).toBe(403);
-    });
-
-    it('allows an admin through to the assistant', async () => {
-      vi.stubGlobal(
-        'fetch',
-        vi.fn().mockResolvedValue({
-          ok: true,
-          json: async () => ({ reply: 'Xin chào' }),
-        })
-      );
-      const req = new NextRequest('http://localhost:4028/api/tro-ly-ai/tro-chuyen', {
-        method: 'POST',
-        headers: withCsrf(adminToken()),
-        body: JSON.stringify({ message: 'hi' }),
-      });
-      const res = await postAi(req);
-      expect(res.status).toBe(200);
-      expect((await res.json()).content).toBe('Xin chào');
     });
   });
 });

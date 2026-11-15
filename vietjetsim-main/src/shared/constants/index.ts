@@ -48,7 +48,6 @@ export const API_ENDPOINTS = {
     CONVERSATIONS: '/api/tro-chuyen/cuoc-hoi-thoai',
     PRESENCE: '/api/tro-chuyen/truc-tuyen',
     MARK_READ: '/api/tro-chuyen/danh-dau-da-doc',
-    ASSISTANT: '/api/tro-ly-ai/tro-chuyen',
     CALLS: '/api/tro-chuyen/cuoc-goi',
   },
   CODING_PI: {
@@ -77,11 +76,6 @@ export const API_ENDPOINTS = {
     RBAC: '/api/quan-tri/phan-quyen',
     AUDIT_LOGS: '/api/quan-tri/nhat-ky-kiem-toan',
     TOOLS: '/api/quan-tri/cong-cu',
-    COLLECT_NETWORK: '/api/quan-tri/thu-thap-mang-luoi',
-    COLLECT_SCHEDULE: '/api/quan-tri/thu-thap-lich-bay',
-    COLLECT_BULK: '/api/quan-tri/thu-thap-hang-loat',
-    COLLECT_AUTO: '/api/quan-tri/thu-thap-tu-dong',
-    COLLECT_SOLVE_WAF: '/api/quan-tri/thu-thap-giai-waf',
     ADJUST_FLIGHT_PRICES: '/api/quan-tri/chuyen-bay/dieu-chinh-gia',
   },
 } as const;
