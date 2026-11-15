@@ -417,28 +417,16 @@ export default function PaymentClient() {
       const stored = sessionStorage.getItem('vjsim_booking');
       if (stored) {
         setBooking(JSON.parse(stored));
-      } else {
-        // Fallback thực tế để đảm bảo trang luôn hiển thị đầy đủ thông tin chuyến bay Vietjet
-        setBooking({
-          flightNo: 'VJ141',
-          from: 'SGN',
-          to: 'HAN',
-          fromCity: 'TP. Hồ Chí Minh',
-          toCity: 'Hà Nội',
-          departTime: '08:30',
-          arriveTime: '10:40',
-          date: new Date().toISOString().split('T')[0],
-          passengers: [{ name: 'NGUYỄN VĂN AN', seat: '12A' }],
-          fareSubtotal: 1250000,
-          tax: 250000,
-          seatFee: 50000,
-          ancillaryFee: 180000,
-          ancillaries: ['baggage_20kg' as AncillaryId],
-          total: 1730000,
-        });
       }
+      // Không có `vjsim_booking` ⇒ khách chưa có đơn đặt vé nào. Trước đây
+      // nhánh `else` dựng một booking giả (VJ141 SGN→HAN, NGUYỄN VĂN AN,
+      // 1.730.000đ) để "trang luôn hiển thị đầy đủ". Hậu quả: mở /thanh-toán
+      // trực tiếp — hoặc từ một tab mới — hiện một vé điện tử hoàn chỉnh
+      // cho một chuyến bay không tồn tại, kèm giá, giờ bay và thông tin hành
+      // khách bịa. Khách đọc đó là vé của họ. `booking` phải giữ `null` để
+      // trang hiện trạng thái "chưa có đơn" thật sự.
     } catch {
-      // Fallback
+      // JSON hỏng ⇒ cũng coi như chưa có đơn.
     }
   }, []);
 
@@ -474,36 +462,41 @@ export default function PaymentClient() {
           setBookingCode(b.booking_code ?? null);
           const dbTotal = Number(b.total_price || 0);
           const dbFlight = b.flight;
-          const fromCode = (dbFlight?.from_code || 'SGN').toUpperCase();
-          const toCode = (dbFlight?.to_code || 'HAN').toUpperCase();
+          // Mọi trường dưới đây đến từ database. Trước đây chúng có
+          // fallback về SGN/HAN/VJ141/08:30 và tên hành khách bịa — nghĩa là
+          // một booking không có chuyến bay (dữ liệu chưa đủ) vẫn được hiện
+          // như một chuyến bay hoàn chỉnh. Thiếu dữ liệu thì phải hiện
+          // thiếu dữ liệu.
+          const fromCode = (dbFlight?.from_code || '').toUpperCase();
+          const toCode = (dbFlight?.to_code || '').toUpperCase();
           const departTimeStr = dbFlight?.depart_time
             ? new Date(dbFlight.depart_time).toLocaleTimeString('vi-VN', {
                 hour: '2-digit',
                 minute: '2-digit',
               })
-            : '08:30';
+            : '';
           const arriveTimeStr = dbFlight?.arrive_time
             ? new Date(dbFlight.arrive_time).toLocaleTimeString('vi-VN', {
                 hour: '2-digit',
                 minute: '2-digit',
               })
-            : '10:40';
+            : '';
           const dateStr = dbFlight?.depart_time
             ? new Date(dbFlight.depart_time).toISOString().split('T')[0]
-            : new Date().toISOString().split('T')[0];
+            : '';
           const paxList = (b.passengers || []).map((p, idx) => ({
-            name: p.name || `HÀNH KHÁCH ${idx + 1}`,
+            name: p.name || `Hành khách ${idx + 1}`,
             seat: p.seat_number || b.seats?.[idx]?.seat_number || 'Chưa chọn',
           }));
 
           setBooking((prev) => ({
             ...prev,
             bookingId: b.id,
-            flightNo: dbFlight?.flight_no || prev?.flightNo || 'VJ141',
+            flightNo: dbFlight?.flight_no || prev?.flightNo || '',
             from: fromCode,
             to: toCode,
-            fromCity: getAirportCity(fromCode),
-            toCity: getAirportCity(toCode),
+            fromCity: fromCode ? getAirportCity(fromCode) : '',
+            toCity: toCode ? getAirportCity(toCode) : '',
             departTime: departTimeStr,
             arriveTime: arriveTimeStr,
             date: dateStr,
@@ -513,7 +506,7 @@ export default function PaymentClient() {
                     ...p,
                     returnSeat: prev?.passengers?.[idx]?.returnSeat,
                   }))
-                : prev?.passengers || [{ name: 'HÀNH KHÁCH', seat: 'Chưa chọn' }],
+                : (prev?.passengers ?? []),
             fareSubtotal: Math.round(dbTotal * 0.65),
             tax: Math.round(dbTotal * 0.25),
             seatFee: prev?.seatFee ?? 0,
@@ -569,6 +562,29 @@ export default function PaymentClient() {
   const payableTotal = useMemo(() => {
     return Math.max(0, total - cashPlusPointsDiscountVnd);
   }, [total, cashPlusPointsDiscountVnd]);
+
+  /**
+   * Phí tiện ích của modal VietQR.
+   *
+   * Trước đây modal nhận cứng `convenienceFee={108000}` — một con số không
+   * thuộc về đơn nào. Nếu khách chọn chỗ hoặc mua thêm hành lý, tổng trên
+   * modal không cộng ra được với tổng bên dưới, và con số cứng 108.000 là
+   * phí mà khách không hề đặt ra. Phí thật là phí chọn chỗ cộng dịch vụ bổ
+   * sung; nếu không có thì bằng 0.
+   */
+  const vietQrConvenienceFee = useMemo(() => {
+    if (!booking) return 0;
+    return (booking.seatFee ?? 0) + (booking.ancillaryFee ?? 0);
+  }, [booking]);
+
+  /**
+   * Tổng mà modal VietQR in ra — phải bằng đúng tổng của các dòng nó hiện:
+   * tạm tính + phí tiện ích − giảm giá.
+   */
+  const vietQrGrandTotal = useMemo(() => {
+    const subtotal = booking?.fareSubtotal ?? 0;
+    return Math.max(0, subtotal + vietQrConvenienceFee - discountAmount);
+  }, [booking, vietQrConvenienceFee, discountAmount]);
 
   /**
    * Số tiền mặt khách phải trả — con số mà server sẽ kiểm tra.
@@ -649,14 +665,18 @@ export default function PaymentClient() {
 
   const itineraryBookingData = useMemo(() => {
     if (!booking) return null;
+    // The itinerary renders a real ticket, so every identifier it shows has to
+    // come from the booking. `vj-id` and `VJ-PNR` were placeholders that
+    // reached a customer-facing document as if they were a PNR.
+    const contactEmail = booking.contactEmail || '';
     return {
-      id: bookingId || booking.bookingId || 'vj-id',
-      booking_code: bookingCodeLabel || bookingCode || 'VJ-PNR',
+      id: bookingId || booking.bookingId || '',
+      booking_code: bookingCodeLabel !== '—' ? bookingCodeLabel : booking.flightNo,
       status: 'confirmed',
       created_at: new Date().toISOString(),
       total_price: total,
       contact_name: booking.passengers?.[0]?.name,
-      contact_email: booking.contactEmail || 'khachhang@vietjetair.vn',
+      contact_email: contactEmail,
       flight: {
         flight_no: booking.flightNo,
         from_code: booking.from,
@@ -669,7 +689,7 @@ export default function PaymentClient() {
         id: `p-${idx}`,
         name: p.name,
         seat_number: p.seat,
-        email: booking.contactEmail || 'khachhang@vietjetair.vn',
+        email: contactEmail,
       })),
       seats: booking.passengers?.map((p) => ({
         seat_number: p.seat,
@@ -679,12 +699,15 @@ export default function PaymentClient() {
         method: paymentMethod,
       },
     };
-  }, [booking, bookingId, bookingCodeLabel, bookingCode, total, paymentMethod]);
+  }, [booking, bookingId, bookingCodeLabel, total, paymentMethod]);
 
   useEffect(() => {
     if (booking?.passengers && booking.passengers.length > 0 && !moviFullName) {
       const first = booking.passengers[0];
-      if (first.name && first.name !== 'HÀNH KHÁCH') {
+      // Tên hành khách phải là tên thật từ đơn đặt vé. Trước đây điều kiện
+      // loại trừ chuỗi 'HÀNH KHÁCH' — một chuỗi chỉ tồn tại vì chính fallback
+      // tạo ra nó — nên bỏ đi: tên nào cũng lấy, đừng tự bịa ra tiêu chí.
+      if (first.name) {
         setMoviFullName(first.name);
       }
     }
@@ -1238,6 +1261,50 @@ export default function PaymentClient() {
     return <PaymentSkeleton />;
   }
 
+  /**
+   * Chưa có đơn đặt vé ⇒ không có gì để thanh toán.
+   *
+   * Đây là trạng thái thật: khách mở `/thanh-toan` mà chưa đi qua luồng đặt vé
+   * (mở tab mới, quay lại sau khi session hết hạn, bấm link trực tiếp). Trước
+   * đây trang dựng một booking giả và hiện một vé điện tử hoàn chỉnh — chuyến
+   * bay, giờ bay, hành khách, tổng tiền, QR chuyển khoản — cho một chuyến bay
+   * không tồn tại. Khách đọc đó là vé của họ.
+   */
+  if (!booking) {
+    return (
+      <div className="min-h-[70vh] flex items-center justify-center px-4 py-16">
+        <div className="max-w-md w-full text-center">
+          <div className="w-20 h-20 mx-auto rounded-2xl bg-[var(--surface-2)] border border-[var(--border)] flex items-center justify-center">
+            <Icon name="TicketIcon" size={36} className="text-[var(--foreground-subtle)]" />
+          </div>
+          <h1 className="mt-6 text-xl font-black font-koho text-[var(--vj-navy)]">
+            Chưa có đơn đặt vé để thanh toán
+          </h1>
+          <p className="mt-3 text-sm text-[var(--foreground-muted)] leading-relaxed">
+            Bạn chưa có đơn đặt vé nào đang chờ thanh toán. Hãy chọn chuyến bay và hoàn tất thông
+            tin hành khách trước, hoặc xem các chuyến đã đặt của bạn.
+          </p>
+          <div className="mt-7 flex flex-col sm:flex-row gap-3 justify-center">
+            <Link
+              href="/tim-ve"
+              className="vj-btn vj-btn-primary px-6 py-3 rounded-xl text-sm inline-flex items-center justify-center gap-2"
+            >
+              <Icon name="MagnifyingGlassIcon" size={16} />
+              Tìm chuyến bay
+            </Link>
+            <Link
+              href="/chuyen-bay-cua-toi"
+              className="vj-btn vj-btn-outline px-6 py-3 rounded-xl text-sm inline-flex items-center justify-center gap-2"
+            >
+              <Icon name="TicketIcon" size={16} />
+              Chuyến bay của tôi
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (confirmed) {
     return (
       <>
@@ -1620,15 +1687,15 @@ export default function PaymentClient() {
               <span className="text-3xs text-gray-500">▾</span>
             </button>
             <div className="flex items-center gap-1 font-koho text-2xs font-semibold text-gray-900 truncate">
-              <span>{booking?.fromCity || booking?.from || 'TP. HCM'}</span>
+              <span>{booking.fromCity || booking.from}</span>
               <span className="text-red-600">✈</span>
-              <span>{booking?.toCity || booking?.to || 'Đà Nẵng'}</span>
+              <span>{booking.toCity || booking.to}</span>
             </div>
           </div>
 
           <div className="hidden sm:flex items-center gap-2 font-koho">
             <span className="font-bold text-xs uppercase tracking-normal text-gray-950 font-koho">
-              {booking?.fromCity || 'TP. HCM'} ({booking?.from || 'SGN'})
+              {booking.fromCity} ({booking.from})
             </span>
             <svg
               width="12"
@@ -1641,11 +1708,13 @@ export default function PaymentClient() {
               <path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z" />
             </svg>
             <span className="font-bold text-xs uppercase tracking-normal text-gray-950 font-koho">
-              {booking?.toCity || 'Đà Nẵng'} ({booking?.to || 'DAD'})
+              {booking.toCity} ({booking.to})
             </span>
-            <span className="text-3xs font-semibold text-gray-700 bg-white/70 px-2 py-0.5 rounded-full ml-1 border border-amber-300/60 font-koho">
-              {booking?.flightNo ? `Chuyến bay ${booking.flightNo}` : 'VJ141'}
-            </span>
+            {booking.flightNo && (
+              <span className="text-3xs font-semibold text-gray-700 bg-white/70 px-2 py-0.5 rounded-full ml-1 border border-amber-300/60 font-koho">
+                Chuyến bay {booking.flightNo}
+              </span>
+            )}
           </div>
 
           {/* 4 Steps Indicator (with Step 4 active) */}
@@ -2263,9 +2332,7 @@ export default function PaymentClient() {
                                 fallbackAccount={selectedAdminAccount}
                                 fallbackAmount={total}
                                 fallbackPnr={
-                                  bookingCodeLabel !== '—'
-                                    ? bookingCodeLabel
-                                    : (booking?.flightNo ?? 'VJ141')
+                                  bookingCodeLabel !== '—' ? bookingCodeLabel : booking.flightNo
                                 }
                                 fallbackAddInfo={transferNote}
                                 showBankHeader={false}
@@ -2313,11 +2380,7 @@ export default function PaymentClient() {
                         onPaid={handlePaymentSuccessFromWebhook}
                         fallbackAccount={selectedAdminAccount}
                         fallbackAmount={total}
-                        fallbackPnr={
-                          bookingCodeLabel !== '—'
-                            ? bookingCodeLabel
-                            : (booking?.flightNo ?? 'VJ141')
-                        }
+                        fallbackPnr={bookingCodeLabel !== '—' ? bookingCodeLabel : booking.flightNo}
                         fallbackAddInfo={transferNote}
                         methodType={selectedMethodGroup}
                       />
@@ -2656,10 +2719,9 @@ export default function PaymentClient() {
                             <div className="flex justify-between items-center text-gray-800">
                               <span className="font-medium">Tạm tính</span>
                               <span className="font-bold text-gray-900">
-                                {Math.max(
-                                  0,
-                                  total - (booking?.ancillaryFee || 54000)
-                                ).toLocaleString('vi-VN')}{' '}
+                                {Math.max(0, total - (booking.ancillaryFee ?? 0)).toLocaleString(
+                                  'vi-VN'
+                                )}{' '}
                                 VND
                               </span>
                             </div>
@@ -2675,7 +2737,7 @@ export default function PaymentClient() {
                             <div className="flex justify-between items-center text-gray-800">
                               <span className="font-medium">Phí tiện ích</span>
                               <span className="font-bold text-gray-900">
-                                {(booking?.ancillaryFee || 54000).toLocaleString('vi-VN')} VND
+                                {(booking.ancillaryFee ?? 0).toLocaleString('vi-VN')} VND
                               </span>
                             </div>
                           </div>
@@ -2832,19 +2894,19 @@ export default function PaymentClient() {
             <div className="lg:col-span-1 space-y-4">
               {/* Realistic Vietjet Ticket Card */}
               <BookingTicketCard
-                flightNo={booking?.flightNo ?? 'VJ141'}
-                from={booking?.from ?? 'SGN'}
-                to={booking?.to ?? 'HAN'}
-                fromCity={booking?.fromCity ?? 'TP. Hồ Chí Minh'}
-                toCity={booking?.toCity ?? 'Hà Nội'}
-                departTime={booking?.departTime ?? '08:30'}
-                arriveTime={booking?.arriveTime ?? '10:40'}
-                date={booking?.date ? formatBookingDay(booking.date) : 'Thứ Sáu, 24/10/2026'}
+                flightNo={booking.flightNo}
+                from={booking.from}
+                to={booking.to}
+                fromCity={booking.fromCity}
+                toCity={booking.toCity}
+                departTime={booking.departTime}
+                arriveTime={booking.arriveTime}
+                date={booking.date ? formatBookingDay(booking.date) : ''}
                 bookingCode={bookingCodeLabel !== '—' ? bookingCodeLabel : undefined}
-                passengers={booking?.passengers ?? [{ name: 'NGUYỄN VĂN AN', seat: '12A' }]}
+                passengers={booking.passengers}
                 fareClass="Eco"
                 ancillaries={
-                  booking?.ancillaries?.length
+                  booking.ancillaries?.length
                     ? (booking.ancillaries
                         .map((id) => ANCILLARY_OPTIONS.find((o) => o.id === id)?.title)
                         .filter(Boolean) as string[])
@@ -2993,10 +3055,15 @@ export default function PaymentClient() {
         isOpen={showVietQrModal}
         onClose={() => setShowVietQrModal(false)}
         methodLabel="VietQR"
-        subtotal={booking?.fareSubtotal ?? total}
+        subtotal={booking.fareSubtotal}
         discount={discountAmount}
-        convenienceFee={108000}
-        grandTotal={total}
+        convenienceFee={vietQrConvenienceFee}
+        /* The modal shows subtotal + convenienceFee - discount, so the total it
+           prints has to be that same sum. It used to be `booking.total -
+           discount`, which already includes the fee — so the breakdown did not
+           add up to the number under it, and the customer could not tell which
+           figure was the one they would be charged. */
+        grandTotal={vietQrGrandTotal}
         onProceed={() => {
           setShowVietQrModal(false);
           toast.success(
@@ -3039,10 +3106,10 @@ export default function PaymentClient() {
       <PassengerDetailModal
         isOpen={showSummaryModal}
         onClose={() => setShowSummaryModal(false)}
-        outboundFare={booking?.total ? Math.round(booking.total * 0.7) : 1220400}
-        outboundFlightNo={booking?.flightNo ?? 'VJ141'}
+        outboundFare={booking.total ? Math.round(booking.total * 0.7) : 0}
+        outboundFlightNo={booking.flightNo}
         outboundTrip={
-          booking?.from && booking?.to
+          booking.from && booking.to
             ? `${booking.fromCity || booking.from} (${booking.from}) → ${booking.toCity || booking.to} (${booking.to})`
             : undefined
         }
