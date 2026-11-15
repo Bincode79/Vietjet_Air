@@ -30,107 +30,6 @@ interface Booking {
   createdAt: string;
 }
 
-const BOOKINGS: Booking[] = [
-  {
-    id: 'VJ2B4K9',
-    userId: '1',
-    userName: 'Nguyễn Văn An',
-    userEmail: 'an.nguyen@gmail.com',
-    flightNo: 'VJ 101',
-    route: 'HAN → SGN',
-    date: '20/03/2026',
-    seat: '14A',
-    amount: 1038900,
-    status: 'confirmed',
-    payMethod: 'Thẻ tín dụng',
-    createdAt: '16/03/2026 20:55',
-  },
-  {
-    id: 'VJ7M3P1',
-    userId: '2',
-    userName: 'Trần Thị Bích',
-    userEmail: 'bich.tran@gmail.com',
-    flightNo: 'VJ 201',
-    route: 'SGN → PQC',
-    date: '05/04/2026',
-    seat: '8C',
-    amount: 598900,
-    status: 'confirmed',
-    payMethod: 'MoMo',
-    createdAt: '16/03/2026 20:48',
-  },
-  {
-    id: 'VJ9X8Y7',
-    userId: '3',
-    userName: 'Lê Minh Tuấn',
-    userEmail: 'tuan.le@outlook.com',
-    flightNo: 'VJ 301',
-    route: 'HAN → DAD',
-    date: '21/03/2026',
-    seat: '22F',
-    amount: 548900,
-    status: 'pending',
-    payMethod: 'Ngân hàng',
-    createdAt: '16/03/2026 20:32',
-  },
-  {
-    id: 'VJ5Z6W4',
-    userId: '4',
-    userName: 'Phạm Thu Hà',
-    userEmail: 'ha.pham@yahoo.com',
-    flightNo: 'VJ 109',
-    route: 'SGN → HAN',
-    date: '18/03/2026',
-    seat: '5B',
-    amount: 748900,
-    status: 'cancelled',
-    payMethod: 'ZaloPay',
-    createdAt: '16/03/2026 19:15',
-  },
-  {
-    id: 'VJ1A2B3',
-    userId: '5',
-    userName: 'Hoàng Văn Dũng',
-    userEmail: 'dung.hoang@gmail.com',
-    flightNo: 'VJ 103',
-    route: 'HAN → SGN',
-    date: '22/03/2026',
-    seat: '11D',
-    amount: 1448900,
-    status: 'confirmed',
-    payMethod: 'Thẻ tín dụng',
-    createdAt: '16/03/2026 18:30',
-  },
-  {
-    id: 'VJ3C5D7',
-    userId: '6',
-    userName: 'Vũ Thị Lan',
-    userEmail: 'lan.vu@gmail.com',
-    flightNo: 'VJ 301',
-    route: 'HAN → DAD',
-    date: '25/03/2026',
-    seat: '7C',
-    amount: 449900,
-    status: 'completed',
-    payMethod: 'VNPay',
-    createdAt: '15/03/2026 14:20',
-  },
-  {
-    id: 'VJ8E9F2',
-    userId: '1',
-    userName: 'Nguyễn Văn An',
-    userEmail: 'an.nguyen@gmail.com',
-    flightNo: 'VJ 105',
-    route: 'HAN → SGN',
-    date: '10/03/2026',
-    seat: '19A',
-    amount: 898900,
-    status: 'completed',
-    payMethod: 'Thẻ tín dụng',
-    createdAt: '08/03/2026 09:45',
-  },
-];
-
 /**
  * All five statuses `bookings.status` can hold. `refunded` was missing, and the
  * lookups below index the map directly, so a refunded booking threw
@@ -160,7 +59,7 @@ interface BookingsTabProps {
 }
 
 export default function BookingsTab({ onToast }: BookingsTabProps = {}) {
-  const [bookings, setBookings] = useState<Booking[]>(BOOKINGS);
+  const [bookings, setBookings] = useState<Booking[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterStatus, setFilterStatus] = useState<'all' | BookingStatus>('all');
   const [dateFrom, setDateFrom] = useState('');
@@ -193,36 +92,34 @@ export default function BookingsTab({ onToast }: BookingsTabProps = {}) {
     setHasError(false);
     try {
       const res = await listAdminBookings({ limit: 100 });
-      if (res && res.bookings && res.bookings.length > 0) {
-        const mapped: Booking[] = res.bookings.map((b) => {
-          return {
-            id: b.booking_code || b.id.slice(0, 8).toUpperCase(),
-            userId: b.user_id || '0',
-            userName: b.user_name || 'Khách hàng',
-            userEmail: b.user_email || undefined,
-            flightNo: b.flight_no || '—',
-            route: b.from_code && b.to_code ? `${b.from_code} → ${b.to_code}` : '—',
-            date: b.created_at ? new Date(b.created_at).toLocaleDateString('vi-VN') : '—',
-            // The seats are the passenger rows' `seat_number` values, joined by
-            // the query. There is no seat on the booking row itself.
-            seat: b.seats || '—',
-            amount: Number(b.total_price) || 0,
-            status: (b.status as BookingStatus) || 'confirmed',
-            payMethod: b.payment_method || '—',
-            createdAt: b.created_at ? new Date(b.created_at).toLocaleString('vi-VN') : '—',
-          };
-        });
-        setBookings(mapped);
-      } else {
-        setBookings(BOOKINGS);
-      }
+      // An empty result is a real answer — there are no bookings. It renders
+      // the empty state; it must never render the demo rows.
+      const mapped: Booking[] = (res?.bookings || []).map((b) => {
+        return {
+          id: b.booking_code || b.id.slice(0, 8).toUpperCase(),
+          userId: b.user_id || '0',
+          userName: b.user_name || 'Khách hàng',
+          userEmail: b.user_email || undefined,
+          flightNo: b.flight_no || '—',
+          route: b.from_code && b.to_code ? `${b.from_code} → ${b.to_code}` : '—',
+          date: b.created_at ? new Date(b.created_at).toLocaleDateString('vi-VN') : '—',
+          // The seats are the passenger rows' `seat_number` values, joined by
+          // the query. There is no seat on the booking row itself.
+          seat: b.seats || '—',
+          amount: Number(b.total_price) || 0,
+          status: (b.status as BookingStatus) || 'confirmed',
+          payMethod: b.payment_method || '—',
+          createdAt: b.created_at ? new Date(b.created_at).toLocaleString('vi-VN') : '—',
+        };
+      });
+      setBookings(mapped);
     } catch {
       // The error flag has to be raised here. `setHasError(false)` at the top
       // of this function means the error branch was unreachable: a failed
       // request fell through to the demo rows below and the operator saw five
       // fabricated bookings under a table that looked live.
       setHasError(true);
-      setBookings(BOOKINGS);
+      setBookings([]);
     } finally {
       setIsLoading(false);
     }

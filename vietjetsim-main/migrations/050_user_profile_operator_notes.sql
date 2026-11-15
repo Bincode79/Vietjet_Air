@@ -1,0 +1,35 @@
+-- 050_user_profile_operator_notes.sql
+--
+-- Ghi chú vận hành trên hồ sơ khách hàng.
+--
+-- Vấn đề:
+--   Bảng "Người dùng" trong console quản trị có một ô "Ghi chú vận hành"
+--   ("Nhập ghi chú cho người dùng này (chỉ hệ thống thấy)...") và một cột
+--   `notes` trong kiểu dữ liệu của tab. Nhưng `user_profiles` KHÔNG có cột
+--   `notes` — cột tên `notes` trong schema thuộc về `agencies` (migration
+--   015).
+--
+--   Hậu quả: ô ghi chú là một `<textarea>` không có `value`, không có
+--   `onChange` và không có write path — gõ vào đó không lưu gì, và tải lại
+--   trang thì trống. Đồng thời `getAllUsers` trả về các hàng không có cột
+--   đó, nên `u.notes` luôn là `undefined`.
+--
+--   Đây là cùng lớp lỗi với "bảng đặt vé hiện 4 cột bịa": UI đọc một cột
+--   không tồn tại, và fallback làm cho nó trông như dữ liệu thật.
+--
+-- Hình dạng:
+--   * `operator_notes TEXT` — nullable, không có default.
+--   * KHÔNG dùng tên `notes`: `agencies.notes` đã tồn tại, và đặt cùng tên ở
+--     hai bảng không liên quan là cách để người đọc tưởng chúng là cùng
+--     loại dữ liệu. Tên mới nói rõ đây là ghi chú của operator.
+--
+-- Idempotency:
+--   `ADD COLUMN IF NOT EXISTS` — nhưng theo quy tắc của repo, một ràng buộc
+--   khai báo bên trong `ADD COLUMN IF NOT EXISTS` KHÔNG BAO GIỜ được áp dụng
+--   (Postgres bỏ toàn bộ phần định nghĩa còn lại khi cột đã tồn tại). Ở đây
+--   không có ràng buộc nào, nên `IF NOT EXISTS` là đủ.
+--
+-- Đây là cột trống: không có dữ liệu nào bị xoá, và không có hành vi cũ nào
+-- phụ thuộc vào nó.
+
+ALTER TABLE user_profiles ADD COLUMN IF NOT EXISTS operator_notes TEXT;

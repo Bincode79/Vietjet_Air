@@ -33,7 +33,8 @@ interface User {
   bookings: number;
   spent: number;
   joinDate: string;
-  notes?: string;
+  /** Ghi chú vận hành của operator (migration 050). */
+  operatorNotes?: string;
   lastLogin?: string;
   address?: string;
 }
@@ -49,7 +50,7 @@ const INITIAL_USERS: User[] = [
     bookings: 5,
     spent: 4820000,
     joinDate: '2026-01-10',
-    notes: 'Khách hàng thân thiết, thường xuyên đặt vé đi Đà Nẵng.',
+    operatorNotes: 'Khách hàng thân thiết, thường xuyên đặt vé đi Đà Nẵng.',
     lastLogin: '2026-04-01 14:30',
     address: 'Quận 1, TP. Hồ Chí Minh',
   },
@@ -75,7 +76,7 @@ const INITIAL_USERS: User[] = [
     bookings: 8,
     spent: 7340000,
     joinDate: '2026-01-20',
-    notes: 'Cần hỗ trợ về hóa đơn đỏ.',
+    operatorNotes: 'Cần hỗ trợ về hóa đơn đỏ.',
     lastLogin: '2026-04-03 18:45',
   },
   {
@@ -88,7 +89,7 @@ const INITIAL_USERS: User[] = [
     bookings: 2,
     spent: 980000,
     joinDate: '2026-01-25',
-    notes: 'Tài khoản tạm khóa do nghi ngờ gian lận thanh toán.',
+    operatorNotes: 'Tài khoản tạm khóa do nghi ngờ gian lận thanh toán.',
   },
   {
     id: '5',
@@ -139,7 +140,8 @@ interface UserApiRow {
   bookings_count?: number | null;
   total_spent?: number | null;
   created_at?: string | null;
-  notes?: string | null;
+  /** Ghi chú vận hành (migration 050). */
+  operator_notes?: string | null;
   last_login?: string | null;
   address?: string | null;
 }
@@ -165,6 +167,11 @@ export default function UsersTab({ onToast }: { onToast?: ToastAPI }) {
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [switchingRoleId, setSwitchingRoleId] = useState<string | null>(null);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  // Nội dung ghi chú đang soạn. Tách khỏi `selectedUser` để gõ không làm
+  // đổi hàng trong bảng, và có nút lưu tường minh — trước đây ô này không
+  // có `value` lẫn `onChange`, nên gõ vào không lưu gì cả.
+  const [notesDraft, setNotesDraft] = useState('');
+  const [isSavingNotes, setIsSavingNotes] = useState(false);
   const { user: currentUser } = useAuth();
 
   const fetchUsers = async () => {
@@ -183,7 +190,10 @@ export default function UsersTab({ onToast }: { onToast?: ToastAPI }) {
           bookings: u.bookings_count || 0,
           spent: Number(u.total_spent) || 0,
           joinDate: u.created_at ? new Date(u.created_at).toISOString().split('T')[0] : 'N/A',
-          notes: u.notes ?? undefined,
+          // `notes` is not a column of `user_profiles` — the column with that
+          // name belongs to `agencies`. The operator note is
+          // `operator_notes` (migration 050).
+          operatorNotes: u.operator_notes ?? undefined,
           lastLogin: u.last_login ? new Date(u.last_login).toLocaleString('vi-VN') : undefined,
           address: u.address ?? undefined,
         }));
@@ -341,6 +351,28 @@ export default function UsersTab({ onToast }: { onToast?: ToastAPI }) {
       onToast?.error('Lỗi cập nhật vai trò', getApiErrorMessage(err, 'Vui lòng thử lại sau.'));
     } finally {
       setSwitchingRoleId(null);
+    }
+  };
+
+  const handleSaveNotes = async () => {
+    if (!selectedUser || isSavingNotes) return;
+    const notes = notesDraft.trim();
+    if (notes === (selectedUser.operatorNotes ?? '')) return;
+    setIsSavingNotes(true);
+    try {
+      await updateUser(selectedUser.id, { operator_notes: notes });
+      setUsers((prev) =>
+        prev.map((u) =>
+          u.id === selectedUser.id ? { ...u, operatorNotes: notes || undefined } : u
+        )
+      );
+      setSelectedUser((prev) => (prev ? { ...prev, operatorNotes: notes || undefined } : prev));
+      setNotesDraft(notes);
+      onToast?.success('Đã lưu ghi chú', `Ghi chú của ${selectedUser.name} đã được lưu.`);
+    } catch (err) {
+      onToast?.error('Lỗi lưu ghi chú', getApiErrorMessage(err, 'Vui lòng thử lại sau.'));
+    } finally {
+      setIsSavingNotes(false);
     }
   };
 
@@ -644,7 +676,12 @@ export default function UsersTab({ onToast }: { onToast?: ToastAPI }) {
                 paginated.map((user, _i) => (
                   <tr
                     key={user.id}
-                    onClick={() => setSelectedUser(user)}
+                    onClick={() => {
+                      setSelectedUser(user);
+                      // Bản nháp ghi chú phải bắt đầu từ giá trị ĐÃ LƯU của
+                      // hàng đang mở, không phải từ giá trị của hàng trước đó.
+                      setNotesDraft(user.operatorNotes ?? '');
+                    }}
                     className="border-b border-white/[0.03] hover:bg-white/[0.05] transition-all group cursor-pointer"
                   >
                     <td className="px-6 py-5">
@@ -949,7 +986,27 @@ export default function UsersTab({ onToast }: { onToast?: ToastAPI }) {
                   <textarea
                     className="w-full bg-white/5 border border-white/5 rounded-2xl p-4 text-xs text-slate-300 placeholder-slate-600 focus:outline-none focus:border-indigo-500/30 min-h-[110px] resize-none"
                     placeholder="Nhập ghi chú cho người dùng này (chỉ hệ thống thấy)..."
+                    value={notesDraft}
+                    onChange={(e) => setNotesDraft(e.target.value)}
+                    maxLength={2000}
                   />
+                  <div className="flex items-center justify-between mt-3">
+                    <p className="text-2xs text-slate-500">
+                      {notesDraft.trim() === (selectedUser.operatorNotes ?? '')
+                        ? 'Chưa có thay đổi.'
+                        : 'Chưa lưu — bấm "Lưu ghi chú".'}
+                    </p>
+                    <button
+                      type="button"
+                      onClick={handleSaveNotes}
+                      disabled={
+                        isSavingNotes || notesDraft.trim() === (selectedUser.operatorNotes ?? '')
+                      }
+                      className="text-2xs font-black uppercase tracking-widest px-4 py-2 rounded-xl bg-indigo-500/20 text-indigo-200 border border-indigo-500/30 hover:bg-indigo-500/30 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                    >
+                      {isSavingNotes ? 'Đang lưu...' : 'Lưu ghi chú'}
+                    </button>
+                  </div>
                 </section>
               </div>
             </div>

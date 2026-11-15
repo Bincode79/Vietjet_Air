@@ -40,7 +40,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
 
     const { id } = await params;
     const body = await request.json();
-    const { role, status } = body;
+    const { role, status, operator_notes } = body;
 
     // Prevent actor from changing their own role/status
     if (id === payload.userId) {
@@ -112,6 +112,38 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
         UPDATE user_profiles
         SET locked_until = ${status === 'locked' ? LOCKED_UNTIL_SENTINEL : null},
             updated_at = NOW()
+        WHERE id = ${id}
+        RETURNING *
+      `;
+      updatedUser = (results as UserRecord[])[0];
+    }
+
+    // Ghi chú vận hành (migration 050).
+    //
+    // Trước đây ô "Ghi chú vận hành" trong bảng người dùng là một
+    // `<textarea>` không có `value`, không có `onChange` và không có write
+    // path — gõ vào không lưu gì. Cột `notes` mà UI đọc thuộc về
+    // `agencies`, không phải `user_profiles`, nên nó luôn là `undefined`.
+    //
+    // Ghi chú được viết riêng, KHÔNG đi kèm khi đổi role hoặc khoá tài
+    // khoản: hai việc đó có hậu quả phân quyền, còn ghi chú thì không.
+    if (operator_notes !== undefined) {
+      if (typeof operator_notes !== 'string') {
+        return NextResponse.json(
+          { error: 'Bad Request', message: 'operator_notes must be a string' },
+          { status: 400 }
+        );
+      }
+      const notes = operator_notes.trim();
+      if (notes.length > 2000) {
+        return NextResponse.json(
+          { error: 'Bad Request', message: 'operator_notes must be 2000 characters or fewer' },
+          { status: 400 }
+        );
+      }
+      const results = await sql`
+        UPDATE user_profiles
+        SET operator_notes = ${notes || null}, updated_at = NOW()
         WHERE id = ${id}
         RETURNING *
       `;

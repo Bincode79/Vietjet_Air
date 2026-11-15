@@ -106,6 +106,8 @@ export interface UserRecord {
   last_login?: string | null;
   failed_login_attempts?: number | null;
   bank_info?: string | Record<string, string | number> | null;
+  /** Ghi chú vận hành của operator (migration 050). */
+  operator_notes?: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -418,22 +420,56 @@ export async function updateUserPassword(userId: string, passwordHash: string): 
   `;
 }
 
+/**
+ * The shape the admin users table renders.
+ *
+ * `getAllUsers` used to `SELECT * FROM user_profiles`, so every row carried
+ * only the profile columns. The admin table reads three more: the number of
+ * bookings, the money spent, and an internal note. None of the three is a
+ * column of `user_profiles` — the first two are aggregates over `bookings`,
+ * and the third does not exist at all.
+ *
+ * The table then showed `0` bookings and `0₫` spent for every customer, and
+ * sorted by those zeroes — which is why the "Chi tiêu" column looked empty
+ * rather than wrong, and why nobody reported it.
+ */
+export interface AdminUserRow extends UserRecord {
+  /** Number of bookings the customer has. */
+  bookings_count: number;
+  /** Total price of the customer's bookings, in VND. */
+  total_spent: number;
+}
+
 export async function getAllUsers(
   page: number = 1,
   limit: number = 20
-): Promise<{ users: UserRecord[]; total: number }> {
+): Promise<{ users: AdminUserRow[]; total: number }> {
   const offset = (page - 1) * limit;
 
+  // The booking aggregates are computed in a subquery per user rather than by
+  // joining `bookings`: a plain JOIN would produce one row per booking, so a
+  // customer with twelve bookings would occupy twelve rows of the admin table
+  // and the pagination would be wrong.
   const users = await sql`
-    SELECT * FROM user_profiles
-    ORDER BY created_at DESC
+    SELECT u.*,
+           COALESCE(b.bookings_count, 0) as bookings_count,
+           COALESCE(b.total_spent, 0) as total_spent
+    FROM user_profiles u
+    LEFT JOIN (
+      SELECT user_id,
+             COUNT(*) as bookings_count,
+             COALESCE(SUM(total_price), 0) as total_spent
+      FROM bookings
+      GROUP BY user_id
+    ) b ON b.user_id = u.id
+    ORDER BY u.created_at DESC
     LIMIT ${limit} OFFSET ${offset}
   `;
 
   const countResult = await sql`SELECT COUNT(*) as total FROM user_profiles`;
   const total = totalOf(countResult);
 
-  return { users: users as UserRecord[], total };
+  return { users: users as AdminUserRow[], total };
 }
 
 export async function updateUserRole(

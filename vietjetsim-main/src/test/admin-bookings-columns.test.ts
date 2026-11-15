@@ -67,7 +67,9 @@ describe('bảng đặt vé của quản trị không bịa dữ liệu cột', 
 
   it('bảng đọc đúng tên cột, không ép qua Record<string, unknown>', () => {
     const mapper =
-      /const mapped: Booking\[\] = res\.bookings\.map\(\(b\) => \{([\s\S]*?)\n {6}\}\);/.exec(tab);
+      /const mapped: Booking\[\] = \(res\?\.bookings \|\| \[\]\)\.map\(\(b\) => \{([\s\S]*?)\n {6}\}\);/.exec(
+        tab
+      );
     expect(mapper).not.toBeNull();
     const body = mapper![1];
 
@@ -77,6 +79,17 @@ describe('bảng đặt vé của quản trị không bịa dữ liệu cột', 
     expect(body).not.toMatch(/'VJ 101'/);
     expect(body).not.toMatch(/'HAN → SGN'/);
     expect(body).not.toMatch(/'Chuyển khoản'/);
+  });
+
+  it('không còn dòng dữ liệu mẫu nào trong bảng đặt vé', () => {
+    // The table seeded its state with a hardcoded array of five bookings.
+    // Every failed or empty request swapped the live rows for those, so a
+    // broken query was indistinguishable from a busy day.
+    expect(tab).not.toMatch(/const BOOKINGS: Booking\[\]/);
+    expect(tab).not.toMatch(/setBookings\(BOOKINGS\)/);
+
+    // And the initial state must be empty, not the demo rows.
+    expect(tab).toMatch(/useState<Booking\[\]>\(\[\]\)/);
   });
 
   it('lỗi tải dữ liệu phải bật cờ lỗi, không lặng lẽ trả về dòng mẫu', () => {

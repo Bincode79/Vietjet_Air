@@ -107,87 +107,6 @@ type Tab =
   | 'loyalty'
   | 'security';
 
-// Fallback data — used only when API fails or returns empty results
-const FALLBACK_UPCOMING: UiBooking[] = [
-  {
-    id: 'VJ2B4K9',
-    flightNo: 'VJ 101',
-    from: 'HAN',
-    to: 'SGN',
-    fromCity: 'Hà Nội',
-    toCity: 'TP. Hồ Chí Minh',
-    date: '20/03/2026',
-    departTime: '06:00',
-    arriveTime: '08:10',
-    seat: '14A',
-    price: 1038900,
-    status: 'confirmed',
-    image: '/images/hero/hero-bali-terraces.jpg',
-    alt: 'Ho Chi Minh City skyline',
-  },
-  {
-    id: 'VJ7M3P1',
-    flightNo: 'VJ 201',
-    from: 'SGN',
-    to: 'PQC',
-    fromCity: 'TP. Hồ Chí Minh',
-    toCity: 'Phú Quốc',
-    date: '05/04/2026',
-    departTime: '07:30',
-    arriveTime: '08:45',
-    seat: '8C',
-    price: 598900,
-    status: 'confirmed',
-    image: '/images/hero/hero-sale-aerial.jpg',
-    alt: 'Phu Quoc island beach',
-  },
-];
-
-const FALLBACK_HISTORY: UiBooking[] = [
-  {
-    id: 'VJ1A2B3',
-    flightNo: 'VJ 301',
-    from: 'HAN',
-    to: 'DAD',
-    fromCity: 'Hà Nội',
-    toCity: 'Đà Nẵng',
-    date: '10/02/2026',
-    departTime: '07:00',
-    arriveTime: '08:20',
-    seat: '22F',
-    price: 548900,
-    status: 'completed',
-  },
-  {
-    id: 'VJ9X8Y7',
-    flightNo: 'VJ 109',
-    from: 'SGN',
-    to: 'HAN',
-    fromCity: 'TP. Hồ Chí Minh',
-    toCity: 'Hà Nội',
-    date: '25/01/2026',
-    departTime: '18:45',
-    arriveTime: '20:55',
-    seat: '5B',
-    price: 748900,
-    status: 'completed',
-  },
-  {
-    id: 'VJ5Z6W4',
-    flightNo: 'VJ 103',
-    from: 'HAN',
-    to: 'SGN',
-    fromCity: 'Hà Nội',
-    toCity: 'TP. Hồ Chí Minh',
-    date: '15/01/2026',
-    departTime: '09:30',
-    arriveTime: '11:40',
-    seat: '11D',
-    price: 1448900,
-    status: 'cancelled',
-  },
-];
-
 /** Booking shape expected by the UI (upcoming cards + history table) */
 interface RefundApiRow {
   id: string;
@@ -452,17 +371,12 @@ export default function UserDashboardClient() {
     try {
       // Fetch confirmed + pending bookings as "upcoming"
       const { bookings } = await listBookings({ status: ['confirmed', 'pending'], limit: 20 });
-      if (Array.isArray(bookings) && bookings.length > 0) {
-        const mapped = bookings.map(mapDbBookingToUi);
-        setUpcomingBookings(mapped);
-      } else {
-        // API empty or error → use fallback
-        setUpcomingBookings(FALLBACK_UPCOMING);
-      }
+      // An empty list is a real answer: the customer has no upcoming trip.
+      // It must render the empty state, not invented bookings.
+      setUpcomingBookings(Array.isArray(bookings) ? bookings.map(mapDbBookingToUi) : []);
     } catch {
       setUpcomingError(true);
-      // Keep fallback so UI still shows something
-      setUpcomingBookings(FALLBACK_UPCOMING);
+      setUpcomingBookings([]);
     } finally {
       setUpcomingLoading(false);
     }
@@ -530,18 +444,15 @@ export default function UserDashboardClient() {
     try {
       // Fetch all bookings (no status filter) — we'll separate upcoming vs history on the client
       const { bookings } = await listBookings({ limit: 50 });
-      if (Array.isArray(bookings) && bookings.length > 0) {
-        // History = everything that is NOT confirmed/pending
-        const mapped = bookings
-          .map(mapDbBookingToUi)
-          .filter((b: UiBooking) => b.status !== 'confirmed' && b.status !== 'pending');
-        setHistoryBookings(mapped.length > 0 ? mapped : FALLBACK_HISTORY);
-      } else {
-        setHistoryBookings(FALLBACK_HISTORY);
-      }
+      // History = everything that is NOT confirmed/pending. No invented rows:
+      // an empty history is the empty state, not a demo itinerary.
+      const mapped = (Array.isArray(bookings) ? bookings : [])
+        .map(mapDbBookingToUi)
+        .filter((b: UiBooking) => b.status !== 'confirmed' && b.status !== 'pending');
+      setHistoryBookings(mapped);
     } catch {
       setHistoryError(true);
-      setHistoryBookings(FALLBACK_HISTORY);
+      setHistoryBookings([]);
     } finally {
       setHistoryLoading(false);
     }

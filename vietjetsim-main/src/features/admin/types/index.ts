@@ -85,7 +85,8 @@ export interface AdminUser {
   total_spent?: number;
   last_login?: string;
   address?: string;
-  notes?: string;
+  /** Ghi chú vận hành của operator (migration 050). */
+  operator_notes?: string | null;
   created_at: string;
 }
 
