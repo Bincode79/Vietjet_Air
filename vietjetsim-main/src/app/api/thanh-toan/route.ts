@@ -12,6 +12,9 @@ import {
   getDiscountCodeById,
   getDiscountCodeByCode,
   countUserDiscountUsage,
+  claimDiscountUsage,
+  releaseDiscountUsage,
+  getTripById,
 } from '@/lib/db';
 import { verifyAuthRequest } from '@/lib/auth';
 import { canAccessBooking } from '@/lib/booking-access';
@@ -65,7 +68,22 @@ export async function POST(request: NextRequest) {
     // PNR, so the value is normalised to a string before it is compared or
     // compared case-insensitively.
     const booking_id = typeof body.booking_id === 'string' ? body.booking_id.trim() : '';
-    const return_booking_id =
+
+    // `return_booking_id` is NO LONGER read from the request body.
+    //
+    // It used to be, and it was the one booking id on this route that skipped
+    // `canAccessBooking`: the outbound leg was checked, the inbound leg was
+    // not, so a caller who owned one leg could name any other booking and have
+    // its status rewritten to `confirmed`. The inbound leg is now DERIVED from
+    // the outbound leg's `trip_id` + `leg_role = 'inbound'` (migration 045),
+    // which is the only relationship that can be trusted — and which the client
+    // cannot forge.
+    //
+    // The field is still accepted in the body for backwards compatibility with
+    // an older client, and is then checked against the derived leg: a mismatch
+    // is refused rather than silently ignored, so a stale client gets a clear
+    // error instead of a booking that quietly stops being confirmed.
+    const requestedReturnBookingId =
       typeof body.return_booking_id === 'string' ? body.return_booking_id.trim() : null;
 
     // Validation
@@ -154,6 +172,38 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // ─── Chặng về: tự suy ra từ trip của chặng đi ────────────────────────────
+    //
+    // Một chuyến khứ hồi là HAI dòng `bookings` cùng `trip_id` (migration 045).
+    // Chặng về được tìm bằng quan hệ đó, không bằng id do client gửi lên —
+    // xem lý do ở chỗ `requestedReturnBookingId` được khai báo.
+    //
+    // `canAccessBooking` đã bảo vệ chặng đi; chặng về là của CÙNG trip và
+    // CÙNG chủ, nên nó thừa hưởng cùng một quyền. Không có chặng về nào của
+    // người khác nằm trong `trip_id` đó — `trip_id` là UUID sinh ở server khi
+    // tạo booking, không phải thứ client kiểm soát được.
+    let returnBookingId: string | null = null;
+    if (booking.trip_id) {
+      const trip = await getTripById(String(booking.trip_id));
+      const inboundLeg = trip?.legs.find((leg) => leg.legRole === 'inbound');
+      if (inboundLeg) {
+        // Một client cũ gửi `return_booking_id` khác chặng về thật: đó là
+        // dấu hiệu client đang cố gắn thanh toán vào một chặng khác. Từ chối
+        // rõ ràng thay vì bỏ qua, để không có chuyện "thanh toán chặng đi xong
+        // nhưng chặng về thì không" mà không ai biết vì sao.
+        if (requestedReturnBookingId && requestedReturnBookingId !== inboundLeg.bookingId) {
+          return NextResponse.json(
+            {
+              error: 'Forbidden',
+              message: 'Chặng về không khớp với chuyến bay đã chọn.',
+            },
+            { status: 403 }
+          );
+        }
+        returnBookingId = inboundLeg.bookingId;
+      }
+    }
+
     let validatedDiscountId: string | undefined;
     let validatedDiscountAmount = 0;
 
@@ -212,6 +262,30 @@ export async function POST(request: NextRequest) {
 
       validatedDiscountAmount = computeDiscountAmount(discount, booking.total_price);
       validatedDiscountId = discount.id;
+    }
+
+    // ─── Claim lượt dùng mã giảm giá (atomic) ────────────────────────────────
+    //
+    // Trên, `usage_limit` được ĐỌC rồi so sánh; lúc tăng bộ đếm lại diễn ra ở
+    // một câu lệnh khác, sau khi thanh toán. Giữa hai câu lệnh đó, một request
+    // khác có thể đọc đúng cùng giá trị và cũng vượt qua — nên hai khách
+    // dùng chung lượt cuối cùng của một mã.
+    //
+    // `claimDiscountUsage` gộp cả hai thành MỘT câu lệnh: `WHERE` là điều
+    // kiện, `SET` là hành động, và Postgres xử lý chúng dưới cùng một row
+    // lock. Mã hết lượt thì không khớp dòng nào ⇒ `false`.
+    //
+    // Lượt được trả lại nếu thanh toán thất bại — xem `.catch()` của
+    // `createPaymentAndConfirmBooking` bên dưới.
+    let discountUsageClaimed = false;
+    if (validatedDiscountId) {
+      discountUsageClaimed = await claimDiscountUsage(validatedDiscountId);
+      if (!discountUsageClaimed) {
+        return NextResponse.json(
+          { error: 'Invalid discount', message: 'Mã giảm giá đã hết lượt sử dụng' },
+          { status: 400 }
+        );
+      }
     }
 
     // Charge exactly what the booking is worth. `amount` from the browser is for
@@ -450,6 +524,20 @@ export async function POST(request: NextRequest) {
         }
       }
 
+      // Trả lại lượt dùng mã giảm giá: lượt đã được claim ở trên, nhưng
+      // không có đồng nào nào được thu — khách không được mất lượt dùng cho
+      // một giao dịch thất bại.
+      if (discountUsageClaimed && validatedDiscountId) {
+        try {
+          await releaseDiscountUsage(validatedDiscountId);
+        } catch (releaseError) {
+          console.error(
+            '[PAYMENT][CRITICAL] Discount use was claimed but the payment failed and the use was not released.',
+            { paymentError, releaseError, discountCodeId: validatedDiscountId }
+          );
+        }
+      }
+
       // Tự động gửi email thông báo thanh toán thất bại / báo lỗi cho khách hàng
       if (toEmail && !toEmail.includes('@khach.vietjetsim.vn')) {
         void sendPaymentFailedEmail({
@@ -468,10 +556,12 @@ export async function POST(request: NextRequest) {
       throw paymentError;
     });
 
-    if (return_booking_id) {
+    // Chặng về được xác nhận theo CHẶNG ĐÃ SUY RA ở trên, không phải theo id
+    // client gửi lên — xem lý do chi tiết ở phần khai báo `requestedReturnBookingId`.
+    if (returnBookingId) {
       try {
         await updateBookingStatus(
-          return_booking_id,
+          returnBookingId,
           initialStatus === 'completed' ? 'confirmed' : 'pending'
         );
       } catch (retConfirmErr) {

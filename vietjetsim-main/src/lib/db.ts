@@ -1031,8 +1031,9 @@ export async function getBookingByCodeOrId(codeOrId: string): Promise<BookingDet
     LIMIT 1
   `;
 
-  if ((results as any[]).length === 0) return null;
-  return getBookingById(String((results as any[])[0].id));
+  const rows = asRows<{ id: unknown }>(results);
+  if (rows.length === 0) return null;
+  return getBookingById(String(rows[0].id));
 }
 
 export async function getBookingById(bookingId: string): Promise<BookingDetail | null> {
@@ -1446,11 +1447,6 @@ export async function createPaymentAndConfirmBooking(payment: {
           updated_at = NOW()
       WHERE id = ${payment.booking_id}
     `,
-      ...(payment.discount_code_id
-        ? [
-            sql`UPDATE discount_codes SET used_count = used_count + 1 WHERE id = ${payment.discount_code_id}`,
-          ]
-        : []),
     ]);
   } catch (txErr) {
     // Compensating transaction: if the payment/booking transaction fails AFTER the
@@ -3254,17 +3250,84 @@ export async function getDiscountCodeByCode(code: string): Promise<DiscountCodeR
   return (results as DiscountCodeRecord[])[0] || null;
 }
 
-/** How many bookings a user has already placed with a given discount code. */
+/**
+ * How many bookings a user has already placed with a given discount code.
+ *
+ * The count is over `bookings` — the table that records which code a booking
+ * was paid with — and it counts only the bookings that are still live
+ * (`pending`, `confirmed`, `completed`).
+ *
+ * Two things it must NOT be:
+ *
+ *   * A count over every booking carrying the code. A `cancelled`/`refunded`
+ *     booking does not consume a use of the code, and counting it would let a
+ *     customer lose a use to a trip they cancelled.
+ *   * A count over `bookings` in *any* state. `discount_code_id` is written by
+ *     `createPaymentAndConfirmBooking` at the moment of payment, so a booking
+ *     that has the code is one that already spent it. Counting the whole table
+ *     counted abandoned baskets too.
+ *
+ * Note this count is a *read*: it cannot by itself stop two concurrent
+ * requests from both seeing 0 and both spending the code. The atomic guard is
+ * `claimDiscountUsage` — the route claims the use before it charges.
+ */
 export async function countUserDiscountUsage(
   userId: string,
   discountCodeId: string
 ): Promise<number> {
   const results = await sql`
-    SELECT COUNT(*)::int AS count
-    FROM bookings
-    WHERE user_id = ${userId} AND discount_code_id = ${discountCodeId}
+    SELECT COUNT(DISTINCT b.id)::int AS count
+    FROM bookings b
+    WHERE b.user_id = ${userId}
+      AND b.discount_code_id = ${discountCodeId}
+      AND b.status IN ('pending', 'confirmed', 'completed')
   `;
   return totalOf(results);
+}
+
+/**
+ * Atomically claim one use of a discount code.
+ *
+ * The route used to *read* `used_count` and compare it against `usage_limit`
+ * (a check), and then increment it later in a separate statement (the act).
+ * Between those two statements another request could read the same value and
+ * pass the same check, so two customers could both spend the last use of a
+ * code.
+ *
+ * This does both in one statement: the `WHERE` clause is the check, the
+ * `SET` is the act, and Postgres serialises them on the row lock. A code whose
+ * last use is already taken matches no row, and `false` comes back.
+ *
+ * `false` also covers a code that does not exist, which is the same answer for
+ * the caller: this code cannot be spent.
+ */
+export async function claimDiscountUsage(discountCodeId: string): Promise<boolean> {
+  const results = await sql`
+    UPDATE discount_codes
+    SET used_count = used_count + 1, updated_at = NOW()
+    WHERE id = ${discountCodeId}
+      AND (usage_limit IS NULL OR used_count < usage_limit)
+    RETURNING id
+  `;
+  return Array.isArray(results) && results.length > 0;
+}
+
+/**
+ * Give back a use of a discount code.
+ *
+ * The compensation for `claimDiscountUsage` when the payment that followed the
+ * claim failed: the code was counted as spent, but nothing was charged, so
+ * the customer must not lose the use.
+ *
+ * `GREATEST(..., 0)` so a double release cannot drive the counter negative,
+ * which would silently grant extra uses.
+ */
+export async function releaseDiscountUsage(discountCodeId: string): Promise<void> {
+  await sql`
+    UPDATE discount_codes
+    SET used_count = GREATEST(used_count - 1, 0), updated_at = NOW()
+    WHERE id = ${discountCodeId}
+  `;
 }
 
 export async function getDiscountCodeById(id: string): Promise<DiscountCodeRecord | null> {
@@ -4464,16 +4527,33 @@ export async function getTripById(tripId: string): Promise<TripRecord | null> {
  * booking), nên không ánh xạ được hành khách → ghế: không sinh được boarding
  * pass theo từng người, và cũng không có chỗ ghi khi khách đổi ghế sau khi
  * đặt vé.
+ *
+ * `bookingId` là ĐIỀU KIỆN bắt buộc, không phải thông tin trang trí: nó biến
+ * câu lệnh thành "ghi ghế cho hành khách **của đặt chỗ này**" thay vì "ghi ghế
+ * cho hành khách có id này". Trước đó lệnh chỉ lọc theo `id`, nên bất kỳ
+ * write path nào truyền nhầm `passengerId` — hoặc bị lỗi IDOR — đều ghi ghế
+ * của hành khách thuộc đặt chỗ khác. `passengers.seat_number` là nơi duy
+ * nhất ánh xạ được hành khách → ghế (migration 046), nên ghi sai ở đây là ghi
+ * sai thẻ cưỡi của người khác.
+ *
+ * Hàm trả về `boolean`: `false` nghĩa là không có hành khách nào khớp cả
+ * `id` lẫn `booking_id` — tức là yêu cầu sai, và caller nên báo lỗi thay vì
+ * báo thành công.
  */
 export async function setPassengerSeatNumber(
   passengerId: string,
-  seatNumber: string | null
-): Promise<void> {
-  await sql`
+  seatNumber: string | null,
+  bookingId?: string | null
+): Promise<boolean> {
+  const rows = await sql`
     UPDATE passengers
     SET seat_number = ${seatNumber}
     WHERE id = ${passengerId}
+      AND (${bookingId ?? null}::uuid IS NULL OR booking_id = ${bookingId ?? null}::uuid)
+    RETURNING id
   `;
+
+  return Array.isArray(rows) && rows.length > 0;
 }
 
 // ─── Dịch vụ mua thêm & đổi ghế sau khi đặt vé (migration 046) ───────────────

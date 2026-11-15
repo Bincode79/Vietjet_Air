@@ -57,6 +57,8 @@ const mocks = vi.hoisted(() => ({
   getDiscountCodeById: vi.fn(),
   getDiscountCodeByCode: vi.fn(),
   countUserDiscountUsage: vi.fn(),
+  claimDiscountUsage: vi.fn(),
+  releaseDiscountUsage: vi.fn(),
   createPaymentAndConfirmBooking: vi.fn(),
 }));
 
@@ -105,6 +107,8 @@ describe('POST /api/thanh-toan — amount reconciliation', () => {
     mocks.refundLoyaltyPoints.mockResolvedValue(undefined);
     mocks.findUserById.mockResolvedValue(null);
     mocks.countUserDiscountUsage.mockResolvedValue(0);
+    mocks.claimDiscountUsage.mockResolvedValue(true);
+    mocks.releaseDiscountUsage.mockResolvedValue(undefined);
     mocks.createPaymentAndConfirmBooking.mockImplementation(async (p: { amount: number }) => ({
       payment: {
         id: 'pay-1',
