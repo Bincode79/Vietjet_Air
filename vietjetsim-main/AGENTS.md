@@ -12,6 +12,7 @@ npm test           # vitest run
 npm run lint       # eslint .   (NOT `next lint` — that is removed in Next 16)
 npm run lint:fix   # eslint . --fix
 npm run lint:tailwind-classes # asserts every className token exists in the generated CSS
+npm run lint:css-debt # ratchet: fails if arbitrary-value CSS debt RISES above the baseline
 npm run test:migrations # 4 migration passes on throwaway Docker Postgres (needs Docker)
 npm run test:smoke # post-build HTTP assertions against a running server
 npm run test:ui    # headless Chrome render check of 56 captures (18 routes × 3 viewports + 2 single-viewport; needs build + start + Chrome)
@@ -45,6 +46,31 @@ them found in this repo:
 compares it against every token in every `className`/`class` attribute, so it catches
 all three. It takes about a minute (it runs Tailwind over the whole tree), so it is a
 separate script rather than part of `npm run lint`.
+
+**An arbitrary value is a ratchet, not a ban — and the ratchet only works if CI runs it.**
+`scripts/css-debt.cjs` counts five kinds of arbitrary value across `src/`
+(`src/test/` excluded): `text-[Npx]`, `[#rrggbb]`, `p-[Npx]`-shaped spacing,
+`rounded[-t|-r|-b|-l]-[Npx]` and `shadow-[…]` (with `drop-shadow-[…]` excluded — it is
+a filter, not a `boxShadow`). The baseline lives in `scripts/css-debt-baseline.json` and
+is currently **0 on all five**. The script fails when a count goes UP, and passes when
+it goes down — so the baseline may only be lowered, never raised, and a file that fixes
+debt makes the next contributor's run stricter.
+
+Two rules keep it honest:
+
+- **Run it in CI.** A ratchet nobody runs is a comment. Both `lint:css-debt` and
+  `lint:tailwind-classes` are steps in the `lint-and-type-check` job; without them the
+  next `p-[13px]` sails through.
+- **A directional radius is the same debt as a plain one.** `rounded-t-[24px]` is
+  `rounded-[24px]` with an edge. The pattern matches both, and the token must hold a
+  SINGLE value (`'24px'`), never a 4-value box model (`'24px 24px 0 0'`) — Tailwind
+  expands a directional token into `border-top-left-radius`/`border-top-right-radius`,
+  and a box model would then zero the bottom corners and change the shape.
+
+The token lives in `tailwind.config.js`; `extend.spacing` carries the 4px grid plus the
+fractional steps the design actually uses (`0.2` = 2px, `1.25` = 5px, `3.35` = 13.4px,
+…), and `extend.boxShadow` carries the named elevations (`vj-up-*`, `vj-elev-*`,
+`glow-*`) that replaced 36 one-off shadows.
 
 Lint is NOT part of `npm run build`: Next 15/16 removed the `eslint` key from
 `next.config.mjs` (setting it logs "Unrecognized key(s) in object: 'eslint'"), and CI
