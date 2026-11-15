@@ -362,7 +362,14 @@ export async function POST(request: NextRequest) {
       }
 
       if (assignment.passengerId) {
-        await setPassengerSeatNumber(assignment.passengerId, seatNumber);
+        // `bookingId` là điều kiện bắt buộc: hành khách phải thuộc CHÍNH đặt
+        // chỗ đang check-in. Xem `setPassengerSeatNumber` — không có nó thì một
+        // `passengerId` của đặt chỗ khác cũng ghi được ghế ở đây.
+        //
+        // `false` nghĩa là không có hành khách nào khớp: `passengerId` của
+        // client không thuộc chặng này. Bỏ qua chứ không báo lỗi, để một
+        // assignment hỏng không làm hỏng cả những assignment hợp lệ còn lại.
+        await setPassengerSeatNumber(assignment.passengerId, seatNumber, bookingId);
       }
 
       const checkIn = await createCheckIn({
