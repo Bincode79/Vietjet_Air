@@ -11,6 +11,7 @@ import {
 } from '@/shared/components/ui';
 import { Pagination } from '@/shared/components/ui';
 import { AIRPORT_CITIES } from '@/shared/constants';
+import type { BookingListItem } from '@/features/bookings/types';
 
 // ─── Dynamic imports for heavy tab components (code-split) ──────────────
 const NotificationsTab = dynamic(() => import('./NotificationsTab'), {
@@ -224,24 +225,24 @@ type UiBooking = {
 /**
  * Map a DB booking record (from /api/dat-ve) to UiBooking format.
  * DB returns: { id, status, total_price, flight: { flight_no, from_code, to_code, depart_time, arrive_time }, passengers: [] }
+ *
+ * The shape is `BookingListItem` — the endpoint's row carries the nested
+ * `flight` and `passengers`, so the mapper can be typed instead of `any`.
  */
-/**
- * NOTE: kept as `any` on purpose. This mapper reads a *nested* `flight` object,
- * but its only call sites pass `BookingRecord` (flat, no `flight` key). Whether
- * the dashboard endpoint actually returns the nested shape is a runtime
- * question that needs a live database to answer — typing it either way here
- * would be a guess that silently changes what the UI renders.
- */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function mapDbBookingToUi(b: any): UiBooking {
-  const flight = b.flight || {};
+function mapDbBookingToUi(b: BookingListItem): UiBooking {
+  const flight = b.flight;
   const dep = flight.depart_time ? new Date(flight.depart_time) : new Date();
   const arr = flight.arrive_time ? new Date(flight.arrive_time) : new Date();
   const fmtTime = (d: Date) =>
     d.getHours().toString().padStart(2, '0') + ':' + d.getMinutes().toString().padStart(2, '0');
   const fmtDate = (d: Date) =>
     `${d.getDate().toString().padStart(2, '0')}/${(d.getMonth() + 1).toString().padStart(2, '0')}/${d.getFullYear()}`;
-  // Derive seat from first passenger if available
+  // Derive seat from first passenger if available.
+  //
+  // The seat lives in `passengers.seat_number` (migration 046) — the column
+  // was `seat` before that and no column has ever been named `seat`, so this
+  // read was always `undefined` and every dashboard row showed `--` for the
+  // seat even for a checked-in traveller.
   const firstPassenger =
     b.passengers && Array.isArray(b.passengers) && b.passengers.length > 0 ? b.passengers[0] : null;
 
@@ -259,7 +260,7 @@ function mapDbBookingToUi(b: any): UiBooking {
     date: fmtDate(dep),
     departTime: fmtTime(dep),
     arriveTime: fmtTime(arr),
-    seat: firstPassenger?.seat || '--',
+    seat: firstPassenger?.seat_number || '--',
     price: typeof b.total_price === 'number' ? b.total_price : Number(b.total_price) || 0,
     status: b.status || 'confirmed',
   };

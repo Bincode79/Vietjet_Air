@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { apiRequest, getApiErrorMessage } from '@/shared/services';
@@ -63,9 +63,6 @@ export default function VSCodeWebEditorPage() {
   // Chế độ làm việc của studio: sửa mã nguồn, hoặc sắp xếp bố cục trang
   // bằng giao diện kéo-thả.
   const [editorMode, setEditorMode] = useState<EditorMode>('code');
-  // GrapesJS editor instance (external library with no local type surface).
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const editorRef = useRef<any>(null);
 
   // Load File Tree
   const loadTree = async () => {
@@ -721,7 +718,6 @@ export default function VSCodeWebEditorPage() {
                     theme="vs-dark"
                     onChange={handleContentChange}
                     onMount={(editor) => {
-                      editorRef.current = editor;
                       editor.onDidChangeCursorPosition((e) => {
                         setCursorPos({ line: e.position.lineNumber, col: e.position.column });
                       });
