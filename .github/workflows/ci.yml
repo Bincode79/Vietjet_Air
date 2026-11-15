@@ -185,10 +185,48 @@ jobs:
           path: /tmp/vietjet-smoke-server.log
           retention-days: 7
 
+  smoke-real-db:
+    name: Smoke Test (real database)
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: vietjetsim-main/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      # Job này là bản sao của job `smoke` nhưng trên Postgres thật thay vì bộ
+      # nhớ in-memory.
+      #
+      # Vì sao cần cả hai: `run-smoke.sh` xanh 36/36, nhưng nó xanh vì dòng
+      # mẫu `VJSMOKE` nằm trong RAM của `src/lib/neon.ts`. Chạy đúng bộ khẳng
+      # định đó với database thật thì route vé điện tử trả 404 — tức là đường
+      # sinh file mà khách nhận ra ngoài đời KHÔNG được cổng HTTP nào canh giữ
+      # khi app chạy với dữ liệu thật. Job này dựng Postgres trong Docker,
+      # replay toàn bộ migration lên nó, seed một đặt chỗ mẫu CÓ hành khách,
+      # rồi chạy lại đúng bộ khẳng định đó.
+      #
+      # Job `smoke` vẫn giữ nguyên: nó nhanh, không cần Docker, và bảo đảm
+      # hành vi guard không đổi. Job này bảo đảm hành vi đó đúng TRÊN DỮ LIỆU
+      # THẬT — hai thứ khác nhau, và chỉ một trong hai là đủ.
+      - name: Smoke test against a real Postgres
+        run: bash scripts/run-smoke-real-db.sh
+        env:
+          JWT_SECRET: ci-smoke-test-secret
+          JWT_REFRESH_SECRET: ci-smoke-test-refresh-secret
+
   summary:
     name: CI Summary
     runs-on: ubuntu-latest
-    needs: [lint-and-type-check, test, build, smoke, migrations]
+    needs: [lint-and-type-check, test, build, smoke, smoke-real-db, migrations]
     if: always()
     steps:
       - name: Summary
@@ -201,4 +239,5 @@ jobs:
           echo "| Unit Tests | ${{ needs.test.result }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Build | ${{ needs.build.result }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Smoke Test | ${{ needs.smoke.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Smoke Test (real DB) | ${{ needs.smoke-real-db.result }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Migrations | ${{ needs.migrations.result }} |" >> $GITHUB_STEP_SUMMARY

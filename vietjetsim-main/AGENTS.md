@@ -14,7 +14,8 @@ npm run lint:fix   # eslint . --fix
 npm run lint:tailwind-classes # asserts every className token exists in the generated CSS
 npm run lint:css-debt # ratchet: fails if arbitrary-value CSS debt RISES above the baseline
 npm run test:migrations # 4 migration passes on throwaway Docker Postgres (needs Docker)
-npm run test:smoke # post-build HTTP assertions against a running server
+npm run test:smoke # post-build HTTP assertions against a running server (in-memory DB)
+npm run test:smoke:real-db # the SAME assertions against a real Postgres (needs Docker + build)
 npm run test:ui    # headless Chrome render check of 56 captures (18 routes × 3 viewports + 2 single-viewport; needs build + start + Chrome)
 ```
 
@@ -1235,6 +1236,45 @@ against a running server; CI runs it in the `smoke` job on port 4028 with no
 `DATABASE_URL`, so it exercises the mock DB path. It asserts routing, redirects, the CSRF
 handshake and auth guards, not happy-path writes — the mock DB cannot register users, so
 persistence flows are out of scope. Point it elsewhere with `SMOKE_BASE_URL`.
+
+**`npm run test:smoke:real-db` runs the SAME assertions against a real Postgres, and it is
+not a duplicate of the job above.** The in-memory gate is green 36/36 partly because the
+sample booking `VJSMOKE` lives in `src/lib/neon.ts` — in RAM. Run the identical assertions
+with a real `DATABASE_URL` and the e-ticket route answers 404: there is no sample row in
+the database, so the one path a customer actually receives — the boarding-pass PDF — had no
+HTTP gate standing behind it.
+
+Measured, with a fault injected into `getBookingByCodeOrId` (a reference to a column that
+does not exist, so the query only fails against real SQL):
+
+| Gate | Result |
+| --- | --- |
+| `test:smoke` (in-memory) | **passed** — the mock never sees SQL |
+| `test:smoke:real-db` (Postgres) | **failed** — 7 assertions red |
+
+That is the whole reason the second gate exists: a bug that only lives in the SQL cannot
+be seen by a gate that never runs SQL.
+
+`scripts/run-smoke-real-db.sh` does the whole thing in one process: it starts a throwaway
+`postgres:16-alpine`, replays all 53 migrations onto it, seeds one booking **with a
+passenger** (the route drops legs whose passenger list is empty, so a booking without one
+never reaches the PDF builder), starts `scripts/neon-http-bridge.cjs` so the Neon HTTP
+driver can reach that Postgres, runs the production build against it, and finally runs
+`scripts/smoke-test.cjs` unchanged. Every one of those steps is torn down in a `trap`.
+
+Two details that are load-bearing:
+
+- **It runs `next start`, not `next dev`.** The "pdfkit cannot find Helvetica.afm" failure
+  only appears in a build (where `pdfkit` is bundled and `__dirname` points at the wrong
+  directory); unit tests against source stay green. Measuring a dev server would report a
+  green gate that never touched the file-generation path.
+- **The booking code is seeded explicitly as `VJSMOKE`.** `generate_booking_code()` now
+  produces six alphanumeric characters, while the assertion expects the filename
+  `ve-dien-tu-VJSMOKE.pdf`. `bookings.booking_code` has no length CHECK (only UNIQUE), so
+  the seed sets it by hand rather than letting the column DEFAULT generate a different one.
+  The demo user is selected by `role`, not by email domain: migration 022 renamed the demo
+  accounts from `@vietjetsim.vn` to `@vietjetair.vn`, and a domain is a moving target.
+
 
 `npm run test:ui` (`scripts/ui-check.cjs`) drives real headless Chrome over the DevTools
 Protocol and asserts the _browser_ side that smoke cannot see: no `console.error`, no JS
