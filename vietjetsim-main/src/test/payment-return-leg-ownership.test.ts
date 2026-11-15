@@ -230,7 +230,7 @@ describe('POST /api/thanh-toan — inbound leg ownership', () => {
       ],
     });
 
-    const res = await createPayment(
+    await createPayment(
       req({
         booking_id: OUTBOUND_ID,
         return_booking_id: VICTIM_ID,
