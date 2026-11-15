@@ -120,12 +120,12 @@ export default function EBoardingPass({ data, passenger }: EBoardingPassProps) {
       {/* Perforation — vạch đứt chia đôi vé + notch hai bên. */}
       <div className="relative my-1">
         <div className="border-t-2 border-dashed border-[var(--border)]" />
-        <div className="absolute left-0 top-1/2 -translate-y-1/2 w-4 h-4 bg-[#FFF9E6] rounded-full -ml-2 border border-[var(--border)]" />
-        <div className="absolute right-0 top-1/2 -translate-y-1/2 w-4 h-4 bg-[#FFF9E6] rounded-full -mr-2 border border-[var(--border)]" />
+        <div className="absolute left-0 top-1/2 -translate-y-1/2 w-4 h-4 bg-vj-surface-warm rounded-full -ml-2 border border-[var(--border)]" />
+        <div className="absolute right-0 top-1/2 -translate-y-1/2 w-4 h-4 bg-vj-surface-warm rounded-full -mr-2 border border-[var(--border)]" />
       </div>
 
       {/* QR + mã vạch. */}
-      <div className="px-4 py-3 flex items-center gap-4 bg-[#FFFDF3]">
+      <div className="px-4 py-3 flex items-center gap-4 bg-vj-surface-cream">
         <div
           className="shrink-0 [&>svg]:w-[132px] [&>svg]:h-[132px]"
           data-testid="eboarding-qr"

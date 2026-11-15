@@ -242,19 +242,19 @@ export default function AnnouncementsTab({ onToast }: { onToast?: ToastAPI }) {
           <table className="w-full">
             <thead>
               <tr className="border-b border-white/5">
-                <th className="text-left text-[10px] font-black text-slate-500 uppercase tracking-widest px-5 py-4">
+                <th className="text-left text-2xs font-black text-slate-500 uppercase tracking-widest px-5 py-4">
                   Tiêu đề
                 </th>
-                <th className="text-left text-[10px] font-black text-slate-500 uppercase tracking-widest px-5 py-4 hidden sm:table-cell">
+                <th className="text-left text-2xs font-black text-slate-500 uppercase tracking-widest px-5 py-4 hidden sm:table-cell">
                   Loại
                 </th>
-                <th className="text-left text-[10px] font-black text-slate-500 uppercase tracking-widest px-5 py-4 hidden md:table-cell">
+                <th className="text-left text-2xs font-black text-slate-500 uppercase tracking-widest px-5 py-4 hidden md:table-cell">
                   Mục tiêu
                 </th>
-                <th className="text-center text-[10px] font-black text-slate-500 uppercase tracking-widest px-5 py-4 hidden lg:table-cell">
+                <th className="text-center text-2xs font-black text-slate-500 uppercase tracking-widest px-5 py-4 hidden lg:table-cell">
                   Trạng thái
                 </th>
-                <th className="text-center text-[10px] font-black text-slate-500 uppercase tracking-widest px-5 py-4">
+                <th className="text-center text-2xs font-black text-slate-500 uppercase tracking-widest px-5 py-4">
                   Thao tác
                 </th>
               </tr>
@@ -460,7 +460,7 @@ function AnnouncementModal({
         </div>
         <form onSubmit={onSubmit} className="p-5 space-y-4">
           <div>
-            <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">
+            <label className="block text-2xs font-black text-slate-500 uppercase tracking-widest mb-1">
               Tiêu đề <span className="text-red-400">*</span>
             </label>
             <input
@@ -474,7 +474,7 @@ function AnnouncementModal({
           </div>
 
           <div>
-            <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">
+            <label className="block text-2xs font-black text-slate-500 uppercase tracking-widest mb-1">
               Nội dung <span className="text-red-400">*</span>
             </label>
             <textarea
@@ -489,7 +489,7 @@ function AnnouncementModal({
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">
+              <label className="block text-2xs font-black text-slate-500 uppercase tracking-widest mb-1">
                 Loại thông báo
               </label>
               <select
@@ -510,7 +510,7 @@ function AnnouncementModal({
               </select>
             </div>
             <div>
-              <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">
+              <label className="block text-2xs font-black text-slate-500 uppercase tracking-widest mb-1">
                 Mục tiêu
               </label>
               <select
@@ -529,7 +529,7 @@ function AnnouncementModal({
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">
+              <label className="block text-2xs font-black text-slate-500 uppercase tracking-widest mb-1">
                 Ngày bắt đầu
               </label>
               <input
@@ -540,7 +540,7 @@ function AnnouncementModal({
               />
             </div>
             <div>
-              <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">
+              <label className="block text-2xs font-black text-slate-500 uppercase tracking-widest mb-1">
                 Ngày kết thúc
               </label>
               <input

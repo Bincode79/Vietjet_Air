@@ -432,7 +432,7 @@ export default function SendBookingEmailModal({
                         <div className="text-3xs uppercase tracking-widest text-slate-400 font-bold">
                           MÃ ĐẶT CHỖ (PNR)
                         </div>
-                        <div className="text-2xl font-black text-[#EC2029] tracking-widest mt-1">
+                        <div className="text-2xl font-black text-vj-red tracking-widest mt-1">
                           {pnr}
                         </div>
                         <div className="text-2xs text-amber-600 font-bold mt-1">
@@ -453,8 +453,7 @@ export default function SendBookingEmailModal({
                           Chủ tài khoản: <strong>DANG THI NGOC HAN</strong>
                         </div>
                         <div>
-                          Nội dung chuyển khoản:{' '}
-                          <strong className="text-[#EC2029]">VJ {pnr}</strong>
+                          Nội dung chuyển khoản: <strong className="text-vj-red">VJ {pnr}</strong>
                         </div>
                       </div>
                     </>
@@ -471,7 +470,7 @@ export default function SendBookingEmailModal({
                         <div className="text-3xs uppercase tracking-widest text-slate-400 font-bold">
                           MÃ ĐẶT CHỖ (PNR)
                         </div>
-                        <div className="text-2xl font-black text-[#EC2029] tracking-widest mt-1">
+                        <div className="text-2xl font-black text-vj-red tracking-widest mt-1">
                           {pnr}
                         </div>
                         <div className="text-2xs text-emerald-600 font-bold mt-1">
@@ -520,7 +519,7 @@ export default function SendBookingEmailModal({
                   )}
 
                   <div className="text-center pt-2">
-                    <span className="inline-block px-5 py-2.5 bg-[#EC2029] text-white font-bold text-2xs rounded-lg uppercase tracking-wider">
+                    <span className="inline-block px-5 py-2.5 bg-vj-red text-white font-bold text-2xs rounded-lg uppercase tracking-wider">
                       {templateType === 'payment_instruction'
                         ? 'Thanh toán ngay bằng VietQR'
                         : 'Xem vé điện tử & Quản lý chuyến bay'}

@@ -120,16 +120,16 @@ export default function VisualEditorPanel({ pagePath, initialLayout }: VisualEdi
   };
 
   return (
-    <div className="flex h-full min-h-0 flex-col bg-[#1e1e1e] text-[#f3f4f6]">
+    <div className="flex h-full min-h-0 flex-col bg-editor-canvas text-editor-ink">
       {/* Thanh công cụ */}
-      <div className="flex shrink-0 items-center justify-between gap-3 border-b border-[#3c3c3c] bg-[#252526] px-4 py-2">
+      <div className="flex shrink-0 items-center justify-between gap-3 border-b border-editor-divider bg-editor-panel px-4 py-2">
         <div className="flex items-center gap-2">
           <span className="text-sm font-bold">🎨 Trình soạn thảo trực quan</span>
-          <span className="rounded bg-[#3c3c3c] px-2 py-0.5 text-[11px] text-[#9ca3af]">
+          <span className="rounded bg-editor-divider px-2 py-0.5 text-xs2 text-editor-ink-soft">
             {pagePath}
           </span>
           {isDirty && (
-            <span className="rounded bg-[#5b4210] px-2 py-0.5 text-[11px] text-[#fde68a]">
+            <span className="rounded bg-editor-warning-bg px-2 py-0.5 text-xs2 text-editor-warning-ink">
               ● Chưa lưu
             </span>
           )}
@@ -139,7 +139,7 @@ export default function VisualEditorPanel({ pagePath, initialLayout }: VisualEdi
           <button
             type="button"
             onClick={handleReset}
-            className="rounded border border-[#454545] bg-[#1e1e1e] px-3 py-1.5 text-xs font-semibold text-[#d1d5db] hover:bg-[#2a2d2e]"
+            className="rounded border border-editor-border bg-editor-canvas px-3 py-1.5 text-xs font-semibold text-editor-ink-dim hover:bg-vj-surface-dark"
           >
             Đặt lại
           </button>
@@ -147,7 +147,7 @@ export default function VisualEditorPanel({ pagePath, initialLayout }: VisualEdi
             type="button"
             onClick={handleSave}
             disabled={status === 'saving'}
-            className="rounded bg-[#76b900] px-4 py-1.5 text-xs font-bold text-white hover:bg-[#85cc0f] disabled:opacity-50"
+            className="rounded bg-editor-success px-4 py-1.5 text-xs font-bold text-white hover:bg-editor-success-hover disabled:opacity-50"
           >
             {status === 'saving' ? 'Đang lưu...' : '💾 Lưu bố cục'}
           </button>
@@ -157,7 +157,9 @@ export default function VisualEditorPanel({ pagePath, initialLayout }: VisualEdi
       {message && (
         <div
           className={`shrink-0 px-4 py-2 text-xs ${
-            status === 'error' ? 'bg-[#450a0a] text-[#fca5a5]' : 'bg-[#052e16] text-[#86efac]'
+            status === 'error'
+              ? 'bg-editor-error-bg text-editor-error-ink'
+              : 'bg-editor-success-bg text-editor-success-ink'
           }`}
         >
           {message}
@@ -166,7 +168,7 @@ export default function VisualEditorPanel({ pagePath, initialLayout }: VisualEdi
 
       {/* Canvas + Inspector */}
       <div className="flex min-h-0 flex-1">
-        <div className="min-w-0 flex-1 border-r border-[#3c3c3c]">
+        <div className="min-w-0 flex-1 border-r border-editor-divider">
           <VisualEditorCanvas
             layout={layout}
             selectedId={selectedId}
@@ -176,17 +178,17 @@ export default function VisualEditorPanel({ pagePath, initialLayout }: VisualEdi
           />
         </div>
 
-        <aside className="flex w-[320px] shrink-0 flex-col overflow-y-auto bg-[#252526]">
-          <div className="border-b border-[#3c3c3c] px-4 py-3">
-            <h2 className="text-xs font-bold uppercase tracking-wide text-[#9ca3af]">
+        <aside className="flex w-[320px] shrink-0 flex-col overflow-y-auto bg-editor-panel">
+          <div className="border-b border-editor-divider px-4 py-3">
+            <h2 className="text-xs font-bold uppercase tracking-wide text-editor-ink-soft">
               Cấu trúc trang
             </h2>
-            <p className="mt-1 text-[11px] leading-relaxed text-[#6b7280]">
+            <p className="mt-1 text-xs2 leading-relaxed text-editor-ink-muted">
               Kéo-thả trên canvas để đổi thứ tự, hoặc dùng nút ↑ ↓ bên dưới.
             </p>
           </div>
 
-          <ul className="divide-y divide-[#3c3c3c]">
+          <ul className="divide-y divide-editor-divider">
             {layout.sections.map((section, index) => {
               const entry = HOMEPAGE_SECTION_CATALOG.find((item) => item.id === section.id);
               const isSelected = section.id === selectedId;
@@ -197,35 +199,37 @@ export default function VisualEditorPanel({ pagePath, initialLayout }: VisualEdi
                     type="button"
                     onClick={() => setSelectedId(section.id)}
                     className={`flex w-full items-start gap-2 px-4 py-3 text-left transition-colors ${
-                      isSelected ? 'bg-[#3a3d3e]' : 'hover:bg-[#2a2d2e]'
+                      isSelected ? 'bg-editor-selected' : 'hover:bg-vj-surface-dark'
                     }`}
                   >
-                    <span className="mt-0.5 text-[10px] font-bold text-[#6b7280]">{index + 1}</span>
+                    <span className="mt-0.5 text-2xs font-bold text-editor-ink-muted">
+                      {index + 1}
+                    </span>
                     <span className="min-w-0 flex-1">
                       <span className="flex items-center gap-2">
-                        <span className="truncate text-xs font-bold text-[#f3f4f6]">
+                        <span className="truncate text-xs font-bold text-editor-ink">
                           {entry?.label ?? section.id}
                         </span>
                         {section.visible === false && (
-                          <span className="shrink-0 rounded bg-[#450a0a] px-1.5 py-0.5 text-[10px] font-semibold text-[#fca5a5]">
+                          <span className="shrink-0 rounded bg-editor-error-bg px-1.5 py-0.5 text-2xs font-semibold text-editor-error-ink">
                             Ẩn
                           </span>
                         )}
                       </span>
-                      <span className="mt-0.5 block truncate text-[11px] text-[#6b7280]">
+                      <span className="mt-0.5 block truncate text-xs2 text-editor-ink-muted">
                         {entry?.description ?? section.id}
                       </span>
                     </span>
                   </button>
 
                   {isSelected && (
-                    <div className="space-y-3 bg-[#2a2d2e] px-4 pb-4 pt-1">
+                    <div className="space-y-3 bg-vj-surface-dark px-4 pb-4 pt-1">
                       <div className="flex items-center gap-2">
                         <button
                           type="button"
                           onClick={() => moveSection(section.id, -1)}
                           disabled={index === 0}
-                          className="rounded border border-[#454545] bg-[#1e1e1e] px-2 py-1 text-[11px] font-bold text-[#d1d5db] disabled:opacity-40"
+                          className="rounded border border-editor-border bg-editor-canvas px-2 py-1 text-xs2 font-bold text-editor-ink-dim disabled:opacity-40"
                         >
                           ↑
                         </button>
@@ -233,14 +237,14 @@ export default function VisualEditorPanel({ pagePath, initialLayout }: VisualEdi
                           type="button"
                           onClick={() => moveSection(section.id, 1)}
                           disabled={index === layout.sections.length - 1}
-                          className="rounded border border-[#454545] bg-[#1e1e1e] px-2 py-1 text-[11px] font-bold text-[#d1d5db] disabled:opacity-40"
+                          className="rounded border border-editor-border bg-editor-canvas px-2 py-1 text-xs2 font-bold text-editor-ink-dim disabled:opacity-40"
                         >
                           ↓
                         </button>
                         <button
                           type="button"
                           onClick={() => toggleVisibility(section.id)}
-                          className="ml-auto rounded border border-[#454545] bg-[#1e1e1e] px-2 py-1 text-[11px] font-bold text-[#d1d5db]"
+                          className="ml-auto rounded border border-editor-border bg-editor-canvas px-2 py-1 text-xs2 font-bold text-editor-ink-dim"
                         >
                           {section.visible === false ? '👁 Hiện' : '🚫 Ẩn'}
                         </button>
@@ -278,7 +282,7 @@ export default function VisualEditorPanel({ pagePath, initialLayout }: VisualEdi
                       />
 
                       <label className="block">
-                        <span className="mb-1 block text-[11px] font-semibold text-[#9ca3af]">
+                        <span className="mb-1 block text-xs2 font-semibold text-editor-ink-soft">
                           Màu nền
                         </span>
                         <div className="flex items-center gap-2">
@@ -291,7 +295,7 @@ export default function VisualEditorPanel({ pagePath, initialLayout }: VisualEdi
                                 backgroundColor: event.target.value,
                               })
                             }
-                            className="h-8 w-10 cursor-pointer rounded border border-[#454545] bg-[#1e1e1e]"
+                            className="h-8 w-10 cursor-pointer rounded border border-editor-border bg-editor-canvas"
                           />
                           <input
                             type="text"
@@ -304,7 +308,7 @@ export default function VisualEditorPanel({ pagePath, initialLayout }: VisualEdi
                               });
                             }}
                             placeholder="vd: #F5F5F5"
-                            className="min-w-0 flex-1 rounded border border-[#454545] bg-[#1e1e1e] px-2 py-1.5 text-xs text-[#f3f4f6] outline-none focus:border-[#f9a51a]"
+                            className="min-w-0 flex-1 rounded border border-editor-border bg-editor-canvas px-2 py-1.5 text-xs text-editor-ink outline-none focus:border-vj-gold-from"
                           />
                         </div>
                       </label>
@@ -315,9 +319,9 @@ export default function VisualEditorPanel({ pagePath, initialLayout }: VisualEdi
             })}
           </ul>
 
-          <div className="mt-auto border-t border-[#3c3c3c] px-4 py-3 text-[11px] leading-relaxed text-[#6b7280]">
-            Bố cục chỉ điều khiển <strong className="text-[#9ca3af]">thứ tự và style</strong> của
-            các section. Nội dung bên trong mỗi section vẫn là component React gốc nên không mất
+          <div className="mt-auto border-t border-editor-divider px-4 py-3 text-xs2 leading-relaxed text-editor-ink-muted">
+            Bố cục chỉ điều khiển <strong className="text-editor-ink-soft">thứ tự và style</strong>{' '}
+            của các section. Nội dung bên trong mỗi section vẫn là component React gốc nên không mất
             hành vi.
           </div>
         </aside>
@@ -338,7 +342,7 @@ function NumberField({
 }) {
   return (
     <label className="block">
-      <span className="mb-1 block text-[11px] font-semibold text-[#9ca3af]">{label}</span>
+      <span className="mb-1 block text-xs2 font-semibold text-editor-ink-soft">{label}</span>
       <input
         type="number"
         min={0}
@@ -352,7 +356,7 @@ function NumberField({
           const parsed = Number.parseInt(raw, 10);
           onChange(Number.isFinite(parsed) && parsed >= 0 ? parsed : undefined);
         }}
-        className="w-full rounded border border-[#454545] bg-[#1e1e1e] px-2 py-1.5 text-xs text-[#f3f4f6] outline-none focus:border-[#f9a51a]"
+        className="w-full rounded border border-editor-border bg-editor-canvas px-2 py-1.5 text-xs text-editor-ink outline-none focus:border-vj-gold-from"
       />
     </label>
   );

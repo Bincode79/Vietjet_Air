@@ -22,7 +22,7 @@ export const ADMIN_SUBTITLE_CLASS =
   'text-xs font-bold text-slate-500 uppercase tracking-widest mt-1 opacity-70';
 
 export const ADMIN_ACTION_BTN =
-  'flex items-center gap-2 text-[10px] font-black uppercase tracking-wider px-4 py-2 rounded-xl transition-all hover:translate-y-[-1px] active:scale-95';
+  'flex items-center gap-2 text-2xs font-black uppercase tracking-wider px-4 py-2 rounded-xl transition-all hover:translate-y-[-1px] active:scale-95';
 
 interface AdminTabHeaderProps {
   icon: string;

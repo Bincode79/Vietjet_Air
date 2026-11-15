@@ -113,7 +113,7 @@ export default function AgenciesTab({ onToast }: { onToast?: ToastAPI }) {
         </div>
         <button
           onClick={() => setShowAddModal(true)}
-          className="flex items-center gap-2 bg-primary hover:bg-primary-dark text-white text-[11px] font-black uppercase tracking-[0.2em] px-6 py-3.5 rounded-2xl transition-all shadow-lg active:scale-95"
+          className="flex items-center gap-2 bg-primary hover:bg-primary-dark text-white text-xs2 font-black uppercase tracking-[0.2em] px-6 py-3.5 rounded-2xl transition-all shadow-lg active:scale-95"
         >
           <Icon name="PlusIcon" size={16} />
           Thêm đại lý
@@ -151,22 +151,22 @@ export default function AgenciesTab({ onToast }: { onToast?: ToastAPI }) {
           <table className="w-full text-left">
             <thead>
               <tr className="bg-white/5 border-b border-white/5">
-                <th className="px-6 py-5 text-[10px] font-black text-slate-500 uppercase tracking-widest">
+                <th className="px-6 py-5 text-2xs font-black text-slate-500 uppercase tracking-widest">
                   Đại lý
                 </th>
-                <th className="px-6 py-5 text-[10px] font-black text-slate-500 uppercase tracking-widest">
+                <th className="px-6 py-5 text-2xs font-black text-slate-500 uppercase tracking-widest">
                   Liên hệ
                 </th>
-                <th className="px-6 py-5 text-[10px] font-black text-slate-500 uppercase tracking-widest text-center">
+                <th className="px-6 py-5 text-2xs font-black text-slate-500 uppercase tracking-widest text-center">
                   Hoa hồng
                 </th>
-                <th className="px-6 py-5 text-[10px] font-black text-slate-500 uppercase tracking-widest text-center">
+                <th className="px-6 py-5 text-2xs font-black text-slate-500 uppercase tracking-widest text-center">
                   Mã đã phát hành
                 </th>
-                <th className="px-6 py-5 text-[10px] font-black text-slate-500 uppercase tracking-widest text-center">
+                <th className="px-6 py-5 text-2xs font-black text-slate-500 uppercase tracking-widest text-center">
                   Trạng thái
                 </th>
-                <th className="px-6 py-5 text-[10px] font-black text-slate-500 uppercase tracking-widest text-center">
+                <th className="px-6 py-5 text-2xs font-black text-slate-500 uppercase tracking-widest text-center">
                   Thao tác
                 </th>
               </tr>
@@ -185,7 +185,7 @@ export default function AgenciesTab({ onToast }: { onToast?: ToastAPI }) {
                   <td colSpan={6} className="px-6 py-24 text-center">
                     <div className="flex flex-col items-center gap-4">
                       <Icon name="InboxIcon" size={32} className="text-slate-600" />
-                      <p className="font-black text-slate-400 uppercase text-[10px] tracking-widest">
+                      <p className="font-black text-slate-400 uppercase text-2xs tracking-widest">
                         Chưa có đại lý
                       </p>
                     </div>
@@ -198,15 +198,15 @@ export default function AgenciesTab({ onToast }: { onToast?: ToastAPI }) {
                       <div className="font-black text-slate-200 group-hover:text-primary transition-colors tracking-tight">
                         {agency.name}
                       </div>
-                      <div className="text-[10px] text-primary/70 uppercase font-black tracking-[0.2em] mt-1">
+                      <div className="text-2xs text-primary/70 uppercase font-black tracking-[0.2em] mt-1">
                         {agency.code}
                       </div>
                     </td>
                     <td className="px-6 py-5">
-                      <div className="text-[11px] font-bold text-slate-300">
+                      <div className="text-xs2 font-bold text-slate-300">
                         {agency.contact_name || '—'}
                       </div>
-                      <div className="text-[10px] text-slate-500 font-bold mt-0.5">
+                      <div className="text-2xs text-slate-500 font-bold mt-0.5">
                         {agency.contact_email || agency.contact_phone || '—'}
                       </div>
                     </td>
@@ -223,7 +223,7 @@ export default function AgenciesTab({ onToast }: { onToast?: ToastAPI }) {
                     <td className="px-6 py-5 text-center">
                       <button
                         onClick={() => handleToggleStatus(agency)}
-                        className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest border transition-all ${
+                        className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-3xs font-black uppercase tracking-widest border transition-all ${
                           agency.is_active
                             ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20 hover:bg-emerald-500/20'
                             : 'bg-amber-500/10 text-amber-400 border-amber-500/20 hover:bg-amber-500/20'
@@ -333,8 +333,7 @@ function AgencyModal({
 
   const fieldClass =
     'w-full px-5 py-4 bg-white/5 border border-white/10 rounded-2xl text-sm font-bold text-white placeholder-slate-700 focus:outline-none focus:border-primary/50 focus:bg-white/10';
-  const labelClass =
-    'block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 ml-1';
+  const labelClass = 'block text-2xs font-black text-slate-500 uppercase tracking-widest mb-2 ml-1';
 
   return (
     <div className="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-[110] flex items-center justify-center p-4 animate-in fade-in duration-300">
@@ -454,14 +453,14 @@ function AgencyModal({
               aria-label="Đóng"
               type="button"
               onClick={onClose}
-              className="flex-1 py-5 bg-white/5 hover:bg-white/10 text-white font-black text-[10px] uppercase tracking-widest rounded-2xl transition-all border border-white/5"
+              className="flex-1 py-5 bg-white/5 hover:bg-white/10 text-white font-black text-2xs uppercase tracking-widest rounded-2xl transition-all border border-white/5"
             >
               Hủy bỏ
             </button>
             <button
               disabled={isSaving}
               type="submit"
-              className="flex-[2] bg-primary hover:bg-primary-dark text-white font-black text-[10px] uppercase tracking-widest py-5 rounded-2xl transition-all shadow-lg active:scale-95 shadow-primary/20 disabled:opacity-50"
+              className="flex-[2] bg-primary hover:bg-primary-dark text-white font-black text-2xs uppercase tracking-widest py-5 rounded-2xl transition-all shadow-lg active:scale-95 shadow-primary/20 disabled:opacity-50"
             >
               {isSaving ? 'Đang lưu...' : agency ? 'Lưu thay đổi' : 'Tạo đại lý'}
             </button>

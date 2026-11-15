@@ -304,14 +304,14 @@ function DateStrip({ value, onSelect }: { value?: string; onSelect?: (iso: strin
                 </svg>
 
                 <div className="relative z-10 flex flex-col items-center justify-center px-1">
-                  <span className="block text-2xs sm:text-sm2 font-bold text-[#733E0A] leading-tight">
+                  <span className="block text-2xs sm:text-sm2 font-bold text-vj-fare-gold-ink leading-tight">
                     {WEEKDAY_LABELS[day.getDay()]}
                   </span>
                   <span className="block text-xs sm:text-base font-black text-gray-950 leading-tight my-0.5">
                     {day.getDate()} tháng {day.getMonth() + 1}
                   </span>
                   <span className="block text-3xs sm:text-sm2 font-medium text-gray-800 leading-tight">
-                    Từ <span className="font-bold text-[#C4121A]">{price.split(' ')[0]}</span>{' '}
+                    Từ <span className="font-bold text-vj-fare-red-ink">{price.split(' ')[0]}</span>{' '}
                     <span className="italic text-gray-700">000 VND</span>
                   </span>
                 </div>
@@ -1082,7 +1082,7 @@ export default function FlightResultsStep({
                 role="button"
                 tabIndex={0}
                 onClick={() => setCompareFare('business')}
-                className="bg-[#8E7022] hover:bg-[#7a5f1a] text-white py-1.5 sm:py-2 px-1 text-center rounded-t-sm flex items-center justify-center cursor-pointer shadow-xs min-h-[30px] transition-colors"
+                className="bg-vj-fare-business hover:bg-vj-fare-business-hover text-white py-1.5 sm:py-2 px-1 text-center rounded-t-sm flex items-center justify-center cursor-pointer shadow-xs min-h-[30px] transition-colors"
               >
                 <img
                   src="/images/fare-classes/business-logo.svg"
@@ -1095,7 +1095,7 @@ export default function FlightResultsStep({
                 role="button"
                 tabIndex={0}
                 onClick={() => setCompareFare('skyboss')}
-                className="bg-[#D71920] hover:bg-[#bf151b] text-white py-1.5 sm:py-2 px-1 text-center rounded-t-sm flex items-center justify-center cursor-pointer shadow-xs min-h-[30px] transition-colors"
+                className="bg-vj-fare-red hover:bg-vj-fare-red-hover text-white py-1.5 sm:py-2 px-1 text-center rounded-t-sm flex items-center justify-center cursor-pointer shadow-xs min-h-[30px] transition-colors"
               >
                 <img
                   src="/images/fare-classes/skyboss-logo.svg"
@@ -1108,7 +1108,7 @@ export default function FlightResultsStep({
                 role="button"
                 tabIndex={0}
                 onClick={() => setCompareFare('deluxe')}
-                className="bg-[#FF8800] hover:bg-[#e67a00] text-white py-1.5 sm:py-2 px-1 text-center rounded-t-sm flex items-center justify-center cursor-pointer shadow-xs min-h-[30px] transition-colors"
+                className="bg-vj-fare-deluxe hover:bg-vj-fare-deluxe-hover text-white py-1.5 sm:py-2 px-1 text-center rounded-t-sm flex items-center justify-center cursor-pointer shadow-xs min-h-[30px] transition-colors"
               >
                 <img
                   src="/images/fare-classes/deluxe-logo.svg"
@@ -1121,7 +1121,7 @@ export default function FlightResultsStep({
                 role="button"
                 tabIndex={0}
                 onClick={() => setCompareFare('eco')}
-                className="bg-[#43B02A] hover:bg-[#399a24] text-white py-1.5 sm:py-2 px-1 text-center rounded-t-sm flex items-center justify-center cursor-pointer shadow-xs min-h-[30px] transition-colors"
+                className="bg-vj-fare-eco hover:bg-vj-fare-eco-hover text-white py-1.5 sm:py-2 px-1 text-center rounded-t-sm flex items-center justify-center cursor-pointer shadow-xs min-h-[30px] transition-colors"
               >
                 <img
                   src="/images/fare-classes/eco-logo.svg"
@@ -1267,7 +1267,7 @@ export default function FlightResultsStep({
                       setExpandedFlightNo(flight.flightNo);
                     }
                   }}
-                  className="w-[105px] sm:w-[28%] lg:w-[226px] shrink-0 bg-gradient-to-b from-[#FFDD55] via-vj-fare-gold to-[#F0B000] p-1.5 sm:p-3 lg:p-4 border-r border-yellow-400 flex flex-col items-center justify-between sm:justify-center text-center relative select-none cursor-pointer hover:brightness-[0.97] transition-colors focus:outline-none focus:ring-0"
+                  className="w-[105px] sm:w-[28%] lg:w-[226px] shrink-0 bg-gradient-to-b from-vj-fare-gold-bright via-vj-fare-gold to-vj-fare-gold-deep p-1.5 sm:p-3 lg:p-4 border-r border-yellow-400 flex flex-col items-center justify-between sm:justify-center text-center relative select-none cursor-pointer hover:brightness-[0.97] transition-colors focus:outline-none focus:ring-0"
                 >
                   <div className="flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-2.5">
                     <div className="flex items-center gap-1">
@@ -1335,11 +1335,11 @@ export default function FlightResultsStep({
                             ? 'bg-gray-100/80 text-gray-400'
                             : isSelected
                               ? fc.id === 'business'
-                                ? 'bg-amber-50/90 ring-2 ring-inset ring-[#8E7022] shadow-xs'
+                                ? 'bg-amber-50/90 ring-2 ring-inset ring-vj-fare-business shadow-xs'
                                 : fc.id === 'skyboss'
-                                  ? 'bg-red-50/90 ring-2 ring-inset ring-[#D71920] shadow-xs'
+                                  ? 'bg-red-50/90 ring-2 ring-inset ring-vj-fare-red shadow-xs'
                                   : fc.id === 'deluxe'
-                                    ? 'bg-orange-50/90 ring-2 ring-inset ring-[#FF8800] shadow-xs'
+                                    ? 'bg-orange-50/90 ring-2 ring-inset ring-vj-fare-deluxe shadow-xs'
                                     : 'bg-red-50/90 ring-2 ring-inset ring-primary shadow-xs'
                               : 'bg-vj-surface-fare hover:bg-vj-surface-fare/70'
                         }`}
@@ -1352,12 +1352,12 @@ export default function FlightResultsStep({
                             <span
                               className={`inline-flex items-center gap-0.5 text-5xs sm:text-4xs font-bold text-white px-1 sm:px-1.5 py-0.5 rounded-full shadow-2xs leading-none uppercase tracking-wider ${
                                 fc.id === 'business'
-                                  ? 'bg-[#8E7022]'
+                                  ? 'bg-vj-fare-business'
                                   : fc.id === 'skyboss'
-                                    ? 'bg-[#D71920]'
+                                    ? 'bg-vj-fare-red'
                                     : fc.id === 'deluxe'
-                                      ? 'bg-[#FF8800]'
-                                      : 'bg-[#EC2029]'
+                                      ? 'bg-vj-fare-deluxe'
+                                      : 'bg-vj-red'
                               }`}
                             >
                               <svg
@@ -1440,18 +1440,18 @@ export default function FlightResultsStep({
                               className={`text-xs sm:text-base lg:text-xl font-bold font-koho leading-none whitespace-nowrap transition-colors ${
                                 isSelected
                                   ? fc.id === 'business'
-                                    ? 'text-[#8E7022]'
+                                    ? 'text-vj-fare-business'
                                     : fc.id === 'skyboss'
-                                      ? 'text-[#D71920]'
+                                      ? 'text-vj-fare-red'
                                       : fc.id === 'deluxe'
-                                        ? 'text-[#FF8800]'
+                                        ? 'text-vj-fare-deluxe'
                                         : 'text-primary'
                                   : 'text-gray-950 group-hover:text-primary'
                               }`}
                             >
                               {Math.floor(fc.price / 1000).toLocaleString('vi-VN')}
                             </span>
-                            <span className="text-[10px] sm:text-xs italic text-gray-500 font-medium leading-tight mt-0.5 whitespace-nowrap">
+                            <span className="text-2xs sm:text-xs italic text-gray-500 font-medium leading-tight mt-0.5 whitespace-nowrap">
                               000 VND
                             </span>
                             <svg

@@ -169,7 +169,7 @@ export default function NotificationDropdown({
         <Icon name="BellIcon" size={18} className="text-slate-400" />
         {unreadCount > 0 && (
           <span
-            className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 flex items-center justify-center text-[10px] font-bold text-white rounded-full animate-pulse"
+            className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 flex items-center justify-center text-2xs font-bold text-white rounded-full animate-pulse"
             style={{ background: '#ef4444' }}
           >
             {unreadCount > 99 ? '99+' : unreadCount}
@@ -207,7 +207,7 @@ export default function NotificationDropdown({
               <h3 className="font-bold text-white text-sm">Thông báo</h3>
               {unreadCount > 0 && (
                 <span
-                  className="text-[11px] font-semibold px-2 py-0.5 rounded-full"
+                  className="text-xs2 font-semibold px-2 py-0.5 rounded-full"
                   style={{ background: 'rgba(239, 68, 68, 0.2)', color: '#F5717A' }}
                 >
                   {unreadCount} mới
@@ -290,7 +290,7 @@ export default function NotificationDropdown({
                         <p className="text-xs text-slate-400 mt-0.5 line-clamp-2">
                           {notification.message}
                         </p>
-                        <p className="text-[11px] text-slate-500 mt-1.5">
+                        <p className="text-xs2 text-slate-500 mt-1.5">
                           {formatTime(notification.created_at)}
                         </p>
                       </div>

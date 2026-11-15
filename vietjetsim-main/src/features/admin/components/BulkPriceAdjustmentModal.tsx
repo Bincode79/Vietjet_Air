@@ -192,7 +192,7 @@ export default function BulkPriceAdjustmentModal({
             <div>
               <div className="flex items-center gap-2">
                 <h2 className="text-lg font-bold text-white">Điều Chỉnh Giá Vé Hàng Loạt</h2>
-                <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                <span className="text-2xs font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
                   Rẻ hơn Vietjet 200K
                 </span>
               </div>
@@ -340,7 +340,7 @@ export default function BulkPriceAdjustmentModal({
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-bold">{opt.label}</span>
                     <span
-                      className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${
+                      className={`text-2xs font-bold px-1.5 py-0.5 rounded ${
                         action === opt.value
                           ? 'bg-amber-400 text-slate-950'
                           : 'bg-white/10 text-slate-400'
@@ -349,7 +349,7 @@ export default function BulkPriceAdjustmentModal({
                       {opt.badge}
                     </span>
                   </div>
-                  <p className="text-[11px] text-slate-400 mt-1 line-clamp-2">{opt.desc}</p>
+                  <p className="text-xs2 text-slate-400 mt-1 line-clamp-2">{opt.desc}</p>
                 </button>
               ))}
             </div>
@@ -360,7 +360,7 @@ export default function BulkPriceAdjustmentModal({
                 <span className="text-xs font-bold text-slate-300">
                   {action.includes('percent') ? 'Tỷ lệ điều chỉnh (%)' : 'Số tiền điều chỉnh (VND)'}
                 </span>
-                <p className="text-[11px] text-slate-500 mt-0.5">
+                <p className="text-xs2 text-slate-500 mt-0.5">
                   {action === 'discount_fixed'
                     ? 'Nhập 200.000 để tự động rẻ hơn giá vé Vietjet 200K'
                     : action.includes('percent')
@@ -388,7 +388,7 @@ export default function BulkPriceAdjustmentModal({
             </div>
 
             {/* Note & Policy */}
-            <div className="text-[11px] text-slate-400 flex items-start gap-2 bg-indigo-500/5 border border-indigo-500/10 rounded-lg p-2.5">
+            <div className="text-xs2 text-slate-400 flex items-start gap-2 bg-indigo-500/5 border border-indigo-500/10 rounded-lg p-2.5">
               <Icon
                 name="InformationCircleIcon"
                 size={15}
@@ -416,7 +416,7 @@ export default function BulkPriceAdjustmentModal({
                     {matchedCount.toLocaleString('vi-VN')} chuyến bay khớp
                   </span>
                 </div>
-                <span className="text-[11px] text-slate-400">Hiển thị mẫu 10 chuyến đầu tiên</span>
+                <span className="text-xs2 text-slate-400">Hiển thị mẫu 10 chuyến đầu tiên</span>
               </div>
 
               {previewSamples && previewSamples.length > 0 ? (

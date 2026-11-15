@@ -319,16 +319,16 @@ export default function RevenueTab() {
           <table className="w-full">
             <thead>
               <tr className="border-b border-white/5">
-                <th className="text-left text-[10px] font-black text-slate-500 uppercase tracking-widest px-5 py-4">
+                <th className="text-left text-2xs font-black text-slate-500 uppercase tracking-widest px-5 py-4">
                   Đường bay
                 </th>
-                <th className="text-right text-[10px] font-black text-slate-500 uppercase tracking-widest px-5 py-4">
+                <th className="text-right text-2xs font-black text-slate-500 uppercase tracking-widest px-5 py-4">
                   Doanh thu
                 </th>
-                <th className="text-right text-[10px] font-black text-slate-500 uppercase tracking-widest px-5 py-4">
+                <th className="text-right text-2xs font-black text-slate-500 uppercase tracking-widest px-5 py-4">
                   Vé bán
                 </th>
-                <th className="text-left text-[10px] font-black text-slate-500 uppercase tracking-widest px-5 py-4 hidden sm:table-cell">
+                <th className="text-left text-2xs font-black text-slate-500 uppercase tracking-widest px-5 py-4 hidden sm:table-cell">
                   Tỷ trọng
                 </th>
               </tr>

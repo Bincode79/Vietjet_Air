@@ -316,7 +316,7 @@ export default function VSCodeWebEditorPage() {
                 fontSize: '13px',
                 userSelect: 'none',
               }}
-              className="hover:bg-[#2A2D2E]"
+              className="hover:bg-vj-surface-dark"
             >
               <span style={{ fontSize: '10px', width: '12px' }}>{isExpanded ? '▼' : '▶'}</span>
               <span style={{ color: '#F9A51A' }}>📁</span>
@@ -355,7 +355,7 @@ export default function VSCodeWebEditorPage() {
             backgroundColor: isActive ? '#37373D' : 'transparent',
             userSelect: 'none',
           }}
-          className="hover:bg-[#2A2D2E]"
+          className="hover:bg-vj-surface-dark"
         >
           <span>{getFileIcon(item.name)}</span>
           <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
@@ -683,7 +683,7 @@ export default function VSCodeWebEditorPage() {
                           padding: '0 2px',
                           marginLeft: '4px',
                         }}
-                        className="hover:bg-[#444444]"
+                        className="hover:bg-vj-surface-darker"
                       >
                         ✕
                       </span>

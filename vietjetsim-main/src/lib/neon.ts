@@ -537,6 +537,51 @@ function createMockSql() {
   const nextMockId = (prefix: string) => `${prefix}-mock-${++mockSeq}`;
   const mockUuid = () => '00000000-0000-4000-8000-' + String(++mockSeq).padStart(12, '0');
 
+  // ─── Seed: một đặt chỗ mẫu, đủ hành khách để sinh được vé điện tử ────
+  //
+  // Endpoint tải vé (`/api/dat-ve/[id]/ve-dien-tu`) đọc booking + trip +
+  // hành khách rồi dựng PDF. Không có dòng mẫu nào thì mọi truy vấn
+  // `bookings`/`passengers` trả `[]` ⇒ endpoint luôn trả 404 ⇒ smoke test
+  // HTTP không bao giờ chạm tới đường sinh file, và lỗi "pdfkit không tìm
+  // thấy font" (một lỗi chỉ xuất hiện trong bản build) sẽ lọt qua CI.
+  //
+  // Dữ liệu mẫu này chỉ tồn tại trong bộ nhớ, chỉ khi KHÔNG có DATABASE_URL —
+  // nên nó không bao giờ chạm dữ liệu thật.
+  const SEED_BOOKING_ID = '00000000-0000-4000-8000-000000000001';
+  const SEED_TRIP_ID = '00000000-0000-4000-8000-000000000002';
+  const SEED_BOOKING_CODE = 'VJSMOKE';
+  const SEED_PASSENGER_ID = '00000000-0000-4000-8000-000000000003';
+
+  mockBookings.push({
+    id: SEED_BOOKING_ID,
+    user_id: '00000000-0000-4000-8000-0000000000ff',
+    flight_id: mockFlights[0].id,
+    booking_code: SEED_BOOKING_CODE,
+    trip_id: SEED_TRIP_ID,
+    leg_role: 'outbound',
+    status: 'confirmed',
+    total_price: 899000,
+    created_at: nowIso(),
+    updated_at: nowIso(),
+  });
+
+  mockPassengers.push({
+    id: SEED_PASSENGER_ID,
+    booking_id: SEED_BOOKING_ID,
+    name: 'Nguyễn Văn Anh',
+    dob: '1990-01-01',
+    id_number: 'C1234567',
+    gender: 'male',
+    country_code: 'VN',
+    phone: '0900000001',
+    email: 'khach@vietjetsim.vn',
+    residence: null,
+    skyjoy_member_id: null,
+    passenger_type: 'adult',
+    seat_number: '12A',
+    created_at: nowIso(),
+  });
+
   const runBookingQuery = (query: string, values: unknown[]): MockResult[] | null => {
     const q = query.toLowerCase();
 
@@ -579,14 +624,46 @@ function createMockSql() {
 
     // ── Đọc booking theo id / PNR ──
     if (q.includes('from bookings')) {
+      // `SELECT * FROM bookings WHERE UPPER(booking_code) = UPPER(?)` — đây là
+      // dạng `confirmVietQrPayment` dùng (không có prefix `b.`). Nếu mock
+      // không lọc theo PNR mà trả về mọi dòng, webhook sẽ đối soát nhầm
+      // đặt chỗ đầu tiên trong bộ nhớ thay vì đặt chỗ của mã PNR.
+      if (q.includes('upper(booking_code) = upper(')) {
+        const code = String(values[0] ?? '').toUpperCase();
+        return mockBookings.filter((b) => String(b.booking_code ?? '').toUpperCase() === code);
+      }
       if (q.includes('upper(b.booking_code) = upper(') || q.includes('booking_code =')) {
         const code = String(values[0] ?? '').toUpperCase();
+        // `getBookingByCodeOrId` tra bằng PNR *hoặc* id (`b.id::text = ?`),
+        // nên phải khớp cả hai — nếu không thì khách dán mã đặt chỗ vào ô
+        // tra cứu sẽ không tìm thấy vé của mình.
+        const byId = mockBookings.find((b) => String(b.id) === String(values[0]));
+        if (byId) return [byId];
         return mockBookings.filter((b) => String(b.booking_code ?? '').toUpperCase() === code);
       }
       if (q.includes('where b.id =') || q.includes('where id =')) {
         const id = values[0];
         const match = mockBookings.find((b) => b.id === id);
-        return match ? [match] : [];
+        if (!match) return [];
+        // `getBookingById` chọn `b.*` cùng `json_agg` hành khách/giao dịch/ghế
+        // trong một câu, nên dòng mock phải có sẵn các mảng đó — nếu không,
+        // mapper nhận `undefined` và mọi thứ liên quan tới hành khách rỗng.
+        const flight = mockFlights.find((f) => f.id === match.flight_id);
+        return [
+          {
+            ...match,
+            flight_no: flight?.flight_no ?? null,
+            from_code: flight?.from_code ?? null,
+            to_code: flight?.to_code ?? null,
+            depart_time: flight?.depart_time ?? null,
+            arrive_time: flight?.arrive_time ?? null,
+            price: flight?.price ?? null,
+            class: flight?.class ?? null,
+            passengers: mockPassengers.filter((p) => p.booking_id === match.id),
+            payments: [],
+            seats: [],
+          },
+        ];
       }
       if (q.includes('where b.user_id =')) {
         const userId = values[0];
@@ -616,8 +693,12 @@ function createMockSql() {
     // ── Hành khách của booking ──
     if (q.includes('from passengers')) {
       if (q.includes('where booking_id =')) {
-        const bookingId = values[0];
-        return mockPassengers.filter((p) => p.booking_id === bookingId);
+        // `getTripById` đọc hành khách bằng `WHERE booking_id = ANY($1::uuid[])`
+        // — tham số là một mảng id, không phải một id. Cả hai dạng phải trả
+        // đúng, nếu không thì trip luôn rỗng và không in được vé.
+        const raw = values[0];
+        const ids = Array.isArray(raw) ? raw.map(String) : [String(raw)];
+        return mockPassengers.filter((p) => ids.includes(String(p.booking_id)));
       }
       if (q.includes('where id =')) {
         const id = values[0];
@@ -630,8 +711,9 @@ function createMockSql() {
     // ── Check-in ──
     if (q.includes('from check_in')) {
       if (q.includes('where booking_id =')) {
-        const bookingId = values[0];
-        return mockCheckIns.filter((c) => c.booking_id === bookingId);
+        const raw = values[0];
+        const ids = Array.isArray(raw) ? raw.map(String) : [String(raw)];
+        return mockCheckIns.filter((c) => ids.includes(String(c.booking_id)));
       }
       return mockCheckIns;
     }
@@ -773,11 +855,12 @@ function createMockSql() {
     },
     {
       // Raw parameterized form (`sql.query(text, values)`), which the chat
-      // helpers use for counter updates. Non-chat statements stay unhandled and
+      // helpers use for counter updates and which `getTripById` uses to read
+      // passengers and check-ins. Non-chat statements stay unhandled and
       // return an empty result set rather than throwing.
       query: async (text: string, values: unknown[] = []) => {
         console.info('[MOCK SQL:query]', text, values);
-        return runChatQuery(text, values) ?? ([] as MockResult[]);
+        return runChatQuery(text, values) ?? runBookingQuery(text, values) ?? ([] as MockResult[]);
       },
       transaction: async (queries: unknown) => {
         if (Array.isArray(queries)) {

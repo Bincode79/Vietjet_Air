@@ -271,7 +271,7 @@ export default function VietQrBox({
     <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-lg">
       {/* VietQR Header — Logo VietQR + Napas 247 + Ngân hàng thụ hưởng STK Admin */}
       {showBankHeader && (
-        <div className="p-4 sm:p-5 bg-gradient-to-r from-[#005BAA] via-[#004B8D] to-[#ED1C24] text-white shadow-md">
+        <div className="p-4 sm:p-5 bg-gradient-to-r from-vj-bank-blue via-vj-bank-blue-dark to-vjred text-white shadow-md">
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-3 min-w-0">
               <div className="min-w-0">
@@ -290,7 +290,7 @@ export default function VietQrBox({
 
             <div className="hidden md:flex flex-col items-end shrink-0">
               <div className="flex items-center gap-1.5 bg-white/20 backdrop-blur-md px-3 py-1 rounded-full text-2xs font-bold text-white shadow-inner">
-                <span className="w-2 h-2 rounded-full bg-[#70E000] animate-pulse" />
+                <span className="w-2 h-2 rounded-full bg-vj-pay-green-bright animate-pulse" />
                 Quét mã tức thì
               </div>
               <span className="text-3xs text-white/70 mt-1">
@@ -305,7 +305,7 @@ export default function VietQrBox({
       <div className="flex flex-col items-center p-5 sm:p-7">
         <div className="relative group">
           {/* Ambient Glow */}
-          <div className="absolute -inset-2 bg-gradient-to-r from-[#005BAA] to-[#ED1C24] rounded-3xl blur-md opacity-25 group-hover:opacity-40 transition duration-300" />
+          <div className="absolute -inset-2 bg-gradient-to-r from-vj-bank-blue to-vjred rounded-3xl blur-md opacity-25 group-hover:opacity-40 transition duration-300" />
 
           <div className="relative p-4 sm:p-5 bg-white rounded-2xl border border-gray-200 shadow-md flex flex-col items-center">
             {/* Tag chuẩn */}
@@ -315,7 +315,7 @@ export default function VietQrBox({
               ) : (
                 <VietQrLogo className="h-5 w-auto" />
               )}
-              <span className="text-2xs sm:text-xs font-black text-[#005BAA] uppercase tracking-wider">
+              <span className="text-2xs sm:text-xs font-black text-vj-bank-blue uppercase tracking-wider">
                 {isVnpay ? 'Mã QR chuẩn VNPAY-QR • NAPAS 247' : 'Mã QR chuẩn VietQR • NAPAS 247'}
               </span>
             </div>
@@ -329,7 +329,7 @@ export default function VietQrBox({
               />
             ) : (
               <div className="w-48 h-48 sm:w-60 sm:h-60 bg-blue-50/50 rounded-2xl animate-pulse flex flex-col items-center justify-center gap-2">
-                <Icon name="QrCodeIcon" size={48} className="text-[#005BAA]" />
+                <Icon name="QrCodeIcon" size={48} className="text-vj-bank-blue" />
                 <span className="text-xs text-gray-500 font-medium">
                   Đang tạo mã {methodLabel}...
                 </span>
@@ -365,7 +365,7 @@ export default function VietQrBox({
         {/* Thông tin thanh toán chi tiết (STK Admin, Tên, Số tiền, Nội dung) */}
         <div className="w-full mt-6 space-y-2.5 bg-slate-50/50 p-4 sm:p-5 rounded-2xl border border-gray-200 shadow-xs">
           <div className="flex items-center justify-between pb-2 border-b border-blue-200/60">
-            <span className="text-xs font-black uppercase tracking-wider text-[#005BAA] font-koho flex items-center gap-1.5">
+            <span className="text-xs font-black uppercase tracking-wider text-vj-bank-blue font-koho flex items-center gap-1.5">
               <Icon name="InformationCircleIcon" size={16} />
               Thông tin thanh toán
             </span>
@@ -374,7 +374,7 @@ export default function VietQrBox({
           {/* Hàng 1: Số tài khoản thụ hưởng của Admin */}
           <div className="flex items-center justify-between gap-3 rounded-xl border border-blue-100 bg-white p-3 sm:p-4 shadow-2xs">
             <div className="flex min-w-0 items-center gap-3">
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-blue-100 bg-blue-50 text-[#005BAA]">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-blue-100 bg-blue-50 text-vj-bank-blue">
                 <Icon name="BuildingLibraryIcon" size={20} />
               </span>
               <div className="min-w-0">
@@ -392,7 +392,7 @@ export default function VietQrBox({
             <button
               type="button"
               onClick={() => copyToClipboard(data?.bank.accountNumber ?? '', 'stk')}
-              className="flex shrink-0 cursor-pointer items-center gap-1.5 rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 text-xs font-bold text-[#005BAA] transition-all hover:bg-blue-100 active:scale-95"
+              className="flex shrink-0 cursor-pointer items-center gap-1.5 rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 text-xs font-bold text-vj-bank-blue transition-all hover:bg-blue-100 active:scale-95"
             >
               <Icon
                 name={copiedField === 'stk' ? 'CheckCircleIcon' : 'ClipboardDocumentIcon'}
@@ -459,13 +459,13 @@ export default function VietQrBox({
         >
           {pollState === 'paid' ? (
             <>
-              <Icon name="CheckCircleIcon" size={18} className="text-[#38B000] animate-bounce" />
+              <Icon name="CheckCircleIcon" size={18} className="text-vj-pay-green animate-bounce" />
               <span>Đã nhận được thanh toán thành công — Đang mở vé điện tử...</span>
             </>
           ) : (
             <>
               <span
-                className={`w-2.5 h-2.5 rounded-full bg-[#005BAA] ${
+                className={`w-2.5 h-2.5 rounded-full bg-vj-bank-blue ${
                   pollState === 'checking' ? 'animate-ping' : 'animate-pulse'
                 }`}
               />
@@ -481,8 +481,8 @@ export default function VietQrBox({
         {/* Hướng dẫn quét mã qua ứng dụng ngân hàng & Ví */}
         <div className="mt-4 pt-3 border-t border-gray-100 text-center max-w-md">
           <p className="text-xs text-gray-600 leading-relaxed font-medium">
-            Mở ứng dụng <span className="font-bold text-[#005BAA]">Mobile Banking</span> của bất kỳ
-            ngân hàng nào (Vietcombank, BIDV, Agribank, VietinBank, MBBank, Techcombank, VPBank,
+            Mở ứng dụng <span className="font-bold text-vj-bank-blue">Mobile Banking</span> của bất
+            kỳ ngân hàng nào (Vietcombank, BIDV, Agribank, VietinBank, MBBank, Techcombank, VPBank,
             ACB...){' '}
             {isVnpay ? (
               <>

@@ -165,7 +165,7 @@ export default function AutoSyncSettingsPanel({
                 Chế độ Tự Động Hóa (Background Auto-Pilot)
               </p>
               <span
-                className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${config.enabled ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-slate-700 text-slate-400'}`}
+                className={`text-2xs font-bold px-2 py-0.5 rounded-full ${config.enabled ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-slate-700 text-slate-400'}`}
               >
                 {config.enabled ? 'ĐANG BẬT' : 'ĐANG TẮT'}
               </span>
@@ -260,7 +260,7 @@ export default function AutoSyncSettingsPanel({
               <option value={168}>Mỗi tuần 1 lần</option>
             </select>
             {config.lastNetworkSync && (
-              <p className="text-[10px] text-slate-500 mt-1">
+              <p className="text-2xs text-slate-500 mt-1">
                 Lần cuối: {new Date(config.lastNetworkSync).toLocaleString('vi-VN')}
               </p>
             )}
@@ -285,7 +285,7 @@ export default function AutoSyncSettingsPanel({
               <option value={7}>7 ngày tới (1 tuần)</option>
             </select>
             {config.lastScheduleSync && (
-              <p className="text-[10px] text-slate-500 mt-1">
+              <p className="text-2xs text-slate-500 mt-1">
                 Lần quét lịch bay gần nhất:{' '}
                 {new Date(config.lastScheduleSync).toLocaleString('vi-VN')}
               </p>
@@ -316,7 +316,7 @@ export default function AutoSyncSettingsPanel({
               <button
                 type="button"
                 onClick={addRoute}
-                className="text-[11px] text-indigo-400 hover:text-indigo-300 flex items-center gap-1 border border-indigo-500/30 px-2 py-0.5 rounded-lg hover:bg-indigo-500/10"
+                className="text-xs2 text-indigo-400 hover:text-indigo-300 flex items-center gap-1 border border-indigo-500/30 px-2 py-0.5 rounded-lg hover:bg-indigo-500/10"
               >
                 <Icon name="PlusIcon" size={12} /> Thêm
               </button>
@@ -328,7 +328,7 @@ export default function AutoSyncSettingsPanel({
                   <select
                     value={r.from}
                     onChange={(e) => updateRoute(idx, 'from', e.target.value)}
-                    className="flex-1 bg-slate-800 border border-white/10 text-white text-[11px] rounded px-2 py-1.5"
+                    className="flex-1 bg-slate-800 border border-white/10 text-white text-xs2 rounded px-2 py-1.5"
                   >
                     {AIRPORTS.map((a) => (
                       <option key={a.code} value={a.code}>
@@ -340,7 +340,7 @@ export default function AutoSyncSettingsPanel({
                   <select
                     value={r.to}
                     onChange={(e) => updateRoute(idx, 'to', e.target.value)}
-                    className="flex-1 bg-slate-800 border border-white/10 text-white text-[11px] rounded px-2 py-1.5"
+                    className="flex-1 bg-slate-800 border border-white/10 text-white text-xs2 rounded px-2 py-1.5"
                   >
                     {AIRPORTS.map((a) => (
                       <option key={a.code} value={a.code}>
@@ -383,7 +383,7 @@ export default function AutoSyncSettingsPanel({
 
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center text-xs">
             <div className="bg-slate-800/50 p-2.5 rounded-lg border border-white/5">
-              <div className="text-slate-400 text-[10px]">Mạng lưới CMS</div>
+              <div className="text-slate-400 text-2xs">Mạng lưới CMS</div>
               <div className="font-bold text-emerald-400 mt-1">
                 {report.network.status === 'success'
                   ? `+${report.network.airportsAdded} sân bay`
@@ -391,19 +391,19 @@ export default function AutoSyncSettingsPanel({
               </div>
             </div>
             <div className="bg-slate-800/50 p-2.5 rounded-lg border border-white/5">
-              <div className="text-slate-400 text-[10px]">Chặng thành công</div>
+              <div className="text-slate-400 text-2xs">Chặng thành công</div>
               <div className="font-bold text-white mt-1">
                 {report.schedule.successfulCombos} / {report.schedule.totalCombos}
               </div>
             </div>
             <div className="bg-slate-800/50 p-2.5 rounded-lg border border-white/5">
-              <div className="text-slate-400 text-[10px]">Chuyến bay đã nhập</div>
+              <div className="text-slate-400 text-2xs">Chuyến bay đã nhập</div>
               <div className="font-bold text-indigo-400 mt-1">
                 {report.schedule.importedFlights}
               </div>
             </div>
             <div className="bg-slate-800/50 p-2.5 rounded-lg border border-white/5">
-              <div className="text-slate-400 text-[10px]">Chuyến đã tồn tại</div>
+              <div className="text-slate-400 text-2xs">Chuyến đã tồn tại</div>
               <div className="font-bold text-slate-400 mt-1">{report.schedule.skippedFlights}</div>
             </div>
           </div>

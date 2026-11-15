@@ -104,7 +104,7 @@ async function main() {
   console.info('\nRedirects and 404');
   const root = await request('/');
   check('GET / is a redirect', root.status, 307);
-  check('GET / redirects to /trang-chu', root.headers.get('location'), '/trang-chu');
+  check('GET / redirects to /vi', root.headers.get('location'), '/vi');
 
   const baggage = await request('/hanh-ly');
   check('GET /hanh-ly is a redirect', baggage.status, 307);
@@ -145,6 +145,38 @@ async function main() {
   for (const path of ['/api/dat-ve', '/api/thanh-vien', '/api/quan-tri/nguoi-dung', '/api/vi']) {
     check(`GET ${path} without a session`, await status(path), 401);
   }
+
+  console.info('\nFile generation (e-ticket PDF)');
+  // Đây là phép kiểm tra duy nhất chạm tới đường sinh file qua HTTP.
+  //
+  // Lỗi "pdfkit không tìm thấy file font Helvetica.afm" chỉ xuất hiện trong
+  // BẢN BUILD (khi `pdfkit` bị bundle vào server chunk, `__dirname` trỏ sai
+  // chỗ) — mọi unit test chạy trên source vẫn xanh. Vì vậy endpoint phải
+  // được gọi thật qua HTTP, và phải trả về một file PDF hợp lệ, nếu không
+  // lỗi đó vẫn lọt qua CI.
+  //
+  // Mã `VJSMOKE` là dòng mẫu trong bộ nhớ, chỉ tồn tại khi KHÔNG có
+  // DATABASE_URL — tức là đúng trường hợp mà smoke test chạy.
+  const ticket = await request('/api/dat-ve/VJSMOKE/ve-dien-tu');
+  check('GET /api/dat-ve/[id]/ve-dien-tu', ticket.status, 200);
+  check(
+    'GET /api/dat-ve/[id]/ve-dien-tu returns application/pdf',
+    ticket.headers.get('content-type'),
+    'application/pdf'
+  );
+  check(
+    'GET /api/dat-ve/[id]/ve-dien-tu names the file after the PNR',
+    ticket.headers.get('content-disposition'),
+    'attachment; filename="ve-dien-tu-VJSMOKE.pdf"'
+  );
+
+  const pdfBytes = Buffer.from(await ticket.arrayBuffer());
+  check('the e-ticket body is a non-empty PDF', pdfBytes.length > 1000, true);
+  check('the e-ticket body starts with %PDF-', pdfBytes.subarray(0, 5).toString(), '%PDF-');
+  check('the e-ticket body ends with EOF', pdfBytes.subarray(-6).toString().includes('EOF'), true);
+  // Font nhúng: tên font xuất hiện trong trang font của file PDF. Thiếu nó thì
+  // tên hành khách tiếng Việt ra ô chữ vuông ở cổng lên máy bay.
+  check('the e-ticket embeds the KoHo font', pdfBytes.toString('latin1').includes('KoHo'), true);
 
   console.info('\nCSRF enforcement');
   const csrfRes = await request('/api/csrf');

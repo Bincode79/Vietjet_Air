@@ -491,7 +491,7 @@ export default function BulkCollectPanel({
                         <td className="px-3 py-2 text-slate-300">{item.date || '—'}</td>
                         <td className="px-3 py-2">
                           <span
-                            className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold ${st.cls}`}
+                            className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-2xs font-bold ${st.cls}`}
                           >
                             <Icon name={st.icon as never} size={10} />
                             {st.text}
@@ -514,13 +514,13 @@ export default function BulkCollectPanel({
                                 type="button"
                                 onClick={() => handleImportItem(item)}
                                 disabled={importingId === key}
-                                className="text-[10px] px-2 py-1 bg-indigo-500/20 text-indigo-400 hover:bg-indigo-500/30 rounded-lg transition-all disabled:opacity-50"
+                                className="text-2xs px-2 py-1 bg-indigo-500/20 text-indigo-400 hover:bg-indigo-500/30 rounded-lg transition-all disabled:opacity-50"
                               >
                                 {importingId === key ? 'Đang nhập...' : 'Nhập'}
                               </button>
                             )}
                           {alreadyImported && (
-                            <span className="text-[10px] text-emerald-500">✓ Đã nhập</span>
+                            <span className="text-2xs text-emerald-500">✓ Đã nhập</span>
                           )}
                         </td>
                       </tr>

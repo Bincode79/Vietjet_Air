@@ -183,7 +183,7 @@ export default function GlobalSearch({ isOpen, onClose, onSelectResult }: Global
 
     const config = statusMap[status] || { label: status, color: 'bg-gray-100 text-gray-700' };
     return (
-      <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-full ${config.color}`}>
+      <span className={`text-2xs font-semibold px-1.5 py-0.5 rounded-full ${config.color}`}>
         {config.label}
       </span>
     );
@@ -278,7 +278,7 @@ export default function GlobalSearch({ isOpen, onClose, onSelectResult }: Global
               {cat.label}
               {categoryCounts[cat.id as keyof typeof categoryCounts] > 0 && (
                 <span
-                  className={`text-[10px] px-1.5 py-0.5 rounded-full ${
+                  className={`text-2xs px-1.5 py-0.5 rounded-full ${
                     activeCategory === cat.id ? 'bg-white/20' : 'bg-slate-700'
                   }`}
                 >
@@ -317,7 +317,7 @@ export default function GlobalSearch({ isOpen, onClose, onSelectResult }: Global
                 <p className="text-slate-500 text-xs mt-1">Nhập từ khoá để tìm kiếm</p>
               </div>
               <div className="flex flex-wrap justify-center gap-2 mt-4 px-4">
-                <span className="text-[11px] text-slate-500 px-2 py-1 bg-slate-800 rounded-lg">
+                <span className="text-xs2 text-slate-500 px-2 py-1 bg-slate-800 rounded-lg">
                   Ví dụ: VJ 101, Nguyễn Văn An, VJ2B4K9
                 </span>
               </div>
@@ -346,7 +346,7 @@ export default function GlobalSearch({ isOpen, onClose, onSelectResult }: Global
                       <div className="flex items-center gap-2">
                         <p className="text-sm font-medium text-white truncate">{result.title}</p>
                         <span
-                          className={`text-[10px] font-medium px-1.5 py-0.5 rounded ${typeConfig.bg} ${typeConfig.text}`}
+                          className={`text-2xs font-medium px-1.5 py-0.5 rounded ${typeConfig.bg} ${typeConfig.text}`}
                         >
                           {typeConfig.label}
                         </span>
@@ -373,12 +373,12 @@ export default function GlobalSearch({ isOpen, onClose, onSelectResult }: Global
         >
           <div className="flex items-center gap-4">
             <span className="flex items-center gap-1">
-              <kbd className="px-1.5 py-0.5 bg-slate-800 rounded text-[10px]">↑</kbd>
-              <kbd className="px-1.5 py-0.5 bg-slate-800 rounded text-[10px]">↓</kbd>
+              <kbd className="px-1.5 py-0.5 bg-slate-800 rounded text-2xs">↑</kbd>
+              <kbd className="px-1.5 py-0.5 bg-slate-800 rounded text-2xs">↓</kbd>
               <span className="ml-1">Điều hướng</span>
             </span>
             <span className="flex items-center gap-1">
-              <kbd className="px-1.5 py-0.5 bg-slate-800 rounded text-[10px]">Nhập</kbd>
+              <kbd className="px-1.5 py-0.5 bg-slate-800 rounded text-2xs">Nhập</kbd>
               <span className="ml-1">Chọn</span>
             </span>
           </div>

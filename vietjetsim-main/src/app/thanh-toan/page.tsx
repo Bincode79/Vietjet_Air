@@ -6,7 +6,7 @@ import { ErrorBoundary } from '@/shared/components/feedback';
 
 export default function PaymentPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#b4ddf5] via-[#d6ebf9] to-[#edf6fd] relative">
+    <div className="min-h-screen bg-gradient-to-b from-vj-blue-tint-5 via-vj-blue-tint-4 to-vj-blue-tint-3 relative">
       {/* Header TRẮNG 74px (biến thể `subpage`) — site thật dùng đúng header
           này cho MỌI trang con của luồng đặt vé (`/select-flight`,
           `/passengers`, `/select-service`, `/payment-methods`). Bản cũ dùng

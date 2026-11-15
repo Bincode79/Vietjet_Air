@@ -12,6 +12,26 @@ const nextConfig = {
   productionBrowserSourceMaps: false,
   distDir: process.env.DIST_DIR || '.next',
 
+  // `pdfkit` phải nằm ngoài bundle server.
+  //
+  // (1) AFM: `new PDFDocument()` nạp sẵn font chuẩn `Helvetica` bằng
+  //     `fs.readFileSync(__dirname + '/data/Helvetica.afm')`. Khi Next bundle
+  //     `pdfkit` vào server chunk, `__dirname` trỏ tới `.next/server/chunks`
+  //     — nơi không có thư mục `data/` ⇒ ENOENT ⇒ endpoint vé điện tử trả 500.
+  // (2) fontkit: `fontkit` (do `pdfkit` kéo về) import `applyDecoratedDescriptor`
+  //     từ `@swc/helpers`. Bản `@swc/helpers` lồng trong `fontkit` là 0.3.17
+  //     (tên export cũ, không tiều tố `_`), còn bản top-level là 0.5.23 (tên
+  //     mới `_apply_decorated_descriptor`). Turbopack resolve về bản top-level
+  //     ⇒ "Export applyDecoratedDescriptor doesn't exist" ⇒ `next dev --turbo`
+  //     crash ở mọi route import `pdfkit`.
+  //
+  // Để `pdfkit` nằm ngoài bundle, cả hai `require`/`import` của Node resolve
+  // theo cây `node_modules` thật ⇒ `__dirname` trỏ đúng `node_modules/pdfkit/js`
+  // (có `data/*.afm`) và `@swc/helpers` resolve đúng bản lồng của `fontkit`.
+  // Next vẫn trace package này vào thư mục `standalone` như một dependency
+  // thông thường.
+  serverExternalPackages: ['pdfkit'],
+
   // Pin Turbopack's workspace root to this app directory. Stray lockfiles one
   // level up (the git-root package-lock.json) and in $HOME made Next infer the
   // wrong root and print "ignored/multiple lockfiles" warnings on every build.

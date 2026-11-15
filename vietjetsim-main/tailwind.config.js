@@ -344,6 +344,55 @@ module.exports = {
           'fare-red': '#D71920',
           // Vàng khung giá vé rẻ nhất.
           'fare-gold': '#FFC700',
+          // ─── Sắc độ hover đi kèm hạng vé ───
+          // Mỗi tab hạng vé có một sắc hover riêng (đậm hơn nền). Gom về đây
+          // để `bg-[#rrggbb]` không rải rác nữa — ratchet scripts/css-debt.cjs
+          // đếm mọi hex viết tay trong class.
+          'fare-business-hover': '#7A5F1A',
+          'fare-red-hover': '#BF151B',
+          'fare-deluxe-hover': '#E67A00',
+          'fare-eco-hover': '#2E7032',
+          // ─── Sắc độ dùng ở bảng giá / thẻ vé ───
+          'fare-gold-ink': '#733E0A',
+          'fare-gold-bright': '#FFDD55',
+          'fare-gold-deep': '#F0B000',
+          'fare-red-ink': '#C4121A',
+          'gold-pure': '#FFD200',
+          'gold-pale-ink': '#FFE066',
+          // ─── Sắc độ xanh của cổng thanh toán ───
+          // Cổng (napas/napas247) đổi bộ chữ theo nhà cung cấp, nên mỗi
+          // dải có một sắc riêng thay vì dùng chung `pay-green`.
+          'pay-green-3bb': '#3BB000',
+          'pay-green-deep': '#248000',
+          'pay-pink': '#E50051',
+          'pay-gold': '#FDB813',
+          'pay-red': '#E31837',
+          'mobile-nav-ink': '#1F2A33',
+        },
+        // Bảng màu của trình chỉnh sửa trực quan (Visual Editor) — giao diện
+        // tối riêng, không thuộc palette thương hiệu, nên có namespace riêng
+        // thay vì trộn vào `vj`.
+        editor: {
+          canvas: '#1E1E1E',
+          panel: '#252526',
+          raised: '#2A2D2E',
+          selected: '#3A3D3E',
+          border: '#454545',
+          divider: '#3C3C3C',
+          ink: '#F3F4F6',
+          'ink-soft': '#9CA3AF',
+          'ink-muted': '#6B7280',
+          'ink-dim': '#D1D5DB',
+          'surface-alt': '#F4F5F7',
+          success: '#76B900',
+          'success-hover': '#85CC0F',
+          'success-bg': '#052E16',
+          'success-ink': '#86EFAC',
+          'error-bg': '#450A0A',
+          'error-ink': '#FCA5A5',
+          'warning-bg': '#5B4210',
+          'warning-ink': '#FDE68A',
+          focus: '#F9A51A',
         },
         // Màu xanh "Bay thẳng / thành công" dùng chung cho hạng vé ECO và
         // trạng thái hoàn tất trong luồng đặt vé/thanh toán.

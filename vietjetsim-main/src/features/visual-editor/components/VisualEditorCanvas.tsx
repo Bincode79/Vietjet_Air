@@ -191,7 +191,7 @@ export default function VisualEditorCanvas({
   }, [selectedId, layout]);
 
   return (
-    <div className="relative h-full w-full overflow-hidden bg-[#f4f5f7]">
+    <div className="relative h-full w-full overflow-hidden bg-editor-surface-alt">
       <div ref={containerRef} className="h-full w-full" />
     </div>
   );

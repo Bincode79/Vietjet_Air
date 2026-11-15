@@ -223,7 +223,7 @@ export default function FlightBookingResultsWrapper({
             <span className="vj-total-pill-value flex-1 truncate">
               {totalBookingAmount.toLocaleString('vi-VN')} VND
             </span>
-            <Icon name="ChevronDownIcon" size={24} className="shrink-0 text-[#333333]" />
+            <Icon name="ChevronDownIcon" size={24} className="shrink-0 text-vj-text" />
           </button>
 
           {/* 4 circular step indicators — đo 15/11/2026 (472×915): đường kính

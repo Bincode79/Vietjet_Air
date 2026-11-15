@@ -194,7 +194,7 @@ export function GalaxyPayBadge({ className = 'h-5 w-auto' }: { className?: strin
         height={20}
         className="h-3.5 w-auto object-contain"
       />
-      <span className="text-[9px] text-emerald-700 font-bold uppercase tracking-wider pl-1.5 border-l border-gray-200">
+      <span className="text-3xs text-emerald-700 font-bold uppercase tracking-wider pl-1.5 border-l border-gray-200">
         SECURE
       </span>
     </div>

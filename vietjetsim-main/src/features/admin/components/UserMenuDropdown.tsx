@@ -105,7 +105,7 @@ export default function UserMenuDropdown({ onNavigate }: UserMenuDropdownProps) 
           <div className="text-xs font-semibold text-white leading-tight">
             {profile?.fullName || user?.email?.split('@')[0] || 'Hệ Thống'}
           </div>
-          <div className="text-[10px] text-indigo-400 leading-tight">{roleLabel}</div>
+          <div className="text-2xs text-indigo-400 leading-tight">{roleLabel}</div>
         </div>
         <Icon
           name="ChevronUpDownIcon"
@@ -160,7 +160,7 @@ export default function UserMenuDropdown({ onNavigate }: UserMenuDropdownProps) 
                 <p className="text-xs text-slate-400 truncate">{user?.email}</p>
                 <div className="flex items-center gap-1.5 mt-1">
                   <span
-                    className="text-[10px] font-semibold px-2 py-0.5 rounded-full"
+                    className="text-2xs font-semibold px-2 py-0.5 rounded-full"
                     style={{
                       background: 'rgba(99, 102, 241, 0.2)',
                       color: '#a5b4fc',
@@ -169,7 +169,7 @@ export default function UserMenuDropdown({ onNavigate }: UserMenuDropdownProps) 
                     {roleLabel}
                   </span>
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-                  <span className="text-[10px] text-emerald-400">Trực tuyến</span>
+                  <span className="text-2xs text-emerald-400">Trực tuyến</span>
                 </div>
               </div>
             </div>
@@ -191,7 +191,7 @@ export default function UserMenuDropdown({ onNavigate }: UserMenuDropdownProps) 
                 </div>
                 <div className="flex-1">
                   <p className="text-sm font-medium text-white">{item.label}</p>
-                  <p className="text-[11px] text-slate-500">{item.description}</p>
+                  <p className="text-xs2 text-slate-500">{item.description}</p>
                 </div>
                 <Icon name="ChevronRightIcon" size={14} className="text-slate-600" />
               </button>
@@ -212,7 +212,7 @@ export default function UserMenuDropdown({ onNavigate }: UserMenuDropdownProps) 
               </div>
               <div className="flex-1">
                 <p className="text-sm font-medium text-slate-300">Về trang chủ</p>
-                <p className="text-[11px] text-slate-500"> Quay lại website</p>
+                <p className="text-xs2 text-slate-500"> Quay lại website</p>
               </div>
             </Link>
           </div>
@@ -238,7 +238,7 @@ export default function UserMenuDropdown({ onNavigate }: UserMenuDropdownProps) 
                 <p className="text-sm font-semibold" style={{ color: '#F5717A' }}>
                   {isLoggingOut ? 'Đang đăng xuất...' : 'Đăng xuất'}
                 </p>
-                <p className="text-[11px] text-red-400/60">Đăng xuất khỏi tài khoản</p>
+                <p className="text-xs2 text-red-400/60">Đăng xuất khỏi tài khoản</p>
               </div>
               {!isLoggingOut && (
                 <Icon name="ArrowRightIcon" size={14} className="text-red-400/60" />

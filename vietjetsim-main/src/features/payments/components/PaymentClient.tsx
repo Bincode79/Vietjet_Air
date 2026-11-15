@@ -1120,7 +1120,7 @@ export default function PaymentClient() {
           <div className="bg-lime-50/60 border border-lime-300 rounded-xl p-3.5 space-y-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2 text-lime-800 text-xs font-bold font-koho">
-                <Icon name="CheckCircleIcon" size={16} className="text-[#38B000]" />
+                <Icon name="CheckCircleIcon" size={16} className="text-vj-pay-green" />
                 <span>Đã đính kèm ảnh biên lai thành công</span>
               </div>
               <button
@@ -1191,7 +1191,7 @@ export default function PaymentClient() {
         type="button"
         onClick={handlePayment}
         disabled={loading}
-        className="w-full mt-2 flex items-center justify-center gap-2 bg-gradient-to-r from-[#44BD04] via-[#38B000] to-[#2B9300] hover:from-[#3BB000] hover:to-[#248000] text-white font-koho font-extrabold py-3.5 px-6 rounded-xl shadow-md shadow-[#38B000]/30 hover:shadow-[#38B000]/40 hover:-translate-y-0.5 active:scale-[0.99] transition-all text-sm cursor-pointer disabled:opacity-50"
+        className="w-full mt-2 flex items-center justify-center gap-2 bg-gradient-to-r from-vj-pay-green-light via-vj-pay-green to-vj-pay-green-dark hover:from-vj-pay-green-3bb hover:to-vj-pay-green-deep text-white font-koho font-extrabold py-3.5 px-6 rounded-xl shadow-md shadow-vj-pay-green/30 hover:shadow-vj-pay-green/40 hover:-translate-y-0.5 active:scale-[0.99] transition-all text-sm cursor-pointer disabled:opacity-50"
       >
         {loading ? (
           <>
@@ -1558,7 +1558,7 @@ export default function PaymentClient() {
                   <button
                     type="button"
                     onClick={() => setShowItineraryModal(true)}
-                    className="w-full flex items-center justify-center gap-2 bg-[#ED1B24] hover:bg-[#c81018] text-white font-bold py-3.5 rounded-xl transition-all shadow-sm text-sm cursor-pointer"
+                    className="w-full flex items-center justify-center gap-2 bg-vj-booking-red hover:bg-vj-booking-red-hover text-white font-bold py-3.5 rounded-xl transition-all shadow-sm text-sm cursor-pointer"
                   >
                     <Icon name="TicketIcon" size={16} />
                     Xem Hành trình & Vé điện tử (Vietjet Itinerary)
@@ -1602,7 +1602,7 @@ export default function PaymentClient() {
     <>
       {/* Trip strip — brand-yellow band directly under header */}
       <div
-        className="bg-gradient-to-r from-[#FFCC00] via-[#FFD200] to-[#FFE066] text-gray-950 shadow-sm border-b border-amber-300"
+        className="bg-gradient-to-r from-vj-gold-button via-vj-gold-pure to-vj-gold-pale-ink text-gray-950 shadow-sm border-b border-amber-300"
         data-testid="trip-board"
       >
         <div className="mx-auto flex max-w-5xl items-center justify-between gap-x-3 px-3 py-2 sm:px-6 sm:py-2.5 text-xs sm:text-sm">
@@ -1654,7 +1654,7 @@ export default function PaymentClient() {
               className="flex items-center gap-1 text-gray-700 font-bold text-xs"
               title="1. Chọn chuyến bay"
             >
-              <div className="w-6 h-6 rounded-full flex items-center justify-center bg-[#38B000] text-white shadow-xs">
+              <div className="w-6 h-6 rounded-full flex items-center justify-center bg-vj-pay-green text-white shadow-xs">
                 <Icon name="CheckIcon" size={12} />
               </div>
               <span className="hidden md:inline text-3xs font-black text-gray-800 font-koho">
@@ -1666,7 +1666,7 @@ export default function PaymentClient() {
               className="flex items-center gap-1 text-gray-700 font-bold text-xs"
               title="2. Thông tin hành khách"
             >
-              <div className="w-6 h-6 rounded-full flex items-center justify-center bg-[#38B000] text-white shadow-xs">
+              <div className="w-6 h-6 rounded-full flex items-center justify-center bg-vj-pay-green text-white shadow-xs">
                 <Icon name="CheckIcon" size={12} />
               </div>
               <span className="hidden md:inline text-3xs font-black text-gray-800 font-koho">
@@ -1678,7 +1678,7 @@ export default function PaymentClient() {
               className="flex items-center gap-1 text-gray-700 font-bold text-xs"
               title="3. Dịch vụ bổ sung"
             >
-              <div className="w-6 h-6 rounded-full flex items-center justify-center bg-[#38B000] text-white shadow-xs">
+              <div className="w-6 h-6 rounded-full flex items-center justify-center bg-vj-pay-green text-white shadow-xs">
                 <Icon name="CheckIcon" size={12} />
               </div>
               <span className="hidden md:inline text-3xs font-black text-gray-800 font-koho">
@@ -2143,7 +2143,7 @@ export default function PaymentClient() {
                             <Icon
                               name="InformationCircleIcon"
                               size={16}
-                              className="text-[#005BAA]"
+                              className="text-vj-bank-blue"
                             />
                             Thông tin thanh toán
                           </label>
@@ -2253,7 +2253,7 @@ export default function PaymentClient() {
 
                             {/* VietQR / VNPAY-QR Quick Scan */}
                             <div className="flex flex-col items-center justify-center p-4 bg-white border-t border-[var(--border)]">
-                              <span className="text-xs font-bold text-[#005BAA] uppercase tracking-wider mb-2 font-koho flex items-center gap-1.5">
+                              <span className="text-xs font-bold text-vj-bank-blue uppercase tracking-wider mb-2 font-koho flex items-center gap-1.5">
                                 <Icon name="QrCodeIcon" size={16} />
                                 Quét mã QR thanh toán (STK Hệ Thống)
                               </span>
@@ -2297,12 +2297,12 @@ export default function PaymentClient() {
                     <div className="space-y-4">
                       <div className="flex items-center justify-between pb-1">
                         <label className="text-xs font-bold text-gray-800 uppercase tracking-wider font-koho flex items-center gap-1.5">
-                          <Icon name="QrCodeIcon" size={16} className="text-[#005BAA]" />
+                          <Icon name="QrCodeIcon" size={16} className="text-vj-bank-blue" />
                           {selectedMethodGroup === 'vnpay_qr'
                             ? 'Thông tin thanh toán (Mã QR VNPAY-QR)'
                             : 'Thông tin thanh toán (Mã QR thanh toán VietQR)'}
                         </label>
-                        <span className="text-3xs font-extrabold uppercase px-2 py-0.5 rounded-full bg-blue-50 text-[#005BAA] border border-blue-200">
+                        <span className="text-3xs font-extrabold uppercase px-2 py-0.5 rounded-full bg-blue-50 text-vj-bank-blue border border-blue-200">
                           {selectedMethodGroup === 'vnpay_qr'
                             ? 'Quét mã VNPAY-QR'
                             : 'Quét mã trực tiếp'}
@@ -2560,7 +2560,7 @@ export default function PaymentClient() {
                       {/* Logo Movi chuẩn nhận diện */}
                       <div>
                         <div className="inline-flex flex-col items-center justify-center border border-gray-200 rounded-xl px-4 py-2 bg-white shadow-2xs">
-                          <span className="text-2xl font-black text-[#E50051] tracking-tight leading-none lowercase">
+                          <span className="text-2xl font-black text-vj-pay-pink tracking-tight leading-none lowercase">
                             movi
                           </span>
                           <span className="text-2xs font-bold text-gray-800 leading-tight mt-1 text-center font-koho">
@@ -2634,7 +2634,7 @@ export default function PaymentClient() {
                           type="button"
                           onClick={handlePayment}
                           disabled={loading}
-                          className="cursor-pointer font-bold text-xs sm:text-sm px-6 sm:px-8 py-2 rounded-lg shadow-sm text-gray-950 bg-gradient-to-b from-[#FDB813] to-[#F59E0B] hover:from-[#F59E0B] hover:to-[#D97706] active:scale-95 transition-all disabled:opacity-50"
+                          className="cursor-pointer font-bold text-xs sm:text-sm px-6 sm:px-8 py-2 rounded-lg shadow-sm text-gray-950 bg-gradient-to-b from-vj-pay-gold to-vj-amber-deep hover:from-vj-amber-deep hover:to-vj-amber-dark active:scale-95 transition-all disabled:opacity-50"
                         >
                           {loading ? 'Đang xử lý...' : 'Xác Nhận'}
                         </button>
@@ -2679,7 +2679,7 @@ export default function PaymentClient() {
                               </span>
                             </div>
                           </div>
-                          <div className="bg-[#E31837] text-white px-4 py-3 flex justify-between items-center font-bold">
+                          <div className="bg-vj-pay-red text-white px-4 py-3 flex justify-between items-center font-bold">
                             <span className="text-sm">Tổng thanh toán</span>
                             <span className="text-base font-black font-koho">
                               {total.toLocaleString('vi-VN')} VND
@@ -3011,7 +3011,7 @@ export default function PaymentClient() {
         <button
           type="button"
           onClick={() => router.push('/tim-ve')}
-          className="flex-1 bg-[#38B000] hover:bg-[#329e00] text-white font-black italic text-sm py-3 rounded-xl shadow transition-all active:scale-95 cursor-pointer text-center"
+          className="flex-1 bg-vj-pay-green hover:bg-vj-pay-green-hover text-white font-black italic text-sm py-3 rounded-xl shadow transition-all active:scale-95 cursor-pointer text-center"
         >
           Mua thêm
         </button>
@@ -3029,7 +3029,7 @@ export default function PaymentClient() {
             }
           }}
           disabled={loading}
-          className="flex-1 bg-[#FFCC00] hover:bg-[#FFD200] disabled:opacity-50 text-gray-950 font-black italic text-sm py-3 rounded-xl shadow transition-all active:scale-95 cursor-pointer text-center"
+          className="flex-1 bg-vj-gold-button hover:bg-vj-gold-pure disabled:opacity-50 text-gray-950 font-black italic text-sm py-3 rounded-xl shadow transition-all active:scale-95 cursor-pointer text-center"
         >
           {loading ? 'Đang xử lý...' : 'Thanh toán'}
         </button>

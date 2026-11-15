@@ -316,19 +316,19 @@ export default function AuditLogsTab({ onToast }: { onToast?: ToastAPI }) {
           <table className="w-full">
             <thead>
               <tr className="border-b border-white/5">
-                <th className="text-left text-[10px] font-black text-slate-500 uppercase tracking-widest px-5 py-4">
+                <th className="text-left text-2xs font-black text-slate-500 uppercase tracking-widest px-5 py-4">
                   Thời gian
                 </th>
-                <th className="text-left text-[10px] font-black text-slate-500 uppercase tracking-widest px-5 py-4">
+                <th className="text-left text-2xs font-black text-slate-500 uppercase tracking-widest px-5 py-4">
                   Hành động
                 </th>
-                <th className="text-left text-[10px] font-black text-slate-500 uppercase tracking-widest px-5 py-4 hidden sm:table-cell">
+                <th className="text-left text-2xs font-black text-slate-500 uppercase tracking-widest px-5 py-4 hidden sm:table-cell">
                   Tài nguyên
                 </th>
-                <th className="text-left text-[10px] font-black text-slate-500 uppercase tracking-widest px-5 py-4 hidden md:table-cell">
+                <th className="text-left text-2xs font-black text-slate-500 uppercase tracking-widest px-5 py-4 hidden md:table-cell">
                   Người dùng
                 </th>
-                <th className="text-center text-[10px] font-black text-slate-500 uppercase tracking-widest px-5 py-4">
+                <th className="text-center text-2xs font-black text-slate-500 uppercase tracking-widest px-5 py-4">
                   Chi tiết
                 </th>
               </tr>
@@ -415,7 +415,7 @@ export default function AuditLogsTab({ onToast }: { onToast?: ToastAPI }) {
                               {log.user_name || 'Hệ thống'}
                             </p>
                             {log.user_email && (
-                              <p className="text-[11px] text-slate-500">{log.user_email}</p>
+                              <p className="text-xs2 text-slate-500">{log.user_email}</p>
                             )}
                           </div>
                         </td>

@@ -48,7 +48,7 @@ function PaymentDetailModal({ payment, onClose }: { payment: Payment; onClose: (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 overflow-hidden">
         <div className="p-6 border-b border-[var(--border)] flex items-center justify-between">
-          <h3 className="text-lg font-bold font-[KoHo,sans-serif] text-[#1A2948]">
+          <h3 className="text-lg font-bold font-[KoHo,sans-serif] text-vj-navy">
             Chi tiết giao dịch
           </h3>
           <button
@@ -68,7 +68,7 @@ function PaymentDetailModal({ payment, onClose }: { payment: Payment; onClose: (
             >
               {status.label}
             </div>
-            <div className="text-3xl font-bold font-[KoHo,sans-serif] text-[#1A2948]">
+            <div className="text-3xl font-bold font-[KoHo,sans-serif] text-vj-navy">
               {formatCurrency(payment.amount)}
             </div>
           </div>
@@ -76,23 +76,23 @@ function PaymentDetailModal({ payment, onClose }: { payment: Payment; onClose: (
           <div className="space-y-3">
             <div className="flex justify-between items-center">
               <span className="text-sm text-[var(--foreground-muted)]">Mã giao dịch</span>
-              <span className="text-sm font-semibold text-[#1A2948]">
+              <span className="text-sm font-semibold text-vj-navy">
                 {payment.id.slice(0, 8).toUpperCase()}
               </span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-sm text-[var(--foreground-muted)]">Mã đặt chỗ</span>
-              <span className="text-sm font-semibold text-[#1A2948]">{payment.booking_code}</span>
+              <span className="text-sm font-semibold text-vj-navy">{payment.booking_code}</span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-sm text-[var(--foreground-muted)]">Phương thức</span>
-              <span className="text-sm font-semibold text-[#1A2948]">
+              <span className="text-sm font-semibold text-vj-navy">
                 {METHOD_LABELS[payment.method] || payment.method}
               </span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-sm text-[var(--foreground-muted)]">Ngày thanh toán</span>
-              <span className="text-sm font-semibold text-[#1A2948]">
+              <span className="text-sm font-semibold text-vj-navy">
                 {formatDate(payment.created_at)}
               </span>
             </div>
@@ -103,7 +103,7 @@ function PaymentDetailModal({ payment, onClose }: { payment: Payment; onClose: (
           <button
             aria-label="Đóng"
             onClick={onClose}
-            className="w-full py-2.5 bg-[#1A2948] text-white rounded-xl font-semibold text-sm font-[KoHo,sans-serif] hover:bg-[#2A3F6F] transition-all"
+            className="w-full py-2.5 bg-vj-navy text-white rounded-xl font-semibold text-sm font-[KoHo,sans-serif] hover:bg-vj-navy-light transition-all"
           >
             Đóng
           </button>
@@ -179,7 +179,7 @@ export default function PaymentHistoryTab() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold font-[KoHo,sans-serif] text-[#1A2948]">
+          <h2 className="text-2xl font-bold font-[KoHo,sans-serif] text-vj-navy">
             Lịch sử thanh toán
           </h2>
           <p className="text-sm text-[var(--foreground-muted)] mt-1">
@@ -189,7 +189,7 @@ export default function PaymentHistoryTab() {
         <button
           onClick={handleExportCSV}
           disabled={payments.length === 0}
-          className="flex items-center gap-2 px-4 py-2 bg-[#1A2948] text-white rounded-lg text-sm font-semibold font-[KoHo,sans-serif] hover:bg-[#2A3F6F] transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="flex items-center gap-2 px-4 py-2 bg-vj-navy text-white rounded-lg text-sm font-semibold font-[KoHo,sans-serif] hover:bg-vj-navy-light transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <Icon name="ArrowDownTrayIcon" size={16} />
           Xuất CSV
@@ -248,7 +248,7 @@ export default function PaymentHistoryTab() {
 
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <span className="font-semibold text-sm text-[#1A2948] font-[KoHo,sans-serif]">
+                      <span className="font-semibold text-sm text-vj-navy font-[KoHo,sans-serif]">
                         Thanh toán
                       </span>
                       <span
@@ -265,7 +265,7 @@ export default function PaymentHistoryTab() {
                   </div>
 
                   <div className="text-right flex-shrink-0">
-                    <div className="font-bold text-sm font-[KoHo,sans-serif] text-[#1A2948]">
+                    <div className="font-bold text-sm font-[KoHo,sans-serif] text-vj-navy">
                       {formatCurrency(payment.amount)}
                     </div>
                     <Icon

@@ -204,7 +204,7 @@ export default function BankAccountsTab({ onToast }: { onToast?: ToastAPI }) {
               className={`group relative bg-slate-800 border transition-all duration-300 rounded-3xl p-6 hover:shadow-2xl hover:shadow-indigo-500/10 ${account.is_default ? 'border-indigo-500/50 bg-indigo-900/10' : 'border-slate-700'}`}
             >
               {account.is_default && (
-                <div className="absolute -top-3 left-6 px-3 py-1 bg-indigo-600 text-white text-[10px] font-black uppercase tracking-widest rounded-full shadow-lg">
+                <div className="absolute -top-3 left-6 px-3 py-1 bg-indigo-600 text-white text-2xs font-black uppercase tracking-widest rounded-full shadow-lg">
                   Mặc định
                 </div>
               )}
@@ -239,7 +239,7 @@ export default function BankAccountsTab({ onToast }: { onToast?: ToastAPI }) {
 
               <div className="space-y-4">
                 <div>
-                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest block mb-1">
+                  <label className="text-2xs font-bold text-slate-500 uppercase tracking-widest block mb-1">
                     Số tài khoản
                   </label>
                   <p className="text-xl font-mono font-bold text-white tracking-wider">
@@ -247,7 +247,7 @@ export default function BankAccountsTab({ onToast }: { onToast?: ToastAPI }) {
                   </p>
                 </div>
                 <div>
-                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest block mb-1">
+                  <label className="text-2xs font-bold text-slate-500 uppercase tracking-widest block mb-1">
                     Chủ tài khoản
                   </label>
                   <p className="text-sm font-semibold text-slate-200">
@@ -255,10 +255,10 @@ export default function BankAccountsTab({ onToast }: { onToast?: ToastAPI }) {
                   </p>
                 </div>
                 <div className="bg-slate-900/50 rounded-xl p-3 border border-slate-700/50">
-                  <label className="text-[10px] font-bold text-indigo-400 uppercase tracking-widest block mb-1">
+                  <label className="text-2xs font-bold text-indigo-400 uppercase tracking-widest block mb-1">
                     Nội dung chuyển khoản mẫu
                   </label>
-                  <p className="text-[11px] font-mono text-indigo-200/70">
+                  <p className="text-xs2 font-mono text-indigo-200/70">
                     {account.transfer_note_template || '{code}I98O'}
                   </p>
                 </div>
@@ -267,7 +267,7 @@ export default function BankAccountsTab({ onToast }: { onToast?: ToastAPI }) {
               <div className="mt-6 pt-4 border-t border-slate-700 flex items-center justify-between">
                 <button
                   onClick={() => toggleStatus(account, 'is_active')}
-                  className={`text-[11px] font-bold px-3 py-1 rounded-full transition-all ${
+                  className={`text-xs2 font-bold px-3 py-1 rounded-full transition-all ${
                     account.is_active
                       ? 'bg-emerald-500/10 text-emerald-400'
                       : 'bg-slate-700 text-slate-500'
@@ -278,7 +278,7 @@ export default function BankAccountsTab({ onToast }: { onToast?: ToastAPI }) {
                 {!account.is_default && (
                   <button
                     onClick={() => toggleStatus(account, 'is_default')}
-                    className="text-[11px] font-bold text-indigo-400 hover:text-indigo-300"
+                    className="text-xs2 font-bold text-indigo-400 hover:text-indigo-300"
                   >
                     Đặt mặc định
                   </button>
@@ -404,23 +404,23 @@ export default function BankAccountsTab({ onToast }: { onToast?: ToastAPI }) {
                         type="button"
                         title={`${t.description} — VD: ${t.example}. Bấm để chèn tại vị trí con trỏ.`}
                         onClick={() => insertToken(t.token)}
-                        className="px-2.5 py-1 rounded-lg bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-300 border border-indigo-500/20 text-[10px] font-mono font-bold transition-all active:scale-95"
+                        className="px-2.5 py-1 rounded-lg bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-300 border border-indigo-500/20 text-2xs font-mono font-bold transition-all active:scale-95"
                       >
                         {t.token}
                       </button>
                     ))}
                   </div>
                   {unknownTokens.length > 0 ? (
-                    <p className="text-[10px] text-red-400 mt-2 font-semibold">
+                    <p className="text-2xs text-red-400 mt-2 font-semibold">
                       Biến không hợp lệ: {unknownTokens.join(', ')} — sẽ không được thay thế.
                     </p>
                   ) : (
-                    <p className="text-[10px] text-slate-500 mt-2">
+                    <p className="text-2xs text-slate-500 mt-2">
                       Bấm vào biến để chèn. Số tiền được ghi dạng số liền, không dấu phân cách.
                     </p>
                   )}
                   {formData.transfer_note_template.trim() && unknownTokens.length === 0 && (
-                    <p className="text-[10px] text-emerald-400/80 mt-1 font-mono">
+                    <p className="text-2xs text-emerald-400/80 mt-1 font-mono">
                       Xem trước: {previewNote}
                     </p>
                   )}

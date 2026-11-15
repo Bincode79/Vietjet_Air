@@ -118,6 +118,17 @@ jobs:
         env:
           CI: true
 
+      # Chạy ngay sau build, trên chính artifact vừa sinh ra.
+      #
+      # Lỗi "pdfkit không tìm thấy font Helvetica.afm" chỉ xuất hiện trong bản
+      # build (khi `pdfkit` bị bundle vào server chunk, `__dirname` trỏ sai chỗ)
+      # — unit test chạy trên source vẫn xanh, nên không cổng nào khác bắt
+      # được. Script này kiểm tra đúng thứ production chạy: `pdfkit` nằm ngoài
+      # bundle, được trace vào standalone kèm file `.afm`, và sinh ra PDF thật
+      # từ đúng thư mục standalone.
+      - name: Verify PDF file-generation pipeline
+        run: npm run test:pdf-pipeline
+
   smoke:
     name: Smoke Test
     runs-on: ubuntu-latest
@@ -136,20 +147,16 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      # Bound to 4028 so it matches the port the smoke test targets; without a
-      # DATABASE_URL the app falls back to the in-memory mock, so no secrets are
-      # needed. The smoke test polls until the server is ready itself.
+      # `scripts/run-smoke.sh` dựng server, chờ nó sẵn sàng, chạy smoke test
+      # rồi dọn dọn — tất cả trong một tiến trình, nên CI và local chạy đúng
+      # một cách (trước đây CI copy-paste cấu hình riêng và có thể trôi khỏi
+      # script).
       #
-      # `set -m` gives the background job its own process group, so the trap can
-      # kill the whole `npm -> next dev -> next-server` group. Killing only the
-      # npm pid would leave next-server holding port 4028.
+      # Script tự gán `DATABASE_URL=""` để app chạy trên bộ nhớ in-memory:
+      # smoke test phải cho kết quả giống nhau mọi lần chạy, và CI không có
+      # database nào để nối vào.
       - name: Smoke test against a running server
-        run: |
-          set -m
-          npm run dev > /tmp/server.log 2>&1 &
-          SERVER_PID=$!
-          trap 'kill -- -$SERVER_PID 2>/dev/null || true' EXIT
-          npm run test:smoke
+        run: bash scripts/run-smoke.sh
         env:
           JWT_SECRET: ci-smoke-test-secret
           JWT_REFRESH_SECRET: ci-smoke-test-refresh-secret
@@ -159,7 +166,7 @@ jobs:
         if: always()
         with:
           name: smoke-server-log
-          path: /tmp/server.log
+          path: /tmp/vietjet-smoke-server.log
           retention-days: 7
 
   summary:

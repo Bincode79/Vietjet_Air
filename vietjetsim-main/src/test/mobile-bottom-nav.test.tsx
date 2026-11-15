@@ -46,7 +46,7 @@ describe('MobileBottomNav', () => {
       .filter((a) => a.getAttribute('aria-current') === 'page');
     expect(current).toHaveLength(1);
     expect(current[0]).toHaveTextContent('Làm thủ tục');
-    expect(current[0].className).toContain('text-[#EC2029]');
+    expect(current[0].className).toContain('text-vj-red');
   });
 
   it('keeps the "Vé của tôi" tab active on flights lookup page', () => {
@@ -58,7 +58,7 @@ describe('MobileBottomNav', () => {
       .filter((a) => a.getAttribute('aria-current') === 'page');
     expect(current).toHaveLength(1);
     expect(current[0]).toHaveTextContent('Vé của tôi');
-    expect(current[0].className).toContain('text-[#EC2029]');
+    expect(current[0].className).toContain('text-vj-red');
   });
 
   // The sign-in and admin screens have their own fixed furniture, and a

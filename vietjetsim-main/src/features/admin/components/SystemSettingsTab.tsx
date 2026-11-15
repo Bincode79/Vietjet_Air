@@ -328,7 +328,7 @@ export default function SystemSettingsTab({ onToast }: { onToast?: ToastAPI }) {
                       <h4 className="font-semibold text-white">{setting.label}</h4>
                       {hasChanges &&
                         localSettings[setting.key]?.value !== settings[setting.key]?.value && (
-                          <span className="text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-400 border border-amber-500/20">
+                          <span className="text-2xs uppercase tracking-wider font-bold px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-400 border border-amber-500/20">
                             Đã thay đổi
                           </span>
                         )}

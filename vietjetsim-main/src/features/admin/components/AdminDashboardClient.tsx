@@ -355,7 +355,7 @@ export default function AdminDashboardClient() {
       <div key={category} className="space-y-1">
         {!sidebarCollapsed && (
           <div className="px-4 pt-4 pb-1">
-            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest opacity-60">
+            <span className="text-2xs font-bold text-slate-500 uppercase tracking-widest opacity-60">
               {NAV_CATEGORIES.find((c) => c.id === category)?.label || category}
             </span>
           </div>
@@ -460,7 +460,7 @@ export default function AdminDashboardClient() {
               >
                 Vietjet Air
               </span>
-              <div className="text-[10px] text-indigo-400 font-medium tracking-wider uppercase">
+              <div className="text-2xs text-indigo-400 font-medium tracking-wider uppercase">
                 Bảng Quản Trị
               </div>
             </div>
@@ -498,7 +498,7 @@ export default function AdminDashboardClient() {
                 <div className="text-xs font-bold text-white truncate max-w-[140px] tracking-tight">
                   {profile?.fullName || user?.email?.split('@')[0] || 'Hệ Thống'}
                 </div>
-                <div className="text-[10px] text-indigo-400/90 font-bold flex items-center gap-1.5 mt-0.5">
+                <div className="text-2xs text-indigo-400/90 font-bold flex items-center gap-1.5 mt-0.5">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.6)] animate-pulse"></span>
                   {roleLabel}
                 </div>
@@ -570,7 +570,7 @@ export default function AdminDashboardClient() {
                 </div>
                 <div>
                   <div className="text-white font-bold text-sm">Vietjet Air</div>
-                  <div className="text-[10px] text-indigo-400 font-medium tracking-wider uppercase">
+                  <div className="text-2xs text-indigo-400 font-medium tracking-wider uppercase">
                     Bảng Quản Trị
                   </div>
                 </div>
@@ -610,7 +610,7 @@ export default function AdminDashboardClient() {
                   <div className="text-xs font-semibold text-white truncate max-w-[140px]">
                     {profile?.fullName || user?.email?.split('@')[0] || 'Hệ Thống'}
                   </div>
-                  <div className="text-[11px] text-indigo-400 flex items-center gap-1">
+                  <div className="text-xs2 text-indigo-400 flex items-center gap-1">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
                     {roleLabel}
                   </div>

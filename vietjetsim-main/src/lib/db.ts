@@ -527,6 +527,11 @@ export async function getAirportByCode(code: string): Promise<AirportRecord | nu
  *
  * The list has to match migration 021's `flights_status_check`, so adding a
  * status means adding it here too.
+ *
+ * Ngoài trạng thái, mọi nhánh đều lọc `depart_time > NOW()`. Một chuyến bay
+ * còn `status = 'active'` nhưng đã khởi hành là chuyến bay quá khứ — trước
+ * đây nó vẫn hiện trong kết quả tìm kiếm khi caller không truyền ngày
+ * (`depart_date`), và khách có thể đặt vé cho chuyến đã cất cánh.
  */
 export async function searchFlights(params: {
   from_code: string;
@@ -546,6 +551,7 @@ export async function searchFlights(params: {
         AND to_code = ${params.to_code}
         AND depart_time >= ${startDate}
         AND depart_time <= ${endDate}
+        AND depart_time > NOW()
         AND available > 0
         AND status IN ('active', 'delayed')
       ORDER BY depart_time ASC
@@ -560,6 +566,7 @@ export async function searchFlights(params: {
         AND class = ${params.class}
         AND available > 0
         AND status IN ('active', 'delayed')
+        AND depart_time > NOW()
       ORDER BY depart_time ASC
     `) as FlightRecord[];
   }
@@ -570,6 +577,7 @@ export async function searchFlights(params: {
       AND to_code = ${params.to_code}
       AND available > 0
       AND status IN ('active', 'delayed')
+      AND depart_time > NOW()
     ORDER BY depart_time ASC
   `) as FlightRecord[];
 }

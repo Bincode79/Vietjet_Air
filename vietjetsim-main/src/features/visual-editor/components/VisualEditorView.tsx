@@ -47,7 +47,7 @@ export default function VisualEditorView({ pagePath }: { pagePath: string }) {
 
   if (isLoading) {
     return (
-      <div className="flex h-full items-center justify-center bg-[#1e1e1e] text-sm text-[#9ca3af]">
+      <div className="flex h-full items-center justify-center bg-editor-canvas text-sm text-editor-ink-soft">
         Đang tải bố cục trang…
       </div>
     );
@@ -56,7 +56,7 @@ export default function VisualEditorView({ pagePath }: { pagePath: string }) {
   return (
     <div className="relative h-full w-full">
       {loadError && (
-        <div className="absolute left-1/2 top-3 z-20 -translate-x-1/2 rounded bg-[#450a0a] px-3 py-1.5 text-xs text-[#fca5a5]">
+        <div className="absolute left-1/2 top-3 z-20 -translate-x-1/2 rounded bg-editor-error-bg px-3 py-1.5 text-xs text-editor-error-ink">
           {loadError}
         </div>
       )}

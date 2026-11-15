@@ -347,7 +347,7 @@ export default function SstkTab({ onToast }: { onToast?: ToastAPI }) {
                       <div className="flex-1 min-w-0">
                         <h3 className="font-bold text-sm truncate text-navy">{tool.label}</h3>
                         <span
-                          className="inline-block px-2 py-0.5 rounded text-[10px] font-semibold capitalize mt-1"
+                          className="inline-block px-2 py-0.5 rounded text-2xs font-semibold capitalize mt-1"
                           style={{
                             background: catStyle.bg,
                             color: catStyle.text,
@@ -451,13 +451,13 @@ export default function SstkTab({ onToast }: { onToast?: ToastAPI }) {
                         <div className="flex items-center gap-2 flex-wrap">
                           <span className="font-semibold text-sm text-navy">{log.tool_label}</span>
                           <span
-                            className={`px-2 py-0.5 rounded text-[10px] font-semibold ${badge?.cls || ''}`}
+                            className={`px-2 py-0.5 rounded text-2xs font-semibold ${badge?.cls || ''}`}
                           >
                             {badge?.label || log.status}
                           </span>
                         </div>
                         <p className="text-xs mt-1 truncate text-vj-gray">{log.result_summary}</p>
-                        <div className="flex items-center gap-3 mt-1.5 text-[11px] text-gray-400">
+                        <div className="flex items-center gap-3 mt-1.5 text-xs2 text-gray-400">
                           <span className="flex items-center gap-1">
                             <Icon name="UserIcon" size={11} /> {log.executed_by.slice(0, 8)}...
                           </span>
