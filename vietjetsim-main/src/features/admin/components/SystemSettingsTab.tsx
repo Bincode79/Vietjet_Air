@@ -2,6 +2,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Icon } from '@/shared/components/ui';
 import { getSystemSettings, updateSystemSettings } from '@/features/admin';
+import {
+  SYSTEM_CONFIG_SCHEMA,
+  getSystemConfigBounds,
+  type SystemConfigKey,
+} from '@/lib/system-config';
 import { getApiErrorMessage } from '@/shared/services';
 import { AdminTabHeader, ADMIN_CARD_STYLE, ADMIN_ACTION_BTN } from './AdminSection';
 
@@ -15,12 +20,19 @@ interface ToastAPI {
 }
 
 const SETTING_CATEGORIES = [
-  { id: 'general', label: 'Cài đặt chung', icon: 'Cog6ToothIcon' },
   { id: 'booking', label: 'Cấu hình đặt vé', icon: 'TicketIcon' },
-  { id: 'payment', label: 'Cấu hình thanh toán & Ngân hàng', icon: 'BanknotesIcon' },
   { id: 'notification', label: 'Thông báo', icon: 'BellIcon' },
 ];
 
+/**
+ * Danh sách cài đặt hiển thị trong tab.
+ *
+ * Mỗi mục PHẢI có một key nằm trong `SYSTEM_CONFIG_SCHEMA`
+ * (`src/lib/system-config.ts`) — đó là danh sách những key thực sự được đọc
+ * khi hệ thống chạy. Key không có trong schema sẽ không có tác dụng gì, nên
+ * không được đưa vào đây: một ô cài đặt "bấm lưu xong nhưng không có gì đổi"
+ * tệ hơn là không có ô đó.
+ */
 const DEFAULT_SETTINGS: Array<{
   key: string;
   label: string;
@@ -29,92 +41,28 @@ const DEFAULT_SETTINGS: Array<{
   category: string;
   options?: { value: string; label: string }[];
 }> = [
-  // --- General ---
-  {
-    key: 'maintenance_mode',
-    label: 'Chế độ bảo trì',
-    description: 'Bật/tắt chế độ bảo trì. Khi bật, người dùng sẽ thấy trang bảo trì.',
-    type: 'boolean',
-    category: 'general',
-  },
   // --- Booking ---
-  {
-    key: 'booking_timeout',
-    label: 'Thời gian timeout đặt vé',
-    description: 'Thời gian (phút) trước khi đặt vé tự động hủy nếu không thanh toán',
-    type: 'number',
-    category: 'booking',
-  },
-  {
-    key: 'min_refund_days',
-    label: 'Số ngày hoàn tiền tối thiểu',
-    description: 'Số ngày tối thiểu trước giờ bay để được yêu cầu hoàn tiền',
-    type: 'number',
-    category: 'booking',
-  },
-  {
-    key: 'max_booking_per_user',
-    label: 'Số vé tối đa/người dùng',
-    description: 'Số lượng vé tối đa một người dùng có thể đặt trong cùng một thời điểm',
-    type: 'number',
-    category: 'booking',
-  },
-  {
-    key: 'min_booking_amount',
-    label: 'Giá trị đặt vé tối thiểu',
-    description: 'Giá trị (VND) tối thiểu để đặt vé',
-    type: 'number',
-    category: 'booking',
-  },
   {
     key: 'max_passengers_per_booking',
     label: 'Số khách tối đa/đơn',
-    description: 'Số lượng hành khách tối đa trong một đơn đặt vé',
+    description:
+      'Giới hạn số khách trong một đơn đặt vé. Áp dụng ở API tạo booking nên không thể vượt qua bằng cách gửi request trực tiếp.',
     type: 'number',
     category: 'booking',
-  },
-  // --- Payment & Bank ---
-  {
-    key: 'admin_bank_name',
-    label: 'Tên ngân hàng nhận tiền',
-    description: 'Tên ngân hàng chính thức nhận thanh toán (VD: Vietcombank, Techcombank)',
-    type: 'text',
-    category: 'payment',
-  },
-  {
-    key: 'admin_bank_account_holder',
-    label: 'Tên chủ tài khoản',
-    description: 'Họ tên đầy đủ của chủ tài khoản nhận tiền',
-    type: 'text',
-    category: 'payment',
-  },
-  {
-    key: 'admin_bank_account_number',
-    label: 'Số tài khoản (STK)',
-    description: 'Số tài khoản ngân hàng để người dùng chuyển khoản thanh toán',
-    type: 'text',
-    category: 'payment',
   },
   // --- Notification ---
   {
     key: 'auto_send_payment_invoice_email',
     label: 'Tự động gửi hoá đơn qua email khi thanh toán',
     description:
-      'Tự động gửi email hoá đơn & vé điện tử cho khách hàng ngay khi hoàn tất thanh toán',
+      'Tự động gửi email hoá đơn & vé điện tử cho khách hàng ngay khi hoàn tất thanh toán.',
     type: 'boolean',
     category: 'notification',
   },
   {
     key: 'email_notifications',
     label: 'Thông báo qua email',
-    description: 'Bật/tắt gửi thông báo qua email cho người dùng',
-    type: 'boolean',
-    category: 'notification',
-  },
-  {
-    key: 'sms_notifications',
-    label: 'Thông báo qua SMS',
-    description: 'Bật/tắt gửi thông báo qua SMS cho người dùng',
+    description: 'Bật/tắt gửi thông báo qua email cho người dùng.',
     type: 'boolean',
     category: 'notification',
   },
@@ -134,8 +82,22 @@ export default function SystemSettingsTab({ onToast }: { onToast?: ToastAPI }) {
     setHasError(false);
     try {
       const data = await getSystemSettings();
-      setSettings(data.settingsObject || {});
-      setLocalSettings(data.settingsObject || {});
+      const fromApi = data.settingsObject || {};
+
+      // Cài đặt chưa từng được lưu sẽ không có trong `system_config` — hiển thị
+      // giá trị mặc định của schema để admin thấy được trạng thái thực tế
+      // đang chạy, thay vì một ô trống gợi ý "chưa cấu hình".
+      const merged: SettingsObject = {};
+      for (const setting of DEFAULT_SETTINGS) {
+        const saved = fromApi[setting.key];
+        merged[setting.key] = {
+          value:
+            saved?.value ?? String(SYSTEM_CONFIG_SCHEMA[setting.key as SystemConfigKey].default),
+          description: setting.description,
+        };
+      }
+      setSettings(merged);
+      setLocalSettings(merged);
     } catch {
       setHasError(true);
     } finally {
@@ -162,8 +124,26 @@ export default function SystemSettingsTab({ onToast }: { onToast?: ToastAPI }) {
     setIsSaving(true);
 
     try {
-      await updateSystemSettings({ settings: localSettings });
-      setSettings(localSettings);
+      // Chỉ gửi những cài đặt thực sự thay đổi. Gửi toàn bộ cũng chạy được,
+      // nhưng mỗi key là một câu `UPSERT` riêng — giữ payload nhỏ giúp lỗi
+      // validation của một key không chặn việc lưu các key còn lại.
+      const changed: SettingsObject = {};
+      for (const setting of DEFAULT_SETTINGS) {
+        const next = localSettings[setting.key]?.value;
+        const prev = settings[setting.key]?.value;
+        if (next !== undefined && next !== prev) {
+          changed[setting.key] = { value: next };
+        }
+      }
+
+      if (Object.keys(changed).length === 0) {
+        setHasChanges(false);
+        return;
+      }
+
+      await updateSystemSettings({ settings: changed });
+      setSettings((prev) => ({ ...prev, ...changed }));
+      setLocalSettings((prev) => ({ ...prev, ...changed }));
       setHasChanges(false);
       onToast?.success('Lưu thành công', 'Các cài đặt đã được cập nhật.');
     } catch (err) {
@@ -175,6 +155,9 @@ export default function SystemSettingsTab({ onToast }: { onToast?: ToastAPI }) {
 
   const handleReset = () => {
     if (confirm('Bạn có chắc muốn đặt lại tất cả cài đặt về giá trị ban đầu?')) {
+      // "Ban đầu" ở đây là giá trị đang lưu trên DB, không phải giá trị mặc
+      // định của schema: admin vừa lưu một cấu hình hợp lệ thì Đặt lại phải
+      // đưa họ về đúng trạng thái đó, không phải xóa cấu hình.
       setLocalSettings(settings);
       setHasChanges(false);
     }
@@ -182,8 +165,16 @@ export default function SystemSettingsTab({ onToast }: { onToast?: ToastAPI }) {
 
   const getSettingValue = (key: string, type: string): string | boolean => {
     const setting = localSettings[key];
-    if (!setting) return type === 'boolean' ? 'false' : '';
-    return setting.value || (type === 'boolean' ? 'false' : '');
+    if (!setting) {
+      // Chưa có trong state (ví dụ lần render đầu) ⇒ lấy mặc định của schema.
+      const spec = SYSTEM_CONFIG_SCHEMA[key as SystemConfigKey];
+      if (spec) return spec.default as string | boolean;
+      return type === 'boolean' ? 'false' : '';
+    }
+    // Boolean được lưu dưới dạng chuỗi `"true"`/`"false"` trong `system_config`,
+    // nên giá trị rỗng phải đọc là `false`, không phải chuỗi rỗng.
+    if (type === 'boolean') return setting.value === 'true';
+    return setting.value;
   };
 
   if (isLoading) {
@@ -339,21 +330,24 @@ export default function SystemSettingsTab({ onToast }: { onToast?: ToastAPI }) {
                     {setting.type === 'boolean' ? (
                       <div className="flex items-center">
                         <button
+                          role="switch"
+                          aria-checked={value === true}
+                          aria-label={setting.label}
                           onClick={() =>
-                            handleSettingChange(setting.key, value === 'true' ? 'false' : 'true')
+                            handleSettingChange(setting.key, value === true ? 'false' : 'true')
                           }
                           className={`relative w-12 h-6 rounded-full transition-all duration-300 ${
-                            value === 'true' ? 'bg-emerald-500' : 'bg-slate-600'
+                            value === true ? 'bg-emerald-500' : 'bg-slate-600'
                           }`}
                         >
                           <span
                             className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow-md transition-transform duration-300 ${
-                              value === 'true' ? 'translate-x-6' : 'translate-x-0.5'
+                              value === true ? 'translate-x-6' : 'translate-x-0.5'
                             }`}
                           />
                         </button>
                         <span className="ml-3 text-xs font-semibold text-slate-400">
-                          {value === 'true' ? 'Đang bật' : 'Đang tắt'}
+                          {value === true ? 'Đang bật' : 'Đang tắt'}
                         </span>
                       </div>
                     ) : setting.type === 'select' ? (
@@ -374,7 +368,8 @@ export default function SystemSettingsTab({ onToast }: { onToast?: ToastAPI }) {
                         value={String(value)}
                         onChange={(e) => handleSettingChange(setting.key, e.target.value)}
                         className="w-full px-4 py-2.5 bg-slate-900/60 border border-white/10 rounded-xl text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all placeholder:text-slate-500"
-                        min={0}
+                        min={getSystemConfigBounds(setting.key as SystemConfigKey).min ?? 0}
+                        max={getSystemConfigBounds(setting.key as SystemConfigKey).max}
                         placeholder={setting.label}
                       />
                     )}
@@ -399,8 +394,7 @@ export default function SystemSettingsTab({ onToast }: { onToast?: ToastAPI }) {
         <div>
           <p className="text-sm font-semibold text-white">Lưu ý khi thay đổi cài đặt</p>
           <ul className="text-xs text-slate-400 mt-1 space-y-1">
-            <li>- Một số thay đổi có thể cần khởi động lại dịch vụ để có hiệu lực</li>
-            <li>- Vui lòng kiểm tra kỹ trước khi bật chế độ bảo trì</li>
+            <li>- Cài đặt có hiệu lực ngay với các request tiếp theo</li>
             <li>- Các thay đổi sẽ được ghi lại trong nhật ký hệ thống</li>
           </ul>
         </div>

@@ -10,11 +10,12 @@ import {
   getAllUsers,
   getAllRefunds,
   updateBookingStatus,
-  deleteFlight,
+  updateFlight,
   getSstkLogs,
   insertSstkLog,
   archiveOldRefunds,
 } from '@/lib/db';
+import { FARE_LADDER_RATIO, MIN_TICKET_PRICE_FLOOR } from '@/lib/flight-pricing-constants';
 
 // ─── Auth guard ──────────────────────────────────────────────────────────────
 
@@ -62,22 +63,53 @@ const TOOLS: Record<
 
   'sync-prices': {
     label: 'Đồng bộ giá chuyến bay',
-    description: 'Cập nhật giá tất cả các chuyến bay theo template giá chuẩn',
+    description: 'Đặt lại giá vé theo mức cơ sở, giữ nguyên tỷ lệ giá theo cabin',
     category: 'flight',
     execute: async (params, _adminId) => {
       const flightsResult = await getAllFlights();
       const flights = flightsResult.flights || [];
-      const basePrice = Number(params.basePrice) || 850000;
-      let updated = 0;
-      for (const _f of flights) {
-        // simulate price sync based on route popularity
-        const multiplier = 0.8 + Math.random() * 0.4; // 0.8 - 1.2
-        const _newPrice = Math.round(basePrice * multiplier);
-        // In real implementation: await updateFlight(f.id, { price: newPrice });
-        updated++;
+
+      const basePrice = Number(params.basePrice);
+      if (!Number.isFinite(basePrice) || basePrice <= 0) {
+        return {
+          summary: 'Giá cơ sở không hợp lệ (phải là số lớn hơn 0)',
+          status: 'error' as const,
+        };
       }
+      // Giá sàn dùng chung với phần điều chỉnh giá hàng loạt — một chuyến bay
+      // có giá 0đ sẽ làm trang tìm chuyến hiển thị sai và hỏng luồng đặt vé.
+      const base = Math.max(MIN_TICKET_PRICE_FLOOR, Math.round(basePrice));
+
+      let updated = 0;
+      const failures: string[] = [];
+
+      for (const flight of flights) {
+        // Giữ tỷ lệ cabin của chuyến bay này: business luôn đắt hơn economy
+        // theo đúng thang giá mà seed migration 030 dùng.
+        const economyPrice = base;
+        const businessPrice = Math.max(economyPrice, Math.round(economyPrice * FARE_LADDER_RATIO));
+
+        try {
+          await updateFlight(flight.id, {
+            price: economyPrice,
+            economy_price: economyPrice,
+            business_price: businessPrice,
+          });
+          updated++;
+        } catch (error) {
+          failures.push(`${flight.flight_no} (${String(error)})`);
+        }
+      }
+
+      if (failures.length > 0) {
+        return {
+          summary: `Đã cập nhật ${updated}/${flights.length} chuyến bay. Lỗi: ${failures.slice(0, 3).join('; ')}`,
+          status: 'partial' as const,
+        };
+      }
+
       return {
-        summary: `Đã đồng bộ giá cho ${updated} chuyến bay (base: ${basePrice.toLocaleString()}đ)`,
+        summary: `Đã đồng bộ giá cho ${updated} chuyến bay (giá cơ sở: ${base.toLocaleString('vi-VN')}₫)`,
         status: 'success' as const,
       };
     },
@@ -88,9 +120,13 @@ const TOOLS: Record<
     description: 'Xóa presence của người dùng offline > 1 giờ để giải phóng session chat',
     category: 'chat',
     execute: async (_params, _adminId) => {
+      // `DELETE ... RETURNING` trả về đúng các hàng đã xoá. Trước đây lệnh
+      // DELETE không có RETURNING nên `result.length` luôn bằng 0 và tool báo
+      // "Đã xóa 0 presence record" dù đã xoá hàng loạt.
       const result = await sql`
         DELETE FROM chat_presence
         WHERE last_seen < NOW() - INTERVAL '1 hour'
+        RETURNING id
       `;
       const count = Array.isArray(result) ? result.length : 0;
       return { summary: `Đã xóa ${count} presence record cũ`, status: 'success' as const };
@@ -178,7 +214,7 @@ const TOOLS: Record<
 
   'bulk-cancel-flights': {
     label: 'Huỷ loạt chuyến bay',
-    description: 'Huỷ nhiều chuyến bay cùng lúc theo khoảng thời gian',
+    description: 'Chuyển nhiều chuyến bay sang trạng thái đã huỷ trong khoảng thời gian',
     category: 'flight',
     execute: async (params, _adminId) => {
       const dateFrom = params.dateFrom;
@@ -195,18 +231,31 @@ const TOOLS: Record<
         const day = f.depart_time.slice(0, 10);
         return day >= dateFrom && day <= dateTo;
       });
+
+      // Huỷ = đổi `status`, KHÔNG phải xoá hàng. Trước đây tool này gọi
+      // `deleteFlight`, tức là xoá vĩnh viễn chuyến bay (và chỉ chạy được khi
+      // chuyến bay chưa có booking nào) trong khi nhãn nói "huỷ".
       let cancelled = 0;
+      const failures: string[] = [];
       for (const f of filtered) {
         try {
-          await deleteFlight(f.id);
+          await updateFlight(f.id, { status: 'cancelled' });
           cancelled++;
-        } catch {
-          /* skip */
+        } catch (error) {
+          failures.push(`${f.flight_no} (${String(error)})`);
         }
       }
+
+      if (failures.length > 0) {
+        return {
+          summary: `Đã huỷ ${cancelled}/${filtered.length} chuyến bay. Lỗi: ${failures.slice(0, 3).join('; ')}`,
+          status: 'partial' as const,
+        };
+      }
+
       return {
         summary: `Đã huỷ ${cancelled}/${filtered.length} chuyến bay trong khoảng ${dateFrom} → ${dateTo}`,
-        status: cancelled === filtered.length ? ('success' as const) : ('partial' as const),
+        status: 'success' as const,
       };
     },
   },
@@ -296,7 +345,10 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json({
-      success: true,
+      // `success` phản ánh kết quả của tool, không phải "route đã chạy xong".
+      // Trước đây route luôn trả `success: true`, nên một tool hỏng (giá cơ sở
+      // không hợp lệ, cập nhật thất bại) vẫn hiện thông báo thành công.
+      success: result.status === 'success',
       toolKey,
       label: tool.label,
       ...result,

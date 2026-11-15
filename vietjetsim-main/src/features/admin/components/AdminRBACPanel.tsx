@@ -22,12 +22,16 @@ import { Icon } from '@/shared/components/ui';
 import {
   listRbacRoles,
   listRbacAudit,
+  listRbacConfig,
+  setRbacConfig,
   assignRbacRole,
   removeRbacRole,
   type AdminRbacAuditRow,
   type AdminRoleRow,
+  type AdminSystemConfigRow,
 } from '@/features/admin';
 import { getApiErrorMessage } from '@/shared/services';
+import { SYSTEM_CONFIG_SCHEMA, type SystemConfigKey } from '@/lib/system-config';
 import {
   PERMISSION_CATEGORIES,
   PERMISSION_LABELS,
@@ -53,6 +57,10 @@ export default function AdminRBACPanel({ onToast }: { onToast?: ToastAPI }) {
   const [selectedUserEmail, setSelectedUserEmail] = useState('');
   const [assignRoleName, setAssignRoleName] = useState<SystemRoleName>('admin_ops');
   const [isAssigning, setIsAssigning] = useState(false);
+  const [configRows, setConfigRows] = useState<AdminSystemConfigRow[]>([]);
+  const [configLoading, setConfigLoading] = useState(false);
+  const [configError, setConfigError] = useState(false);
+  const [savingConfigKey, setSavingConfigKey] = useState<string | null>(null);
 
   // ─── Fetch data ──────────────────────────────────────────────────────
 
@@ -72,6 +80,63 @@ export default function AdminRBACPanel({ onToast }: { onToast?: ToastAPI }) {
   useEffect(() => {
     fetchData();
   }, [fetchData]);
+
+  // ─── System config (tab "Cấu hình hệ thống") ─────────────────────────
+  //
+  // Dữ liệu đọc từ bảng `system_config` thật. Trước đây tab này hiển thị
+  // các giá trị hard-code (`site_name`, `maintenance_mode`, …) và bấm vào chỉ
+  // hiện toast "đang được phát triển" — tức là admin thấy một bảng cấu hình
+  // nhưng không thay đổi được gì.
+
+  const fetchConfig = useCallback(async () => {
+    setConfigLoading(true);
+    setConfigError(false);
+    try {
+      const data = await listRbacConfig();
+      setConfigRows(data.configs || []);
+    } catch (err) {
+      console.error('RBAC config fetch error:', err);
+      setConfigError(true);
+    } finally {
+      setConfigLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (activeTab === 'config') fetchConfig();
+  }, [activeTab, fetchConfig]);
+
+  /** Giá trị hiện tại của một key: ưu tiên hàng trong DB, không có thì dùng mặc định schema. */
+  const configValueOf = (key: SystemConfigKey): string => {
+    const row = configRows.find((c) => c.key === key);
+    if (row) return row.value;
+    return String(SYSTEM_CONFIG_SCHEMA[key].default);
+  };
+
+  const handleToggleConfig = async (key: SystemConfigKey) => {
+    const next = configValueOf(key) === 'true' ? 'false' : 'true';
+    setSavingConfigKey(key);
+    try {
+      await setRbacConfig({ key, value: next });
+      setConfigRows((prev) => [
+        ...prev.filter((c) => c.key !== key),
+        {
+          id: `local-${key}`,
+          key,
+          value: next,
+          type: 'boolean',
+          description: SYSTEM_CONFIG_SCHEMA[key].description,
+          category: null,
+          updated_at: new Date().toISOString(),
+        },
+      ]);
+      onToast?.success('Đã cập nhật', `${key} = ${next}`);
+    } catch (err) {
+      onToast?.error('Lỗi', getApiErrorMessage(err, 'Không thể cập nhật cấu hình'));
+    } finally {
+      setSavingConfigKey(null);
+    }
+  };
 
   // ─── Assign role handler ─────────────────────────────────────────────
 
@@ -486,91 +551,97 @@ export default function AdminRBACPanel({ onToast }: { onToast?: ToastAPI }) {
       {/* ═══════ TAB: CONFIG ══════ */}
       {activeTab === 'config' && (
         <div className="bg-white rounded-xl border border-gray-200 p-6">
-          <h3 className="font-bold text-base mb-4 font-koho">Cấu hình hệ thống</h3>
+          <div className="flex items-center justify-between gap-3 mb-4">
+            <h3 className="font-bold text-base font-koho">Cấu hình hệ thống</h3>
+            <button
+              onClick={fetchConfig}
+              disabled={configLoading}
+              className="text-xs font-bold text-primary hover:underline disabled:opacity-50 disabled:no-underline"
+            >
+              {configLoading ? 'Đang tải…' : 'Tải lại'}
+            </button>
+          </div>
 
-          {/* Quick config cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {[
-              {
-                key: 'site_name',
-                label: 'Tên website',
-                value: 'Vietjet Air',
-                desc: 'Hiển thị trên header/tab',
-                icon: 'GlobeAltIcon',
-              },
-              {
-                key: 'maintenance_mode',
-                value: 'false',
-                desc: 'Bật chế độ bảo trì',
-                icon: 'WrenchIcon',
-              },
-              {
-                key: 'max_booking_per_user',
-                value: '5',
-                desc: 'Giới hạn đặt vé/user',
-                icon: 'TicketIcon',
-              },
-              {
-                key: 'auto_cancel_hours',
-                value: '24',
-                desc: 'Tự động huỷ sau X giờ',
-                icon: 'ClockIcon',
-              },
-              {
-                key: 'currency_symbol',
-                value: '₫',
-                desc: 'Ký hiệu tiền tệ',
-                icon: 'CurrencyDollarIcon',
-              },
-              {
-                key: 'default_language',
-                value: 'vi',
-                desc: 'Ngôn ngữ mặc định',
-                icon: 'LanguageIcon',
-              },
-            ].map((cfg) => (
-              <div
-                key={cfg.key}
-                className="rounded-xl border border-gray-200 p-4 hover:border-red-200 hover:shadow-sm transition-all group cursor-pointer"
-                onClick={() =>
-                  onToast?.info(
-                    `Config: ${cfg.key}`,
-                    'Tính năng chỉnh sửa config đang được phát triển'
-                  )
-                }
-              >
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center group-hover:bg-red-100 transition-colors">
-                    <Icon name={cfg.icon} size={15} className="text-primary" />
-                  </div>
-                  <span className="text-2xs font-mono text-gray-400">{cfg.key}</span>
-                </div>
-                <div className="font-bold text-sm text-navy">{cfg.label}</div>
-                <div className="text-lg font-black mt-1 font-koho">{cfg.value}</div>
-                <div className="text-2xs text-gray-400 mt-1">{cfg.desc}</div>
+          {configError ? (
+            <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+              Không thể tải cấu hình hệ thống.
+            </div>
+          ) : (
+            <>
+              <p className="text-xs text-gray-500 mb-4">
+                Giá trị đọc trực tiếp từ bảng{' '}
+                <code className="bg-gray-100 px-1 rounded">system_config</code>. Chỉ các cài đặt có
+                tác dụng thật mới được liệt kê — cài đặt không có trong danh sách này sẽ không ảnh
+                hưởng gì tới hệ thống.
+              </p>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {(Object.keys(SYSTEM_CONFIG_SCHEMA) as SystemConfigKey[]).map((key) => {
+                  const spec = SYSTEM_CONFIG_SCHEMA[key];
+                  const isBoolean = spec.type === 'boolean';
+                  const currentValue = configValueOf(key);
+                  const isOn = currentValue === 'true';
+                  const isSaving = savingConfigKey === key;
+
+                  return (
+                    <div
+                      key={key}
+                      className="rounded-xl border border-gray-200 p-4 hover:border-primary/40 hover:shadow-sm transition-all"
+                    >
+                      <div className="flex items-center gap-2 mb-2">
+                        <div className="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center">
+                          <Icon name="Cog6ToothIcon" size={15} className="text-primary" />
+                        </div>
+                        <span className="text-2xs font-mono text-gray-400">{key}</span>
+                      </div>
+                      <div className="font-bold text-sm text-navy">{spec.description}</div>
+
+                      {isBoolean ? (
+                        <button
+                          role="switch"
+                          aria-checked={isOn}
+                          aria-label={spec.description}
+                          disabled={isSaving}
+                          onClick={() => handleToggleConfig(key)}
+                          className={`relative w-12 h-6 mt-3 rounded-full transition-all duration-300 disabled:opacity-50 ${
+                            isOn ? 'bg-emerald-500' : 'bg-gray-300'
+                          }`}
+                        >
+                          <span
+                            className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow-md transition-transform duration-300 ${
+                              isOn ? 'translate-x-6' : 'translate-x-0.5'
+                            }`}
+                          />
+                        </button>
+                      ) : (
+                        <div className="text-lg font-black mt-1 font-koho">{currentValue}</div>
+                      )}
+
+                      <div className="text-2xs text-gray-400 mt-2">
+                        {isBoolean ? (isOn ? 'Đang bật' : 'Đang tắt') : `Mặc định: ${spec.default}`}
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
-            ))}
-          </div>
 
-          <div
-            className="mt-4 p-3 rounded-lg flex items-start gap-2"
-            style={{ background: '#FFFBEB', border: '1px solid #FDE68A' }}
-          >
-            <Icon
-              name="InformationCircleIcon"
-              size={16}
-              className="text-yellow-600 mt-0.5 flex-shrink-0"
-            />
-            <p className="text-xs" style={{ color: '#92400E' }}>
-              Chức năng chỉnh sửa cấu hình trực tiếp sẽ khả dụng sau khi tạo bảng{' '}
-              <code className="bg-yellow-100 px-1 rounded">system_config</code> trong database. Hiện
-              tại các giá trị được quản lý qua API{' '}
-              <code className="bg-yellow-100 px-1 rounded">
-                POST /api/quan-tri/phan-quyen?action=set_config
-              </code>
-              .
-            </p>
-          </div>
+              <div
+                className="mt-4 p-3 rounded-lg flex items-start gap-2"
+                style={{ background: '#FFFBEB', border: '1px solid #FDE68A' }}
+              >
+                <Icon
+                  name="InformationCircleIcon"
+                  size={16}
+                  className="text-yellow-600 mt-0.5 flex-shrink-0"
+                />
+                <p className="text-xs" style={{ color: '#92400E' }}>
+                  Thay đổi được ghi vào{' '}
+                  <code className="bg-yellow-100 px-1 rounded">system_config</code> và có hiệu lực
+                  với các request tiếp theo. Mọi thay đổi đều được ghi vào Audit Log.
+                </p>
+              </div>
+            </>
+          )}
         </div>
       )}
 

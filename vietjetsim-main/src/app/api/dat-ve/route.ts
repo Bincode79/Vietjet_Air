@@ -25,6 +25,7 @@ import { sendPaymentInstructionEmail } from '@/lib/mail';
 import { renderTransferNote } from '@/lib/transfer-note';
 import { rateLimit } from '@/lib/rate-limit';
 import { setGuestBookingCookie } from '@/lib/guest-booking';
+import { getSystemConfigValue } from '@/lib/system-config';
 
 export async function GET(request: NextRequest) {
   try {
@@ -114,6 +115,21 @@ export async function POST(request: NextRequest) {
 
     if (!flight_id || !passengers || !Array.isArray(passengers) || passengers.length === 0) {
       return NextResponse.json({ error: 'flight_id and passengers are required' }, { status: 400 });
+    }
+
+    // Giới hạn số khách/đơn do admin cấu hình trong `system_config`
+    // (`max_passengers_per_booking`). UI đã chặn sẵn nhưng API phải chặn lại:
+    // nếu không, client có thể gửi vượt giới hạn và chèn hàng loạt khách vào
+    // `passengers` (mỗi khách là một hàng DB).
+    const maxPassengers = await getSystemConfigValue('max_passengers_per_booking');
+    if (passengers.length > maxPassengers) {
+      return NextResponse.json(
+        {
+          error: `A booking can include at most ${maxPassengers} passenger(s)`,
+          maxPassengers,
+        },
+        { status: 400 }
+      );
     }
 
     if (!consents || typeof consents !== 'object' || consents.policyAccepted !== true) {

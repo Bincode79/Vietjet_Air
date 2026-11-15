@@ -125,13 +125,20 @@ export default function SstkTab({ onToast }: { onToast?: ToastAPI }) {
         setLastResult(data as ToolResult);
         onToast?.success(data.label, data.summary);
       } else {
-        onToast?.error('Lỗi thực thi', data.message || 'Unknown error');
+        // `partial` vẫn là kết quả có thật (một phần đã chạy, phần còn lại lỗi)
+        // nên hiện summary thật thay vì "Unknown error".
+        const detail = data.summary || data.message || 'Unknown error';
+        if (data.status === 'partial') {
+          onToast?.error('Thực thi một phần', detail);
+        } else {
+          onToast?.error('Lỗi thực thi', detail);
+        }
         setLastResult({
           success: false,
           toolKey,
           label: toolKey,
-          summary: data.message || 'Unknown error',
-          status: 'error',
+          summary: detail,
+          status: data.status || 'error',
           executedAt: new Date().toISOString(),
         });
       }

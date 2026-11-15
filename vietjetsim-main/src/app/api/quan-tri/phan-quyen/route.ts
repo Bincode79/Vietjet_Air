@@ -11,6 +11,7 @@ import {
   setConfigValue,
 } from '@/lib/db';
 import { SYSTEM_ROLES, Permission, PERMISSION_LABELS, type SystemRoleName } from '@/lib/rbac';
+import { SYSTEM_CONFIG_SCHEMA, type SystemConfigKey } from '@/lib/system-config';
 import { parsePaginationParams } from '@/lib/pagination';
 
 // ─── Auth helper (shared across all endpoints) with RBAC support ─────────────
@@ -58,7 +59,11 @@ export async function GET(request: NextRequest) {
     if (section === 'config') {
       const category = searchParams.get('category') || undefined;
       const configs = await getAllConfig(category);
-      return NextResponse.json({ configs });
+      // Chỉ key có tác dụng runtime mới được hiện ra — key lạ chỉ là rác và
+      // khiến admin tưởng cấu hình được thứ không tác động gì.
+      return NextResponse.json({
+        configs: configs.filter((c) => c.key in SYSTEM_CONFIG_SCHEMA),
+      });
     }
 
     // Default: full RBAC overview
@@ -184,10 +189,11 @@ export async function POST(request: NextRequest) {
 
     // ─── Action: set_config ────────────────────────────────────────────
     if (action === 'set_config') {
-      const { key, value, type, description, category } = body as {
+      // `type` không lấy từ body nữa: kiểu của một cài đặt do schema quyết
+      // định, không phải do client tự khai báo.
+      const { key, value, description, category } = body as {
         key: string;
         value: string;
-        type?: string;
         description?: string;
         category?: string;
       };
@@ -199,11 +205,63 @@ export async function POST(request: NextRequest) {
         );
       }
 
+      // Chỉ cho phép ghi key có tác dụng runtime. Ghi một key lạ sẽ tạo hàng
+      // `system_config` không ai đọc — admin tưởng đã cấu hình xong trong khi
+      // hệ thống không hề thay đổi.
+      if (!(key in SYSTEM_CONFIG_SCHEMA)) {
+        return NextResponse.json(
+          {
+            error: 'Bad Request',
+            message: `Unknown config key: ${key}`,
+            allowedKeys: Object.keys(SYSTEM_CONFIG_SCHEMA),
+          },
+          { status: 400 }
+        );
+      }
+
+      const spec = SYSTEM_CONFIG_SCHEMA[key as SystemConfigKey];
+      const raw = String(value).trim();
+      let normalized: string;
+
+      if (spec.type === 'boolean') {
+        const lowered = raw.toLowerCase();
+        if (lowered !== 'true' && lowered !== 'false') {
+          return NextResponse.json(
+            { error: 'Bad Request', message: `${key} must be "true" or "false"` },
+            { status: 400 }
+          );
+        }
+        normalized = lowered;
+      } else if (spec.type === 'number') {
+        const parsed = Number(raw);
+        if (!Number.isFinite(parsed)) {
+          return NextResponse.json(
+            { error: 'Bad Request', message: `${key} must be a number` },
+            { status: 400 }
+          );
+        }
+        if (spec.min !== undefined && parsed < spec.min) {
+          return NextResponse.json(
+            { error: 'Bad Request', message: `${key} must be at least ${spec.min}` },
+            { status: 400 }
+          );
+        }
+        if (spec.max !== undefined && parsed > spec.max) {
+          return NextResponse.json(
+            { error: 'Bad Request', message: `${key} must be at most ${spec.max}` },
+            { status: 400 }
+          );
+        }
+        normalized = String(parsed);
+      } else {
+        normalized = raw;
+      }
+
       const cfg = await setConfigValue(
         key,
-        value,
-        type || 'string',
-        description || null,
+        normalized,
+        spec.type,
+        description ?? spec.description,
         category || 'general',
         auth.userId
       );
@@ -214,7 +272,7 @@ export async function POST(request: NextRequest) {
         action: 'system:config_change',
         targetType: 'config',
         targetId: cfg.id,
-        detailsJson: JSON.stringify({ key, value, type }),
+        detailsJson: JSON.stringify({ key, value: normalized, type: spec.type }),
         status: 'success',
         ipAddress: request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || undefined,
         userAgent: request.headers.get('user-agent') || undefined,

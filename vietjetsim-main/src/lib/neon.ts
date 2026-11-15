@@ -287,6 +287,95 @@ function createMockSql(): SqlClient {
   const nextChatId = (prefix: string) => `${prefix}-mock-${++chatSeq}`;
 
   /**
+   * Bảng `system_config` trong bộ nhớ.
+   *
+   * Được seed với đúng các key trong `SYSTEM_CONFIG_SCHEMA` (`lib/system-config.ts`)
+   * và giá trị mặc định của chúng — nhờ vậy mock mode và production hành xử
+   * giống nhau khi admin chưa lưu cài đặt nào.
+   */
+  const mockSystemConfig: MockResult[] = [
+    {
+      id: 'mock-config-auto-send',
+      key: 'auto_send_payment_invoice_email',
+      value: 'true',
+      type: 'boolean',
+      description: 'Tự động gửi hoá đơn qua email khi thanh toán',
+      category: 'notification',
+      updated_by: null,
+      created_at: nowIso(),
+      updated_at: nowIso(),
+    },
+    {
+      id: 'mock-config-email-notifications',
+      key: 'email_notifications',
+      value: 'true',
+      type: 'boolean',
+      description: 'Thông báo qua email',
+      category: 'notification',
+      updated_by: null,
+      created_at: nowIso(),
+      updated_at: nowIso(),
+    },
+    {
+      id: 'mock-config-max-passengers',
+      key: 'max_passengers_per_booking',
+      value: '9',
+      type: 'number',
+      description: 'Số khách tối đa/đơn',
+      category: 'booking',
+      updated_by: null,
+      created_at: nowIso(),
+      updated_at: nowIso(),
+    },
+  ];
+
+  const getMockSystemConfigStore = () => mockSystemConfig;
+
+  /**
+   * Đại lý và mã giảm giá.
+   *
+   * Tab "Quản lý đại lý" và "Quản lý mã giảm giá" đọc/ghi hai bảng này. Không
+   * có store thì mọi câu hỏi trả `[]` ⇒ danh sách rỗng và mọi thao tác thêm
+   * / sửa / xoá trả về `undefined` ⇒ UI báo lỗi 500 trong khi code chạy đúng.
+   */
+  const mockAgencies: MockResult[] = [
+    {
+      id: 'mock-agency-1',
+      code: 'AGENCY01',
+      name: 'Đại lý Hà Nội',
+      contact_name: 'Nguyễn Văn A',
+      contact_email: 'lienhe@agency01.vn',
+      contact_phone: '0900000001',
+      address: '1 Hàng Bạc, Hà Nội',
+      commission_rate: 8,
+      notes: null,
+      is_active: true,
+      created_at: nowIso(),
+      updated_at: nowIso(),
+    },
+  ];
+
+  const mockDiscountCodes: MockResult[] = [
+    {
+      id: 'mock-discount-1',
+      code: 'VJ10',
+      type: 'percentage',
+      value: 10,
+      min_booking_amount: 0,
+      max_discount_amount: 200000,
+      agency_id: null,
+      usage_limit: 1000,
+      usage_per_user_limit: 1,
+      used_count: 0,
+      is_active: true,
+      valid_from: nowIso(),
+      valid_to: null,
+      created_at: nowIso(),
+      updated_at: nowIso(),
+    },
+  ];
+
+  /**
    * Tài khoản demo cho UI check.
    *
    * Không có tài khoản này thì `scripts/ui-check.cjs` đăng nhập luôn nhận 401,
@@ -411,6 +500,194 @@ function createMockSql(): SqlClient {
   );
 
   const normalizeSql = (text: string) => text.replace(/\s+/g, ' ').trim().toLowerCase();
+
+  /**
+   * Trích danh sách cột trong mệnh đề `SET` của một câu `UPDATE`, theo đúng
+   * thứ tự xuất hiện.
+   *
+   * Câu SQL có hai dạng trong codebase: raw `sql.query` dùng `$1, $2, …`, còn
+   * template `sql` biến mỗi `${…}` thành `?`. Giá trị của các cột luôn đi
+   * trước trong mảng `values` (tham số của mệnh đề `WHERE` nằm ở cuối), nên
+   * thứ tự cột trong `SET` chính là thứ tự chỉ số cần đọc.
+   *
+   * Chỉ phần sau `SET` được xét: `SET a = $1, b = $2` phải ra `['a', 'b']`, và
+   * `updated_at = NOW()` không có tham số nên không được tính.
+   */
+  const extractSetColumns = (text: string): string[] => {
+    const setIndex = text.search(/\bset\b/i);
+    if (setIndex < 0) return [];
+    const setClause = text.slice(setIndex);
+    const whereIndex = setClause.search(/\bwhere\b/i);
+    const assignments = whereIndex >= 0 ? setClause.slice(0, whereIndex) : setClause;
+
+    return [...assignments.matchAll(/([a-z_][a-z0-9_]*)\s*=\s*(?:\$\d+|\?)/gi)]
+      .map((m) => m[1].toLowerCase())
+      .filter((column) => column !== 'set');
+  };
+
+  /**
+   * Đại lý (`agencies`) và mã giảm giá (`discount_codes`).
+   *
+   * `getAllAgencies` dùng `sql.query` với câu có `LEFT JOIN discount_codes`
+   * và `COUNT(d.id)::int AS discount_count`, còn các route ghi dùng `sql` với
+   * template. Cả hai đều phải được trả lời, nếu không tab "Quản lý đại lý" và
+   * "Quản lý mã giảm giá" rỗng/lỗi trong mock mode.
+   */
+  function runAgencyAndDiscountQuery(
+    text: string,
+    values: unknown[]
+  ): MockResult[] | null {
+    const q = normalizeSql(text);
+
+    // ── agencies ───────────────────────────────────────────────────────────
+    // Các nhánh ghi (INSERT/UPDATE/DELETE) phải được kiểm tra TRƯỚC nhánh
+    // đọc: câu `INSERT INTO agencies` không có mệnh đề `FROM agencies`, nên
+    // nếu bọc tất cả trong `if (q.includes('from agencies'))` thì chúng không
+    // bao giờ vào được.
+    if (q.includes('insert into agencies')) {
+      const row: MockResult = {
+        id: nextChatId('agc'),
+        code: String(values[0] ?? '').toUpperCase(),
+        name: String(values[1] ?? ''),
+        contact_name: values[2] ?? null,
+        contact_email: values[3] ?? null,
+        contact_phone: values[4] ?? null,
+        address: values[5] ?? null,
+        commission_rate: values[6] ?? 0,
+        notes: values[7] ?? null,
+        is_active: values[8] ?? true,
+        created_at: nowIso(),
+        updated_at: nowIso(),
+      };
+      mockAgencies.push(row);
+      return [row];
+    }
+
+    if (q.includes('update agencies')) {
+      const id = String(values[values.length - 1]);
+      const row = mockAgencies.find((a) => a.id === id);
+      if (!row) return [];
+      // `updateAgency` dựng câu `SET col = $1, ...` (raw `sql.query`) và đẩy
+      // id xuống cuối; câu `SET col = ?` (template `sql`) đánh số theo thứ tự
+      // xuất hiện. Cả hai dạng đều phải map đúng cột.
+      const columns = extractSetColumns(text);
+      columns.forEach((column, index) => {
+        if (column && column !== 'updated_at') row[column] = values[index];
+      });
+      row.updated_at = nowIso();
+      return [row];
+    }
+
+    if (q.includes('delete from agencies')) {
+      const id = String(values[0]);
+      const index = mockAgencies.findIndex((a) => a.id === id);
+      if (index >= 0) mockAgencies.splice(index, 1);
+      return [];
+    }
+
+    if (q.includes('from agencies')) {
+      if (q.includes('count(*)')) {
+        return [{ total: mockAgencies.length }];
+      }
+
+      // Lọc theo `WHERE id = ?` / `WHERE code = ?` khi câu có điều kiện.
+      let rows = mockAgencies.map((a) => ({
+        ...a,
+        discount_count: mockDiscountCodes.filter((d) => d.agency_id === a.id).length,
+      }));
+
+      const idMatch = q.match(/where\s+(?:a\.)?id\s*=\s*(?:\?|\$\d+)/);
+      if (idMatch) {
+        const wanted = String(values[0]);
+        rows = rows.filter((a) => a.id === wanted);
+      } else {
+        const codeMatch = q.match(/where\s+(?:a\.)?code\s*=\s*(?:\?|\$\d+)/);
+        if (codeMatch) {
+          const wanted = String(values[0]).toUpperCase();
+          rows = rows.filter((a) => String(a.code).toUpperCase() === wanted);
+        }
+      }
+
+      // `getAllAgencies` truyền `LIMIT $n OFFSET $m` — hai giá trị cuối.
+      const limit = Number(values[values.length - 2]);
+      const offset = Number(values[values.length - 1]);
+      if (Number.isFinite(limit) && Number.isFinite(offset)) {
+        return rows.slice(offset, offset + limit);
+      }
+      return rows;
+    }
+
+    // ── discount_codes ─────────────────────────────────────────────────────
+    // Cùng lý do như `agencies`: nhánh ghi phải kiểm tra trước nhánh đọc.
+    if (q.includes('insert into discount_codes')) {
+      const row: MockResult = {
+        id: nextChatId('dsc'),
+        code: String(values[0] ?? '').toUpperCase(),
+        type: values[1] ?? 'percentage',
+        value: values[2] ?? 0,
+        min_booking_amount: values[3] ?? 0,
+        max_discount_amount: values[4] ?? null,
+        agency_id: values[5] ?? null,
+        usage_limit: values[6] ?? null,
+        usage_per_user_limit: values[7] ?? 1,
+        used_count: 0,
+        is_active: values[8] ?? true,
+        valid_from: values[9] ?? null,
+        valid_to: values[10] ?? null,
+        created_at: nowIso(),
+        updated_at: nowIso(),
+      };
+      mockDiscountCodes.push(row);
+      return [row];
+    }
+
+    if (q.includes('update discount_codes')) {
+      const id = String(values[values.length - 1]);
+      const row = mockDiscountCodes.find((d) => d.id === id);
+      if (!row) return [];
+      const columns = extractSetColumns(text);
+      columns.forEach((column, index) => {
+        if (column && column !== 'updated_at') row[column] = values[index];
+      });
+      row.updated_at = nowIso();
+      return [row];
+    }
+
+    if (q.includes('delete from discount_codes')) {
+      const id = String(values[0]);
+      const index = mockDiscountCodes.findIndex((d) => d.id === id);
+      if (index >= 0) mockDiscountCodes.splice(index, 1);
+      return [];
+    }
+
+    if (q.includes('from discount_codes')) {
+      if (q.includes('count(*)')) {
+        return [{ total: mockDiscountCodes.length }];
+      }
+
+      let rows = [...mockDiscountCodes];
+      const idMatch = q.match(/where\s+(?:d\.)?id\s*=\s*(?:\?|\$\d+)/);
+      if (idMatch) {
+        const wanted = String(values[0]);
+        rows = rows.filter((d) => d.id === wanted);
+      } else {
+        const codeMatch = q.match(/where\s+(?:d\.)?code\s*=\s*(?:\?|\$\d+)/);
+        if (codeMatch) {
+          const wanted = String(values[0]).toUpperCase();
+          rows = rows.filter((d) => String(d.code).toUpperCase() === wanted);
+        }
+      }
+
+      const limit = Number(values[values.length - 2]);
+      const offset = Number(values[values.length - 1]);
+      if (Number.isFinite(limit) && Number.isFinite(offset)) {
+        return rows.slice(offset, offset + limit);
+      }
+      return rows;
+    }
+
+    return null;
+  }
 
   /** Handles user_profiles query for dev/test */
   function runUserProfileQuery(text: string, values: unknown[]): MockResult[] | null {
@@ -782,6 +1059,21 @@ function createMockSql(): SqlClient {
 
     if (q.includes('from chat_presence where conversation_id = ? and role = ?')) {
       return chatPresence.filter((p) => p.conversation_id === values[0] && p.role === values[1]);
+    }
+
+    // Tool SSTK "Reset chat bị treo" xoá presence cũ. Không có handler này thì
+    // mock trả `[]` và tool luôn báo "Đã xóa 0 presence record".
+    if (q.includes('delete from chat_presence')) {
+      const cutoff = Date.now() - 60 * 60 * 1000;
+      const stale = chatPresence.filter((p) => {
+        const lastSeen = new Date(String(p.last_seen)).getTime();
+        return Number.isFinite(lastSeen) && lastSeen < cutoff;
+      });
+      for (const row of stale) {
+        const index = chatPresence.indexOf(row);
+        if (index >= 0) chatPresence.splice(index, 1);
+      }
+      return stale;
     }
 
     // Conversation counters, issued through `sql.query` by sendChatMessage and
@@ -1168,11 +1460,96 @@ function createMockSql(): SqlClient {
       ];
     }
 
-    if (q.includes('from system_config')) {
-      return [
-        { key: 'auto_send_invoice_email', value: 'true' },
-        { key: 'refund_feature_enabled', value: 'true' },
-      ];
+    // ── `system_config` ─────────────────────────────────────────────────────
+    //
+    // Bảng cấu hình hệ thống: `GET/PATCH /api/quan-tri/cai-dat` đọc và ghi
+    // vào đây, còn `POST /api/quan-tri/phan-quyen?action=set_config` upsert
+    // theo cặp (key, value). Trước đây mock chỉ trả về một danh sách cố định
+    // với key sai (`auto_send_invoice_email` thay vì
+    // `auto_send_payment_invoice_email`), nên trong mock mode cài đặt tắt
+    // thông báo email vẫn không có tác dụng.
+    if (q.includes('system_config')) {
+      const configStore = getMockSystemConfigStore();
+
+      if (q.includes('insert into system_config')) {
+        // `INSERT INTO system_config (key, value, ...) VALUES (?, ?, ...)`
+        const key = String(values[0]);
+        const value = String(values[1]);
+        const existing = configStore.find((row) => row.key === key);
+        if (existing) {
+          existing.value = value;
+          existing.updated_at = nowIso();
+        } else {
+          configStore.push({
+            id: `mock-config-${key}`,
+            key,
+            value,
+            type: String(values[2] ?? 'string'),
+            description: String(values[3] ?? ''),
+            category: String(values[4] ?? 'general'),
+            updated_by: null,
+            created_at: nowIso(),
+            updated_at: nowIso(),
+          });
+        }
+        const saved = configStore.find((row) => row.key === key)!;
+        return [saved] as MockResult[];
+      }
+
+      if (q.includes('update system_config')) {
+        const key = String(values[0]);
+        const value = String(values[1]);
+        const existing = configStore.find((row) => row.key === key);
+        if (existing) {
+          existing.value = value;
+          existing.updated_at = nowIso();
+        }
+        return existing ? [existing] : [];
+      }
+
+      if (q.includes('delete from system_config')) {
+        const key = String(values[0]);
+        const index = configStore.findIndex((row) => row.key === key);
+        if (index >= 0) configStore.splice(index, 1);
+        return [];
+      }
+
+      // SELECT: lọc theo `key = ?` hoặc `key IN (?, ?, ...)` khi có, nếu không
+      // thì trả về toàn bộ bảng.
+      //
+      // Cả hai dạng đều phải hỗ trợ: production dùng placeholder (`IN ($1, $2)`)
+      // còn test/script có thể viết literal (`IN ('a', 'b')`).
+      const literalInMatch = q.match(/key\s+in\s*\(([^)]*)\)/);
+      const literalInKeys =
+        literalInMatch && !literalInMatch[1].includes('?')
+          ? literalInMatch[1]
+              .split(',')
+              .map((part) => part.trim().replace(/^['"]|['"]$/g, ''))
+              .filter(Boolean)
+          : null;
+
+      const selectRows = configStore.filter((row) => {
+        const rowKey = String(row.key);
+        if (literalInKeys) return literalInKeys.includes(rowKey);
+        if (q.includes(' in (')) {
+          const wanted = values.map((v) => String(v));
+          return wanted.includes(rowKey);
+        }
+        if (q.includes(' where key =') || q.includes('where key =')) {
+          return rowKey === String(values[0]);
+        }
+        return true;
+      });
+
+      // Chỉ trả về các cột mà câu truy vấn thực sự chọn, để shape của hàng
+      // khớp với kiểu mà route khai báo.
+      if (q.includes('select key, value')) {
+        return selectRows.map((row) => ({ key: row.key, value: row.value })) as MockResult[];
+      }
+      if (q.includes('select *')) {
+        return selectRows as MockResult[];
+      }
+      return selectRows as MockResult[];
     }
 
     return null;
@@ -1208,6 +1585,9 @@ function createMockSql(): SqlClient {
       const walletLoyaltyResult = runWalletAndLoyaltyQuery(query, values);
       if (walletLoyaltyResult) return walletLoyaltyResult as T[];
 
+      const agencyDiscountResult = runAgencyAndDiscountQuery(query, values);
+      if (agencyDiscountResult) return agencyDiscountResult as T[];
+
       const flightSeatResult = runFlightAndSeatQuery(query, values);
       if (flightSeatResult) return flightSeatResult as T[];
 
@@ -1233,6 +1613,7 @@ function createMockSql(): SqlClient {
         console.info('[MOCK SQL:query]', text, values);
         return (runChatQuery(text, values) ??
           runBookingQuery(text, values) ??
+          runAgencyAndDiscountQuery(text, values) ??
           ([] as MockResult[])) as T[];
       },
       transaction: async (queries: unknown) => {

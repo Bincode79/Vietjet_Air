@@ -366,6 +366,33 @@ export function removeRbacRole(targetUserId: string) {
   });
 }
 
+/** Hàng cấu hình hệ thống trả về từ `GET /api/quan-tri/phan-quyen?section=config`. */
+export interface AdminSystemConfigRow {
+  id: string;
+  key: string;
+  value: string;
+  type: string;
+  description: string | null;
+  category: string | null;
+  updated_at: string;
+}
+
+export function listRbacConfig() {
+  return apiRequest<{ configs: AdminSystemConfigRow[] }>(`${EP.RBAC}?section=config`);
+}
+
+export function setRbacConfig(input: {
+  key: string;
+  value: string;
+  description?: string;
+  category?: string;
+}) {
+  return apiRequest<{ success: boolean; message?: string }>(EP.RBAC, {
+    method: 'POST',
+    body: { action: 'set_config', ...input },
+  });
+}
+
 // ─── SSTK tools ─────────────────────────────────────────────────────────────
 
 export function listSstkTools() {
