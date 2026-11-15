@@ -24,6 +24,11 @@
  *   không theo token nên không theo dark mode, và đó là lý do `AGENTS.md` cấm
  *   hex mới cho các sắc thái đã có token.
  *
+ * Từ 2026-11-15 ratchet đo thêm 3 nhóm: `spacing`, `radius`, `shadow`. Trước
+ * đó nó chỉ bắt được 2 mẫu, nên một class tuỳ ý mới kiểu `p-[13px]` hay
+ * `rounded-[7px]` lọt qua cổng mà không ai hay biết. Giá trị hiện tại được
+ * chốt làm baseline (ratchet chỉ đỏ khi TĂNG) — mỗi đợt dọn sẽ hạ được.
+ *
  * File `.css` không bị tính: `src/styles/tailwind.css` là nơi *định nghĩa* token,
  * nên hex ở đó là đúng chỗ, không phải nợ.
  */
@@ -50,6 +55,43 @@ const PATTERNS = [
     label: '[#rrggbb]  màu tuỳ ý trong class',
     regex: /\[#[0-9a-fA-F]{3,8}\]/g,
     advice: 'dùng token (var(--primary)/var(--foreground)…) hoặc thêm token mới vào :root',
+  },
+  {
+    key: 'spacing',
+    label: 'p-[Npx]  khoảng cách tuỳ ý',
+    // Chỉ bắt khoảng cách (padding/margin/gap) — KHÔNG bắt `w-[Npx]`/`h-[Npx]`.
+    //
+    // Lý do: kích thước container (`w-[570px]`, `max-w-[1150px]`) là số đo
+    // bố cục, không thuộc thang 4px — bắt nó sẽ ép người làm frontend sửa
+    // những thứ vốn đúng, và biến ratchet thành công cụ gây khó chịu (nên sẽ
+    // bị tắt). Chỉ khoảng cách mới là nơi thang 4px áp dụng thật, và cũng là
+    // nơi lệch grid tạo ra layout không nhất quán.
+    //
+    // Giá trị px — `p-[calc(…)]` và `p-[var(--x)]` là biểu thức, không phải
+    // giá trị tuỳ ý cần chốt.
+    regex:
+      /\b(?:p|px|py|pt|pb|pl|pr|m|mx|my|mt|mb|ml|mr|gap|gap-x|gap-y|space-x|space-y)-\[[0-9.]+px\]/g,
+    advice:
+      'dùng thang spacing 4px của Tailwind (p-1 = 4px, p-2 = 8px…) hoặc alias có sẵn trong `extend.spacing`',
+  },
+  {
+    key: 'radius',
+    label: 'rounded-[Npx]  bo góc tuỳ ý',
+    // Bắt cả biến thể theo cạnh (`rounded-t-[24px]`, `rounded-br-[5px]`) —
+    // chúng là cùng một loại nợ, chỉ khác hướng.
+    regex: /\brounded(?:-[trbl])?-\[[0-9.]+px\]/g,
+    advice: 'dùng thang borderRadius của Tailwind (rounded-md/lg/xl…)',
+  },
+  {
+    key: 'shadow',
+    label: 'shadow-[…]  đổ bóng tuỳ ý',
+    // Chỉ bắt shadow có độ mờ (blur) — `shadow-[inset_0_2px_4px_…]` cũng vào.
+    //
+    // `(?<!drop-)` là bắt buộc: `drop-shadow-[…]` là scale KHÁC (dropShadow),
+    // không dùng chung token với boxShadow — nên nó không thuộc ratchet này.
+    regex: /(?<!drop-)\bshadow-\[[^[\]]*\d+px[^[\]]*\]/g,
+    advice:
+      'dùng thang boxShadow của Tailwind (shadow-sm/md/lg…) hoặc khai báo một shadow có tên trong `extend.boxShadow`',
   },
 ];
 

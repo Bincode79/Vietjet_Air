@@ -97,6 +97,9 @@ async function run() {
     return {
       headerBox,
       heroBox,
+      // Link điều hướng — dùng để đối chiếu khoảng cách giữa các mục menu
+      // với header (một trong các chỗ dễ vỡ khi đổi breakpoint).
+      navItems: navItems.slice(0, 12),
       tabs: tabs.slice(0, 5),
       ctaBox,
       overflowCount: overflows.length,

@@ -1,8 +1,11 @@
 {
-  "measuredAt": "2026-11-14",
+  "measuredAt": "2026-11-15",
   "note": "Ratchet của scripts/css-debt.cjs — chỉ được hạ, không được nâng.",
   "counts": {
     "fontSize": 0,
-    "color": 0
+    "color": 0,
+    "spacing": 0,
+    "radius": 0,
+    "shadow": 0
   }
 }
