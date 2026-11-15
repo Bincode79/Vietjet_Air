@@ -77,7 +77,8 @@ export interface AdminUser {
   email: string;
   full_name?: string;
   name?: string;
-  phone?: string;
+  /** `NULL` khi admin xoá số điện thoại trong form chỉnh sửa. */
+  phone?: string | null;
   role: string;
   status?: 'active' | 'locked';
   loyalty_points?: number;

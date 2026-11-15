@@ -290,5 +290,15 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)'],
+  // `_next/*` là hạ tầng của Next, không phải nội dung của ứng dụng:
+  // `_next/static` và `_next/image` vốn đã được miễn, nhưng các endpoint
+  // HMR của dev server (`_next/webpack-hmr`, `_next/hmr`) thì chưa — chúng
+  // bị proxy đuổi về `/dang-nhap` bằng 307, phá vỡ handshake HMR.
+  //
+  // Hệ quả đo được được, không phải lý thuyết: `scripts/ui-check.cjs` dò
+  // dev server bằng cách hỏi `/_next/webpack-hmr` và coi 200 là "dev". Vì
+  // proxy chặn đường dẫn đó, CẢ dev lẫn production đều trả 307 → fetch đi
+  // theo redirect → 200 → bộ dò báo "dev server" cho cả hai, và báo cáo UI
+  // check mất khả năng nói mình đang đo bản build nào.
+  matcher: ['/((?!_next(?:/|$)|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)'],
 };

@@ -378,10 +378,18 @@ export async function updateUserProfile(
   // `phone` is nullable on purpose: a cleared number must be stored as NULL, not
   // `''`, because `user_profiles_phone_key` (007) is unique and would then let
   // exactly one account hold the empty value.
-  updates: { full_name?: string; phone?: string | null; avatar_url?: string }
+  //
+  // `email` was added for the admin "Chỉnh sửa người dùng" form, which
+  // exposed an email field that had no write path at all.
+  updates: {
+    full_name?: string;
+    phone?: string | null;
+    avatar_url?: string;
+    email?: string;
+  }
 ): Promise<UserRecord> {
   // Whitelist of allowed column names (prevent SQL key injection)
-  const ALLOWED_COLUMNS = ['full_name', 'phone', 'avatar_url'] as const;
+  const ALLOWED_COLUMNS = ['full_name', 'phone', 'avatar_url', 'email'] as const;
   const setClauses: string[] = [];
   const values: DbParam[] = [];
 
@@ -2280,6 +2288,94 @@ export async function getBookingStatusDistribution(): Promise<
     FROM bookings
     GROUP BY status
   `;
+}
+
+/**
+ * Monthly revenue + ticket counts for the last `months` calendar months.
+ * Cancelled/refunded bookings are excluded so the chart reflects realised revenue.
+ */
+export async function getMonthlyRevenue(
+  months: number = 6
+): Promise<Array<{ month: string; revenue: number; tickets: number }>> {
+  const rows = asRows<{
+    month: string;
+    revenue: string | number;
+    tickets: string | number;
+  }>(
+    await sql`
+      SELECT
+        to_char(date_trunc('month', b.created_at), 'YYYY-MM') AS month,
+        COALESCE(SUM(b.total_price), 0) AS revenue,
+        COUNT(b.id) AS tickets
+      FROM bookings b
+      WHERE b.status NOT IN ('cancelled', 'refunded')
+        AND b.created_at >= date_trunc('month', NOW()) - CAST(${months - 1} || ' months' AS INTERVAL)
+      GROUP BY date_trunc('month', b.created_at)
+      ORDER BY date_trunc('month', b.created_at) ASC
+    `
+  );
+
+  return rows.map((r) => ({
+    month: String(r.month),
+    revenue: Number(r.revenue) || 0,
+    tickets: Number(r.tickets) || 0,
+  }));
+}
+
+/**
+ * Revenue grouped by flight route, ordered by revenue desc.
+ * `tickets` counts bookings (one booking may carry multiple passengers).
+ */
+export async function getRouteRevenue(
+  limit: number = 10
+): Promise<Array<{ route: string; revenue: number; tickets: number }>> {
+  const rows = asRows<{
+    route: string;
+    revenue: string | number;
+    tickets: string | number;
+  }>(
+    await sql`
+      SELECT
+        CONCAT(f.from_code, ' - ', f.to_code) AS route,
+        COALESCE(SUM(b.total_price), 0) AS revenue,
+        COUNT(b.id) AS tickets
+      FROM bookings b
+      JOIN flights f ON b.flight_id = f.id
+      WHERE b.status NOT IN ('cancelled', 'refunded')
+      GROUP BY f.from_code, f.to_code
+      ORDER BY revenue DESC, tickets DESC
+      LIMIT ${limit}
+    `
+  );
+
+  return rows.map((r) => ({
+    route: String(r.route),
+    revenue: Number(r.revenue) || 0,
+    tickets: Number(r.tickets) || 0,
+  }));
+}
+
+/**
+ * Seat-class split derived from the flight cabin each booking was issued on.
+ */
+export async function getSeatClassSplit(): Promise<Array<{ class: string; count: number }>> {
+  const rows = asRows<{ class: string; count: string | number }>(
+    await sql`
+      SELECT
+        f.class AS class,
+        COUNT(b.id) AS count
+      FROM bookings b
+      JOIN flights f ON b.flight_id = f.id
+      WHERE b.status NOT IN ('cancelled', 'refunded')
+      GROUP BY f.class
+      ORDER BY count DESC
+    `
+  );
+
+  return rows.map((r) => ({
+    class: String(r.class),
+    count: Number(r.count) || 0,
+  }));
 }
 
 export async function getRecentActivity(limit: number = 20): Promise<

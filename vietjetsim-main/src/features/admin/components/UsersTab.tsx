@@ -301,16 +301,50 @@ export default function UsersTab({ onToast }: { onToast?: ToastAPI }) {
     }
   };
 
-  const handleSaveEdit = (e: React.FormEvent) => {
+  const handleSaveEdit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingUser) return;
+
+    const name = editingUser.name.trim();
+    const email = editingUser.email.trim();
+    const phone = editingUser.phone.trim();
+
+    if (name.length < 2) {
+      onToast?.error('Lỗi nhập liệu', 'Họ tên phải có ít nhất 2 ký tự.');
+      return;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      onToast?.error('Lỗi nhập liệu', 'Email không hợp lệ.');
+      return;
+    }
+    if (phone && !/^\+?\d[\d\s]{7,19}$/.test(phone)) {
+      onToast?.error('Lỗi nhập liệu', 'Số điện thoại không hợp lệ.');
+      return;
+    }
+
     setIsSavingEdit(true);
-    setTimeout(() => {
-      setUsers((prev) => prev.map((u) => (u.id === editingUser.id ? editingUser : u)));
+    try {
+      // Ghi thật vào DB. Trước đây hàm này chỉ cập nhật state cục bộ trong
+      // `setTimeout` rồi báo "Cập nhật thành công" — không có gì được ghi, nên
+      // mọi chỉnh sửa tên/email/điện thoại biến mất khi tải lại trang.
+      const res = await updateUser(editingUser.id, {
+        full_name: name,
+        email,
+        phone: phone || null,
+      });
+
+      setUsers((prev) =>
+        prev.map((u) => (u.id === editingUser.id ? { ...u, name, email, phone } : u))
+      );
+      setSelectedUser((prev) => (prev ? { ...prev, name, email, phone } : prev));
       setEditingUser(null);
-      onToast?.success('Cập nhật thành công', `Thông tin của ${editingUser.name} đã được lưu.`);
+      onToast?.success('Cập nhật thành công', `Thông tin của ${name} đã được lưu.`);
+      void res;
+    } catch (err) {
+      onToast?.error('Lỗi cập nhật', getApiErrorMessage(err, 'Vui lòng thử lại sau.'));
+    } finally {
       setIsSavingEdit(false);
-    }, 600);
+    }
   };
 
   const totalPages = Math.max(1, Math.ceil(sorted.length / pageSize));

@@ -533,10 +533,7 @@ function createMockSql(): SqlClient {
    * template. Cả hai đều phải được trả lời, nếu không tab "Quản lý đại lý" và
    * "Quản lý mã giảm giá" rỗng/lỗi trong mock mode.
    */
-  function runAgencyAndDiscountQuery(
-    text: string,
-    values: unknown[]
-  ): MockResult[] | null {
+  function runAgencyAndDiscountQuery(text: string, values: unknown[]): MockResult[] | null {
     const q = normalizeSql(text);
 
     // ── agencies ───────────────────────────────────────────────────────────
@@ -591,7 +588,7 @@ function createMockSql(): SqlClient {
       }
 
       // Lọc theo `WHERE id = ?` / `WHERE code = ?` khi câu có điều kiện.
-      let rows = mockAgencies.map((a) => ({
+      let rows: MockResult[] = mockAgencies.map((a) => ({
         ...a,
         discount_count: mockDiscountCodes.filter((d) => d.agency_id === a.id).length,
       }));
@@ -684,6 +681,148 @@ function createMockSql(): SqlClient {
         return rows.slice(offset, offset + limit);
       }
       return rows;
+    }
+
+    return null;
+  }
+
+  /**
+   * Handles the three chart-aggregate queries used by the admin revenue tab
+   * (`getMonthlyRevenue`, `getRouteRevenue`, `getSeatClassSplit`).
+   *
+   * Without this the mock returns `[]` for them and the revenue tab renders
+   * empty charts even though the mock holds bookings and flights — the UI gate
+   * would then capture a page whose data layer never worked.
+   */
+  function runAnalyticsQuery(text: string, values: unknown[]): MockResult[] | null {
+    const q = normalizeSql(text);
+
+    // ── Recent activity (bookings) ──────────────────────────────────────────
+    // `getRecentActivity` chạy hai câu: một câu lấy booking mới nhất, một
+    // câu lấy refund mới nhất. Mock chưa có bảng refund nên chỉ trả bookings.
+    if (q.includes("'booking' as type")) {
+      const limit = Math.max(1, Number(values[0]) || 20);
+      return [...mockBookings]
+        .sort(
+          (a, b) =>
+            new Date(String(b.created_at ?? 0)).getTime() -
+            new Date(String(a.created_at ?? 0)).getTime()
+        )
+        .slice(0, limit)
+        .map((b) => ({
+          type: 'booking',
+          id: b.id,
+          created_at: b.created_at,
+          status: b.status,
+          total_price: b.total_price,
+          reason: null,
+        }));
+    }
+
+    // ── Booking status distribution ─────────────────────────────────────────
+    // `getBookingStatusDistribution` bị lọc bởi `get status` trước khi tới
+    // `get revenue`, nên phải kiểm tra trước nhánh tổng doanh thu.
+    if (q.includes('group by status')) {
+      const counts = new Map<string, number>();
+      for (const booking of mockBookings) {
+        const status = String(booking.status ?? 'pending');
+        counts.set(status, (counts.get(status) ?? 0) + 1);
+      }
+      return [...counts.entries()].map(([status, count]) => ({ status, count }));
+    }
+
+    // ── Total revenue stats ────────────────────────────────────────────────
+    // `getRevenueStats` là nguồn của KPI trên tab doanh thu. Nếu mock trả
+    // `[]` thì `parseFloat(undefined)` → NaN và mọi thẻ số liệu hiện "NaN₫".
+    if (q.includes('total_revenue') && q.includes('avg_booking_value')) {
+      const active = mockBookings.filter(
+        (b) => !['cancelled', 'refunded'].includes(String(b.status ?? 'pending'))
+      );
+      const totalRevenue = active.reduce((sum, b) => sum + (Number(b.total_price) || 0), 0);
+      const totalBookings = mockBookings.length;
+      return [
+        {
+          total_revenue: totalRevenue,
+          total_bookings: totalBookings,
+          avg_booking_value: totalBookings > 0 ? totalRevenue / totalBookings : 0,
+          completed_bookings: mockBookings.filter((b) => String(b.status ?? '') === 'completed')
+            .length,
+          pending_bookings: mockBookings.filter((b) => String(b.status ?? '') === 'pending').length,
+        },
+      ];
+    }
+
+    // ── Monthly revenue ─────────────────────────────────────────────────────
+    if (q.includes("to_char(date_trunc('month'")) {
+      // `values[0]` là số tháng LÙI (${months - 1}), nên cửa sổ là
+      // `values[0] + 1` tháng tính cả tháng hiện tại — giống hệt
+      // `date_trunc('month', NOW()) - CAST(${months - 1} || ' months' AS INTERVAL)`.
+      const months = Math.max(1, (Number(values[0]) || 0) + 1);
+      const now = new Date();
+      const buckets = new Map<string, { revenue: number; tickets: number }>();
+      for (let i = months - 1; i >= 0; i--) {
+        const d = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - i, 1));
+        buckets.set(d.toISOString().slice(0, 7), { revenue: 0, tickets: 0 });
+      }
+
+      for (const booking of mockBookings) {
+        const status = String(booking.status ?? 'pending');
+        if (status === 'cancelled' || status === 'refunded') continue;
+        const created = new Date(String(booking.created_at ?? nowIso()));
+        if (Number.isNaN(created.getTime())) continue;
+        const key = created.toISOString().slice(0, 7);
+        const bucket = buckets.get(key);
+        if (!bucket) continue;
+        bucket.revenue += Number(booking.total_price) || 0;
+        bucket.tickets += 1;
+      }
+
+      return [...buckets.entries()].map(([month, agg]) => ({
+        month,
+        revenue: agg.revenue,
+        tickets: agg.tickets,
+      }));
+    }
+
+    // ── Revenue by route ────────────────────────────────────────────────────
+    if (q.includes('as route') && q.includes('from bookings') && q.includes('join flights')) {
+      const limit = Math.max(1, Number(values[0]) || 10);
+      const byRoute = new Map<string, { revenue: number; tickets: number }>();
+      const flightById = new Map(mockFlights.map((f) => [String(f.id), f]));
+
+      for (const booking of mockBookings) {
+        const status = String(booking.status ?? 'pending');
+        if (status === 'cancelled' || status === 'refunded') continue;
+        const flight = flightById.get(String(booking.flight_id));
+        if (!flight) continue;
+        const route = `${flight.from_code} - ${flight.to_code}`;
+        const agg = byRoute.get(route) ?? { revenue: 0, tickets: 0 };
+        agg.revenue += Number(booking.total_price) || 0;
+        agg.tickets += 1;
+        byRoute.set(route, agg);
+      }
+
+      return [...byRoute.entries()]
+        .map(([route, agg]) => ({ route, revenue: agg.revenue, tickets: agg.tickets }))
+        .sort((a, b) => b.revenue - a.revenue)
+        .slice(0, limit);
+    }
+
+    // ── Seat class split ────────────────────────────────────────────────────
+    if (q.includes('f.class as class')) {
+      const flightById = new Map(mockFlights.map((f) => [String(f.id), f]));
+      const counts = new Map<string, number>();
+      for (const booking of mockBookings) {
+        const status = String(booking.status ?? 'pending');
+        if (status === 'cancelled' || status === 'refunded') continue;
+        const flight = flightById.get(String(booking.flight_id));
+        if (!flight) continue;
+        const seatClass = String(flight.class ?? 'economy');
+        counts.set(seatClass, (counts.get(seatClass) ?? 0) + 1);
+      }
+      return [...counts.entries()]
+        .map(([className, count]) => ({ class: className, count }))
+        .sort((a, b) => b.count - a.count);
     }
 
     return null;
@@ -1588,6 +1727,9 @@ function createMockSql(): SqlClient {
       const agencyDiscountResult = runAgencyAndDiscountQuery(query, values);
       if (agencyDiscountResult) return agencyDiscountResult as T[];
 
+      const analyticsResult = runAnalyticsQuery(query, values);
+      if (analyticsResult) return analyticsResult as T[];
+
       const flightSeatResult = runFlightAndSeatQuery(query, values);
       if (flightSeatResult) return flightSeatResult as T[];
 
@@ -1614,6 +1756,7 @@ function createMockSql(): SqlClient {
         return (runChatQuery(text, values) ??
           runBookingQuery(text, values) ??
           runAgencyAndDiscountQuery(text, values) ??
+          runAnalyticsQuery(text, values) ??
           ([] as MockResult[])) as T[];
       },
       transaction: async (queries: unknown) => {
