@@ -345,8 +345,7 @@ export async function POST(request: NextRequest) {
         return NextResponse.json(
           {
             error: 'Seat held by another customer',
-            message:
-              'Một hoặc nhiều ghế đang được khách khác giữ. Vui lòng chọn ghế khác.',
+            message: 'Một hoặc nhiều ghế đang được khách khác giữ. Vui lòng chọn ghế khác.',
             seats: blocked,
           },
           { status: 409 }

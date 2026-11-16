@@ -1646,7 +1646,7 @@ function createMockSql(): SqlClient {
       ];
     }
 
-  // ── `system_config` ─────────────────────────────────────────────────────
+    // ── `system_config` ─────────────────────────────────────────────────────
     //
     // Bảng cấu hình hệ thống: `GET/PATCH /api/quan-tri/cai-dat` đọc và ghi
     // vào đây, còn `POST /api/quan-tri/phan-quyen?action=set_config` upsert

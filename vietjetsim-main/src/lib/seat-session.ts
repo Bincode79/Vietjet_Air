@@ -42,7 +42,7 @@
  * giá trị phải do server sinh ra thì mới chứng minh được điều gì.
  */
 import { createHash, randomBytes } from 'crypto';
-import { type NextRequest, type NextResponse } from 'next/server';
+import { type NextResponse } from 'next/server';
 
 export const SEAT_SESSION_COOKIE = 'vj_seat_session';
 

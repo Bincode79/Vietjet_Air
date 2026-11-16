@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Flight } from '@/features/bookings/types/booking-flow';
 import { getSeatCharge } from '@/features/bookings/pricing';
 import { RiCloseLine } from 'react-icons/ri';

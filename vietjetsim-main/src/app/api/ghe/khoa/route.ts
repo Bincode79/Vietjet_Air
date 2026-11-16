@@ -37,9 +37,7 @@ interface BookedSeatRow {
  */
 function sanitizeSeatIds(seatIds: unknown): string[] {
   if (!Array.isArray(seatIds)) return [];
-  return seatIds
-    .map((s) => String(s).trim().toUpperCase())
-    .filter((s) => SEAT_REGEX.test(s));
+  return seatIds.map((s) => String(s).trim().toUpperCase()).filter((s) => SEAT_REGEX.test(s));
 }
 
 /**
@@ -135,10 +133,7 @@ export async function POST(request: NextRequest) {
     const { flightId, seatIds } = body;
 
     if (!flightId || !Array.isArray(seatIds) || seatIds.length === 0) {
-      return NextResponse.json(
-        { error: 'flightId và seatIds là bắt buộc' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'flightId và seatIds là bắt buộc' }, { status: 400 });
     }
 
     const validSeats = sanitizeSeatIds(seatIds);
@@ -250,10 +245,7 @@ export async function DELETE(request: NextRequest) {
     const { flightId, seatIds } = body;
 
     if (!flightId || !Array.isArray(seatIds) || seatIds.length === 0) {
-      return NextResponse.json(
-        { error: 'flightId và seatIds là bắt buộc' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'flightId và seatIds là bắt buộc' }, { status: 400 });
     }
 
     const validSeats = sanitizeSeatIds(seatIds);

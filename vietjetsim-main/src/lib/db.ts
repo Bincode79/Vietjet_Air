@@ -3,11 +3,7 @@ import { sql } from '@/lib/neon';
 export { sql };
 import type { Permission } from '@/lib/rbac';
 import type { SeatLockRow } from '@/lib/seat-lock';
-import {
-  SeatLockConflictError,
-  classifySeatLocks,
-  partitionSeatLocks,
-} from '@/lib/seat-lock';
+import { SeatLockConflictError, classifySeatLocks, partitionSeatLocks } from '@/lib/seat-lock';
 import type {
   DashboardSummary,
   KPIData,
