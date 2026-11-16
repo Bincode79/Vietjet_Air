@@ -1718,10 +1718,12 @@ h6 {
 .vj-total-pill-value {
   font-family: var(--vj-font-cta, 'JambonoMedium');
   font-size: 14px;
-  /* CURSOR_TASK.md Hạng mục 1: số tiền màu đỏ đậm `#C4121A` in đậm. */
-  font-weight: 700;
+  /* Đo 16/11/2026 tại site thật (472×915): ô nhập tổng tiền dùng
+     `JambonoMedium` 14px/**400**, màu đỏ thương hiệu `#EC2029`.
+     (`#C4121A` là màu đỏ đậm của bảng giá vé, KHÔNG dùng ở pill tổng.) */
+  font-weight: 400;
   line-height: 19px;
-  color: #c4121a;
+  color: #ec2029;
 }
 
 /* Vòng tròn bước trong băng vàng (đo 15/11/2026, 472×915):

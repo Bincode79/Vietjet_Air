@@ -151,7 +151,12 @@ function CheckInContent({ prefillBookingId }: { prefillBookingId: string }) {
 
         setTrip(data.trip);
         // Mặc định chọn chặng đi; nếu chỉ có vé một chặng thì chặng đó.
-        setLegSelection(data.trip.inbound ? 'outbound' : 'inbound');
+        //
+        // Điều kiện phải là `trip.outbound`, không phải `trip.inbound`: với vé
+        // MỘT chặng, `trip.inbound` là `null` nên biểu thức cũ gán
+        // `legSelection = 'inbound'` — `selectedLegs` rỗng, danh sách hành
+        // khách không hiện và nút "Xác nhận làm thủ tục" không bao giờ bật.
+        setLegSelection(data.trip.outbound ? 'outbound' : 'inbound');
         setSeatDraft({});
         setStep('confirm');
       } catch (error) {
