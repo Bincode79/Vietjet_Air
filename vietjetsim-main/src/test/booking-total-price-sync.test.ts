@@ -15,6 +15,9 @@ vi.mock('@/lib/db', () => ({
     available: 100,
   })),
   createBooking: (...args: any[]) => createBookingMock(...args),
+  // `/api/dat-ve` checks `seat_locks` before creating the booking; without
+  // this export the route throws and every seated request answers 500.
+  getSeatLocksForSeats: vi.fn(async () => []),
   recordBookingConsents: vi.fn(),
   getUserById: vi.fn(),
   findUserById: vi.fn(),

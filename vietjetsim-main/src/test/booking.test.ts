@@ -160,7 +160,10 @@ describe('Booking Database Module', () => {
       // inserting CTE. Interpolating it from another query's result passed
       // undefined and violated passengers.booking_id NOT NULL.
       const [strings, ...params] = (sql as any).mock.calls[0];
-      expect(strings.join(' ')).toContain('WITH reserved_flight AS');
+      // `WITH` now opens on `locked_seats` (the seat-lock guard), so the
+      // reservation CTE no longer sits directly after it. Assert the CTE
+      // itself is still present, not its position in the WITH list.
+      expect(strings.join(' ')).toContain('reserved_flight AS');
       expect(strings.join(' ')).toContain('new_booking AS');
       expect(strings.join(' ')).toContain('available >= ');
       expect(strings.join(' ')).toContain('nb.id, p.name');
