@@ -1,5 +1,6 @@
 import { type NextRequest } from 'next/server';
 import { sql } from '@/lib/db';
+import { resolveSeatSession } from '@/lib/seat-session';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -10,13 +11,16 @@ interface BookedRow {
 
 interface LockRow {
   seat_number: string;
-  session_id: string;
+  owner_token: string | null;
   expires_at: string;
 }
 
-async function fetchSeatData(flightId: string): Promise<{
+async function fetchSeatData(
+  flightId: string,
+  ownerToken: string
+): Promise<{
   occupied: string[];
-  locked: { seatId: string; expiresAt: string; sessionId: string }[];
+  locked: { seatId: string; expiresAt: string; mine: boolean }[];
 }> {
   // Get confirmed/pending booked seats
   const bookedRows = (await sql`
@@ -30,13 +34,13 @@ async function fetchSeatData(flightId: string): Promise<{
   const occupied = bookedRows.map((r) => r.seat_number);
 
   // Get temporary locks (gracefully handle table not existing)
-  let locked: { seatId: string; expiresAt: string; sessionId: string }[] = [];
+  let locked: { seatId: string; expiresAt: string; mine: boolean }[] = [];
   try {
     // Clean up expired locks first
     await sql`DELETE FROM seat_locks WHERE expires_at <= NOW()`;
 
     const lockRows = (await sql`
-      SELECT seat_number, session_id, expires_at
+      SELECT seat_number, owner_token, expires_at
       FROM seat_locks
       WHERE flight_id = ${flightId}
         AND expires_at > NOW()
@@ -45,10 +49,16 @@ async function fetchSeatData(flightId: string): Promise<{
     locked = lockRows.map((r) => ({
       seatId: r.seat_number,
       expiresAt: r.expires_at,
-      // The session that holds the lock. Without it the client cannot tell its
-      // own temporary hold apart from another customer's, and it renders its
-      // own seat as "đã đặt" — which then refuses to deselect it.
-      sessionId: r.session_id,
+      // The server decides whether this lock belongs to the caller and says
+      // so with a boolean. It used to hand out `session_id` — the very
+      // credential that proves ownership — to EVERY viewer, which meant
+      // reading the SSE stream was enough to steal somebody else's seat.
+      //
+      // The client needs to tell its own temporary hold apart from another
+      // customer's, because rendering its own seat as "đã đặt" made it look
+      // unavailable to its own holder, and `toggleSeat` then refused to
+      // deselect it.
+      mine: r.owner_token === ownerToken,
     }));
   } catch (err) {
     // seat_locks table may not exist yet — return empty locks array
@@ -72,6 +82,10 @@ export async function GET(request: NextRequest) {
     });
   }
 
+  // The owner token comes from the server-issued cookie, so a viewer cannot
+  // claim a lock is theirs. It never leaves the server.
+  const { ownerToken } = resolveSeatSession(request);
+
   const encoder = new TextEncoder();
 
   const stream = new ReadableStream({
@@ -86,7 +100,7 @@ export async function GET(request: NextRequest) {
 
       const fetchAndSend = async () => {
         try {
-          const { occupied, locked } = await fetchSeatData(flightId);
+          const { occupied, locked } = await fetchSeatData(flightId, ownerToken);
           send('seats', {
             flightId,
             occupied,

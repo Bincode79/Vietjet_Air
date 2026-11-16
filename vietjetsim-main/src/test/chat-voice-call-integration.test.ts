@@ -22,7 +22,9 @@ describe('Voice Call & Real-time Calling Integration: User <-> Admin', () => {
     expect(guestRes.status).toBe(200);
     const guestData = await guestRes.json();
     const conversationId = guestData.conversationId;
-    const guestToken = guestRes.cookies.get('access_token')?.value;
+    const cookieHeader = guestRes.headers.get('set-cookie') || '';
+    const tokenMatch = cookieHeader.match(/access_token=([^;]+)/);
+    const guestToken = tokenMatch ? tokenMatch[1] : undefined;
     expect(guestToken).toBeDefined();
 
     const csrfToken = 'test-valid-csrf-token-32-chars-long!';
@@ -186,7 +188,9 @@ describe('Voice Call & Real-time Calling Integration: User <-> Admin', () => {
     const guestRes = await guestChatPost(guestReq);
     const guestData = await guestRes.json();
     const convId = guestData.conversationId;
-    const guestToken = guestRes.cookies.get('access_token')?.value;
+    const cookieHeader = guestRes.headers.get('set-cookie') || '';
+    const tokenMatch = cookieHeader.match(/access_token=([^;]+)/);
+    const guestToken = tokenMatch ? tokenMatch[1] : undefined;
 
     // 2. User initiates call
     const callInitReq = new NextRequest('http://localhost:4028/api/tro-chuyen/cuoc-goi', {

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getBookingByCodeOrId, getActiveBankAccounts } from '@/lib/db';
 import { verifyAuthRequest } from '@/lib/auth';
+import { rateLimit } from '@/lib/rate-limit';
 import { canAccessBooking } from '@/lib/booking-access';
 import { renderTransferNote } from '@/lib/transfer-note';
 import { buildVietQrPayload, lookupBankBin } from '@/lib/vietqr';
@@ -15,6 +16,9 @@ import { getApiErrorMessage } from '@/shared/services';
  */
 export async function GET(request: NextRequest) {
   try {
+    const limited = rateLimit(request, { windowMs: 60_000, maxRequests: 60 });
+    if (limited) return limited;
+
     const { user } = await verifyAuthRequest(request);
 
     const bookingId = request.nextUrl.searchParams.get('bookingId');
