@@ -4,8 +4,16 @@ import { useEffect, useState, useRef } from 'react';
 export interface SeatMapEvent {
   flightId: string;
   occupied: string[];
-  /** `sessionId` is the session holding the lock; the client compares it with its own. */
-  locked: { seatId: string; expiresAt: string; sessionId: string }[];
+  /**
+   * `mine` is computed BY THE SERVER: it says whether this lock belongs to the
+   * browser that is watching.
+   *
+   * The server used to hand out `session_id` to every viewer, which leaked the
+   * very credential that proves ownership — reading the SSE stream was enough
+   * to steal somebody else's seat. It now sends a boolean instead, so the
+   * credential never leaves the server.
+   */
+  locked: { seatId: string; expiresAt: string; mine: boolean }[];
   updatedAt: string;
 }
 

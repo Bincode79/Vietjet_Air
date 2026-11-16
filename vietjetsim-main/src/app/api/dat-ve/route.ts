@@ -8,6 +8,7 @@ import {
   createUser,
   findUserByEmail,
   getActiveBankAccounts,
+  getSeatLocksForSeats,
 } from '@/lib/db';
 import { parsePaginationParams, getPaginationMeta } from '@/lib/pagination';
 import {
@@ -26,6 +27,8 @@ import { renderTransferNote } from '@/lib/transfer-note';
 import { rateLimit } from '@/lib/rate-limit';
 import { setGuestBookingCookie } from '@/lib/guest-booking';
 import { getSystemConfigValue } from '@/lib/system-config';
+import { classifySeatLocks, partitionSeatLocks, SeatLockConflictError } from '@/lib/seat-lock';
+import { deriveOwnerToken, readSeatSession } from '@/lib/seat-session';
 
 export async function GET(request: NextRequest) {
   try {
@@ -308,6 +311,49 @@ export async function POST(request: NextRequest) {
     // The booked total is the server's number.
     const totalPrice = serverCalculated;
 
+    // `owner_token` của phiên giữ ghế — SHA-256 của cookie `vj_seat_session`
+    // do server cấp (xem `src/lib/seat-session.ts`). `null` khi request không
+    // có cookie: tức là KHÔNG chứng minh được sở hữu lock nào.
+    const seatSession = readSeatSession(request);
+    const seatOwnerToken = seatSession ? deriveOwnerToken(seatSession) : null;
+
+    // ─── Quyền sở hữu khoá ghế ───────────────────────────────────────────────
+    //
+    // `seat_locks` từng CHỈ mang tính thông báo: không nơi nào trong luồng
+    // tạo booking đọc lại bảng này, nên một ghế đang được khách A giữ vẫn bị
+    // khách B đặt mất — và A chỉ biết khi đến bước cuối, lúc index duy nhất
+    // trên `seats` từ chối. Ở đây luật được ràng buộc đúng chỗ:
+    //
+    //   * ghế đang có lock của phiên KHÁC  → từ chối (409);
+    //   * ghế có lock của chính phiên này   → được đặt (giữ ghế rồi đặt vé);
+    //   * ghế không có lock nào             → được đặt (khách không chọn ghế,
+    //                                         hoặc chọn ghế rồi lock hết hạn).
+    //
+    // Xem `src/lib/seat-lock.ts` cho luật và lý do fail-closed.
+    //
+    // Lưu ý: đây là lớp kiểm tra THỨ NHẤT, để trả lời nhanh và đúng thông
+    // điệp. Lớp thứ hai nằm trong `createBooking` (ràng buộc nguyên tử trong
+    // SQL) — lớp đó mới là lớp quyết định, vì giữa hai lớp này có cửa sổ
+    // TOCTOU: khách B kiểm tra ở đây (thấy trống), khách A giữ ghế, khách B
+    // tạo booking.
+    if (sanitizedSeats.length > 0) {
+      const lockRows = await getSeatLocksForSeats(flight_id, sanitizedSeats);
+      const verdicts = classifySeatLocks(lockRows, sanitizedSeats, seatOwnerToken);
+      const { blocked } = partitionSeatLocks(verdicts);
+
+      if (blocked.length > 0) {
+        return NextResponse.json(
+          {
+            error: 'Seat held by another customer',
+            message:
+              'Một hoặc nhiều ghế đang được khách khác giữ. Vui lòng chọn ghế khác.',
+            seats: blocked,
+          },
+          { status: 409 }
+        );
+      }
+    }
+
     // Prevent overbooking: refuse the booking when the flight has no seats left
     // for every seated passenger. This check must happen before createBooking so
     // we never accept money for a seat that does not exist.
@@ -382,6 +428,10 @@ export async function POST(request: NextRequest) {
         seatedCount,
         trip_id: tripId,
         leg_role: 'outbound',
+        // Ràng buộc lock NGUYÊN TỬ (xem `createBooking`): ghế đang bị phiên
+        // khác giữ thì đơn này phải thất bại, kể cả khi lớp kiểm tra ở trên
+        // đã qua. Đây là lớp quyết định.
+        seat_owner_token: seatOwnerToken,
       },
       normalizedPassengers,
       seatRows,
@@ -411,6 +461,9 @@ export async function POST(request: NextRequest) {
           seatedCount,
           trip_id: tripId,
           leg_role: 'inbound',
+          // Chặng về giữ ghế trên chuyến bay KHÁC, nên lock của nó là của
+          // chính phiên này (nếu khách đã giữ ghế về) — cùng luật với chặng đi.
+          seat_owner_token: seatOwnerToken,
         },
         normalizedPassengers,
         returnSeatRows,
@@ -518,6 +571,22 @@ export async function POST(request: NextRequest) {
 
     return response;
   } catch (error) {
+    // Ghế bị phiên khác giữ, phát hiện bởi ràng buộc NGUYÊN TỬ trong
+    // `createBooking` — tức là lớp kiểm tra ở đầu route đã qua, nhưng giữa
+    // hai lớp đó có người khác giành ghế. Đây là câu trả lời đúng, và nó
+    // khác "ghế vừa được người khác đặt" (index duy nhất `23505` bên dưới):
+    // ở đây ghế VẪN CÒN TRỐNG, chỉ là đang có người giữ.
+    if (error instanceof SeatLockConflictError) {
+      return NextResponse.json(
+        {
+          error: 'Seat held by another customer',
+          message: 'Một hoặc nhiều ghế đang được khách khác giữ. Vui lòng chọn ghế khác.',
+          seats: error.seats,
+        },
+        { status: 409 }
+      );
+    }
+
     const dbError = error as { code?: unknown; constraint?: unknown; message?: unknown };
     if (
       dbError.code === '23505' &&

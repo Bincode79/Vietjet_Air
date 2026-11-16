@@ -1520,6 +1520,37 @@ function createMockSql(): SqlClient {
     return null;
   };
 
+  /**
+   * Đọc `seat_locks` qua `sql.query` — dạng `getSeatLocksForSeats` dùng.
+   *
+   * Truy vấn thật là:
+   *
+   *   SELECT seat_number, owner_token, expires_at
+   *     FROM seat_locks
+   *    WHERE flight_id = $1 AND seat_number = ANY($2::text[]) AND expires_at > NOW()
+   *
+   * Mock không có parser SQL nên nó đọc thẳng giá trị tham số. Nếu không có
+   * nhánh này, `getSeatLocksForSeats` luôn trả về rỗng trong mock mode — và
+   * luật "ghế đang có người giữ thì không ai được đặt" sẽ KHÔNG BAO GIỜ
+   * chạy trong test, tức là test xanh trong khi tính năng không tồn tại.
+   */
+  const runSeatLockQuery = (query: string, values: unknown[]): MockResult[] | null => {
+    const q = query.toLowerCase();
+    if (!q.includes('from seat_locks')) return null;
+
+    const flightId = String(values[0] ?? '');
+    const seatNumbers = Array.isArray(values[1]) ? (values[1] as string[]) : null;
+    const now = Date.now();
+
+    return mockSeatLocks.filter((lock) => {
+      if (lock.flight_id !== flightId) return false;
+      if (seatNumbers && !seatNumbers.includes(String(lock.seat_number))) return false;
+      // `expires_at > NOW()`
+      if (new Date(String(lock.expires_at)).getTime() <= now) return false;
+      return true;
+    });
+  };
+
   const runFlightAndSeatQuery = (query: string, values: unknown[]): MockResult[] | null => {
     const q = query.toLowerCase();
 
@@ -1544,7 +1575,7 @@ function createMockSql(): SqlClient {
     }
 
     if (q.includes('insert into seat_locks')) {
-      const [flightId, seatNumber, sessionId, expiresAt] = values as [
+      const [flightId, seatNumber, ownerToken, expiresAt] = values as [
         string,
         string,
         string,
@@ -1557,7 +1588,7 @@ function createMockSql(): SqlClient {
         id: nextChatId('lock'),
         flight_id: flightId,
         seat_number: seatNumber,
-        session_id: sessionId,
+        owner_token: ownerToken,
         expires_at: expiresAt || new Date(Date.now() + 600000).toISOString(),
         created_at: nowIso(),
       };
@@ -1567,9 +1598,15 @@ function createMockSql(): SqlClient {
         // returns no rows. Without this the mock would let every session steal
         // every seat, and the guard would look like it worked in tests while
         // doing nothing in dev.
+        //
+        // `owner_token IS NULL` nghĩa là lock mồ côi (tạo bởi client cũ) —
+        // lock đó không chặn ai, nên nó bị chiếm. Điều kiện này phải khớp
+        // với route `/api/ghe/khoa`, nếu không mock và DB thật sẽ hành xử
+        // khác nhau.
         const current = mockSeatLocks[existing];
         const expired = new Date(String(current.expires_at)).getTime() <= Date.now();
-        if (current.session_id !== sessionId && !expired) {
+        const heldByOther = current.owner_token !== ownerToken && !expired;
+        if (heldByOther && current.owner_token !== null) {
           return [];
         }
         mockSeatLocks[existing] = row;
@@ -1580,6 +1617,16 @@ function createMockSql(): SqlClient {
     }
 
     if (q.includes('delete from seat_locks')) {
+      // `DELETE … WHERE owner_token = $x` chỉ xoá lock của chính mình. Mock
+      // phải làm đúng vậy, nếu không thì một phiên có thể xoá lock của
+      // người khác — đúng cái lỗi route này đã chặn.
+      const ownerToken = values.find((v) => typeof v === 'string' && /^[0-9a-f]{64}$/.test(v));
+      if (ownerToken) {
+        for (let i = mockSeatLocks.length - 1; i >= 0; i -= 1) {
+          const lock = mockSeatLocks[i];
+          if (lock.owner_token === ownerToken) mockSeatLocks.splice(i, 1);
+        }
+      }
       return [];
     }
 
@@ -1599,7 +1646,7 @@ function createMockSql(): SqlClient {
       ];
     }
 
-    // ── `system_config` ─────────────────────────────────────────────────────
+  // ── `system_config` ─────────────────────────────────────────────────────
     //
     // Bảng cấu hình hệ thống: `GET/PATCH /api/quan-tri/cai-dat` đọc và ghi
     // vào đây, còn `POST /api/quan-tri/phan-quyen?action=set_config` upsert
@@ -1753,7 +1800,8 @@ function createMockSql(): SqlClient {
       // return an empty result set rather than throwing.
       query: async <T = SqlRow>(text: string, values: unknown[] = []): Promise<T[]> => {
         console.info('[MOCK SQL:query]', text, values);
-        return (runChatQuery(text, values) ??
+        return (runSeatLockQuery(text, values) ??
+          runChatQuery(text, values) ??
           runBookingQuery(text, values) ??
           runAgencyAndDiscountQuery(text, values) ??
           runAnalyticsQuery(text, values) ??
