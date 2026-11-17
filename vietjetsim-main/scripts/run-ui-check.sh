@@ -9,6 +9,10 @@
 # theo yêu cầu nên một sleep cố định sẽ chụp ảnh lúc còn skeleton. Cổng debug
 # CDP cũng phải khác để không tranh với một phiên ui-check khác trên cùng máy.
 #
+# Server chạy bằng `scripts/start-standalone.cjs` — cùng cơ chế với `npm start`
+# (xem file đó để biết vì sao `next start` không dùng được với
+# `output: 'standalone'`).
+#
 # Biến môi trường:
 #   UI_CHECK_PORT      cổng server (mặc định 4029)
 #   UI_CHECK_CDP_PORT  cổng debug CDP (mặc định 9345)
@@ -56,7 +60,7 @@ trap cleanup_files EXIT INT TERM
 
 echo "▸ Đang khởi động production server…"
 : > "$LOG"
-DIST_DIR="$DIST_DIR" npx next start -p "$PORT" > "$LOG" 2>&1 &
+DIST_DIR="$DIST_DIR" node scripts/start-standalone.cjs --port "$PORT" > "$LOG" 2>&1 &
 SERVER_PID=$!
 
 cleanup() {

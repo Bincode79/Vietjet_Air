@@ -22,6 +22,15 @@ npm run test:ui    # headless Chrome render check of 56 captures (18 routes × 3
 Lint/format rules live in `eslint.config.mjs` (flat config, prettier printWidth 100,
 single quotes, `trailingComma: 'es5'`). Run `npx eslint <file> --fix` before finishing.
 
+**`npm start` runs the standalone build, not `next start`.** `next.config.mjs` sets
+`output: 'standalone'`, and Next refuses `next start` with it ("next start does not work
+with output: standalone"). `npm start` therefore calls
+`scripts/start-standalone.cjs`, which runs `.next/standalone/server.js` the way Docker and
+Render do — and which also does what `next start` used to do for free: load `.env.*` from
+the app root and copy `.next/static` + `public/` into the standalone bundle (Next
+deliberately leaves them out, so without the copy every asset 404s and the page renders
+unstyled). `scripts/compare-servers.cjs` diffs the two servers' responses path by path.
+
 **A class Tailwind that does not exist fails silently — so `npm run lint:tailwind-classes`
 exists to catch it.** Tailwind emits no rule for a class it cannot resolve, and emits no
 warning either: the element just renders unstyled. Three ways that happens here, all of
@@ -1264,10 +1273,12 @@ driver can reach that Postgres, runs the production build against it, and finall
 
 Two details that are load-bearing:
 
-- **It runs `next start`, not `next dev`.** The "pdfkit cannot find Helvetica.afm" failure
+- **It runs a production server, not `next dev`.** The "pdfkit cannot find Helvetica.afm" failure
   only appears in a build (where `pdfkit` is bundled and `__dirname` points at the wrong
   directory); unit tests against source stay green. Measuring a dev server would report a
-  green gate that never touched the file-generation path.
+  green gate that never touched the file-generation path. The script starts the server via
+  `scripts/start-standalone.cjs` — the same entry point as `npm start`, because `next start`
+  does not work with `output: 'standalone'`.
 - **The booking code is seeded explicitly as `VJSMOKE`.** `generate_booking_code()` now
   produces six alphanumeric characters, while the assertion expects the filename
   `ve-dien-tu-VJSMOKE.pdf`. `bookings.booking_code` has no length CHECK (only UNIQUE), so
@@ -1306,7 +1317,8 @@ in `chromePath()`) and `UI_CHECK_SHOTS_DIR` (screenshots default to a temp dir s
 run does not leave artifacts behind).
 
 **One command for the whole gate:** `scripts/run-ui-check.sh` builds into
-`.next-uicheck`, starts `next start` on 4029, runs `ui-check.cjs`, then restores
+`.next-uicheck`, starts the production server (via `scripts/start-standalone.cjs`, the
+same entry point as `npm start`) on 4029, runs `ui-check.cjs`, then restores
 `next-env.d.ts`/`tsconfig.json` and kills the server — so it can run beside a live
 `next dev` (see below). `UI_CHECK_SKIP_BUILD=1` reuses an existing build. If a screen's
 `Emulation.setDeviceMetricsOverride` hangs, `setViewport()` retries three times and clears
@@ -1321,20 +1333,20 @@ that times out. The comment in `shot()` described this order for a long time whi
 called `Page.captureScreenshot` twice with identical parameters — the second attempt just
 repeated the command that had already timed out.
 
-**The gate needs `ALLOW_MOCK_DB=1`, and that is not a loophole.** `next start` runs with
-`NODE_ENV=production`, where `lib/neon.ts` deliberately throws
+**The gate needs `ALLOW_MOCK_DB=1`, and that is not a loophole.** The production server runs
+with `NODE_ENV=production`, where `lib/neon.ts` deliberately throws
 `DATABASE_URL is required in production` rather than silently serving in-memory data. With
 no database and no flag, every API answers 500 and 42 of 68 captures get flagged — which
 reads as a UI regression when it is only a missing database. The script exports the flag;
 it is the only place that should. Never set it on a server.
 
-**`next start` needs `.next`, and a running `next dev` is using it — so build a second
-copy instead of stopping the dev server.** `next.config.mjs` reads `DIST_DIR`, so the
-whole gate can run beside a live dev server on another port:
+**The production server needs its own build directory, and a running `next dev` is using
+`.next` — so build a second copy instead of stopping the dev server.** `next.config.mjs`
+reads `DIST_DIR`, so the whole gate can run beside a live dev server on another port:
 
 ```bash
 DIST_DIR=.next-uicheck npm run build
-DIST_DIR=.next-uicheck npx next start -p 4029
+DIST_DIR=.next-uicheck node scripts/start-standalone.cjs --port 4029
 UI_CHECK_BASE_URL=http://127.0.0.1:4029 node scripts/ui-check.cjs
 ```
 

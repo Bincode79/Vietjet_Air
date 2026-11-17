@@ -355,6 +355,8 @@ npm install --production
 npm run build
 
 # Chạy server với process manager (PM2)
+# `npm start` chạy bản standalone (xem `scripts/start-standalone.cjs`) — tương
+# thích với `output: 'standalone'` trong `next.config.mjs`.
 npm install -g pm2
 pm2 start npm --name "vietjetsim" -- start
 pm2 save

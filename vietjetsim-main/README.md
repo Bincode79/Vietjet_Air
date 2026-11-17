@@ -237,8 +237,8 @@ Route handlers are exercised directly with a real `NextRequest` and a real JWT;
 | ------------------------ | -------------------------------------------------------------------------------------------------------------- |
 | `npm run dev`            | Start dev server on port 4028                                                                                  |
 | `npm run build`          | Build for production                                                                                           |
-| `npm run start`          | Start production server on port 4028                                                                           |
-| `npm run serve`          | Start production server (default port)                                                                         |
+| `npm run start`          | Start production server on port 4028 (standalone build)                                                        |
+| `npm run serve`          | Start production server (default port, standalone build)                                                       |
 | `npm run lint`           | Run ESLint checks                                                                                              |
 | `npm run lint:fix`       | Auto-fix ESLint issues                                                                                         |
 | `npm run format`         | Format code with Prettier                                                                                      |
@@ -257,6 +257,12 @@ Route handlers are exercised directly with a real `NextRequest` and a real JWT;
 npm run build
 npm run serve
 ```
+
+`npm run serve` chạy bản **standalone** (`.next/standalone/server.js`) — cùng cơ
+chế với Docker/Render. Script `scripts/start-standalone.cjs` lo phần chuẩn bị:
+nạp `.env.*` từ gốc app, copy `.next/static` và `public/` vào gói standalone,
+rồi khởi động server. (`next start` không dùng được với `output: 'standalone'` —
+Next sẽ in cảnh báo "next start does not work with output: standalone".)
 
 ### Deploy to Vercel
 

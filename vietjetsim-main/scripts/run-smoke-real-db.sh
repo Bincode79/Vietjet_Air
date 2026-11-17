@@ -82,11 +82,11 @@ fail() {
 command -v docker >/dev/null 2>&1 || fail "Không có `docker` trên PATH — cần Docker để dựng Postgres thật."
 docker info >/dev/null 2>&1 || fail "Docker daemon chưa chạy (thử `colima start`)."
 
-# Script này chạy app ở chế độ PRODUCTION (`next start`), không phải `next dev`.
-# Đó là điều bắt buộc, không phải sở thích: lỗi "pdfkit không tìm thấy font
-# Helvetica.afm" chỉ xuất hiện ở bản build (khi `pdfkit` bị bundle vào server
-# chunk, `__dirname` trỏ sai chỗ) — unit test chạy trên source vẫn xanh. Chạy
-# `next dev` ở đây sẽ báo xanh mà không hề chạm vào đường sinh file.
+# Script này chạy app ở chế độ PRODUCTION (`scripts/start-standalone.cjs`), không
+# phải `next dev`. Đó là điều bắt buộc, không phải sở thích: lỗi "pdfkit không
+# tìm thấy font Helvetica.afm" chỉ xuất hiện ở bản build (khi `pdfkit` bị bundle
+# vào server chunk, `__dirname` trỏ sai chỗ) — unit test chạy trên source vẫn
+# xanh. Chạy `next dev` ở đây sẽ báo xanh mà không hề chạm vào đường sinh file.
 [ -d ".next/server" ] || fail "Chưa có bản build. Chạy `npm run build` trước (script này đo bản production)."
 
 # ── 1. Postgres ──────────────────────────────────────────────────────────────
@@ -183,7 +183,7 @@ done
 echo "▸ Khởi động app trên cổng $APP_PORT, nối Postgres thật"
 DATABASE_URL="$PG_URL" \
 NEON_FETCH_ENDPOINT="http://127.0.0.1:${BRIDGE_PORT}/sql" \
-  npx next start -p "$APP_PORT" > "$APP_LOG" 2>&1 &
+  node scripts/start-standalone.cjs --port "$APP_PORT" > "$APP_LOG" 2>&1 &
 APP_PID=$!
 
 APP_READY=0

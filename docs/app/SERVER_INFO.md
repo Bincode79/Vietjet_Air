@@ -30,8 +30,15 @@
 ssh root@156.67.214.184
 cd /var/www/vietjet && git pull
 cd vietjetsim-main && npm ci && npm run build
-pm2 restart vietjet
+pm2 restart vietjet --update-env
 ```
+
+> **Lưu ý PM2.** App chạy qua `scripts/start-standalone.cjs` (cùng cơ chế với
+> `npm start`), không phải `next start` — `next start` không dùng được với
+> `output: 'standalone'`. Script đó tự nạp `.env.local` từ gốc app và copy
+> `.next/static` + `public/` vào gói standalone, nên **không** cần export biến
+> môi trường thủ công cho PM2. Đổi `ecosystem.config.js` thì cần
+> `pm2 restart vietjet --update-env` (hoặc `pm2 reload`) để PM2 nạp lại config.
 
 ### Tài khoản admin (DB production)
 
