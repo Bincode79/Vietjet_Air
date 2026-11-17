@@ -375,7 +375,7 @@ export default function PassengerInfoStep({
                   </div>
                 </div>
 
-                <div className="p-4 sm:p-5 space-y-4">
+                <div className="p-4 sm:p-5 space-y-4 font-koho">
                   {/* Gender row — nhóm radio, nhãn là dòng chữ riêng (không nổi) */}
                   <div>
                     <label className={fieldLabelClass}>Giới tính</label>
@@ -387,7 +387,7 @@ export default function PassengerInfoStep({
                       ].map(([val, label]) => (
                         <label
                           key={val}
-                          className="flex items-center gap-2 cursor-pointer text-sm2 font-medium text-vj-text select-none"
+                          className="flex items-center gap-2 cursor-pointer text-sm font-medium text-vj-text select-none font-koho"
                         >
                           <input
                             id={`passenger-${i}-gender-${val}`}
@@ -418,7 +418,7 @@ export default function PassengerInfoStep({
                             name={`passenger-${i}-name`}
                             type="text"
                             autoCapitalize="characters"
-                            className="uppercase font-medium"
+                            className="uppercase font-medium font-koho"
                             value={p.name}
                             onChange={(e) =>
                               updatePassenger(i, 'name', e.target.value.toUpperCase())
@@ -438,7 +438,7 @@ export default function PassengerInfoStep({
                             name={`passenger-${i}-firstName`}
                             type="text"
                             autoCapitalize="characters"
-                            className="uppercase font-medium"
+                            className="uppercase font-medium font-koho"
                             value={p.firstName || ''}
                             onChange={(e) =>
                               updatePassenger(i, 'firstName', e.target.value.toUpperCase())
@@ -448,7 +448,7 @@ export default function PassengerInfoStep({
                         </UnderlineField>
                       </div>
                     </div>
-                    <div className="mt-1.5 text-2xs text-blue-600 flex items-center gap-1">
+                    <div className="mt-1.5 text-xs text-blue-600 flex items-center gap-1 font-koho font-medium">
                       <span className="font-bold">ℹ</span>
                       <span>
                         Vé in tên đầy đủ theo thứ tự: họ, tên đệm, tên — ví dụ “Nguyễn Văn An”.
@@ -647,12 +647,12 @@ export default function PassengerInfoStep({
                   )}
 
                   {/* Privacy note & Checkboxes inside passenger card */}
-                  <div className="mt-4 pt-3 border-t border-gray-100 text-xs">
-                    <div className="flex items-start gap-1.5 text-2xs text-blue-600 leading-relaxed mb-2.5">
+                  <div className="mt-4 pt-3 border-t border-gray-100 text-xs font-koho">
+                    <div className="flex items-start gap-1.5 text-xs text-blue-600 leading-relaxed mb-2.5 font-medium">
                       <span className="font-bold text-xs leading-none">ℹ</span>
                       <span>
                         Dữ liệu cá nhân của Quý khách sẽ được Vietjet xử lý theo{' '}
-                        <strong className="underline cursor-pointer">
+                        <strong className="underline cursor-pointer font-bold">
                           Chính sách Quyền riêng tư
                         </strong>
                         , Quý khách có thể lựa chọn cho phép Vietjet sử dụng dữ liệu cá nhân cho các
@@ -660,7 +660,7 @@ export default function PassengerInfoStep({
                       </span>
                     </div>
                     <div className="space-y-2 pl-4">
-                      <label className="flex items-center gap-2 cursor-pointer text-xs text-gray-700 select-none">
+                      <label className="flex items-center gap-2 cursor-pointer text-xs text-gray-700 select-none font-koho">
                         <input
                           type="checkbox"
                           checked={consents.marketing}
@@ -671,7 +671,7 @@ export default function PassengerInfoStep({
                         />
                         <span>Gửi thông tin khuyến mãi, ưu đãi</span>
                       </label>
-                      <label className="flex items-center gap-2 cursor-pointer text-xs text-gray-700 select-none">
+                      <label className="flex items-center gap-2 cursor-pointer text-xs text-gray-700 select-none font-koho">
                         <input
                           type="checkbox"
                           checked={consents.survey}

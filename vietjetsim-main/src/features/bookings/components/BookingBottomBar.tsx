@@ -69,8 +69,8 @@ export default function BookingBottomBar({
 
         {/* Center: Total price */}
         <div className="flex flex-col items-center leading-tight">
-          <span className="text-2xl3 font-bold text-gray-800 font-koho">Tổng tiền</span>
-          <span className="text-xl4 font-bold font-jambono text-primary">
+          <span className="text-2xl3 font-bold text-black font-koho">Tổng tiền</span>
+          <span className="text-xl4 font-bold font-jambono text-black">
             {total.toLocaleString('vi-VN')} VND
           </span>
         </div>

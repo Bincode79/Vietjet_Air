@@ -1639,7 +1639,7 @@ h6 {
 .vj-total-bar-label {
   font-family: var(--vj-font-body, 'KoHo');
   font-size: 16px;
-  font-weight: 500;
+  font-weight: 700;
   line-height: 22px;
   color: #000000;
 }
@@ -1647,7 +1647,7 @@ h6 {
 .vj-total-bar-amount {
   font-family: var(--vj-font-body, 'KoHo');
   font-size: 20px;
-  font-weight: 400;
+  font-weight: 700;
   line-height: 22px;
   color: #000000;
 }
@@ -1794,6 +1794,7 @@ h6 {
   border: 0;
   padding: 0;
   background: transparent;
+  font-family: var(--vj-font-body, 'KoHo');
   font-size: 16px;
   line-height: 21.28px;
   font-weight: 500;
@@ -1813,7 +1814,7 @@ h6 {
   font-size: 16px;
   line-height: 21.28px;
   font-weight: 500;
-  font-family: var(--vj-font);
+  font-family: var(--vj-font-body, 'KoHo');
   color: var(--foreground);
   outline: none;
 }
@@ -1837,6 +1838,7 @@ h6 {
   left: 0;
   top: 50%;
   transform: translateY(-50%);
+  font-family: var(--vj-font-body, 'KoHo');
   font-size: 15px;
   line-height: 20px;
   font-weight: 500;

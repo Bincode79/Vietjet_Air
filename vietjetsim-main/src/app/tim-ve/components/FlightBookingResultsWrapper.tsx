@@ -368,15 +368,15 @@ export default function FlightBookingResultsWrapper({
               <div aria-hidden="true" className="flex-1" />
               <div className="relative w-[405px] shrink-0">
                 <div className="flex flex-col items-start">
-                  <span className="vj-total-bar-label">Tổng tiền</span>
-                  <span className="vj-total-bar-amount">
+                  <span className="vj-total-bar-label font-bold text-black font-koho">Tổng tiền</span>
+                  <span className="vj-total-bar-amount font-bold text-black font-koho">
                     {totalBookingAmount.toLocaleString('vi-VN')} VND
                   </span>
                 </div>
                 <button
                   type="button"
                   onClick={() => setShowSummaryModal(true)}
-                  className="absolute left-[73px] top-0 text-sm2 font-normal text-[var(--vj-detail-gray)] hover:text-gray-500 transition-colors cursor-pointer"
+                  className="absolute left-[73px] top-0 text-sm2 font-bold text-amber-500 hover:text-amber-600 transition-colors cursor-pointer font-koho"
                 >
                   Chi tiết
                 </button>
