@@ -213,7 +213,7 @@ export default function BulkPriceAdjustmentModal({
         </div>
 
         {/* Body (scrollable) */}
-        <div className="flex-1 overflow-y-auto p-5 space-y-5 custom-scrollbar">
+        <div className="flex-1 overflow-y-auto p-5 space-y-5">
           {/* 1. Bộ lọc phạm vi */}
           <div className="bg-white/[0.02] border border-white/5 rounded-xl p-4 space-y-3">
             <h3 className="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-2">

@@ -1,10 +1,10 @@
 # 🛫 Vietjet Air — Vietnam Flight Booking Simulator
 
-A complete **Vietjet Air booking experience simulator** built with Next.js 15 (App Router), React 19, TypeScript, Tailwind CSS, and **Neon Serverless Postgres** with **custom JWT authentication**. Search domestic Vietnam flights, select seats, pay via wallet/card simulation, manage bookings, and access a full admin panel.
+A complete **Vietjet Air booking experience simulator** built with **Next.js 16** (App Router), React 19, TypeScript, Tailwind CSS, and **Neon Serverless Postgres** with **custom JWT authentication**. Search domestic Vietnam flights, select seats, pay via wallet/card simulation, manage bookings, and access a full admin panel.
 
 ## 🚀 Features
 
-- **Next.js 15** (App Router) with React 19 & TypeScript
+- **Next.js 16** (App Router) with React 19 & TypeScript
 - **Tailwind CSS** with custom Vietjet brand theme
 - **Neon Serverless Postgres** (with in-memory mock fallback for local dev)
 - **Custom JWT Auth** (15-minute access tokens + 7-day refresh tokens with rotation & reuse detection)
@@ -291,7 +291,7 @@ The project includes `@netlify/plugin-nextjs` for seamless deployment.
 ## 🙏 Acknowledgments
 
 - Built with [Rocket.new](https://rocket.new)
-- Powered by Next.js 15, React 19, and Neon Postgres
+- Powered by **Next.js 16**, React 19, and Neon Postgres
 - Styled with Tailwind CSS & Vietjet brand guidelines
 
 Built with ❤️ on Rocket.new

@@ -32,6 +32,9 @@ export const PUBLIC_ROUTES = [
   // Trang thanh toán cho phép khách vãng lai thanh toán mà không cần đăng nhập
   '/thanh-toan',
   '/payment',
+  // Static assets (fonts, images) must not be bounced to login by the
+  // middleware; a 307 returning HTML instead of the asset breaks downloads.
+  '/fonts',
   // Programs alias that immediately 307s to the (public) services page — it
   // must stay reachable signed-out, otherwise the middleware bounces it
   // to login before the page's own redirect can run.

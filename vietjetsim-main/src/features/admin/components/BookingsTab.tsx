@@ -1025,7 +1025,7 @@ export default function BookingsTab({ onToast }: BookingsTabProps = {}) {
             </div>
 
             {/* Modal Content */}
-            <div className="p-8 max-h-[70vh] overflow-y-auto custom-scrollbar">
+            <div className="p-8 max-h-[70vh] overflow-y-auto">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {/* Left Column: Guest & Flight */}
                 <div className="space-y-6">
