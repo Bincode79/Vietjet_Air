@@ -1217,14 +1217,23 @@ export async function createBooking(
   // (trừ em bé) chiếm đúng một ghế. Ghép theo thứ tự `created_at` của hành
   // khách là thứ tự hành khách được ghi vào đặt vé.
   if (seats && seats.length > 0) {
-    const seatNumbers = seats.map((seat) => seat.seat_number);
+    // Số thứ tự phải đi cùng dữ liệu trong JSON: `WITH ORDINALITY` không thể đứng
+    // cạnh một column definition list — Postgres từ chối hợp cả hai
+    // ("WITH ORDINALITY cannot be used with a column definition list"), mà
+    // `jsonb_to_recordset` lại bắt buộc có column definition list. Câu lệnh cũ
+    // khai thêm một cột `ord` không kiểu sau `WITH ORDINALITY` nên chưa bao giờ
+    // parse nổi trên Postgres thật (mọi booking có chọn ghế đều 500), còn suite
+    // unit mock `sql` nên không hề hay biết.
+    const seatRowsJson = seats.map((seat, index) => ({
+      seat_number: seat.seat_number,
+      ord: index,
+    }));
     await sql`
       WITH seat_rows AS (
         SELECT st2.seat_number,
                ROW_NUMBER() OVER (ORDER BY st2.ord) AS rn
-        FROM jsonb_to_recordset(${JSON.stringify(
-          seatNumbers.map((seatNumber) => ({ seat_number: seatNumber }))
-        )}::jsonb) WITH ORDINALITY AS st2(seat_number text, ord)
+        FROM jsonb_to_recordset(${JSON.stringify(seatRowsJson)}::jsonb)
+          AS st2(seat_number text, ord int)
       ),
       passenger_rows AS (
         SELECT p2.id AS passenger_id,
