@@ -2201,11 +2201,11 @@ h6 {
   width: 420px;
   max-width: 100%;
   margin: 0 auto;
-  padding: 16px 24px 12px;
-  border-radius: 0 0 var(--vj-skyid-radius-panel) var(--vj-skyid-radius-panel);
+  padding: 22px 28px 18px;
+  border-radius: 16px;
   background-color: #ffffff;
   text-align: center;
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.18);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.22);
 }
 
 /* Tiêu đề — `.gid-content-title`. */
@@ -2327,18 +2327,19 @@ h6 {
   height: 100%;
   padding: 0 8px 0 10px;
   border: 0;
+  border-right: 1px solid var(--vj-skyid-border);
   background: transparent;
   font-family: 'KoHo', ui-sans-serif, system-ui, sans-serif;
-  font-size: 16px;
+  font-size: 15px;
   line-height: 24px;
   color: var(--vj-skyid-ink);
   white-space: nowrap;
   cursor: pointer;
 }
 
-/* Ô nhập số: đẩy sang phải khối cờ (85px), nhãn nổi cũng ở `left:85px`. */
+/* Ô nhập số: đẩy sang phải khối cờ (88px), nhãn nổi cũng ở `left:88px`. */
 .vj-skyid-input-phone {
-  margin-left: 85px;
+  margin-left: 88px;
 }
 
 .vj-skyid-phone .vj-skyid-input {
@@ -2358,8 +2359,8 @@ h6 {
   justify-content: center;
   min-width: 160px;
   max-width: 232px;
-  min-height: 38px;
-  padding: 6px 12px;
+  min-height: 40px;
+  padding: 8px 20px;
   border: 0;
   border-radius: var(--vj-skyid-radius-btn);
   background: var(--vj-skyid-gold);
@@ -2369,12 +2370,13 @@ h6 {
   font-weight: 700;
   color: #111111 !important;
   cursor: pointer;
-  transition: background-color 160ms ease;
+  transition: all 160ms ease;
 }
 
 .vj-skyid-btn:hover:not(:disabled) {
   background-color: var(--vj-skyid-gold-hover);
   color: #111111 !important;
+  transform: translateY(-1px);
 }
 
 .vj-skyid-btn:focus-visible {
@@ -2383,10 +2385,13 @@ h6 {
 }
 
 .vj-skyid-btn:disabled {
-  background-color: var(--vj-skyid-disabled-bg);
-  color: #111111 !important;
-  opacity: 0.75;
-  cursor: not-allowed;
+  background: #f3f4f6 !important;
+  background-image: none !important;
+  color: #9ca3af !important;
+  border: 1px solid #e5e7eb;
+  box-shadow: none !important;
+  opacity: 1 !important;
+  cursor: not-allowed !important;
 }
 
 /* Nút phụ (social, quay lại) — viền `#E8EBEF`, bo góc `8px`. */
@@ -3582,8 +3587,12 @@ h6 {
   align-items: flex-start;
   justify-content: center;
   min-height: 0;
-  padding-top: 52px;
-  background-image: var(--vj-popup-body-overlay);
+  padding-top: 48px;
+  padding-bottom: 24px;
+  background-image: linear-gradient(rgba(0, 0, 0, 0.45) 0%, rgba(0, 0, 0, 0.15) 100%), url('/images/skyid/bg.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
 /* Khung form SkyID — tự giãn theo nội dung form, không bó cứng 208px */
@@ -4850,19 +4859,23 @@ select option {
 
 /* Enhanced CTA button with shadow and hover effects */
 .vj-skyid-btn:not(:disabled) {
-  box-shadow: var(--vj-skyid-shadow-md);
+  background: linear-gradient(135deg, #e99f24 0%, #ffdd00 100%) !important;
+  color: #111111 !important;
+  font-weight: 700 !important;
+  box-shadow: 0 4px 12px rgba(233, 159, 36, 0.35);
   transition: var(--vj-skyid-transition);
 }
 
 .vj-skyid-btn:not(:disabled):hover {
   transform: translateY(-1px);
-  box-shadow: var(--vj-skyid-shadow-lg);
-  background: linear-gradient(135deg, #EDAF17 0%, #FFE933 100%);
+  box-shadow: 0 6px 16px rgba(233, 159, 36, 0.45);
+  background: linear-gradient(135deg, #EDAF17 0%, #FFE933 100%) !important;
+  color: #111111 !important;
 }
 
 .vj-skyid-btn:not(:disabled):active {
   transform: translateY(0);
-  box-shadow: var(--vj-skyid-shadow-md);
+  box-shadow: 0 4px 12px rgba(233, 159, 36, 0.35);
 }
 
 /* Better disabled state for ghost buttons */
@@ -5060,6 +5073,7 @@ select option {
     width: 100%;
     max-width: 100%;
     padding: 20px 16px 24px;
+    border-radius: 16px;
     margin-bottom: 8px;
   }
   
