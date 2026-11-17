@@ -77,10 +77,22 @@ export async function GET(request: NextRequest) {
         }
       }, 30_000);
 
+      // Total connection timeout: close the SSE stream even if the client never
+      // sends an abort signal (tab closed forcefully, silent network drop).
+      const totalTimeout = setTimeout(() => {
+        clearInterval(pollInterval);
+        clearInterval(pingInterval);
+        try {
+          controller.close();
+        } catch {
+          /* already closed */
+        }
+      }, 60_000);
       // Cleanup on client disconnect
       request.signal.addEventListener('abort', () => {
         clearInterval(pollInterval);
         clearInterval(pingInterval);
+        clearTimeout(totalTimeout);
         try {
           controller.close();
         } catch {
