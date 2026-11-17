@@ -2899,9 +2899,9 @@ export default function PaymentClient() {
                         }}
                         placeholder=" "
                         disabled={promoApplied}
-                        className={`vj-lookup-input font-mono uppercase disabled:opacity-50 ${promoApplied ? 'form-input-valid' : ''}`}
+                        className={`vj-lookup-input font-mono uppercase font-bold text-black !text-black disabled:opacity-50 ${promoApplied ? 'form-input-valid' : ''}`}
                       />
-                      <label htmlFor="promo-code-input" className="vj-lookup-label">
+                      <label htmlFor="promo-code-input" className="vj-lookup-label font-bold text-black !text-black font-koho">
                         VJ2026
                       </label>
                     </div>
