@@ -1110,9 +1110,9 @@ export default function PaymentClient() {
 
   // Form xác nhận đã chuyển khoản — dùng chung cho tab Ngân hàng và tab VietQR
   const transferConfirmBlock = (
-    <div className="bg-white border border-[var(--border)] rounded-2xl p-5 space-y-4 shadow-sm">
-      <div className="flex items-center justify-between pb-3 border-b border-gray-100">
-        <h4 className="text-sm font-bold font-koho text-[var(--foreground)] flex items-center gap-2">
+    <div className="mt-5 pt-4 border-t border-gray-200/90 space-y-3">
+      <div className="flex items-center justify-between pb-2 border-b border-gray-100">
+        <h4 className="text-sm font-bold font-koho text-gray-900 flex items-center gap-2">
           <Icon name="CheckCircleIcon" size={18} className="text-primary" />
           Xác nhận thanh toán & Tải ảnh biên lai
         </h4>
@@ -1206,81 +1206,6 @@ export default function PaymentClient() {
           </div>
         )}
       </div>
-
-      {/* <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-        <div>
-          <label className="block text-xs font-semibold font-koho text-[var(--foreground-muted)] mb-1">
-            Nội dung chuyển khoản
-          </label>
-          <input
-            type="text"
-            value={transferNoteInput}
-            onChange={(e) => setTransferNoteInput(e.target.value)}
-            placeholder={transferNote}
-            className="w-full px-3 py-2.5 bg-[var(--surface)] border border-[var(--border)] rounded-lg text-xs font-mono focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"
-          />
-        </div>
-        <div>
-          <label className="block text-xs font-semibold font-koho text-[var(--foreground-muted)] mb-1">
-            Số tiền đã chuyển (VND)
-          </label>
-          <input
-            type="text"
-            inputMode="numeric"
-            value={transferAmountInput}
-            onChange={(e) => setTransferAmountInput(e.target.value)}
-            placeholder={String(total)}
-            className="w-full px-3 py-2.5 bg-[var(--surface)] border border-[var(--border)] rounded-lg text-xs font-mono focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"
-          />
-        </div>
-      </div> */}
-
-      {/* Nút ĐÃ THANH TOÁN — Màu xanh nõn chuối Vietjet */}
-      <button
-        id="btn-da-thanh-toan"
-        type="button"
-        onClick={handlePayment}
-        disabled={loading}
-        className="w-full mt-2 flex items-center justify-center gap-2 bg-gradient-to-r from-vj-pay-green-light via-vj-pay-green to-vj-pay-green-dark hover:from-vj-pay-green-3bb hover:to-vj-pay-green-deep text-white font-koho font-extrabold py-3.5 px-6 rounded-xl shadow-md shadow-vj-pay-green/30 hover:shadow-vj-pay-green/40 hover:-translate-y-0.5 active:scale-[0.99] transition-all text-sm cursor-pointer disabled:opacity-50"
-      >
-        {loading ? (
-          <>
-            <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none">
-              <circle
-                className="opacity-25"
-                cx="12"
-                cy="12"
-                r="10"
-                stroke="currentColor"
-                strokeWidth="4"
-              />
-              <path
-                className="opacity-75"
-                fill="currentColor"
-                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-              />
-            </svg>
-            <span>Đang gửi xác nhận thanh toán...</span>
-          </>
-        ) : (
-          <>
-            <Icon name="CheckCircleIcon" size={18} className="text-white" />
-            <span>
-              {receiptImage
-                ? selectedMethodGroup === 'vnpay_qr'
-                  ? 'Tôi đã thanh toán VNPAY-QR (Đã đính kèm ảnh biên lai)'
-                  : selectedMethodGroup === 'vietqr'
-                    ? 'Tôi đã thanh toán VietQR (Đã đính kèm ảnh biên lai)'
-                    : 'Xác nhận đã thanh toán (Đã đính kèm ảnh biên lai)'
-                : selectedMethodGroup === 'vnpay_qr'
-                  ? 'Tôi đã quét mã VNPAY-QR — Đã thanh toán'
-                  : selectedMethodGroup === 'vietqr'
-                    ? 'Tôi đã quét mã VietQR — Đã thanh toán'
-                    : 'Tôi đã chuyển khoản — Đã thanh toán'}
-            </span>
-          </>
-        )}
-      </button>
     </div>
   );
 
@@ -2081,8 +2006,8 @@ export default function PaymentClient() {
                   </div>
                 </div>
 
-                {/* Giao diện áp mã giảm giá — Đặt trước QR thanh toán */}
-                <div className="mb-5 rounded-xl border border-gray-200/90 bg-slate-50/70 p-4 shadow-2xs">
+                {/* Giao diện áp mã giảm giá — Chung 1 vùng */}
+                <div className="pt-4 border-t border-gray-200">
                   <label className="flex items-center gap-3 cursor-pointer select-none">
                     <input
                       type="checkbox"
@@ -2095,7 +2020,7 @@ export default function PaymentClient() {
                     </span>
                   </label>
                   {hasPromoChecked && (
-                    <div className="mt-3 pt-3 border-t border-gray-200/80 flex gap-2 font-koho">
+                    <div className="mt-3 pt-3 border-t border-gray-100 flex gap-2 font-koho">
                       <input
                         type="text"
                         value={promoCode}
@@ -2124,7 +2049,7 @@ export default function PaymentClient() {
                   )}
                 </div>
 
-                <form onSubmit={handlePayment}>
+                <form onSubmit={handlePayment} className="pt-4 border-t border-gray-200">
                   {/* Card Form */}
                   {paymentMethod === 'card' && (
                     <div className="space-y-4">
@@ -2845,9 +2770,10 @@ export default function PaymentClient() {
                       {/* Submit */}
                       <button
                         id="payment-submit-btn"
+                        data-testid="btn-da-thanh-toan"
                         type="submit"
                         disabled={loading}
-                        className="w-full mt-6 flex items-center justify-center gap-2 bg-primary hover:bg-primary-dark text-white font-koho font-black py-3.5 px-5 sm:py-4 sm:px-6 rounded-xl transition-all duration-200 shadow-vj-btn hover:shadow-vj-btn-hover hover:-translate-y-1 hover:scale-[1.01] active:scale-[0.99] disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:scale-100 text-sm sm:text-base cursor-pointer"
+                        className="w-full mt-6 flex items-center justify-center gap-2 bg-gradient-to-r from-red-600 via-primary to-red-700 hover:from-red-700 hover:to-primary-dark text-white font-koho font-black py-3.5 px-5 sm:py-4 sm:px-6 rounded-xl transition-all duration-200 shadow-vj-btn hover:shadow-vj-btn-hover hover:-translate-y-0.5 active:scale-[0.99] disabled:opacity-60 disabled:cursor-not-allowed text-sm sm:text-base cursor-pointer"
                       >
                         {loading ? (
                           <>

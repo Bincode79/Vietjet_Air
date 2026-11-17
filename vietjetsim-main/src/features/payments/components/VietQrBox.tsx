@@ -245,7 +245,7 @@ export default function VietQrBox({
   }
 
   return (
-    <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-lg">
+    <div className="bg-white border border-gray-200/90 rounded-xl overflow-hidden shadow-2xs">
       {/* VietQR Header — Logo VietQR + Napas 247 + Ngân hàng thụ hưởng STK Admin */}
       {showBankHeader && (
         <div className="p-4 sm:p-5 bg-gradient-to-r from-vj-bank-blue via-vj-bank-blue-dark to-vjred text-white shadow-md">
@@ -333,7 +333,7 @@ export default function VietQrBox({
         </div>
 
         {/* Thông tin thanh toán chi tiết (STK Admin, Tên, Số tiền, Nội dung) */}
-        <div className="w-full mt-6 space-y-2.5 bg-slate-50/50 p-4 sm:p-5 rounded-2xl border border-gray-200 shadow-xs">
+        <div className="w-full mt-5 space-y-2.5 bg-slate-50/70 p-4 rounded-xl border border-gray-200/90 shadow-2xs">
           <div className="flex items-center justify-between pb-2 border-b border-gray-200">
             <span className="text-xs font-black uppercase tracking-wider text-black font-koho flex items-center gap-1.5">
               <Icon name="InformationCircleIcon" size={16} />
