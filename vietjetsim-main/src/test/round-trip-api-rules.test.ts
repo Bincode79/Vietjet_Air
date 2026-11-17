@@ -29,6 +29,7 @@ const dbMocks = vi.hoisted(() => ({
   isRefundFeatureEnabled: vi.fn(),
   getBookingCashPaid: vi.fn(),
   getTripById: vi.fn(),
+  getSeatLocksForSeats: vi.fn(async () => []),
 }));
 
 vi.mock('@/lib/db', () => dbMocks);

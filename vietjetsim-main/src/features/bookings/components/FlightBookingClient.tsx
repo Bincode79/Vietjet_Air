@@ -616,11 +616,58 @@ function FlightBookingClientInner({
           container 1230px, cột trái 820px). Không đặt `max-w-5xl` ở đây vì
           nó sẽ thu hẹp cột trái về 1024px-centered, lệch với số đo. */}
       <div className="mx-auto max-w-full">
+        {step === 1 && isRoundTrip && (
+          <div className="mb-4 grid grid-cols-2 gap-2 p-1 bg-white/80 backdrop-blur-sm rounded-2xl border border-gray-200 shadow-xs">
+            <button
+              type="button"
+              data-testid="tab-leg-outbound"
+              onClick={() => setCurrentLeg('outbound')}
+              className={`flex flex-col items-center justify-center py-2 px-3 rounded-xl transition text-center cursor-pointer ${
+                currentLeg === 'outbound'
+                  ? 'bg-primary text-white shadow-xs font-bold'
+                  : 'text-gray-700 hover:bg-gray-100 font-medium'
+              }`}
+            >
+              <div className="flex items-center gap-1.5 text-xs sm:text-sm font-koho">
+                <span>Chiều đi: {params.from} → {params.to}</span>
+              </div>
+              <div className={`text-2xs mt-0.5 ${currentLeg === 'outbound' ? 'text-white/90' : 'text-gray-500'}`}>
+                {booking.selectedFlight
+                  ? `Đã chọn: ${booking.selectedFlight.flightNo} (${(booking.selectedFlight.fareClass || 'ECO').toUpperCase()})`
+                  : 'Đang chọn'}
+              </div>
+            </button>
+            <button
+              type="button"
+              data-testid="tab-leg-inbound"
+              onClick={() => setCurrentLeg('inbound')}
+              className={`flex flex-col items-center justify-center py-2 px-3 rounded-xl transition text-center cursor-pointer ${
+                currentLeg === 'inbound'
+                  ? 'bg-primary text-white shadow-xs font-bold'
+                  : 'text-gray-700 hover:bg-gray-100 font-medium'
+              }`}
+            >
+              <div className="flex items-center gap-1.5 text-xs sm:text-sm font-koho">
+                <span>Chiều về: {params.to} → {params.from}</span>
+              </div>
+              <div className={`text-2xs mt-0.5 ${currentLeg === 'inbound' ? 'text-white/90' : 'text-gray-500'}`}>
+                {booking.returnFlight
+                  ? `Đã chọn: ${booking.returnFlight.flightNo} (${(booking.returnFlight.fareClass || 'ECO').toUpperCase()})`
+                  : currentLeg === 'inbound'
+                    ? 'Đang chọn'
+                    : 'Chưa chọn'}
+              </div>
+            </button>
+          </div>
+        )}
+
         {step === 1 && (
           <ErrorBoundary inline variant="api" retryLabel="Tìm lại chuyến bay">
             {currentLeg === 'outbound' ? (
               <FlightResultsStep
                 key="outbound-step"
+                leg="outbound"
+                isRoundTrip={isRoundTrip}
                 onSelect={(flight, isUserAction) =>
                   handleFlightSelect(flight, 'outbound', isUserAction ?? true)
                 }
@@ -636,6 +683,8 @@ function FlightBookingClientInner({
             ) : (
               <FlightResultsStep
                 key="inbound-step"
+                leg="inbound"
+                isRoundTrip={isRoundTrip}
                 onSelect={(flight, isUserAction) =>
                   handleFlightSelect(flight, 'inbound', isUserAction ?? true)
                 }

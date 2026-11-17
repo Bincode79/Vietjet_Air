@@ -1309,6 +1309,29 @@ function createMockSql(): SqlClient {
   const nextMockId = (prefix: string) => `${prefix}-mock-${++mockSeq}`;
   const mockUuid = () => '00000000-0000-4000-8000-' + String(++mockSeq).padStart(12, '0');
 
+  /**
+   * Sinh PNR 6 ký tự giống hàm `generateBookingCode` của Postgres.
+   *
+   * Bảng `bookings.booking_code` là `varchar(6)` — nếu mock sinh mã dài hơn
+   * thì mọi câu `WHERE UPPER(booking_code) = UPPER($1)` vẫn khớp, nhưng vé
+   * in ra sẽ có mã 8-10 ký tự, tức khác hẳn DB thật. E2E test cần PNR đúng
+   * 6 ký tự để khẳng định trải nghiệm người dùng.
+   */
+  const MOCK_PNR_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  const generateMockPnr = (): string => {
+    let code = '';
+    for (let i = 0; i < 6; i += 1) {
+      code += MOCK_PNR_ALPHABET[Math.floor(Math.random() * MOCK_PNR_ALPHABET.length)];
+    }
+    // PNR phải là duy nhất trong bộ nhớ — trùng thì tra cứu vé sẽ ra nhầm
+    // chuyến (và E2E sẽ chạy ổn trong lúc DB thật đã có unique index).
+    if (mockBookings.some((b) => b.booking_code === code)) {
+      mockSeq += 1;
+      return `${code}${String(mockSeq % 10)}`.slice(0, 6);
+    }
+    return code;
+  };
+
   // ─── Seed: các đặt chỗ mẫu, đủ hành khách để sinh được vé điện tử ───
   //
   // Endpoint tải vé (`/api/dat-ve/[id]/ve-dien-tu`) đọc booking + trip +
@@ -1484,22 +1507,208 @@ function createMockSql(): SqlClient {
       return mockBookings;
     }
 
-    // ── Tạo booking (CTE `new_booking`) ──
+    // ── Tạo booking (CTE `new_booking`) ────────────────────────────────────
+    //
+    // `createBooking` chèn booking + hành khách + ghế + phụ dịch vụ trong MỘT
+    // câu lệnh multi-CTE. Bản mock trước đây chỉ trả về một dòng booking rỗng
+    // (`total_price: 0`, không hành khách, không ghế) — nên trong mock mode
+    // luồng đặt vé "chạy" nhưng không sinh ra dữ liệu thật: PNR rỗng, vé điện
+    // tử không có hành khách, check-in không tìm thấy ghế.
+    //
+    // Bản mock này bám sát SQL thật, kể cả điều kiện từ chối: nếu chuyến bay
+    // hết chỗ HOẶC một ghế đang bị phiên khác giữ thì phải TRẢ VỀ RỖNG (giống
+    // `reserved_flight` không UPDATE được), để `createBooking` ném
+    // `SeatLockConflictError` / trả `undefined` đúng như Postgres.
     if (q.includes('insert into bookings')) {
-      // `createBooking` chèn qua một CTE, nên mock chỉ cần trả về dòng vừa
-      // tạo với đủ trường mà các mapper đọc.
-      const row: MockResult = {
-        id: nextMockId('booking'),
-        booking_code: `MK${String(mockSeq).padStart(4, '0')}`,
-        trip_id: mockUuid(),
-        leg_role: 'outbound',
+      // Thứ tự tham số của `createBooking` (xem `src/lib/db.ts`):
+      //   0  flight_id          (locked_seats)
+      //   1  JSON ghế yêu cầu   (locked_seats)
+      //   2  seat_owner_token   (locked_seats)
+      //   3  seatedCount        (reserved_flight)
+      //   4  flight_id          (reserved_flight)
+      //   5  seatedCount        (reserved_flight)
+      //   6  user_id            (new_booking)
+      //   7  flight_id          (new_booking)
+      //   8  total_price        (new_booking)
+      //   9  trip_id            (new_booking)
+      //  10  leg_role           (new_booking)
+      //  11  JSON hành khách    (inserted_passengers)
+      //  12  consents.marketing
+      //  13  consents.survey
+      //  14  consents.retainForFutureBooking
+      //  15  consents.policyAccepted
+      //  16  JSON ghế đã bán    (inserted_seats)
+      //  17  JSON phụ dịch vụ   (inserted_ancillaries)
+      const flightId = String(values[4] ?? values[0] ?? '');
+      const seatedCount = Math.max(0, Number(values[5] ?? values[3] ?? 0) || 0);
+      const userId = String(values[6] ?? '');
+      const totalPrice = Number(values[8] ?? 0) || 0;
+      const tripId = values[9] ? String(values[9]) : mockUuid();
+      const legRole = values[10] ? String(values[10]) : 'outbound';
+      const ownerToken = values[2] ? String(values[2]) : null;
+
+      const parseJsonArray = (raw: unknown): Array<Record<string, unknown>> => {
+        if (Array.isArray(raw)) return raw as Array<Record<string, unknown>>;
+        if (typeof raw !== 'string') return [];
+        try {
+          const parsed = JSON.parse(raw);
+          return Array.isArray(parsed) ? (parsed as Array<Record<string, unknown>>) : [];
+        } catch {
+          return [];
+        }
+      };
+
+      const requestedSeats = parseJsonArray(values[1]);
+      const passengerRows = parseJsonArray(values[11]);
+      const soldSeats = parseJsonArray(values[16]);
+
+      // ── `locked_seats`: ghế đang bị PHIÊN KHÁC giữ ──
+      const now = Date.now();
+      const blockedSeats = mockSeatLocks.filter((lock) => {
+        if (String(lock.flight_id) !== flightId) return false;
+        if (!requestedSeats.some((s) => String(s.seat_number) === String(lock.seat_number))) {
+          return false;
+        }
+        // `expires_at > NOW()`
+        if (new Date(String(lock.expires_at)).getTime() <= now) return false;
+        // `owner_token IS NOT NULL AND owner_token IS DISTINCT FROM $owner`
+        if (lock.owner_token === null || lock.owner_token === undefined) return false;
+        if (ownerToken !== null && String(lock.owner_token) === ownerToken) return false;
+        return true;
+      });
+      if (blockedSeats.length > 0) {
+        // `reserved_flight` không UPDATE được ⇒ `new_booking` không có dòng ⇒
+        // `createBooking` trả `undefined` và gọi `findForeignSeatLocks`.
+        return [];
+      }
+
+      // ── `reserved_flight`: trừ ghế khỏi chuyến bay ──
+      const flight = mockFlights.find((f) => String(f.id) === flightId);
+      if (!flight) return [];
+      if (Number(flight.available ?? 0) < seatedCount) {
+        // `available >= $seatedCount` không thỏa ⇒ không có dòng ⇒ booking rỗng.
+        return [];
+      }
+      flight.available = Number(flight.available ?? 0) - seatedCount;
+
+      // ── `new_booking` ──
+      const bookingRow: MockResult = {
+        id: mockUuid(),
+        user_id: userId,
+        flight_id: flightId,
         status: 'pending',
-        total_price: 0,
+        total_price: totalPrice,
+        trip_id: tripId,
+        leg_role: legRole,
+        booking_code: generateMockPnr(),
         created_at: nowIso(),
         updated_at: nowIso(),
       };
-      mockBookings.push(row);
-      return [row];
+      mockBookings.push(bookingRow);
+
+      // ── `inserted_passengers` ──
+      passengerRows.forEach((p, index) => {
+        mockPassengers.push({
+          id: mockUuid(),
+          booking_id: bookingRow.id,
+          name: String(p.name ?? ''),
+          dob: p.dob ?? null,
+          id_number: p.id_number ?? null,
+          gender: p.gender ?? 'male',
+          country_code: p.country_code ?? 'VN',
+          phone: p.phone ?? null,
+          email: p.email ?? null,
+          residence: p.residence ?? null,
+          skyjoy_member_id: p.skyjoy_member_id ?? null,
+          passenger_type: p.passenger_type ?? 'adult',
+          seat_number: null,
+          created_at: new Date(Date.now() + index).toISOString(),
+        });
+      });
+
+      // ── `inserted_seats` ──
+      soldSeats.forEach((s) => {
+        mockSeats.push({
+          id: mockUuid(),
+          booking_id: bookingRow.id,
+          flight_id: flightId,
+          seat_number: String(s.seat_number ?? ''),
+          status: 'reserved',
+          price: Number(s.price ?? 0) || 0,
+          check_in_status: 'not_checked_in',
+          check_in_time: null,
+          created_at: nowIso(),
+        });
+      });
+
+      return [bookingRow];
+    }
+
+    // ── Gán ghế cho hành khách (CTE `seat_rows`) ─────────────────────────────
+    //
+    // `createBooking` chạy câu thứ hai để ghi `passengers.seat_number`:
+    //
+    //   WITH seat_rows AS (… jsonb_to_recordset($1) …),
+    //        passenger_rows AS (… ROW_NUMBER() OVER (ORDER BY created_at, id) …)
+    //   UPDATE passengers p SET seat_number = s.seat_number
+    //     FROM passenger_rows pr JOIN seat_rows s ON s.rn = pr.rn
+    //    WHERE p.id = pr.passenger_id
+    //
+    // Đây là nơi duy nhất ánh xạ được hành khách → ghế. Không mock nó thì
+    // `passengers.seat_number` luôn NULL ⇒ không sinh được boarding pass theo
+    // từng người, và đổi ghế sau khi đặt vé không có chỗ ghi.
+    if (q.includes('with seat_rows as') && q.includes('update passengers')) {
+      // Tham số: 0 = JSON `[{seat_number, ord}]`, 1 = booking_id.
+      let seatRows: Array<{ seat_number: string; ord: number }> = [];
+      const raw = values[0];
+      if (typeof raw === 'string') {
+        try {
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed)) seatRows = parsed;
+        } catch {
+          seatRows = [];
+        }
+      } else if (Array.isArray(raw)) {
+        seatRows = raw as Array<{ seat_number: string; ord: number }>;
+      }
+      const bookingId = String(values[1] ?? '');
+
+      // `passenger_rows`: hành khách (không phải em bé) của booking, xếp theo
+      // `ORDER BY created_at, id`.
+      const bookingPassengers = mockPassengers
+        .filter((p) => String(p.booking_id) === bookingId && p.passenger_type !== 'infant')
+        .sort((a, b) => {
+          const byTime = String(a.created_at ?? '').localeCompare(String(b.created_at ?? ''));
+          if (byTime !== 0) return byTime;
+          return String(a.id).localeCompare(String(b.id));
+        });
+
+      // `seat_rows`: xếp theo `ord`.
+      const orderedSeats = [...seatRows].sort((a, b) => Number(a.ord ?? 0) - Number(b.ord ?? 0));
+
+      orderedSeats.forEach((seat, index) => {
+        const passenger = bookingPassengers[index];
+        if (!passenger) return;
+        passenger.seat_number = seat.seat_number;
+      });
+
+      return [];
+    }
+
+    // ── `setPassengerSeatNumber` ─────────────────────────────────────────────
+    //
+    //   UPDATE passengers SET seat_number = $1
+    //    WHERE id = $2 AND ($3::uuid IS NULL OR booking_id = $3::uuid)
+    //   RETURNING id
+    if (q.includes('update passengers') && q.includes('set seat_number =')) {
+      const seatNumber = values[0] as string | null;
+      const passengerId = String(values[1] ?? '');
+      const bookingId = values[2] ? String(values[2]) : null;
+      const match = mockPassengers.find((p) => String(p.id) === passengerId);
+      if (!match) return [];
+      if (bookingId !== null && String(match.booking_id) !== bookingId) return [];
+      match.seat_number = seatNumber;
+      return [{ id: match.id }];
     }
 
     // ── Hành khách của booking ──
@@ -1520,7 +1729,75 @@ function createMockSql(): SqlClient {
       return mockPassengers;
     }
 
-    // ── Check-in ──
+    // ── Check-in ────────────────────────────────────────────────────────────
+    //
+    // `createCheckIn` chèn một dòng `check_in` (14 cột), và
+    // `getCheckInStatusByBookingId` đọc trạng thái bằng một câu `SELECT` với
+    // các sub-query `EXISTS`/`(SELECT … LIMIT 1)`.
+    //
+    // QUAN TRỌNG: nhánh `INSERT INTO check_in` phải được nhận diện TRƯỚC nhánh
+    // generic `from check_in` — nếu không, câu INSERT sẽ rơi vào nhánh generic
+    // và không bao giờ ghi được dòng check-in.
+    if (q.includes('insert into check_in')) {
+      // Thứ tự tham số (xem `createCheckIn`):
+      //   0 booking_id, 1 passenger_id, 2 seat_number, 3 flight_no,
+      //   4 from_code, 5 to_code, 6 depart_time, 7 passenger_name,
+      //   8 id_number, 9 baggage_info, 10 gate, 11 terminal,
+      //  12 check_in_number, 13 boarding_pass_number
+      const checkInNumber = String(values[12] ?? `VN-${Date.now().toString(36).toUpperCase()}`);
+      const row: MockResult = {
+        id: mockUuid(),
+        booking_id: String(values[0] ?? ''),
+        passenger_id: values[1] ? String(values[1]) : null,
+        seat_number: String(values[2] ?? ''),
+        flight_no: values[3] ? String(values[3]) : null,
+        from_code: values[4] ? String(values[4]) : null,
+        to_code: values[5] ? String(values[5]) : null,
+        depart_time: values[6] ? String(values[6]) : null,
+        passenger_name: values[7] ? String(values[7]) : null,
+        id_number: values[8] ? String(values[8]) : null,
+        baggage_info: values[9] ? String(values[9]) : null,
+        gate: values[10] ? String(values[10]) : null,
+        terminal: values[11] ? String(values[11]) : null,
+        check_in_number: checkInNumber,
+        boarding_pass_number: String(values[13] ?? checkInNumber),
+        status: 'checked_in',
+        check_in_time: nowIso(),
+        created_at: nowIso(),
+      };
+      mockCheckIns.push(row);
+
+      // Đồng bộ `seats.check_in_status` — boarding pass đọc ghế này.
+      const seat = mockSeats.find(
+        (s) =>
+          String(s.booking_id) === row.booking_id && String(s.seat_number) === row.seat_number
+      );
+      if (seat) {
+        seat.check_in_status = 'checked_in';
+        seat.check_in_time = row.check_in_time;
+      }
+
+      return [row];
+    }
+
+    // `getCheckInStatusByBookingId` — trả về MỘT dòng tổng hợp.
+    if (q.includes('exists(select 1 from check_in')) {
+      const bookingId = String(values[0] ?? '');
+      const first = mockCheckIns.find((c) => String(c.booking_id) === bookingId);
+      return [
+        {
+          has_check_in: Boolean(first),
+          check_in_id: first?.id ?? null,
+          passenger_name: first?.passenger_name ?? null,
+          seat_number: first?.seat_number ?? null,
+          check_in_number: first?.check_in_number ?? null,
+          boarding_pass_number: first?.boarding_pass_number ?? null,
+          status: first?.status ?? null,
+          check_in_time: first?.check_in_time ?? null,
+        },
+      ];
+    }
+
     if (q.includes('from check_in')) {
       if (q.includes('where booking_id =')) {
         const raw = values[0];
@@ -1528,6 +1805,120 @@ function createMockSql(): SqlClient {
         return mockCheckIns.filter((c) => ids.includes(String(c.booking_id)));
       }
       return mockCheckIns;
+    }
+
+    // ── Thanh toán (`payments`) ──────────────────────────────────────────────
+    //
+    // `createPaymentAndConfirmBooking` chạy hai câu trong một transaction:
+    //   INSERT INTO payments (booking_id, method, status, amount, receipt_image, transfer_note)
+    //   UPDATE bookings SET status = $1, discount_code_id = $2, discount_amount = $3,
+    //                         receipt_image = $4, transfer_note = $5, updated_at = NOW()
+    //                WHERE id = $6
+    // rồi đọc lại:
+    //   SELECT * FROM payments WHERE booking_id = $1 ORDER BY created_at DESC LIMIT 1
+    //   SELECT * FROM bookings WHERE id = $1
+    if (q.includes('insert into payments')) {
+      const row: MockResult = {
+        id: mockUuid(),
+        booking_id: String(values[0] ?? ''),
+        method: String(values[1] ?? ''),
+        status: String(values[2] ?? 'completed'),
+        amount: Number(values[3] ?? 0) || 0,
+        receipt_image: values[4] ? String(values[4]) : null,
+        transfer_note: values[5] ? String(values[5]) : null,
+        created_at: nowIso(),
+        updated_at: nowIso(),
+      };
+      mockPayments.push(row);
+      return [row];
+    }
+
+    if (q.includes('from payments')) {
+      const bookingId = String(values[0] ?? '');
+      const rows = mockPayments
+        .filter((p) => String(p.booking_id) === bookingId)
+        .sort((a, b) => String(b.created_at ?? '').localeCompare(String(a.created_at ?? '')));
+      // `ORDER BY created_at DESC LIMIT 1` — chỉ câu đọc lại giao dịch mới nhất.
+      if (q.includes('limit 1')) return rows.slice(0, 1);
+      return rows;
+    }
+
+    // `UPDATE bookings SET status = …` — xác nhận đặt vé sau khi thanh toán.
+    if (q.includes('update bookings') && q.includes('set status =')) {
+      const status = String(values[0] ?? '');
+      const bookingId = String(values[5] ?? values[values.length - 1] ?? '');
+      const booking = mockBookings.find((b) => String(b.id) === bookingId);
+      if (!booking) return [];
+      booking.status = status;
+      if (values[1] !== undefined) booking.discount_code_id = values[1];
+      if (values[2] !== undefined) booking.discount_amount = values[2];
+      if (values[3] !== undefined) booking.receipt_image = values[3];
+      if (values[4] !== undefined) booking.transfer_note = values[4];
+      booking.updated_at = nowIso();
+      return [booking];
+    }
+
+    // ── Đổi ghế sau khi đặt vé (`booking_seat_changes` + `seats`) ────────────
+    if (q.includes('insert into booking_seat_changes')) {
+      const row: MockResult = {
+        id: mockUuid(),
+        booking_id: String(values[0] ?? ''),
+        passenger_id: String(values[1] ?? ''),
+        old_seat: values[2] ? String(values[2]) : null,
+        new_seat: String(values[3] ?? ''),
+        price_delta: Number(values[4] ?? 0) || 0,
+        created_at: nowIso(),
+      };
+      mockSeatChanges.push(row);
+      return [row];
+    }
+
+    // `UPDATE seats SET status = …` — giải phóng ghế cũ / chiếm ghế mới.
+    if (q.includes('update seats')) {
+      const status = q.includes("'available'") ? 'available' : 'reserved';
+      const bookingId = String(values[0] ?? '');
+      const seatNumber = String(values[1] ?? '');
+      const seat = mockSeats.find(
+        (s) => String(s.booking_id) === bookingId && String(s.seat_number) === seatNumber
+      );
+      if (!seat) return [];
+      seat.status = status;
+      if (status === 'available') {
+        seat.check_in_status = 'not_checked_in';
+        seat.check_in_time = null;
+      }
+      // `price = $x` (ghế mới) đứng sau `WHERE booking_id = $x AND seat_number = $y`.
+      const priceIdx = q.indexOf('price =');
+      if (priceIdx >= 0 && values.length > 2) {
+        seat.price = Number(values[values.length - 1] ?? seat.price) || seat.price;
+      }
+      return [{ id: seat.id }];
+    }
+
+    // `INSERT INTO seats …` — ghế mới được tạo khi khách đổi ghế mà đơn đặt
+    // vé ban đầu không chọn ghế.
+    if (q.includes('insert into seats')) {
+      const booking = mockBookings.find((b) => String(b.id) === String(values[0] ?? ''));
+      if (!booking) return [];
+      const row: MockResult = {
+        id: mockUuid(),
+        booking_id: booking.id,
+        flight_id: booking.flight_id,
+        seat_number: String(values[1] ?? ''),
+        status: 'reserved',
+        price: Number(values[2] ?? 0) || 0,
+        check_in_status: 'not_checked_in',
+        check_in_time: null,
+        created_at: nowIso(),
+      };
+      mockSeats.push(row);
+      return [row];
+    }
+
+    // `SELECT … FROM seats WHERE booking_id = $1` — ghế đã bán của booking.
+    if (q.includes('from seats')) {
+      const bookingId = String(values[0] ?? '');
+      return mockSeats.filter((s) => String(s.booking_id) === bookingId);
     }
 
     return null;
@@ -1564,8 +1955,121 @@ function createMockSql(): SqlClient {
     });
   };
 
+  /**
+   * Áp điều kiện lọc của `flights` trong mock.
+   *
+   * `getAllFlights` dựng `WHERE 1=1 AND from_code = $1 AND to_code = $2 AND
+   * class = $3 AND (flight_no ILIKE $4 OR from_code ILIKE $4 OR to_code ILIKE
+   * $4)` rồi gọi qua `sql.query`; `searchFlights` dùng tagged template nên
+   * placeholder là `?` và điều kiện là `depart_time >= ? AND depart_time <= ?`.
+   *
+   * Vì vậy chỗ đọc tham số phải theo DÁNG placeholder, không đếm tuần tự:
+   * - `$n` ⇒ `values[n - 1]` (một tham số có thể dùng nhiều lần, như `$4` ở
+   *   ILIKE trên),
+   * - `?` ⇒ tham số kế tiếp theo thứ tự xuất hiện.
+   */
+  const matchFlightWhere = (
+    flight: MockResult,
+    wherePart: string,
+    values: unknown[]
+  ): boolean => {
+    if (!wherePart) return true;
+
+    let positional = 0;
+    /** Đọc giá trị của placeholder tại vị trí `raw` trong `wherePart`. */
+    const readValue = (raw: string): unknown => {
+      if (raw === '?') {
+        const value = values[positional];
+        positional += 1;
+        return value;
+      }
+      const n = Number(raw.replace('$', ''));
+      return values[n - 1];
+    };
+
+    // Điều kiện bằng trên cột: `from_code = ?`, `class = $3`, …
+    const eqRegex = /\b(from_code|to_code|class)\s*(=|<>|!=)\s*(\$\d+|\?)/g;
+    for (const m of wherePart.matchAll(eqRegex)) {
+      const value = readValue(m[3]);
+      const column = m[1];
+      if (m[2] === '=') {
+        if (String(flight[column] ?? '') !== String(value ?? '')) return false;
+      } else if (String(flight[column] ?? '') === String(value ?? '')) {
+        return false;
+      }
+    }
+
+    // `depart_time >= ? AND depart_time <= ?`
+    const timeRegex = /depart_time\s*(>=|<=|>|<)\s*(\$\d+|\?)/g;
+    for (const m of wherePart.matchAll(timeRegex)) {
+      const operator = m[1];
+      const value = String(readValue(m[2]) ?? '');
+      const left = new Date(String(flight.depart_time ?? '')).getTime();
+      const right = new Date(value).getTime();
+      if (Number.isNaN(left) || Number.isNaN(right)) continue;
+      if (operator === '>=' && !(left >= right)) return false;
+      if (operator === '<=' && !(left <= right)) return false;
+      if (operator === '>' && !(left > right)) return false;
+      if (operator === '<' && !(left < right)) return false;
+    }
+
+    // `flight_no ILIKE $4 OR from_code ILIKE $4 OR to_code ILIKE $4`
+    if (wherePart.includes('ilike')) {
+      const first = wherePart.match(/ilike\s*(\$\d+|\?)/);
+      if (first) {
+        const pattern = String(readValue(first[1]) ?? '%');
+        const needle = pattern.replace(/%/g, '').toLowerCase();
+        const haystack = [flight.flight_no, flight.from_code, flight.to_code]
+          .map((v) => String(v ?? '').toLowerCase())
+          .join(' ');
+        if (needle && !haystack.includes(needle)) return false;
+      }
+    }
+
+    // `available > 0` và `status IN ('active','delayed')` — điều kiện hằng, không
+    // dùng tham số.
+    if (/\bavailable\s*>\s*0/.test(wherePart)) {
+      if (Number(flight.available ?? 0) <= 0) return false;
+    }
+    if (wherePart.includes('status in')) {
+      const allowed = [...wherePart.matchAll(/'([a-z_]+)'/g)].map((m) => m[1]);
+      if (allowed.length > 0 && !allowed.includes(String(flight.status ?? ''))) return false;
+    }
+
+    return true;
+  };
+
   const runFlightAndSeatQuery = (query: string, values: unknown[]): MockResult[] | null => {
     const q = query.toLowerCase();
+
+    // ── `UPDATE flights SET …` (admin đổi trạng thái chuyến bay) ────────────
+    //
+    // `updateFlight` dựng câu SQL động: `SET status = $1, gate = $2, … WHERE
+    // id = $n RETURNING *`. Mock phải áp đúng các cột được set, nếu không thì
+    // bảng quản trị "lưu" trạng thái `delayed` mà không có gì thay đổi — và
+    // luồng SSE (`/api/sse/trang-thai-chuyen-bay`) sẽ không bao giờ báo trễ.
+    if (q.includes('update flights')) {
+      const flightId = String(values[values.length - 1] ?? '');
+      const flight = mockFlights.find((f) => String(f.id) === flightId);
+      if (!flight) return [];
+
+      // Cột nào được set → tham số tương ứng, theo đúng thứ tự trong câu.
+      const setPart = q.slice(q.indexOf('set'), q.indexOf('where id ='));
+      const columns = [...setPart.matchAll(/([a-z_]+)\s*=\s*\$\d+/g)].map((m) => m[1]);
+      columns.forEach((col, index) => {
+        if (col === 'updated_at') return;
+        (flight as Record<string, unknown>)[col] = values[index];
+      });
+      flight.updated_at = nowIso();
+      return [flight];
+    }
+
+    // ── `SELECT COUNT(*) as total FROM flights` (đếm tổng cho phân trang) ───
+    if (q.includes('count(*)') && q.includes('from flights')) {
+      const wherePart = q.slice(q.indexOf('where'));
+      const filtered = mockFlights.filter((f) => matchFlightWhere(f, wherePart, values, 0));
+      return [{ total: filtered.length }];
+    }
 
     if (q.includes('from flights')) {
       if (q.includes('where id =')) {
@@ -1578,7 +2082,34 @@ function createMockSql(): SqlClient {
         const match = mockFlights.find((f) => String(f.flight_no).toUpperCase() === no);
         return match ? [match] : [];
       }
-      return mockFlights;
+
+      // `getAllFlights` (bảng quản trị) và `searchFlights` (trang tìm kiếm)
+      // đều lọc theo chặng / hạng / khoảng ngày bay. Không lọc thì bảng quản
+      // trị hiện mọi chuyến bay và trang tìm kiếm hiện chuyến bay của ngày khác
+      // — tức E2E sẽ khẳng định sai thứ nó cần kiểm chứng.
+      const whereIdx = q.indexOf('where');
+      const hasWhere = whereIdx >= 0;
+      const wherePart = hasWhere ? q.slice(whereIdx) : '';
+      const filtered = mockFlights.filter((f) => matchFlightWhere(f, wherePart, values, 0));
+
+      // `LIMIT $n OFFSET $m` — hai tham số cuối của `getAllFlights`.
+      if (hasWhere && /limit\s+\$\d+\s+offset\s+\$\d+/.test(q)) {
+        const limit = Number(values[values.length - 2] ?? filtered.length) || filtered.length;
+        const offset = Number(values[values.length - 1] ?? 0) || 0;
+        const sorted = [...filtered].sort((a, b) =>
+          String(b.depart_time ?? '').localeCompare(String(a.depart_time ?? ''))
+        );
+        return sorted.slice(offset, offset + limit);
+      }
+
+      // `ORDER BY depart_time ASC` (trang tìm kiếm).
+      if (q.includes('order by depart_time asc')) {
+        return [...filtered].sort((a, b) =>
+          String(a.depart_time ?? '').localeCompare(String(b.depart_time ?? ''))
+        );
+      }
+
+      return filtered;
     }
 
     if (q.includes('from seat_locks')) {
@@ -1644,9 +2175,15 @@ function createMockSql(): SqlClient {
     }
 
     if (q.includes('from bank_accounts')) {
+      // Tên cột chuẩn (`bank_name`, `account_number`, `account_holder`) được
+      // trả SONG SONG với alias cũ (`admin_bank_name`, …) vì hai bên đọc khác
+      // nhau: `PaymentClient` đọc tên cột chuẩn, còn route cũ đọc alias.
       return [
         {
           id: 'bank-default-1',
+          bank_name: 'VIB',
+          account_number: '002704060049968',
+          account_holder: 'CONG TY CP HANG KHONG VIETJET',
           admin_bank_name: 'VIB',
           admin_bank_account_number: '002704060049968',
           admin_bank_account_holder: 'CONG TY CP HANG KHONG VIETJET',
@@ -1814,6 +2351,7 @@ function createMockSql(): SqlClient {
       query: async <T = SqlRow>(text: string, values: unknown[] = []): Promise<T[]> => {
         console.info('[MOCK SQL:query]', text, values);
         return (runSeatLockQuery(text, values) ??
+          runFlightAndSeatQuery(text, values) ??
           runChatQuery(text, values) ??
           runBookingQuery(text, values) ??
           runAgencyAndDiscountQuery(text, values) ??
@@ -1826,6 +2364,13 @@ function createMockSql(): SqlClient {
           for (const q of queries) {
             if (typeof q === 'function') {
               results.push(await q());
+            } else if (q && typeof (q as PromiseLike<unknown>).then === 'function') {
+              // Neon batch API trả về một Promise cho MỖI câu trong
+              // `transaction([...])`. Bản mock trước đây chỉ chạy được
+              // callback và bỏ qua promise — nên `createPaymentAndConfirmBooking`
+              // trong mock mode KHÔNG ghi giao dịch và KHÔNG xác nhận booking:
+              // trang thanh toán báo thành công nhưng dữ liệu không đổi.
+              results.push(await q);
             } else {
               results.push([]);
             }

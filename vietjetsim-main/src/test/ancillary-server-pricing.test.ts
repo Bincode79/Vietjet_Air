@@ -18,6 +18,7 @@ const dbMocks = vi.hoisted(() => ({
   createUser: vi.fn(),
   findUserByEmail: vi.fn(),
   getActiveBankAccounts: vi.fn(),
+  getSeatLocksForSeats: vi.fn(async () => []),
 }));
 
 vi.mock('@/lib/db', () => dbMocks);

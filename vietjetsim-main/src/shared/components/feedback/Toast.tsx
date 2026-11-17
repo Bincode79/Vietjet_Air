@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 
 export type ToastType = 'success' | 'error' | 'warning' | 'info' | 'promo';
 
@@ -284,20 +285,25 @@ export interface ToastContainerProps {
 }
 
 const POSITION_CLASSES: Record<NonNullable<ToastContainerProps['position']>, string> = {
-  'top-right': 'top-3 sm:top-4 right-3 sm:right-4 left-3 sm:left-auto items-center sm:items-end',
-  'top-left': 'top-3 sm:top-4 left-3 sm:left-4 right-3 sm:right-auto items-center sm:items-start',
+  'top-right': 'top-[108px] sm:top-[88px] right-3 sm:right-6 left-3 sm:left-auto items-center sm:items-end',
+  'top-left': 'top-[108px] sm:top-[88px] left-3 sm:left-6 right-3 sm:right-auto items-center sm:items-start',
   'bottom-right': 'bottom-4 right-3 sm:right-4 left-3 sm:left-auto items-center sm:items-end',
   'bottom-left': 'bottom-4 left-3 sm:left-4 right-3 sm:right-auto items-center sm:items-start',
-  'top-center': 'top-3 sm:top-4 left-1/2 -translate-x-1/2 items-center px-2',
+  'top-center': 'top-[108px] sm:top-[88px] left-1/2 -translate-x-1/2 items-center px-2',
   'bottom-center': 'bottom-4 left-1/2 -translate-x-1/2 items-center px-2',
 };
 
 export function ToastContainer({ toasts, onDismiss, position = 'top-right' }: ToastContainerProps) {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   if (toasts.length === 0) return null;
 
-  return (
+  const content = (
     <div
-      className={`fixed z-[9999] flex flex-col gap-2.5 pointer-events-none ${POSITION_CLASSES[position]}`}
+      className={`fixed z-[99999] flex flex-col gap-2.5 pointer-events-none ${POSITION_CLASSES[position]}`}
       aria-label="Thông báo"
     >
       {toasts.map((toast) => (
@@ -307,6 +313,12 @@ export function ToastContainer({ toasts, onDismiss, position = 'top-right' }: To
       ))}
     </div>
   );
+
+  if (typeof document !== 'undefined' && mounted) {
+    return createPortal(content, document.body);
+  }
+
+  return content;
 }
 
 export default ToastNotification;

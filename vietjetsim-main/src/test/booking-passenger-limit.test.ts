@@ -39,6 +39,7 @@ vi.mock('@/lib/db', () => ({
   createUser: vi.fn(),
   findUserByEmail: vi.fn(),
   getActiveBankAccounts: vi.fn(async () => []),
+  getSeatLocksForSeats: vi.fn(async () => []),
 }));
 
 vi.mock('@/lib/mail', () => ({

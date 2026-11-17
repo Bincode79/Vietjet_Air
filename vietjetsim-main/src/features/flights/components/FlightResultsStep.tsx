@@ -184,6 +184,10 @@ export interface FlightResultsStepProps {
   child?: string;
   /** Infants under 2 from the URL, charged a lap fare and not seated. */
   infant?: string;
+  /** Leg being selected: outbound (chiều đi) or inbound (chiều về). */
+  leg?: 'outbound' | 'inbound';
+  /** Whether this search is for a round-trip itinerary. */
+  isRoundTrip?: boolean;
 }
 
 const WEEKDAY_LABELS = ['Chủ nhật', 'Thứ hai', 'Thứ ba', 'Thứ tư', 'Thứ năm', 'Thứ sáu', 'Thứ bảy'];
@@ -459,6 +463,8 @@ export default function FlightResultsStep({
   onContinue: _onContinue,
   search,
   onDateChange,
+  leg = 'outbound',
+  isRoundTrip = false,
   // `pax` / `child` / `infant` vẫn nằm trong `FlightResultsStepProps` (hợp đồng
   // public của component) nhưng KHÔNG còn được dùng ở đây: thanh "Tổng tiền"
   // dính đáy do `FlightBookingResultsWrapper` render, và nó đã tự tính tổng từ
@@ -688,36 +694,7 @@ export default function FlightResultsStep({
       });
   }, [filters, sortBy, searchQuery, flights]);
 
-  // Pre-select first available flight silently if needed for flow, but do NOT auto-expand details accordion
-  const [initialPreselected, setInitialPreselected] = useState(false);
-  useEffect(() => {
-    if (filtered.length > 0 && !initialPreselected) {
-      setInitialPreselected(true);
-      const firstFlight = filtered[0];
-      if (firstFlight) {
-        setSelectedFareClassMap((prev) => ({
-          ...prev,
-          [firstFlight.flightNo]: 'eco',
-        }));
-        onSelect(
-          {
-            ...firstFlight,
-            price: firstFlight.price,
-            class: 'economy',
-            fareClass: 'eco',
-          },
-          false
-        );
-        const fares = {
-          eco: firstFlight.price,
-          deluxe: Math.round(firstFlight.price * 1.3),
-          skyboss: Math.round(firstFlight.price * 1.7),
-          business: Math.round(firstFlight.price * 2.77),
-        };
-        onFlightSelect?.(firstFlight.flightNo, 'eco', firstFlight.price, fares, firstFlight);
-      }
-    }
-  }, [filtered, initialPreselected, onSelect, onFlightSelect]);
+  // User manually selects flight fare card; no premature auto-selection before user intent.
 
   return (
     <div className="w-full relative items-start pb-16 sm:pb-14">
@@ -1001,7 +978,29 @@ export default function FlightResultsStep({
       <div className="w-full min-w-0 space-y-4">
         {/* Route board — clean white card with opposing red and gray arrows matching sample */}
         {search?.from && search?.to && (
-          <div className="rounded-vj bg-white border border-gray-100 shadow-xs px-2.5 py-2 sm:px-8 sm:py-3.5 mb-2 mx-auto w-full max-w-xs sm:max-w-lg">
+          <div className="rounded-vj bg-white border border-gray-100 shadow-xs px-2.5 py-2.5 sm:px-8 sm:py-3.5 mb-2 mx-auto w-full max-w-xs sm:max-w-lg">
+            {/* Header chip: CHIỀU ĐI / CHIỀU VỀ */}
+            <div className="flex items-center justify-center mb-1.5 sm:mb-2">
+              <span
+                data-testid="flight-leg-badge"
+                className={`inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full text-xs font-bold font-koho uppercase tracking-wide ${
+                  leg === 'inbound'
+                    ? 'bg-amber-100 text-amber-800 border border-amber-300'
+                    : 'bg-red-50 text-primary border border-red-200'
+                }`}
+              >
+                <span
+                  className={`w-2 h-2 rounded-full ${
+                    leg === 'inbound' ? 'bg-amber-500' : 'bg-primary'
+                  } animate-pulse`}
+                />
+                {leg === 'inbound'
+                  ? 'Chuyến bay chiều về'
+                  : isRoundTrip
+                    ? 'Chuyến bay chiều đi'
+                    : 'Chuyến bay chiều đi'}
+              </span>
+            </div>
             <div className="flex items-center justify-between sm:justify-center gap-1 sm:gap-14">
               <div className="text-center min-w-0 flex-1 sm:flex-initial">
                 <div className="text-xl sm:text-3xl font-black text-gray-950 font-koho leading-none tracking-tight">

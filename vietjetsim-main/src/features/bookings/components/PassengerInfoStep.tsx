@@ -58,8 +58,8 @@ function createBlankPassenger(type: PassengerType = 'adult'): Passenger {
  */
 const fieldLabelClass = 'block text-base font-medium text-vj-currency-gray mb-1 font-koho';
 
-/** Bề rộng/cao của radio và checkbox theo số đo site thật (13/11/2026). */
-const RADIO_CLASS = 'w-[42px] h-[42px] cursor-pointer accent-primary shrink-0';
+/** Bề rộng/cao của radio và checkbox theo chuẩn form hiện đại Vietjet. */
+const RADIO_CLASS = 'w-[18px] h-[18px] cursor-pointer accent-primary shrink-0';
 const CHECKBOX_CLASS = 'w-[14px] h-[14px] rounded border-gray-300 accent-primary shrink-0';
 
 /**

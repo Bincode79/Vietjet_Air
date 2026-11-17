@@ -3528,11 +3528,13 @@ h6 {
   background-image: var(--vj-popup-body-overlay);
 }
 
-/* Khung form SkyID 500×208 — tương ứng iframe của site thật. */
+/* Khung form SkyID — tự giãn theo nội dung form, không bó cứng 208px */
 .vj-popup-viewport {
   width: var(--vj-popup-viewport-width);
   max-width: calc(100% - 32px);
-  height: var(--vj-popup-viewport-height);
+  min-height: var(--vj-popup-viewport-height);
+  max-height: calc(100vh - 180px);
+  height: auto;
   overflow-y: auto;
   overscroll-behavior: contain;
 }
@@ -4885,6 +4887,12 @@ select option {
   background: rgba(255, 255, 255, 0.98);
   z-index: 20;
   animation: fadeIn 0.3s ease;
+}
+
+.vj-skyid-success-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .vj-skyid-success-circle {
