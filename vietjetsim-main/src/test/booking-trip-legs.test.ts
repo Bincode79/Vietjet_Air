@@ -66,10 +66,14 @@ describe('POST /api/dat-ve — liên kết 2 chặng khứ hồi bằng trip_id'
     getFlightByIdMock.mockImplementation(async (id: string) => ({
       id,
       flight_no: id === 'flight-out' ? 'VJ301' : 'VJ302',
-      from_code: 'HAN',
-      to_code: 'SGN',
-      depart_time: '2026-03-20T06:00:00Z',
-      arrive_time: '2026-03-20T08:25:00Z',
+      ...(id === 'flight-out'
+        ? // Chặng đi HAN → SGN.
+          { from_code: 'HAN', to_code: 'SGN' }
+        : // Chặng về phải là tuyến đảo và khởi hành sau khi chặng đi hạ cánh
+          // (quy tắc route chặn ở API kể từ khi validate khứ hồi).
+          { from_code: 'SGN', to_code: 'HAN' }),
+      depart_time: id === 'flight-out' ? '2026-03-20T06:00:00Z' : '2026-03-27T10:00:00Z',
+      arrive_time: id === 'flight-out' ? '2026-03-20T08:25:00Z' : '2026-03-27T12:25:00Z',
       price: 899000,
       economy_price: 899000,
       business_price: 2490000,

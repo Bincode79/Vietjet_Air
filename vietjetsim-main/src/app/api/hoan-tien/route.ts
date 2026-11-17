@@ -6,6 +6,7 @@ import {
   createRefund,
   isRefundFeatureEnabled,
   getBookingCashPaid,
+  getTripById,
 } from '@/lib/db';
 import { parsePaginationParams } from '@/lib/pagination';
 
@@ -114,12 +115,24 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Cannot refund more than the booking was actually worth.
-    if (refundAmount > booking.total_price) {
+    // Cannot refund more than the booking was actually worth. A round trip is
+    // TWO `bookings` rows sharing one `trip_id` (migration 045): the whole
+    // price sits on the outbound row and the inbound row reads 0 — so the cap
+    // and the cash-paid ceiling below are summed over the trip. Capping a leg
+    // at its own row made a refund filed from the inbound PNR impossible
+    // ("not above 0 VND") while the same trip refunded in full from the
+    // outbound one.
+    const trip = booking.trip_id ? await getTripById(booking.trip_id) : null;
+    const tripLegs = trip?.legs?.length ? trip.legs : null;
+
+    const refundCap = tripLegs
+      ? tripLegs.reduce((sum, leg) => sum + (Number(leg.totalPrice) || 0), 0)
+      : Number(booking.total_price) || 0;
+    if (refundAmount > refundCap) {
       return NextResponse.json(
         {
           error: 'Refund amount too high',
-          message: `Số tiền hoàn không được vượt quá ${booking.total_price.toLocaleString(
+          message: `Số tiền hoàn không được vượt quá ${refundCap.toLocaleString(
             'vi-VN'
           )} VND (tổng tiền đặt chỗ).`,
         },
@@ -131,8 +144,20 @@ export async function POST(request: NextRequest) {
     // collects 0đ, so asking for the full fare back would be a cash payout for
     // a ticket the customer never paid cash for. The cap only bites once a
     // payment has been completed; a pending bank transfer has not moved money
-    // yet and must still be refundable.
-    const { cashPaid, hasCompletedPayment } = await getBookingCashPaid(booking.id);
+    // yet and must still be refundable. Payments attach to the leg that was
+    // paid — normally the outbound row — so a ticket filed from the inbound
+    // PNR must look at the whole trip before concluding nothing was collected.
+    let cashPaid = 0;
+    let hasCompletedPayment = false;
+    if (tripLegs) {
+      for (const leg of tripLegs) {
+        const paid = await getBookingCashPaid(leg.bookingId);
+        cashPaid += paid.cashPaid;
+        hasCompletedPayment = hasCompletedPayment || paid.hasCompletedPayment;
+      }
+    } else {
+      ({ cashPaid, hasCompletedPayment } = await getBookingCashPaid(booking.id));
+    }
     if (hasCompletedPayment && cashPaid <= 0) {
       return NextResponse.json(
         {

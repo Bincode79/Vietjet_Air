@@ -154,21 +154,42 @@ export async function PATCH(request: NextRequest) {
     if (status === 'approved' || status === 'completed') {
       try {
         const results = await sql`
-          SELECT r.booking_id, r.amount, b.user_id
+          SELECT r.booking_id, r.amount, b.user_id, b.trip_id
           FROM refund_requests r
           JOIN bookings b ON r.booking_id = b.id
           WHERE r.id = ${refundId}
         `;
         const refundRecord = results[0];
         if (refundRecord?.booking_id) {
-          // 1. Release seats (booked seats for this booking become available again)
-          await sql`DELETE FROM seats WHERE booking_id = ${refundRecord.booking_id}`;
+          // The ticket names one booking, but a round trip is TWO rows sharing
+          // one `trip_id` (migration 045). Everything below therefore reaches
+          // the whole trip: releasing only the matched row left the inbound
+          // leg confirmed with its seats held and its PNR scannable after the
+          // money was back. On a single-leg booking `trip_id` is NULL, the
+          // `trip_id = …::uuid` comparison matches nothing, and the explicit
+          // id match keeps the statement working unchanged.
+          await sql`
+            DELETE FROM seats
+            WHERE booking_id IN (
+              SELECT id FROM bookings
+              WHERE id = ${refundRecord.booking_id}
+                 OR trip_id = ${refundRecord.trip_id ?? null}::uuid
+            )
+          `;
 
-          // 2. If the booking was paid with the wallet, refund the money back into it.
-          //    Without this step the money would vanish even though the seat is released.
+          // If the booking was paid with the wallet, refund the money back into it.
+          // Without this step the money would vanish even though the seat is released.
+          // The payment sits on whichever leg was actually paid — the ticket may
+          // have been filed from the other leg's PNR — so the lookup runs across
+          // the trip and takes the newest completed payment.
           const paymentResults = await sql`
             SELECT method, amount FROM payments
-            WHERE booking_id = ${refundRecord.booking_id} AND status = 'completed'
+            WHERE booking_id IN (
+                SELECT id FROM bookings
+                WHERE id = ${refundRecord.booking_id}
+                   OR trip_id = ${refundRecord.trip_id ?? null}::uuid
+              )
+              AND status = 'completed'
             ORDER BY created_at DESC LIMIT 1
           `;
           const payment = paymentResults[0];
@@ -218,8 +239,19 @@ export async function PATCH(request: NextRequest) {
             }
           }
 
-          // 3. Mark booking as refunded
-          await updateBookingStatus(refundRecord.booking_id, 'refunded');
+          // 3. Mark every leg of the trip as refunded. `updateBookingStatus`
+          //    refuses to overwrite `cancelled`/`refunded`, so re-running an
+          //    approval only no-ops the rows already settled.
+          if (refundRecord.trip_id) {
+            const legRows = await sql`
+              SELECT id FROM bookings WHERE trip_id = ${refundRecord.trip_id}::uuid
+            `;
+            for (const leg of legRows) {
+              await updateBookingStatus(String(leg.id), 'refunded');
+            }
+          } else {
+            await updateBookingStatus(refundRecord.booking_id, 'refunded');
+          }
           const pointSummary =
             pointsRefunded > 0
               ? `, ${pointsRefunded.toLocaleString('vi-VN')} SkyPoint đã được hoàn lại`

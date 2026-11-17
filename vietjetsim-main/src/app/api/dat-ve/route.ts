@@ -261,6 +261,35 @@ export async function POST(request: NextRequest) {
           { status: 409 }
         );
       }
+      // The return leg must actually be a return: the reverse route, departing
+      // no earlier than the outbound lands. The search page constrains both
+      // through its URL, but the API trusts `return_flight_id` — a hand-written
+      // request could otherwise weld two one-way flights into a "trip" that
+      // flies the customer in circles.
+      if (returnFlight.from_code !== flight.to_code || returnFlight.to_code !== flight.from_code) {
+        return NextResponse.json(
+          {
+            error: 'Return flight route mismatch',
+            message: 'Chuyến bay về phải bay tuyến ngược với chuyến bay đi.',
+          },
+          { status: 400 }
+        );
+      }
+      const outboundArriveAt = new Date(flight.arrive_time).getTime();
+      const returnDepartAt = new Date(returnFlight.depart_time).getTime();
+      if (
+        Number.isFinite(outboundArriveAt) &&
+        Number.isFinite(returnDepartAt) &&
+        returnDepartAt < outboundArriveAt
+      ) {
+        return NextResponse.json(
+          {
+            error: 'Return flight departs before the outbound lands',
+            message: 'Chuyến bay về phải khởi hành sau khi chuyến bay đi hạ cánh.',
+          },
+          { status: 400 }
+        );
+      }
       const returnFareClass = FARE_CLASSES.includes(requestedReturnFareClass as FareClassId)
         ? (requestedReturnFareClass as FareClassId)
         : 'eco';
@@ -274,6 +303,18 @@ export async function POST(request: NextRequest) {
       sanitizedReturnSeats = Array.isArray(return_seats)
         ? return_seats.filter((s): s is string => typeof s === 'string' && s.trim().length > 0)
         : [];
+      // The outbound leg enforces this above; the return leg must too, or a
+      // client could attach seats nobody occupies (each one charged through
+      // `getSeatCharge`) or drop a seated passenger's seat silently.
+      if (
+        sanitizedReturnSeats.length > 0 &&
+        sanitizedReturnSeats.length !== seatedPassengers.length
+      ) {
+        return NextResponse.json(
+          { error: 'Number of return seats must match number of seated passengers' },
+          { status: 400 }
+        );
+      }
       returnSeatRows = sanitizedReturnSeats.map((seat) => ({
         seat_number: seat,
         price: getSeatCharge(seat),
