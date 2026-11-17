@@ -34,6 +34,17 @@ const effectiveJwtSecret = JWT_SECRET || 'dev-secret-key-do-not-use-in-productio
 // proxy runs outside the route context where `next/headers` is available.
 const CSRF_COOKIE_NAME = 'csrf_token';
 
+// Must match `SEAT_SESSION_COOKIE` in `@/lib/seat-session`; duplicated for the
+// same reason. This cookie is the credential that proves a seat lock belongs
+// to the caller — it is issued HERE, by the server, and the client cannot
+// read or forge it (httpOnly).
+const SEAT_SESSION_COOKIE = 'vj_seat_session';
+
+// 32 random bytes, hex-encoded — the same width the CSRF bootstrap below
+// uses. `crypto.getRandomValues` is available in the Edge runtime.
+const SEAT_SESSION_BYTES = 32;
+const SEAT_SESSION_MAX_AGE = 60 * 60 * 12; // 12 hours
+
 // `/api/csrf` exists solely to issue that cookie, so the proxy must stay out of
 // its responses — see the bootstrap block at the end of `proxy()`.
 const CSRF_ISSUE_PATH = '/api/csrf';
@@ -283,6 +294,30 @@ export async function proxy(request: NextRequest) {
       sameSite: 'strict',
       path: '/',
       maxAge: 60 * 60 * 24,
+    });
+  }
+
+  // ─── Phiên giữ ghế ───────────────────────────────────────────────────────
+  //
+  // Cookie này là credential chứng minh "tôi là phiên đang giữ ghế này".
+  // Trước đây client tự sinh `session_id` trong `sessionStorage` và gửi lên
+  // — tức là tự khai quyền sở hữu, không có bằng chứng nào. Giờ server cấp
+  // giá trị, `httpOnly` nên JavaScript không đọc được, và `sameSite: strict`
+  // nên một trang khác không thể khiến trình duyệt gửi nó đi.
+  //
+  // Cấp cho MỌI request (kể cả API), vì khách chọn ghế có thể bắt đầu từ
+  // một trang tĩnh rồi mới điền hành khách — và người đã có cookie thì giữ
+  // nguyên cookie cũ, nên phiên giữ chỗ không bị cắt giữa chừng.
+  if (!request.cookies.get(SEAT_SESSION_COOKIE)?.value) {
+    const bytes = new Uint8Array(SEAT_SESSION_BYTES);
+    crypto.getRandomValues(bytes);
+    const session = Array.from(bytes, (b) => b.toString(16).padStart(2, '0')).join('');
+    response.cookies.set(SEAT_SESSION_COOKIE, session, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      path: '/',
+      maxAge: SEAT_SESSION_MAX_AGE,
     });
   }
 

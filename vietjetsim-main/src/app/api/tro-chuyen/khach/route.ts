@@ -2,9 +2,13 @@ import { NextRequest, NextResponse } from 'next/server';
 import { randomUUID } from 'crypto';
 import { createUser, findUserByEmail, getOrCreateConversation, sendChatMessage } from '@/lib/db';
 import { generateTokens, hashPassword, setAuthCookiesOnResponse, type User } from '@/lib/auth';
+import { rateLimit } from '@/lib/rate-limit';
 
 export async function POST(request: NextRequest) {
   try {
+    const limited = rateLimit(request, { windowMs: 60_000, maxRequests: 30 });
+    if (limited) return limited;
+
     const body = await request.json().catch(() => ({}));
     const fullName = String(body.fullName || '').trim();
     const phone = String(body.phone || '')

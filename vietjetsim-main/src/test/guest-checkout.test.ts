@@ -61,6 +61,9 @@ vi.mock('@/lib/db', async () => {
     findUserByEmail: vi.fn().mockResolvedValue(null),
     createUser: vi.fn().mockResolvedValue(mockUser),
     createBooking: vi.fn().mockResolvedValue(mockBooking),
+    // `/api/dat-ve` checks `seat_locks` before creating the booking; without
+    // this export the route throws and every seated request answers 500.
+    getSeatLocksForSeats: vi.fn().mockResolvedValue([]),
     getFlightById: vi.fn().mockResolvedValue({
       id: 'flight-1',
       flight_number: 'VJ123',

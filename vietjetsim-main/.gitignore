@@ -43,6 +43,8 @@ database-backup/*.sql
 # Optional: if using testing tools
 coverage/
 jest-test-results.json
+test-results/
+.playwright/
 
 # Optional: if using IDEs
 .vscode/

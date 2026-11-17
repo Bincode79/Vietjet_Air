@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
 import { verifyAdminRequest } from '@/lib/admin-auth';
+import { writeAuditLog } from '@/lib/db';
 import { getApiErrorMessage } from '@/shared/services';
 
 // NOTE: `path.resolve(process.cwd())` here and in `getSafePath()` makes the
@@ -148,7 +149,7 @@ export async function GET(req: NextRequest) {
 
 // POST: Save file content
 export async function POST(req: NextRequest) {
-  const { error, response } = await verifyAdminRequest(req, 'system:config');
+  const { error, response, payload } = await verifyAdminRequest(req, 'system:config');
   if (error) return response;
 
   try {
@@ -163,6 +164,20 @@ export async function POST(req: NextRequest) {
     }
 
     fs.writeFileSync(safePath, content, 'utf8');
+
+    // Ghi audit log cho thao tác chỉnh sửa file qua visual editor
+    await writeAuditLog({
+      adminId: payload.userId,
+      adminEmail: payload.email,
+      action: 'edit_editor_file',
+      targetType: 'file',
+      targetId: filePath,
+      detailsJson: JSON.stringify({ path: filePath }),
+      status: 'success',
+      ipAddress: req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || undefined,
+      userAgent: req.headers.get('user-agent') || undefined,
+    }).catch((logError) => console.error('[EDITOR-AUDIT] failed to write audit log:', logError));
+
     return NextResponse.json({ ok: true, message: 'Saved successfully', path: filePath });
   } catch (err) {
     return NextResponse.json(

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Flight } from '@/features/bookings/types/booking-flow';
 import { getSeatCharge } from '@/features/bookings/pricing';
 import { RiCloseLine } from 'react-icons/ri';
@@ -41,18 +41,13 @@ export default function SeatSelectionDrawer({
   const [lockedSeats, setLockedSeats] = useState<Set<string>>(new Set());
   const [holdSecondsLeft, setHoldSecondsLeft] = useState(HOLD_TIMEOUT_SECONDS);
   const [isLocking, setIsLocking] = useState(false);
-  const sessionIdRef = useRef<string>('');
 
-  // Get or create session ID for seat locking
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    let sid = sessionStorage.getItem('vietjet_seat_session');
-    if (!sid) {
-      sid = `seat_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
-      sessionStorage.setItem('vietjet_seat_session', sid);
-    }
-    sessionIdRef.current = sid;
-  }, []);
+  // Ghế được giữ bằng cookie `vj_seat_session` do SERVER cấp (httpOnly), nên
+  // client không có (và không cần) mã phiên nào. `sessionIdRef` trước đây sinh
+  // một chuỗi ngẫu nhiên trong `sessionStorage` và gửi lên cùng mọi yêu cầu
+  // `/api/ghe/khoa` — nhưng server đã bỏ đọc trường đó từ lâu (xem
+  // `src/lib/seat-session.ts`), nên nó chỉ làm rối và khiến ta tưởng rằng
+  // client có quyền sở hữu lock.
 
   // SSE for real-time seat data
   const currentFlightId = activeLeg === 'outbound' ? flight.id : (returnFlight?.id ?? flight.id);
@@ -70,7 +65,9 @@ export default function SeatSelectionDrawer({
   const sseLocked = useMemo(() => {
     const set = new Set<string>();
     if (seatMapData?.locked) {
-      seatMapData.locked.forEach((l) => set.add(l.seatId));
+      seatMapData.locked.forEach((l) => {
+        if (!l.mine) set.add(l.seatId);
+      });
     }
     return set;
   }, [seatMapData]);
@@ -92,7 +89,6 @@ export default function SeatSelectionDrawer({
         body: JSON.stringify({
           flightId: currentFlightId,
           seatIds: seatsToRelease,
-          sessionId: sessionIdRef.current,
         }),
         keepalive: true,
       });
@@ -143,7 +139,6 @@ export default function SeatSelectionDrawer({
           body: JSON.stringify({
             flightId: currentFlightId,
             seatIds: [seatId],
-            sessionId: sessionIdRef.current,
           }),
         });
         if (res.ok) {
@@ -167,7 +162,6 @@ export default function SeatSelectionDrawer({
           body: JSON.stringify({
             flightId: currentFlightId,
             seatIds: [seatId],
-            sessionId: sessionIdRef.current,
           }),
         });
       } catch {
