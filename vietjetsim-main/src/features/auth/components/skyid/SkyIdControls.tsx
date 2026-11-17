@@ -54,13 +54,13 @@ export function SkyIdSocialButtons({
 export function SkyIdErrorNote({ message }: { message: string }) {
   if (!message) return null;
   return (
-    <p
-      role="alert"
-      className="mt-2 text-sm leading-[22px]"
-      style={{ color: 'var(--vj-skyid-border-error)' }}
-    >
-      {message}
-    </p>
+    <div className="vj-skyid-error-enhanced mt-3">
+      <svg className="vj-skyid-error-icon" width="16" height="16" viewBox="0 0 16 16">
+        <circle cx="8" cy="8" r="7" stroke="currentColor" strokeWidth="1.5" fill="none"/>
+        <path d="M8 4v5M8 11v1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+      </svg>
+      <span>{message}</span>
+    </div>
   );
 }
 

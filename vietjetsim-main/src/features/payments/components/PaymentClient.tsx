@@ -735,18 +735,25 @@ export default function PaymentClient() {
     ]
   );
 
-  // Tự động điền nội dung và số tiền chuyển khoản dự kiến nếu khách chưa nhập
+  // Tự động điền nội dung và số tiền chuyển khoản dự kiến nếu khách chưa nhập.
+  //
+  // Hai effect này PHẢI ghi đè giá trị đang có, không chỉ điền khi ô còn
+  // trống. Trước đây điều kiện là `!transferNoteInput` / `!transferAmountInput`,
+  // nên ở lần render đầu tiên `bookingCodeLabel` còn là '—' và `total` bằng 0
+  // ⇒ ô nhận giá trị tạm '—I98O'. Khi PNR và tổng tiền tải về sau, điều kiện
+  // đó không còn đúng nữa ⇒ ô vẫn giữ '—I98O' ⇒ server trả 400
+  // "Transfer details do not match" dù khách đã nhập đúng.
   useEffect(() => {
-    if (transferNote && !transferNoteInput) {
+    if (transferNote) {
       setTransferNoteInput(transferNote);
     }
-  }, [transferNote, transferNoteInput]);
+  }, [transferNote]);
 
   useEffect(() => {
-    if (total > 0 && !transferAmountInput) {
+    if (total > 0) {
       setTransferAmountInput(String(total));
     }
-  }, [total, transferAmountInput]);
+  }, [total]);
 
   const applyPromo = async () => {
     if (!promoCode.trim()) return;

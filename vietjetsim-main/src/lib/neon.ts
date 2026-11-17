@@ -1290,6 +1290,19 @@ function createMockSql(): SqlClient {
   const mockBookings: MockResult[] = [];
   const mockPassengers: MockResult[] = [];
   const mockCheckIns: MockResult[] = [];
+  /**
+   * Giao dịch thanh toán và ghế đã bán.
+   *
+   * Hai store này không có thì luồng "đặt vé → thanh toán VietQR → nhận vé"
+   * và "check-in đổi ghế" không thể chạy trong mock mode: `getBookingById`
+   * gộp `payments`/`seats` vào dòng booking, và `createPaymentAndConfirmBooking`
+   * ghi cả hai. Thiếu store ⇒ trang thanh toán không thấy giao dịch nào và
+   * check-in không đổi được ghế, dù code chạy đúng.
+   */
+  const mockPayments: MockResult[] = [];
+  const mockSeats: MockResult[] = [];
+  /** Lịch sử đổi ghế (migration 046) — bảng `booking_seat_changes`. */
+  const mockSeatChanges: MockResult[] = [];
 
   /** Sinh id giả cho dòng mock — đủ duy nhất trong phạm vi một phiên test. */
   let mockSeq = 0;

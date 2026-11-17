@@ -315,6 +315,15 @@ input[type='date'].vj-no-native-icon::-moz-calendar-picker-indicator {
   --vj-skyid-disabled-bg: #f5f5f5;
   --vj-skyid-disabled-ink: #c4c4c4;
 
+  /* Enhanced UI tokens */
+  --vj-skyid-success: #10B981;
+  --vj-skyid-success-bg: rgba(16, 185, 129, 0.08);
+  --vj-skyid-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --vj-skyid-shadow-md: 0 4px 12px rgba(233, 159, 36, 0.3);
+  --vj-skyid-shadow-lg: 0 6px 16px rgba(233, 159, 36, 0.4);
+  --vj-skyid-transition: all 0.2s ease;
+  --vj-skyid-transition-slow: all 0.3s ease;
+
   /* ─── Token popup SkyID 622×664 (đo 14/11/2026 trên DOM sống) ───────────
    * Popup đăng nhập/đăng ký của site thật nằm trong khung 622×664 bo 10px:
    * băng đỏ 48px ở đỉnh, khung form SkyID 500×208, bottom nav 62px bo 15px. */
@@ -4758,4 +4767,238 @@ select option {
   width: 100% !important;
   max-width: none !important;
   padding: 0 !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * Enhanced UI/UX improvements for SkyID popup
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Enhanced input focus with glow effect */
+.vj-skyid-input:focus {
+  border-color: var(--vj-skyid-border-focus);
+  box-shadow: 0 0 0 3px rgba(255, 219, 1, 0.15), 0 4px 20px rgba(0, 0, 0, 0.15);
+  transition: var(--vj-skyid-transition);
+}
+
+/* Enhanced CTA button with shadow and hover effects */
+.vj-skyid-btn:not(:disabled) {
+  box-shadow: var(--vj-skyid-shadow-md);
+  transition: var(--vj-skyid-transition);
+}
+
+.vj-skyid-btn:not(:disabled):hover {
+  transform: translateY(-1px);
+  box-shadow: var(--vj-skyid-shadow-lg);
+  background: linear-gradient(135deg, #EDAF17 0%, #FFE933 100%);
+}
+
+.vj-skyid-btn:not(:disabled):active {
+  transform: translateY(0);
+  box-shadow: var(--vj-skyid-shadow-md);
+}
+
+/* Better disabled state for ghost buttons */
+.vj-skyid-btn-ghost:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  filter: grayscale(0.6);
+}
+
+/* Enhanced error display with icons */
+.vj-skyid-error-enhanced {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  background: rgba(230, 10, 50, 0.08);
+  border-left: 3px solid var(--vj-skyid-border-error);
+  color: var(--vj-skyid-border-error);
+  font-size: 14px;
+  animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.vj-skyid-error-icon {
+  flex-shrink: 0;
+  color: var(--vj-skyid-border-error);
+}
+
+/* Loading overlay */
+.vj-skyid-loading-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(4px);
+  z-index: 10;
+  animation: fadeIn 0.2s ease;
+}
+
+.vj-skyid-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(233, 159, 36, 0.2);
+  border-top-color: #E99F24;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.vj-skyid-loading-text {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--vj-skyid-ink);
+}
+
+/* Success overlay */
+.vj-skyid-success-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  background: rgba(255, 255, 255, 0.98);
+  z-index: 20;
+  animation: fadeIn 0.3s ease;
+}
+
+.vj-skyid-success-circle {
+  stroke-dasharray: 176;
+  stroke-dashoffset: 176;
+  animation: drawCircle 0.6s ease forwards;
+}
+
+.vj-skyid-success-check {
+  stroke-dasharray: 50;
+  stroke-dashoffset: 50;
+  animation: drawCheck 0.4s ease 0.4s forwards;
+}
+
+@keyframes drawCircle {
+  to { stroke-dashoffset: 0; }
+}
+
+@keyframes drawCheck {
+  to { stroke-dashoffset: 0; }
+}
+
+.vj-skyid-success-text {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--vj-skyid-success);
+}
+
+/* Step transition animations */
+.vj-skyid-step-container {
+  animation: slideInRight 0.3s ease;
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.vj-skyid-step-container.reverse {
+  animation: slideInLeft 0.3s ease;
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Enhanced tab navigation */
+[role="tablist"] {
+  transition: var(--vj-skyid-transition);
+}
+
+[role="tab"][aria-selected="true"] {
+  box-shadow: 
+    var(--vj-skyid-shadow-sm),
+    0 0 0 1px rgba(232, 235, 239, 0.5);
+  transform: scale(1.02);
+  transition: var(--vj-skyid-transition);
+}
+
+[role="tab"][aria-selected="false"]:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+/* Mobile optimizations */
+@media (max-width: 640px) {
+  .vj-popup-frame {
+    max-height: 95vh;
+  }
+  
+  .vj-popup-body {
+    padding-top: 32px;
+  }
+  
+  .vj-skyid-popup-card {
+    padding: 24px 20px;
+  }
+  
+  .vj-skyid-title {
+    font-size: 20px;
+  }
+  
+  .vj-skyid-subtitle {
+    font-size: 13px;
+  }
+  
+  .vj-skyid-btn {
+    height: 44px;
+    font-size: 15px;
+  }
+  
+  .vj-skyid-input {
+    height: 44px;
+    font-size: 15px;
+  }
+  
+  .vj-skyid-phone {
+    height: 44px;
+  }
+  
+  .vj-skyid-input-phone {
+    height: 44px;
+    font-size: 15px;
+  }
 }

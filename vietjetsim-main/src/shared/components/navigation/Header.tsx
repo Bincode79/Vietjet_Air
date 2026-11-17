@@ -448,7 +448,7 @@ export default function Header({
                 uppercase, mục active có gạch dưới #F7C61A.
               - Tầng 3 = dải dịch vụ phụ cao 35px, nền gradient đen → trong suốt,
                 icon 25×25 + chữ 16px/700, gap 24px, active #F7C61A. */}
-        {!compactMode && (
+        {!compactMode && isHomepage && (
           <div className="hidden lg:block">
             {/* Lớp phủ tối phủ lên ảnh hero. */}
             <div className="vj-header-scrim">

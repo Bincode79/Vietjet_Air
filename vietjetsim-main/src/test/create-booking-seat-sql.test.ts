@@ -17,9 +17,12 @@ import { createBooking } from '@/lib/db';
 
 vi.mock('@/lib/neon', () => {
   const queryMock = vi.fn();
-  const sqlMock = Object.assign(vi.fn(async () => [{ id: 'bk-1', booking_code: 'ABC123' }]), {
-    query: queryMock,
-  });
+  const sqlMock = Object.assign(
+    vi.fn(async () => [{ id: 'bk-1', booking_code: 'ABC123' }]),
+    {
+      query: queryMock,
+    }
+  );
   return { sql: sqlMock };
 });
 
@@ -109,9 +112,7 @@ describe('createBooking — SQL ghép ghế phải parse được trên Postgres
     // JSON tham số phải mang số thứ tự mảng để ORDER BY st2.ord phản ánh
     // đúng thứ tự khách chọn ghế.
     const mocked = sql as unknown as { mock: { calls: unknown[][] } };
-    const seatCall = mocked.mock.calls.find(
-      (call) => sqlText(call).includes('seat_rows')
-    );
+    const seatCall = mocked.mock.calls.find((call) => sqlText(call).includes('seat_rows'));
     // call = [strings, v1, v2] — giá trị đầu tiên là JSON tham số.
     const jsonParam = JSON.parse(String(seatCall?.[1])) as {
       seat_number: string;
