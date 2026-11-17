@@ -83,20 +83,20 @@ export default function AncillaryServicesStep({
         {/* 1. Chọn chỗ ngồi yêu thích (Screenshot 8) */}
         <div
           onClick={onOpenSeatDrawer}
-          className="group cursor-pointer rounded-vj bg-white border border-vj-line p-4 shadow-xs hover:shadow-md transition-all flex items-center justify-between"
+          className="group cursor-pointer rounded-2xl bg-white border border-gray-200/80 p-3.5 sm:p-4 shadow-xs hover:shadow-md hover:border-amber-300 transition-all flex items-center justify-between"
         >
-          <div className="flex items-center gap-4 min-w-0">
-            <div className="w-14 h-14 rounded-vj bg-vj-surface-fare border border-vj-field-line flex items-center justify-center p-2 shadow-xs shrink-0 group-hover:scale-105 transition-transform">
-              <SeatArmchairIcon size={36} />
+          <div className="flex items-center gap-3.5 sm:gap-4 min-w-0">
+            <div className="shrink-0 flex items-center justify-center group-hover:scale-105 transition-transform">
+              <SeatArmchairIcon width={50} height={66} className="drop-shadow-xs" />
             </div>
             <div className="min-w-0">
-              <h3 className="text-base font-semibold text-vj-text group-hover:text-primary transition-colors">
+              <h3 className="text-base font-bold text-gray-950 group-hover:text-primary transition-colors">
                 Chọn chỗ ngồi yêu thích
               </h3>
-              <p className="text-sm2 font-medium text-vj-currency-gray mt-0.5">
+              <p className="text-xs sm:text-sm text-gray-500 mt-0.5">
                 Hãy chọn chỗ ngồi yêu thích của bạn
               </p>
-              <div className="text-base font-bold text-primary mt-0.5">
+              <div className="text-sm sm:text-base font-bold text-primary mt-0.5">
                 {seatFee > 0 ? `${seatFee.toLocaleString('vi-VN')} VND` : '0 VND'}
               </div>
               <div className="flex items-center gap-3 text-3xs font-bold text-gray-700 mt-1 border-t border-gray-100 pt-1">
@@ -120,20 +120,20 @@ export default function AncillaryServicesStep({
         {/* 2. Chọn hành lý/Dịch vụ nối chuyến (Screenshot 8) */}
         <div
           onClick={onOpenBaggageDrawer}
-          className="group cursor-pointer rounded-vj bg-white border border-vj-line p-4 shadow-xs hover:shadow-md transition-all flex items-center justify-between"
+          className="group cursor-pointer rounded-2xl bg-white border border-gray-200/80 p-3.5 sm:p-4 shadow-xs hover:shadow-md hover:border-amber-300 transition-all flex items-center justify-between"
         >
-          <div className="flex items-center gap-4 min-w-0">
-            <div className="w-14 h-14 rounded-vj bg-vj-surface-fare border border-vj-field-line flex items-center justify-center p-2 shadow-xs shrink-0 group-hover:scale-105 transition-transform">
-              <BaggageLuggageIcon size={36} />
+          <div className="flex items-center gap-3.5 sm:gap-4 min-w-0">
+            <div className="shrink-0 flex items-center justify-center group-hover:scale-105 transition-transform">
+              <BaggageLuggageIcon width={50} height={66} className="drop-shadow-xs" />
             </div>
             <div className="min-w-0">
-              <h3 className="text-base font-semibold text-vj-text group-hover:text-primary transition-colors">
+              <h3 className="text-base font-bold text-gray-950 group-hover:text-primary transition-colors">
                 Chọn hành lý/Dịch vụ nối chuyến
               </h3>
-              <p className="text-sm2 font-medium text-vj-currency-gray mt-0.5">
+              <p className="text-xs sm:text-sm text-gray-500 mt-0.5">
                 Hãy lựa chọn gói hành lý phù hợp
               </p>
-              <div className="text-base font-bold text-primary mt-0.5">
+              <div className="text-sm sm:text-base font-bold text-primary mt-0.5">
                 {baggageFee > 0 ? `${baggageFee.toLocaleString('vi-VN')} VND` : '0 VND'}
               </div>
               <div className="flex items-center gap-3 text-3xs font-bold text-gray-700 mt-1 border-t border-gray-100 pt-1">
@@ -158,18 +158,18 @@ export default function AncillaryServicesStep({
         {/* 3. Chọn suất ăn (Screenshot 8) */}
         <div
           onClick={onOpenMealDrawer}
-          className="group cursor-pointer rounded-vj bg-white border border-vj-line p-4 shadow-xs hover:shadow-md transition-all flex items-center justify-between"
+          className="group cursor-pointer rounded-2xl bg-white border border-gray-200/80 p-3.5 sm:p-4 shadow-xs hover:shadow-md hover:border-amber-300 transition-all flex items-center justify-between"
         >
-          <div className="flex items-center gap-4 min-w-0">
-            <div className="w-14 h-14 rounded-vj bg-vj-surface-fare border border-vj-field-line flex items-center justify-center p-2 shadow-xs shrink-0 group-hover:scale-105 transition-transform">
-              <HotMealIcon size={36} />
+          <div className="flex items-center gap-3.5 sm:gap-4 min-w-0">
+            <div className="shrink-0 flex items-center justify-center group-hover:scale-105 transition-transform">
+              <HotMealIcon width={50} height={66} className="drop-shadow-xs" />
             </div>
             <div className="min-w-0">
-              <h3 className="text-base font-semibold text-vj-text group-hover:text-primary transition-colors">
+              <h3 className="text-base font-bold text-gray-950 group-hover:text-primary transition-colors">
                 Chọn suất ăn
               </h3>
               <p className="text-xs font-bold italic text-red-600 mt-0.5">jet café</p>
-              <div className="text-base font-bold text-primary mt-0.5">
+              <div className="text-sm sm:text-base font-bold text-primary mt-0.5">
                 {mealFee > 0 ? `${mealFee.toLocaleString('vi-VN')} VND` : '0 VND'}
               </div>
               <div className="flex items-center gap-3 text-3xs font-bold text-gray-700 mt-1 border-t border-gray-100 pt-1">
@@ -193,54 +193,55 @@ export default function AncillaryServicesStep({
         {/* 4. Dịch vụ Taxi */}
         <div
           onClick={onOpenTaxiDrawer}
-          className="group cursor-pointer rounded-vj bg-white border border-vj-line p-4 shadow-sm hover:shadow-md hover:border-amber-300 transition-all flex items-center justify-between"
+          className="group cursor-pointer rounded-2xl bg-white border border-gray-200/80 p-3.5 sm:p-4 shadow-xs hover:shadow-md hover:border-amber-300 transition-all flex items-center justify-between"
         >
-          <div className="flex items-center gap-3.5">
-            <div className="w-14 h-14 rounded-vj bg-vj-surface-fare border border-vj-field-line flex items-center justify-center p-2 shadow-xs shrink-0 group-hover:scale-105 transition-transform">
-              <AirportTaxiIcon size={36} />
+          <div className="flex items-center gap-3.5 sm:gap-4 min-w-0">
+            <div className="shrink-0 flex items-center justify-center group-hover:scale-105 transition-transform">
+              <AirportTaxiIcon width={50} height={66} className="drop-shadow-xs" />
             </div>
-            <div>
-              <h3 className="text-base font-semibold text-vj-text group-hover:text-primary-dark transition-colors">
+            <div className="min-w-0">
+              <h3 className="text-base font-bold text-gray-950 group-hover:text-primary transition-colors">
                 Dịch vụ Taxi
               </h3>
-              <p className="text-sm2 font-medium text-vj-currency-gray mt-0.5">
+              <p className="text-xs sm:text-sm text-gray-500 mt-0.5">
                 Đưa đón sân bay thuận tiện, giá ưu đãi
               </p>
+              <div className="text-sm sm:text-base font-bold text-primary mt-0.5">0 VND</div>
             </div>
           </div>
           <RiArrowRightSLine
-            size={20}
-            className="text-gray-400 group-hover:text-primary-dark group-hover:translate-x-0.5 transition-all"
+            size={22}
+            className="text-gray-400 group-hover:text-primary group-hover:translate-x-0.5 transition-all shrink-0"
           />
         </div>
 
         {/* 5. Bảo hiểm du lịch Vietjet Travel Safe */}
         <div
           onClick={onOpenInsuranceDrawer}
-          className={`group cursor-pointer rounded-vj border p-3.5 sm:p-4 shadow-sm hover:shadow-md transition-all flex items-center justify-between ${
+          className={`group cursor-pointer rounded-2xl border p-3.5 sm:p-4 shadow-xs hover:shadow-md transition-all flex items-center justify-between ${
             hasInsurance
-              ? 'bg-red-50/30 border-primary-dark'
-              : 'bg-white border-vj-line hover:border-amber-300'
+              ? 'bg-red-50/40 border-primary-dark shadow-sm'
+              : 'bg-white border-gray-200/80 hover:border-amber-300'
           }`}
         >
-          <div className="flex items-center gap-3.5 flex-1 pr-2">
-            <div className="w-14 h-14 rounded-vj bg-vj-surface-fare border border-vj-field-line flex items-center justify-center p-2 shadow-xs shrink-0 group-hover:scale-105 transition-transform">
-              <SkyCareInsuranceIcon size={36} />
+          <div className="flex items-center gap-3.5 sm:gap-4 flex-1 pr-2 min-w-0">
+            <div className="shrink-0 flex items-center justify-center group-hover:scale-105 transition-transform">
+              <SkyCareInsuranceIcon width={50} height={66} className="drop-shadow-xs" />
             </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h3 className="text-base font-semibold text-vj-text group-hover:text-primary-dark transition-colors">
+            <div className="min-w-0">
+              <div className="flex items-center gap-2 flex-wrap">
+                <h3 className="text-base font-bold text-gray-950 group-hover:text-primary transition-colors">
                   Bảo hiểm du lịch Vietjet Travel Safe
                 </h3>
-                <span className="text-base font-bold text-primary-dark">
+                <span className="text-sm sm:text-base font-bold text-primary">
                   {insuranceFee.toLocaleString('vi-VN')} VND
                 </span>
               </div>
-              <div className="text-xs2 text-gray-500 mt-0.5 space-y-0.5">
+              <div className="text-xs text-gray-500 mt-0.5 space-y-0.5">
                 <span className="font-bold text-gray-700 block">
                   {flight.from} → {flight.to}
                 </span>
-                <p className="line-clamp-2">
+                <p className="line-clamp-2 text-2xs sm:text-xs">
                   Bảo hiểm du lịch. Giấy chứng nhận bảo hiểm sẽ được cấp cùng vé máy bay, và không
                   thể cấp lại sau chuyến bay.
                 </p>
@@ -248,64 +249,64 @@ export default function AncillaryServicesStep({
             </div>
           </div>
           <RiArrowRightSLine
-            size={20}
-            className="text-gray-400 group-hover:text-primary-dark group-hover:translate-x-0.5 transition-all shrink-0"
+            size={22}
+            className="text-gray-400 group-hover:text-primary group-hover:translate-x-0.5 transition-all shrink-0"
           />
         </div>
 
         {/* 6. Dịch vụ theo hành khách [New] */}
         <div
           onClick={onOpenPassengerServicesDrawer}
-          className="group cursor-pointer rounded-vj bg-white border border-vj-line p-4 shadow-sm hover:shadow-md hover:border-amber-300 transition-all flex items-center justify-between"
+          className="group cursor-pointer rounded-2xl bg-white border border-gray-200/80 p-3.5 sm:p-4 shadow-xs hover:shadow-md hover:border-amber-300 transition-all flex items-center justify-between"
         >
-          <div className="flex items-center gap-3.5">
-            <div className="w-14 h-14 rounded-vj bg-vj-surface-fare border border-vj-field-line flex items-center justify-center p-2 shadow-xs shrink-0 group-hover:scale-105 transition-transform">
-              <SkyKidsIcon size={36} />
+          <div className="flex items-center gap-3.5 sm:gap-4 min-w-0">
+            <div className="shrink-0 flex items-center justify-center group-hover:scale-105 transition-transform">
+              <SkyKidsIcon width={50} height={66} className="drop-shadow-xs" />
             </div>
-            <div>
+            <div className="min-w-0">
               <div className="flex items-center gap-2">
-                <h3 className="text-base font-semibold text-vj-text group-hover:text-primary-dark transition-colors">
+                <h3 className="text-base font-bold text-gray-950 group-hover:text-primary transition-colors">
                   Dịch vụ theo hành khách
                 </h3>
-                <span className="text-2xs bg-primary-dark text-white font-bold px-1.5 py-0.2 rounded italic">
+                <span className="text-3xs bg-primary text-white font-bold px-1.5 py-0.5 rounded-full uppercase tracking-wider">
                   New
                 </span>
               </div>
-              <p className="text-sm2 font-medium text-vj-currency-gray mt-0.5">Hãy chọn dịch vụ</p>
+              <p className="text-xs sm:text-sm text-gray-500 mt-0.5">Hãy chọn dịch vụ</p>
             </div>
           </div>
           <RiArrowRightSLine
-            size={20}
-            className="text-gray-400 group-hover:text-primary-dark group-hover:translate-x-0.5 transition-all"
+            size={22}
+            className="text-gray-400 group-hover:text-primary group-hover:translate-x-0.5 transition-all shrink-0"
           />
         </div>
 
         {/* 7. Mang theo thú cưng [New] */}
         <div
           onClick={onOpenPetDrawer}
-          className="group cursor-pointer rounded-vj bg-white border border-vj-line p-4 shadow-sm hover:shadow-md hover:border-amber-300 transition-all flex items-center justify-between"
+          className="group cursor-pointer rounded-2xl bg-white border border-gray-200/80 p-3.5 sm:p-4 shadow-xs hover:shadow-md hover:border-amber-300 transition-all flex items-center justify-between"
         >
-          <div className="flex items-center gap-3.5">
-            <div className="w-14 h-14 rounded-vj bg-vj-surface-fare border border-vj-field-line flex items-center justify-center p-2 shadow-xs shrink-0 group-hover:scale-105 transition-transform">
-              <PetTravelIcon size={36} />
+          <div className="flex items-center gap-3.5 sm:gap-4 min-w-0">
+            <div className="shrink-0 flex items-center justify-center group-hover:scale-105 transition-transform">
+              <PetTravelIcon width={50} height={66} className="drop-shadow-xs" />
             </div>
-            <div>
+            <div className="min-w-0">
               <div className="flex items-center gap-2">
-                <h3 className="text-base font-semibold text-vj-text group-hover:text-primary-dark transition-colors">
+                <h3 className="text-base font-bold text-gray-950 group-hover:text-primary transition-colors">
                   Mang theo thú cưng
                 </h3>
-                <span className="text-2xs bg-primary-dark text-white font-bold px-1.5 py-0.2 rounded italic">
+                <span className="text-3xs bg-primary text-white font-bold px-1.5 py-0.5 rounded-full uppercase tracking-wider">
                   New
                 </span>
               </div>
-              <p className="text-sm2 font-medium text-vj-currency-gray mt-0.5">
+              <p className="text-xs sm:text-sm text-gray-500 mt-0.5">
                 Thú cưng ơi, bay thôi! Dịch vụ vận chuyển thú cưng trên chuyến bay
               </p>
             </div>
           </div>
           <RiArrowRightSLine
-            size={20}
-            className="text-gray-400 group-hover:text-primary-dark group-hover:translate-x-0.5 transition-all"
+            size={22}
+            className="text-gray-400 group-hover:text-primary group-hover:translate-x-0.5 transition-all shrink-0"
           />
         </div>
       </div>

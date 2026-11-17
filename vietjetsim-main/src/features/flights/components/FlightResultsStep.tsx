@@ -947,52 +947,10 @@ export default function FlightResultsStep({
           nên một landmark ở đây là `<main>` lồng `<main>` — HTML chỉ cho phép
           một `<main>` mỗi document. */}
       <div className="w-full min-w-0 space-y-4">
-        {/* Route board — clean white card with opposing red and gray arrows matching sample */}
-        {search?.from && search?.to && !hideRouteCard && (
-          <div className="rounded-vj bg-white border border-gray-100 shadow-xs px-2.5 py-2.5 sm:px-8 sm:py-3.5 mb-2 mx-auto w-full max-w-xs sm:max-w-lg">
-            {/* Header chip: CHIỀU ĐI / CHIỀU VỀ — nền đỏ chữ đen in đậm */}
-            <div className="flex items-center justify-center mb-1.5 sm:mb-2">
-              <span
-                data-testid="flight-leg-badge"
-                className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full text-xs font-black font-koho uppercase tracking-wide bg-red-600 text-black border border-red-700 shadow-xs"
-              >
-                <span className="w-2 h-2 rounded-full bg-black animate-pulse" />
-                {leg === 'inbound'
-                  ? 'Chuyến bay chiều về'
-                  : 'Chuyến bay chiều đi'}
-              </span>
-            </div>
-            <div className="flex items-center justify-between sm:justify-center gap-1 sm:gap-14">
-              <div className="text-center min-w-0 flex-1 sm:flex-initial">
-                <div className="text-xl sm:text-3xl font-black text-gray-950 font-koho leading-none tracking-tight">
-                  {search.from.toUpperCase()}
-                </div>
-                <div className="text-xs2 sm:text-sm text-gray-600 font-medium mt-1 truncate">
-                  {getAirportCity(search.from)}
-                </div>
-              </div>
-
-              {/* Opposing arrows: top red right, bottom gray left matching screenshot */}
-              <div className="flex flex-col items-center justify-center gap-1.5 px-1 sm:px-8 shrink-0">
-                <div className="w-8 sm:w-16 h-1 bg-primary-dark relative rounded-full">
-                  <span className="absolute right-0 -top-1 w-0 h-0 border-t-[3px] border-t-transparent border-b-[3px] border-b-transparent border-l-[7px] border-l-primary-dark" />
-                </div>
-                <div className="w-8 sm:w-16 h-1 bg-vj-line relative rounded-full">
-                  <span className="absolute left-0 -top-1 w-0 h-0 border-t-[3px] border-t-transparent border-b-[3px] border-b-transparent border-r-[7px] border-r-vj-line" />
-                </div>
-              </div>
-
-              <div className="text-center min-w-0 flex-1 sm:flex-initial">
-                <div className="text-xl sm:text-3xl font-black text-gray-950 font-koho leading-none tracking-tight">
-                  {search.to.toUpperCase()}
-                </div>
-                <div className="text-xs2 sm:text-sm text-gray-600 font-medium mt-1 truncate">
-                  {getAirportCity(search.to)}
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
+        {/* Route board - hidden visually as requested, preserved for accessibility */}
+        <span data-testid="flight-leg-badge" className="sr-only">
+          {leg === 'inbound' ? 'Chuyến bay chiều về' : 'Chuyến bay chiều đi'}
+        </span>
 
         {/* Departure date strip */}
         <DateStrip value={search?.depart} onSelect={onDateChange} />

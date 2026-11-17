@@ -549,9 +549,9 @@ h6 {
     );
     color: #000000;
     border-radius: 10px;
-    /* Site thật: nút MUI dùng JambonoMedium 16px/500, KHÔNG phải KoHo. */
+    /* Site thật: nút MUI dùng JambonoMedium 16px/700, KHÔNG phải KoHo. */
     font-family: var(--vj-font-cta);
-    font-weight: 500;
+    font-weight: 700;
     text-transform: uppercase;
     min-height: 44px;
     /* Ba tầng bóng MUI đo được trên nút "TÌM CHUYẾN BAY" của site thật. */
@@ -579,7 +579,7 @@ h6 {
     padding-right: 0;
     font-family: var(--vj-font-body, 'KoHo');
     font-size: 14px;
-    font-weight: 500;
+    font-weight: 700;
     line-height: 20px;
     text-transform: none;
     border-radius: 10px;

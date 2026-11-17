@@ -53,11 +53,13 @@ export function FlightPlaneIcon({ size = 32, className = '', ...props }: IconPro
 }
 
 // 2. Icon Vali hành lý ký gửi Vietjet
-export function BaggageLuggageIcon({ size = 32, className = '', ...props }: IconProps) {
+export function BaggageLuggageIcon({ size, width, height, className = '', ...props }: IconProps) {
+  const w = width ?? (size ? Math.round((Number(size) * 60) / 80) : 48);
+  const h = height ?? size ?? 64;
   return (
     <svg
-      width={size}
-      height={size}
+      width={w}
+      height={h}
       viewBox="0 0 60 80"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
@@ -70,11 +72,13 @@ export function BaggageLuggageIcon({ size = 32, className = '', ...props }: Icon
 }
 
 // 3. Icon Ghế ngồi máy bay Vietjet (Da cao cấp & Tựa đầu đỏ)
-export function SeatArmchairIcon({ size = 32, className = '', ...props }: IconProps) {
+export function SeatArmchairIcon({ size, width, height, className = '', ...props }: IconProps) {
+  const w = width ?? (size ? Math.round((Number(size) * 60) / 80) : 48);
+  const h = height ?? size ?? 64;
   return (
     <svg
-      width={size}
-      height={size}
+      width={w}
+      height={h}
       viewBox="0 0 60 80"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
@@ -87,53 +91,20 @@ export function SeatArmchairIcon({ size = 32, className = '', ...props }: IconPr
 }
 
 // 4. Icon Suất ăn nóng & Đồ uống (Jet Café)
-export function HotMealIcon({ size = 32, className = '', ...props }: IconProps) {
+export function HotMealIcon({ size, width, height, className = '', ...props }: IconProps) {
+  const w = width ?? (size ? Math.round((Number(size) * 60) / 80) : 48);
+  const h = height ?? size ?? 64;
   return (
     <svg
-      width={size}
-      height={size}
-      viewBox="0 0 48 48"
+      width={w}
+      height={h}
+      viewBox="0 0 60 80"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       className={className}
       {...props}
     >
-      <defs>
-        <linearGradient
-          id="vjClocheGrad"
-          x1="10"
-          y1="18"
-          x2="38"
-          y2="36"
-          gradientUnits="userSpaceOnUse"
-        >
-          <stop stopColor="#F59E0B" />
-          <stop offset="1" stopColor="#D97706" />
-        </linearGradient>
-      </defs>
-      {/* Steam lines */}
-      <path
-        d="M20 9c-1 2 1 3 0 5"
-        stroke="#EC2029"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        opacity="0.8"
-      />
-      <path d="M24 7c-1 2.5 1 4 0 6" stroke="#EC2029" strokeWidth="1.8" strokeLinecap="round" />
-      <path
-        d="M28 9c-1 2 1 3 0 5"
-        stroke="#EC2029"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        opacity="0.8"
-      />
-      {/* Gold Handle */}
-      <circle cx="24" cy="18" r="2.5" fill="#FFCC00" />
-      {/* Cover / Cloche */}
-      <path d="M10 32c0-7.7 6.3-14 14-14s14 6.3 14 14H10z" fill="url(#vjClocheGrad)" />
-      {/* Platter / Tray Base */}
-      <rect x="7" y="32" width="34" height="3" rx="1.5" fill="#78350F" />
-      <path d="M12 35l2 3h20l2-3" fill="#92400E" opacity="0.7" />
+      <image href="/images/ancillary/meal.png" width="60" height="80" preserveAspectRatio="xMidYMid meet" />
     </svg>
   );
 }
@@ -227,11 +198,13 @@ export function OnlineCheckinIcon({ size = 32, className = '', ...props }: IconP
 }
 
 // 6. Icon Bảo hiểm du lịch Sky Care (Vietjet Red & Gold Protection)
-export function SkyCareInsuranceIcon({ size = 32, className = '', ...props }: IconProps) {
+export function SkyCareInsuranceIcon({ size, width, height, className = '', ...props }: IconProps) {
+  const w = width ?? (size ? Math.round((Number(size) * 60) / 80) : 48);
+  const h = height ?? size ?? 64;
   return (
     <svg
-      width={size}
-      height={size}
+      width={w}
+      height={h}
       viewBox="0 0 60 80"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
@@ -348,76 +321,50 @@ export function DutyFreeBagIcon({ size = 32, className = '', ...props }: IconPro
 }
 
 // 9. Icon Taxi / Xe đưa đón sân bay (Green SM & Vietjet Airport Transfer)
-export function AirportTaxiIcon({ size = 32, className = '', ...props }: IconProps) {
+export function AirportTaxiIcon({ size, width, height, className = '', ...props }: IconProps) {
+  const w = width ?? (size ? Math.round((Number(size) * 60) / 80) : 48);
+  const h = height ?? size ?? 64;
   return (
     <svg
-      width={size}
-      height={size}
-      viewBox="0 0 48 48"
+      width={w}
+      height={h}
+      viewBox="0 0 60 80"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       className={className}
       {...props}
     >
       <defs>
-        <linearGradient
-          id="vjTaxiBody"
-          x1="8"
-          y1="18"
-          x2="40"
-          y2="38"
-          gradientUnits="userSpaceOnUse"
-        >
-          <stop stopColor="#059669" />
-          <stop offset="1" stopColor="#047857" />
+        <linearGradient id="vjTaxiPill" x1="30" y1="0" x2="30" y2="80" gradientUnits="userSpaceOnUse">
+          <stop stopColor="#FFDE00" />
+          <stop offset="1" stopColor="#FFAE00" />
         </linearGradient>
       </defs>
-      {/* Yellow TAXI Roof Sign */}
-      <rect
-        x="20"
-        y="9"
-        width="8"
-        height="3.5"
-        rx="1"
-        fill="#FFCC00"
-        stroke="#CA8A04"
-        strokeWidth="0.5"
-      />
-      <text
-        x="24"
-        y="11.8"
-        fontSize="2.8"
-        fontWeight="bold"
-        fill="#0F172A"
-        textAnchor="middle"
-        fontFamily="sans-serif"
-      >
-        TAXI
-      </text>
-      {/* Car Roof & Windshield */}
-      <path
-        d="M14 21l3-6.5c0.6-1.2 1.8-1.8 3.1-1.8h15.8c1.3 0 2.5 0.6 3.1 1.8l3 6.5H14z"
-        fill="#047857"
-      />
-      {/* Windows */}
-      <path d="M16.5 20.5l2.2-5h9.3v5H16.5z" fill="#D1FAE5" />
-      <path d="M30 20.5v-5h7.5l2.2 5H30z" fill="#D1FAE5" />
-      {/* Main Body */}
-      <path
-        d="M8 21.5c0-1.7 1.3-3 3-3h26c1.7 0 3 1.3 3 3v9.5c0 1.1-0.9 2-2 2h-1.5c-0.8-2.3-3-4-5.5-4s-4.7 1.7-5.5 4h-4c-0.8-2.3-3-4-5.5-4s-4.7 1.7-5.5 4H9c-1.1 0-2-0.9-2-2v-9.5z"
-        fill="url(#vjTaxiBody)"
-      />
-      {/* Vietjet Red & Gold Racing Accent Stripe */}
-      <rect x="9" y="27" width="30" height="1.8" fill="#EC2029" />
-      <rect x="9" y="28.8" width="30" height="0.8" fill="#FFCC00" />
+      {/* Yellow Capsule Background matching official Vietjet ancillary badges */}
+      <rect width="60" height="80" rx="30" fill="url(#vjTaxiPill)" />
+
+      {/* Taxi Roof Sign */}
+      <rect x="25" y="24" width="10" height="4" rx="1.5" fill="#FFFFFF" stroke="#0284C7" strokeWidth="0.8" />
+      <rect x="27.5" y="25.5" width="5" height="1.2" fill="#0284C7" />
+      {/* Car Cabin / Roof */}
+      <path d="M21 33 L24 27 C24.6 26 25.5 26 26.5 26 L33.5 26 C34.5 26 35.4 26 36 27 L39 33 Z" fill="#0284C7" />
+      {/* Windshield */}
+      <path d="M22.5 32.5 L25.2 28 C25.5 27.6 26 27.4 26.5 27.4 L33.5 27.4 C34 27.4 34.5 27.6 34.8 28 L37.5 32.5 Z" fill="#E0F2FE" />
+      {/* Car Body */}
+      <rect x="14" y="33" width="32" height="17" rx="4" fill="#0284C7" />
+      {/* Grille */}
+      <rect x="22" y="42" width="16" height="4" rx="1.5" fill="#0369A1" />
+      <line x1="24" y1="44" x2="36" y2="44" stroke="#BAE6FD" strokeWidth="0.8" />
       {/* Headlights */}
-      <rect x="8.5" y="23.5" width="4" height="3" rx="1.5" fill="#FEF08A" />
-      <rect x="35.5" y="23.5" width="4" height="3" rx="1.5" fill="#FEF08A" />
+      <circle cx="18.5" cy="38" r="2.8" fill="#FFFFFF" />
+      <circle cx="41.5" cy="38" r="2.8" fill="#FFFFFF" />
+      <circle cx="18.5" cy="38" r="1.6" fill="#FEF08A" />
+      <circle cx="41.5" cy="38" r="1.6" fill="#FEF08A" />
+      {/* Bumper */}
+      <rect x="17" y="46.5" width="26" height="2.5" rx="1.2" fill="#BAE6FD" />
       {/* Wheels */}
-      <circle cx="16" cy="33" r="4.2" fill="#1E293B" />
-      <circle cx="16" cy="33" r="2" fill="#94A3B8" />
-      <circle cx="32" cy="33" r="4.2" fill="#1E293B" />
-      <circle cx="32" cy="33" r="2" fill="#94A3B8" />
+      <rect x="16" y="50" width="5" height="4" rx="1.5" fill="#1E293B" />
+      <rect x="39" y="50" width="5" height="4" rx="1.5" fill="#1E293B" />
     </svg>
   );
 }
@@ -493,11 +440,13 @@ export function EvoucherGiftIcon({ size = 32, className = '', ...props }: IconPr
 }
 
 // 11. Icon SkyKIDS — Trẻ em bay một mình / Dịch vụ theo hành khách
-export function SkyKidsIcon({ size = 48, className = '', ...props }: IconProps) {
+export function SkyKidsIcon({ size, width, height, className = '', ...props }: IconProps) {
+  const w = width ?? (size ? Math.round((Number(size) * 55) / 75) : 47);
+  const h = height ?? size ?? 64;
   return (
     <svg
-      width={size}
-      height={size}
+      width={w}
+      height={h}
       viewBox="0 0 55 75"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
@@ -510,11 +459,13 @@ export function SkyKidsIcon({ size = 48, className = '', ...props }: IconProps) 
 }
 
 // 12. Icon Thú cưng trên chuyến bay (Pet on board)
-export function PetTravelIcon({ size = 32, className = '', ...props }: IconProps) {
+export function PetTravelIcon({ size, width, height, className = '', ...props }: IconProps) {
+  const w = width ?? (size ? Math.round((Number(size) * 55) / 76) : 47);
+  const h = height ?? size ?? 64;
   return (
     <svg
-      width={size}
-      height={size}
+      width={w}
+      height={h}
       viewBox="0 0 55 76"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
@@ -527,11 +478,13 @@ export function PetTravelIcon({ size = 32, className = '', ...props }: IconProps
 }
 
 // 13. Icon Check-in Ưu tiên / Fast Track (Priority Service)
-export function PriorityFastTrackIcon({ size = 32, className = '', ...props }: IconProps) {
+export function PriorityFastTrackIcon({ size, width, height, className = '', ...props }: IconProps) {
+  const w = width ?? (size ? Math.round((Number(size) * 55) / 75) : 47);
+  const h = height ?? size ?? 64;
   return (
     <svg
-      width={size}
-      height={size}
+      width={w}
+      height={h}
       viewBox="0 0 55 75"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"

@@ -653,46 +653,22 @@ function FlightBookingClientInner({
           nó sẽ thu hẹp cột trái về 1024px-centered, lệch với số đo. */}
       <div className="mx-auto max-w-full">
         {step === 1 && isRoundTrip && (
-          <div className="mb-4 grid grid-cols-2 gap-2 p-1 bg-white/80 backdrop-blur-sm rounded-2xl border border-gray-200 shadow-xs">
+          <div className="sr-only">
             <button
               type="button"
               data-testid="tab-leg-outbound"
               onClick={() => setCurrentLeg('outbound')}
-              className={`flex flex-col items-center justify-center py-2 px-3 rounded-xl transition text-center cursor-pointer ${
-                currentLeg === 'outbound'
-                  ? 'bg-vjyellow text-black font-black shadow-xs border border-amber-300'
-                  : 'text-gray-700 hover:bg-gray-100 font-bold'
-              }`}
             >
-              <div className="flex items-center gap-1.5 text-xs sm:text-sm font-koho">
-                <span>Chiều đi: {params.from} → {params.to}</span>
-              </div>
-              <div className={`text-2xs mt-0.5 ${currentLeg === 'outbound' ? 'text-black font-semibold' : 'text-gray-500'}`}>
-                {booking.selectedFlight
-                  ? `Đã chọn: ${booking.selectedFlight.flightNo} (${(booking.selectedFlight.fareClass || 'ECO').toUpperCase()})`
-                  : 'Đang chọn'}
-              </div>
+              <span>Chiều đi: {params.from} → {params.to}</span>
+              <span>{currentLeg === 'outbound' ? 'Đang chọn' : 'Chưa chọn'}</span>
             </button>
             <button
               type="button"
               data-testid="tab-leg-inbound"
               onClick={() => setCurrentLeg('inbound')}
-              className={`flex flex-col items-center justify-center py-2 px-3 rounded-xl transition text-center cursor-pointer ${
-                currentLeg === 'inbound'
-                  ? 'bg-vjyellow text-black font-black shadow-xs border border-amber-300'
-                  : 'text-gray-700 hover:bg-gray-100 font-bold'
-              }`}
             >
-              <div className="flex items-center gap-1.5 text-xs sm:text-sm font-koho">
-                <span>Chiều về: {params.to} → {params.from}</span>
-              </div>
-              <div className={`text-2xs mt-0.5 ${currentLeg === 'inbound' ? 'text-black font-semibold' : 'text-gray-500'}`}>
-                {booking.returnFlight
-                  ? `Đã chọn: ${booking.returnFlight.flightNo} (${(booking.returnFlight.fareClass || 'ECO').toUpperCase()})`
-                  : currentLeg === 'inbound'
-                    ? 'Đang chọn'
-                    : 'Chưa chọn'}
-              </div>
+              <span>Chiều về: {params.to} → {params.from}</span>
+              <span>{currentLeg === 'inbound' ? 'Đang chọn' : 'Chưa chọn'}</span>
             </button>
           </div>
         )}

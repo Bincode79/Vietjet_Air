@@ -59,7 +59,7 @@ export default function BookingBottomBar({
           <button
             type="button"
             onClick={onBack}
-            className="rounded-5xs border border-[var(--vj-border-back)] bg-white h-[39px] px-4 text-sm font-medium text-vj-text transition-colors hover:bg-gray-50"
+            className="rounded-5xs border border-[var(--vj-border-back)] bg-white h-[39px] px-4 text-sm font-bold text-gray-900 transition-colors hover:bg-gray-50 active:scale-95"
           >
             Quay lại
           </button>
@@ -69,7 +69,7 @@ export default function BookingBottomBar({
 
         {/* Center: Total price */}
         <div className="flex flex-col items-center leading-tight">
-          <span className="text-2xl3 font-semibold text-gray-800 font-koho">Tổng tiền</span>
+          <span className="text-2xl3 font-bold text-gray-800 font-koho">Tổng tiền</span>
           <span className="text-xl4 font-bold font-jambono text-primary">
             {total.toLocaleString('vi-VN')} VND
           </span>
@@ -81,7 +81,7 @@ export default function BookingBottomBar({
           form={formId}
           onClick={isSubmit ? undefined : action}
           disabled={isDisabled}
-          className="vj-cta h-[39px] min-h-[39px] px-6 rounded-vj font-koho text-sm font-medium uppercase tracking-normal transition-all shadow-sm disabled:cursor-not-allowed disabled:opacity-50"
+          className="vj-cta h-[39px] min-h-[39px] px-6 rounded-vj font-koho text-sm font-black text-black uppercase tracking-normal transition-all shadow-sm disabled:cursor-not-allowed disabled:opacity-50 active:scale-95"
         >
           {label}
         </button>
