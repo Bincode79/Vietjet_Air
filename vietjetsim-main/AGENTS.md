@@ -1042,6 +1042,20 @@ return response;` narrows correctly and avoids returning `undefined` from a hand
   outside the project root plus secret-bearing files (`.env*`, `*.pem`, `*.key`, `.git`).
 - **Never trust identity from request bodies or headers** (`x-user-id`). Resolve the
   caller from the signed `access_token` via `getToken`/`verifyAuthRequest`.
+- **Seat locks are server-owned; a lock is a right, not a hint.** The client never
+  chooses its own lock identity. `proxy.ts` issues an httpOnly `vj_seat_session`
+  cookie; the server stores only its SHA-256 `owner_token` in `seat_locks`
+  (see `migrations/051_seat_locks_server_owned.sql`). A lock may be released only
+  by the session that owns it, and only an owned lock counts as a seat the guest
+  is allowed to book. Classification lives in `src/lib/seat-lock.ts`
+  (`classifySeatLocks` → `held` / `foreign` / `none`); `createBooking` re-checks
+  it inside one transaction and throws `SeatLockConflictError` → HTTP 409.
+  Two rules matter when editing this area: a request with **no** `owner_token`
+  fails closed (it owns nothing, so foreign locks block it), and a lock with a
+  NULL `owner_token` is an orphan that blocks nobody. `src/app/api/ghe/khoa`
+  must not accept a client-supplied session id, and the SSE route must never
+  broadcast lock identities — it sends a `mine` boolean instead. A seat that is
+  already booked (`seats.booking_id IS NOT NULL`) cannot be locked at all.
 - **Gate privileged checks with `isAdminRole(role)`**, not `role === 'admin'`, so the
   comparison survives future role additions.
 - Chat conversation access must go through `userOwnsConversation(conversationId, userId)`

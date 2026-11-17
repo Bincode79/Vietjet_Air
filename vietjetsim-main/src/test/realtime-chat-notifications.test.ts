@@ -27,7 +27,9 @@ describe('Real-time Chat Messages & Notifications Verification', () => {
     expect(guestRes.status).toBe(200);
     const guestData = await guestRes.json();
     const convId = guestData.conversationId;
-    const guestToken = guestRes.cookies.get('access_token')?.value || '';
+    const cookieHeader = guestRes.headers.get('set-cookie') || '';
+    const tokenMatch = cookieHeader.match(/access_token=([^;]+)/);
+    const guestToken = tokenMatch ? tokenMatch[1] : undefined;
     expect(guestToken).toBeDefined();
 
     // ─── 2. Setup Admin credentials ──────────────────────────────────────────

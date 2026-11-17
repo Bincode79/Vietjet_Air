@@ -2,6 +2,8 @@
 import { sql } from '@/lib/neon';
 export { sql };
 import type { Permission } from '@/lib/rbac';
+import type { SeatLockRow } from '@/lib/seat-lock';
+import { SeatLockConflictError, classifySeatLocks, partitionSeatLocks } from '@/lib/seat-lock';
 import type {
   DashboardSummary,
   KPIData,
@@ -1070,6 +1072,51 @@ export async function getBookingById(bookingId: string): Promise<BookingDetail |
   };
 }
 
+/**
+ * Các khoá ghế (`seat_locks`) còn hiệu lực cho một danh sách ghế của một
+ * chuyến bay.
+ *
+ * Tách riêng khỏi route `/api/ghe/khoa` để luồng đặt vé dùng lại được: trước
+ * đây không nơi nào trong `createBooking` đọc bảng này, nên lock chỉ mang
+ * tính thông báo. Xem `src/lib/seat-lock.ts` cho luật phán quyết.
+ *
+ * `ANY($1::text[])` dùng `sql.query` với placeholder tường minh — driver Neon
+ * serialize mảng thành mảng Postgres, nhưng bind kiểu `::text[]` qua tagged
+ * template là đường dẫn không được kiểm chứng ở đây (xem `getTripById`).
+ */
+export async function getSeatLocksForSeats(
+  flightId: string,
+  seatNumbers: string[]
+): Promise<SeatLockRow[]> {
+  if (seatNumbers.length === 0) return [];
+
+  return (await sql.query(
+    `SELECT seat_number, owner_token, expires_at
+       FROM seat_locks
+      WHERE flight_id = $1
+        AND seat_number = ANY($2::text[])
+        AND expires_at > NOW()`,
+    [flightId, seatNumbers]
+  )) as SeatLockRow[];
+}
+
+/**
+ * Những ghế trong danh sách đang bị phiên KHÁC giữ.
+ *
+ * Dùng sau khi `createBooking` không tạo được booking, để phân biệt "ghế
+ * đang có người giữ" với "chuyến bay hết chỗ" — hai thông báo khác nhau và
+ * client xử lý khác nhau.
+ */
+async function findForeignSeatLocks(
+  flightId: string,
+  seatNumbers: string[],
+  ownerToken: string | null
+): Promise<string[]> {
+  const rows = await getSeatLocksForSeats(flightId, seatNumbers);
+  const checks = classifySeatLocks(rows, seatNumbers, ownerToken);
+  return partitionSeatLocks(checks).blocked;
+}
+
 export async function createBooking(
   booking: {
     user_id: string;
@@ -1085,6 +1132,16 @@ export async function createBooking(
     trip_id?: string | null;
     /** Which leg of the trip this row is: 'outbound' (đi) or 'inbound' (về). */
     leg_role?: 'outbound' | 'inbound';
+    /**
+     * `owner_token` của phiên đang giữ ghế — SHA-256 của cookie
+     * `vj_seat_session` (xem `src/lib/seat-session.ts`).
+     *
+     * Dùng để ràng buộc nguyên tử: ghế đang bị phiên KHÁC giữ thì đơn đặt
+     * vé phải thất bại, kể cả khi kiểm tra ở route đã qua. Không có giá trị
+     * này (khách không giữ ghế nào, hoặc request không có cookie phiên) thì
+     * MỌI lock còn hiệu lực của người khác đều được coi là xung đột.
+     */
+    seat_owner_token?: string | null;
   },
   passengers: {
     name: string;
@@ -1132,13 +1189,56 @@ export async function createBooking(
 
   const seatedCount = Math.max(0, Number(booking.seatedCount) || 0);
 
+  // Ghế mà đơn này đòi giữ. Ràng buộc lock được áp dụng NGUYÊN TỬ cùng câu
+  // `INSERT` (xem `locked_seats` bên dưới), không phải ở một câu `SELECT` riêng
+  // trước đó — vì giữa hai câu đó có cửa sổ TOCTOU: khách B kiểm tra lock
+  // (thấy trống), khách A giữ ghế, khách B tạo booking, và cả hai đều thắng.
+  const requestedSeatNumbers = (seats || []).map((seat) => seat.seat_number);
+
   const rows = (await sql`
-    WITH reserved_flight AS (
+    WITH locked_seats AS (
+      -- Khoá những dòng 'seat_locks' mà phiên này được phép giữ, và ĐỒNG
+      -- THỜI phát hiện ghế nào đang bị phiên khác giữ.
+      --
+      -- FOR UPDATE khoá hàng đang xét, nên hai request cùng lúc không thể
+      -- cùng kết luận "ghế này trống": request thứ hai chờ hàng được mở khoá
+      -- rồi mới đọc được owner_token mới.
+      --
+      -- Điều kiện IS DISTINCT FROM là phần fail-closed: lock mồ côi
+      -- (owner_token IS NULL) không chặn ai — nó không chứng minh được chủ
+      -- sở hữu, và tự hết hạn sau 10 phút. Còn lock CÓ chủ sở hữu mà chủ
+      -- sở hữu khác phiên này thì chặn.
+      --
+      -- Danh sách ghế được truyền dưới dạng jsonb rồi tách ra, thay vì
+      -- bind mảng trực tiếp: driver Neon serialize mảng thành mảng
+      -- Postgres, nhưng bind kiểu ::text[] qua tagged template là đường dẫn
+      -- không được kiểm chứng ở đây (xem getTripById).
+      SELECT sl.seat_number AS blocked_seat
+      FROM seat_locks sl
+      WHERE sl.flight_id = ${booking.flight_id}
+        AND sl.seat_number IN (
+          SELECT jsonb_array_elements_text(${JSON.stringify(requestedSeatNumbers)}::jsonb)
+        )
+        AND sl.expires_at > NOW()
+        AND sl.owner_token IS NOT NULL
+        AND sl.owner_token IS DISTINCT FROM ${booking.seat_owner_token ?? null}::text
+      FOR UPDATE
+    ),
+    seat_guard AS (
+      SELECT
+        (SELECT COUNT(*)::int FROM locked_seats) AS conflict_count
+    ),
+    reserved_flight AS (
       UPDATE flights
       SET available = available - ${seatedCount}
-      WHERE id = ${booking.flight_id} AND available >= ${seatedCount}
+      WHERE id = ${booking.flight_id}
+        AND available >= ${seatedCount}
+        -- Chỉ trừ ghế khi KHÔNG có xung đột lock. Nếu không có điều kiện này
+        -- thì một data-modifying CTE luôn chạy, và đơn bị từ chối vì ghế
+        -- bị giữ vẫn làm mất chỗ trên chuyến bay.
+        AND (SELECT conflict_count FROM seat_guard) = 0
       RETURNING id
-    ),
+  ),
     new_booking AS (
       INSERT INTO bookings (user_id, flight_id, status, total_price, trip_id, leg_role)
       SELECT
@@ -1167,7 +1267,7 @@ export async function createBooking(
           passenger_type text
         )
       RETURNING 1
-    ),
+  ),
     inserted_consents AS (
       INSERT INTO booking_consents (
         booking_id, marketing, survey, retain_for_future_booking, policy_accepted
@@ -1204,6 +1304,24 @@ export async function createBooking(
     )
     SELECT b.* FROM new_booking b
   `) as BookingRecord[];
+
+  // `rows` rỗng khi đơn bị từ chối — có thể vì chuyến bay hết chỗ, hoặc vì
+  // một ghế đang bị phiên khác giữ. Hai trường hợp này phải phân biệt được:
+  // "hết ghế" và "ghế có người giữ" là hai thông báo khác nhau, và client
+  // xử lý khác nhau (client kia chỉ cần đổi ghế).
+  if (!rows || rows.length === 0) {
+    if (requestedSeatNumbers.length > 0) {
+      const blocked = await findForeignSeatLocks(
+        booking.flight_id,
+        requestedSeatNumbers,
+        booking.seat_owner_token ?? null
+      );
+      if (blocked.length > 0) {
+        throw new SeatLockConflictError(blocked);
+      }
+    }
+    return undefined as unknown as BookingRecord;
+  }
 
   // Ghế của từng hành khách (migration 046) — ghi SAU câu trên, vì một
   // data-modifying CTE không nhìn thấy dòng mà CTE khác vừa ghi (cùng giới

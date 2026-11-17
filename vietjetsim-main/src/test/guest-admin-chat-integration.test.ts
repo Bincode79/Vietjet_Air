@@ -30,7 +30,9 @@ describe('End-to-End Chat Flow: Guest User <-> Admin Connection & Logic', () => 
 
     const conversationId = guestData.conversationId;
 
-    const guestToken = guestRes.cookies.get('access_token')?.value;
+    const cookieHeader = guestRes.headers.get('set-cookie') || '';
+    const tokenMatch = cookieHeader.match(/access_token=([^;]+)/);
+    const guestToken = tokenMatch ? tokenMatch[1] : undefined;
     expect(guestToken).toBeDefined();
 
     const csrfToken = 'test-valid-csrf-token-32-chars-long!';

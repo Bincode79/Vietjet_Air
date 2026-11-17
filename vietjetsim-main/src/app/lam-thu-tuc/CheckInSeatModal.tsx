@@ -31,7 +31,9 @@ export default function CheckInSeatModal({
       liveSeatData.occupied.forEach((s) => set.add(s));
     }
     if (liveSeatData?.locked) {
-      liveSeatData.locked.forEach((l) => set.add(l.seatId));
+      liveSeatData.locked.forEach((l) => {
+        if (!l.mine) set.add(l.seatId);
+      });
     }
     // Allow the user to keep their current seat if they already had it
     if (currentSeat) {
@@ -75,25 +77,25 @@ export default function CheckInSeatModal({
       const prevSeat = selectedSeat;
       setSelectedSeat(seatId);
 
-      // Lock new seat & unlock previous seat
+      // Lock new seat & unlock previous seat.
+      //
+      // Không gửi mã phiên nào: lock được chứng minh bằng cookie
+      // `vj_seat_session` do server cấp (httpOnly), nên client không cần — và
+      // không nên — tự sinh.
       try {
-        const sessionId =
-          (typeof window !== 'undefined' && sessionStorage.getItem('vietjet_seat_session')) ||
-          'checkin_sess_' + Math.random().toString(36).substring(2, 9);
-
         if (flightId) {
           if (prevSeat && prevSeat !== seatId) {
             void fetch('/api/ghe/khoa', {
               method: 'DELETE',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ flightId, seatIds: [prevSeat], sessionId }),
+              body: JSON.stringify({ flightId, seatIds: [prevSeat] }),
             }).catch(() => {});
           }
 
           void fetch('/api/ghe/khoa', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ flightId, seatIds: [seatId], sessionId }),
+            body: JSON.stringify({ flightId, seatIds: [seatId] }),
           }).catch(() => {});
         }
       } catch {

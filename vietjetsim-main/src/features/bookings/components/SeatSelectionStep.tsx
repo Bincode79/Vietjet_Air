@@ -289,16 +289,11 @@ export default function SeatSelectionStep({
     selectedRef.current = selected;
   }, [selected]);
 
-  const getSessionId = useCallback(() => {
-    if (typeof window === 'undefined') return '';
-    let sid = sessionStorage.getItem('vietjet_seat_session');
-    if (!sid) {
-      sid = 'sess_' + Math.random().toString(36).substring(2, 10) + Date.now().toString(36);
-      sessionStorage.setItem('vietjet_seat_session', sid);
-    }
-    return sid;
-  }, []);
-
+  // Ghế được giữ bằng cookie `vj_seat_session` do SERVER cấp (httpOnly), nên
+  // client không có (và không cần) mã phiên nào. `getSessionId` trước đây sinh
+  // một chuỗi ngẫu nhiên trong `sessionStorage` và gửi lên — nhưng server đã
+  // bỏ đọc trường đó từ lâu, nên nó chỉ làm rối và khiến ta tưởng rằng
+  // client có quyền sở hữu lock.
   useEffect(() => {
     if (holdTimer !== null) {
       if (intervalRef.current) clearInterval(intervalRef.current);
@@ -314,7 +309,6 @@ export default function SeatSelectionStep({
                 body: JSON.stringify({
                   flightId: flight.id,
                   seatIds: selectedRef.current,
-                  sessionId: getSessionId(),
                 }),
               }).catch(() => {});
             }
@@ -329,14 +323,13 @@ export default function SeatSelectionStep({
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
-  }, [holdTimer, flight.id, getSessionId]);
+  }, [holdTimer, flight.id]);
 
   const [exitRowCandidate, setExitRowCandidate] = useState<string | null>(null);
 
   // Merge live SSE seat data into local dynamicSeats state
   useEffect(() => {
     if (!liveSeatData) return;
-    const mySession = getSessionId();
 
     setDynamicSeats((prev) => {
       const next = { ...prev };
@@ -350,7 +343,12 @@ export default function SeatSelectionStep({
         // Rendering it as "đã đặt" made the seat look unavailable to its own
         // holder, and `toggleSeat` refused to deselect it (`status ===
         // 'occupied'`), so the customer could not change their mind.
-        if (lock.sessionId && mySession && lock.sessionId === mySession) continue;
+        //
+        // The server decides this and says so with `mine`. It used to send the
+        // raw `session_id` and the client compared it with its own generated
+        // id — but the server no longer sends that id, so the comparison never
+        // matched and the customer's own seat was drawn as taken.
+        if (lock.mine) continue;
         if (next[lock.seatId] && next[lock.seatId].status !== 'occupied') {
           next[lock.seatId] = { ...next[lock.seatId], status: 'occupied' };
         }
@@ -359,7 +357,7 @@ export default function SeatSelectionStep({
     });
     // Deselect any seat that became occupied remotely
     setSelected((prev) => prev.filter((id) => !liveSeatData.occupied.includes(id)));
-  }, [liveSeatData, getSessionId]);
+  }, [liveSeatData]);
 
   // A child must sit beside an adult; an infant is absent here because it
   // rides on a lap and is filtered out of `seatedPassengers`.
@@ -383,11 +381,10 @@ export default function SeatSelectionStep({
         body: JSON.stringify({
           flightId: flight.id,
           seatIds: [seatId],
-          sessionId: getSessionId(),
         }),
       }).catch(() => {});
     },
-    [flight.id, getSessionId]
+    [flight.id]
   );
 
   const unlockSeatRemote = useCallback(
@@ -399,11 +396,10 @@ export default function SeatSelectionStep({
         body: JSON.stringify({
           flightId: flight.id,
           seatIds: [seatId],
-          sessionId: getSessionId(),
         }),
       }).catch(() => {});
     },
-    [flight.id, getSessionId]
+    [flight.id]
   );
 
   // Release locks on unmount
@@ -416,13 +412,12 @@ export default function SeatSelectionStep({
           body: JSON.stringify({
             flightId: flight.id,
             seatIds: selectedRef.current,
-            sessionId: getSessionId(),
           }),
           keepalive: true,
         }).catch(() => {});
       }
     };
-  }, [flight.id, getSessionId]);
+  }, [flight.id]);
 
   const toggleSeat = useCallback(
     (seatId: string) => {

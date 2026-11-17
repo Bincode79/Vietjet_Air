@@ -34,7 +34,9 @@ export default function SeatChangeModal({ leg, onClose, onChanged }: SeatChangeM
   const occupiedSet = useMemo(() => {
     const set = new Set<string>();
     liveSeatData?.occupied?.forEach((seat) => set.add(seat));
-    liveSeatData?.locked?.forEach((lock) => set.add(lock.seatId));
+    liveSeatData?.locked?.forEach((lock) => {
+      if (!lock.mine) set.add(lock.seatId);
+    });
     // Ghế hiện tại của chính khách vẫn chọn được (không phải ghế trống).
     for (const passenger of leg.passengers) {
       if (passenger.seat_number) set.delete(passenger.seat_number);
