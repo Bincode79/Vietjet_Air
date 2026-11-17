@@ -58,87 +58,13 @@ export function BaggageLuggageIcon({ size = 32, className = '', ...props }: Icon
     <svg
       width={size}
       height={size}
-      viewBox="0 0 48 48"
+      viewBox="0 0 60 80"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       className={className}
       {...props}
     >
-      <defs>
-        <linearGradient
-          id="vjLuggageBody"
-          x1="12"
-          y1="14"
-          x2="36"
-          y2="44"
-          gradientUnits="userSpaceOnUse"
-        >
-          <stop stopColor="#EC2029" />
-          <stop offset="1" stopColor="#991B1B" />
-        </linearGradient>
-      </defs>
-      {/* Retractable Handle */}
-      <path
-        d="M18 14V7c0-1.1 0.9-2 2-2h8c1.1 0 2 0.9 2 2v7"
-        stroke="#4B5563"
-        strokeWidth="2.5"
-        strokeLinecap="round"
-      />
-      {/* Suitcase Body */}
-      <rect x="11" y="13" width="26" height="30" rx="5" fill="url(#vjLuggageBody)" />
-      {/* Corner protectors in charcoal */}
-      <path d="M11 18c0-2.8 2.2-5 5-5h2v6h-7v-1z" fill="#7F1D1D" opacity="0.8" />
-      <path d="M37 18c0-2.8-2.2-5-5-5h-2v6h7v-1z" fill="#7F1D1D" opacity="0.8" />
-      {/* Sleek Aerodynamic Ribs / Grooves */}
-      <line
-        x1="18"
-        y1="18"
-        x2="18"
-        y2="38"
-        stroke="#FFFFFF"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        opacity="0.3"
-      />
-      <line
-        x1="24"
-        y1="18"
-        x2="24"
-        y2="38"
-        stroke="#FFFFFF"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        opacity="0.3"
-      />
-      <line
-        x1="30"
-        y1="18"
-        x2="30"
-        y2="38"
-        stroke="#FFFFFF"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        opacity="0.3"
-      />
-      {/* Signature Vietjet Yellow Luggage Tag */}
-      <rect
-        x="28"
-        y="15"
-        width="7"
-        height="10"
-        rx="1.5"
-        fill="#FFCC00"
-        stroke="#CA8A04"
-        strokeWidth="0.5"
-      />
-      <circle cx="31.5" cy="17.5" r="0.8" fill="#B45309" />
-      <line x1="30" y1="20" x2="33" y2="20" stroke="#B45309" strokeWidth="0.8" />
-      <line x1="30" y1="22" x2="33" y2="22" stroke="#B45309" strokeWidth="0.8" />
-      {/* 360-degree Spinner Wheels */}
-      <circle cx="16" cy="44" r="2.5" fill="#1F2937" />
-      <circle cx="16" cy="44" r="1" fill="#9CA3AF" />
-      <circle cx="32" cy="44" r="2.5" fill="#1F2937" />
-      <circle cx="32" cy="44" r="1" fill="#9CA3AF" />
+      <image href="/images/ancillary/baggage.png" width="60" height="80" preserveAspectRatio="xMidYMid meet" />
     </svg>
   );
 }
@@ -149,71 +75,13 @@ export function SeatArmchairIcon({ size = 32, className = '', ...props }: IconPr
     <svg
       width={size}
       height={size}
-      viewBox="0 0 48 48"
+      viewBox="0 0 60 80"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       className={className}
       {...props}
     >
-      <defs>
-        <linearGradient
-          id="vjSeatBack"
-          x1="14"
-          y1="6"
-          x2="34"
-          y2="42"
-          gradientUnits="userSpaceOnUse"
-        >
-          <stop stopColor="#334155" />
-          <stop offset="1" stopColor="#0F172A" />
-        </linearGradient>
-      </defs>
-      {/* Vietjet Signature Red Leather Antimacassar / Headrest */}
-      <rect
-        x="17"
-        y="5"
-        width="14"
-        height="8"
-        rx="3.5"
-        fill="#EC2029"
-        stroke="#B91C1C"
-        strokeWidth="0.8"
-      />
-      <path d="M21 9h6" stroke="#FFCC00" strokeWidth="1.2" strokeLinecap="round" />
-      {/* Ergonomic Backrest */}
-      <path
-        d="M17 14c-2.2 0-4 1.8-4 4v13c0 1.1 0.9 2 2 2h18c1.1 0 2-0.9 2-2V18c0-2.2-1.8-4-4-4H17z"
-        fill="url(#vjSeatBack)"
-      />
-      {/* Padded Seat Cushion */}
-      <rect
-        x="12"
-        y="30"
-        width="24"
-        height="6.5"
-        rx="3"
-        fill="#1E293B"
-        stroke="#0F172A"
-        strokeWidth="0.8"
-      />
-      {/* Armrests */}
-      <rect x="9" y="23" width="3.5" height="11" rx="1.75" fill="#64748B" />
-      <rect x="35.5" y="23" width="3.5" height="11" rx="1.75" fill="#64748B" />
-      {/* Seat Stand / Base */}
-      <path d="M22 36.5v5.5h4v-5.5" stroke="#475569" strokeWidth="2.5" strokeLinecap="round" />
-      <line
-        x1="17"
-        y1="42"
-        x2="31"
-        y2="42"
-        stroke="#334155"
-        strokeWidth="2.5"
-        strokeLinecap="round"
-      />
-      {/* Gold Airline Seatbelt Buckle */}
-      <path d="M19 28.5h4" stroke="#94A3B8" strokeWidth="1.8" strokeLinecap="round" />
-      <rect x="23" y="27.5" width="3" height="2" rx="0.5" fill="#FFCC00" />
-      <path d="M26 28.5h3" stroke="#94A3B8" strokeWidth="1.8" strokeLinecap="round" />
+      <image href="/images/ancillary/seat.png" width="60" height="80" preserveAspectRatio="xMidYMid meet" />
     </svg>
   );
 }
@@ -364,51 +232,13 @@ export function SkyCareInsuranceIcon({ size = 32, className = '', ...props }: Ic
     <svg
       width={size}
       height={size}
-      viewBox="0 0 48 48"
+      viewBox="0 0 60 80"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       className={className}
       {...props}
     >
-      <defs>
-        <linearGradient
-          id="vjShieldGrad"
-          x1="12"
-          y1="6"
-          x2="36"
-          y2="42"
-          gradientUnits="userSpaceOnUse"
-        >
-          <stop stopColor="#EC2029" />
-          <stop offset="0.6" stopColor="#DC2626" />
-          <stop offset="1" stopColor="#991B1B" />
-        </linearGradient>
-      </defs>
-      {/* Shield Base */}
-      <path
-        d="M24 5l14 5v12c0 11-6.2 18.5-14 21.5-7.8-3-14-10.5-14-21.5V10l14-5z"
-        fill="url(#vjShieldGrad)"
-      />
-      {/* Outer Gold Crest Trim */}
-      <path
-        d="M24 7.5l11.5 4.2v9.8c0 9-4.8 15.3-11.5 17.8-6.7-2.5-11.5-8.8-11.5-17.8v-9.8L24 7.5z"
-        stroke="#FFCC00"
-        strokeWidth="1.4"
-        fill="none"
-      />
-      {/* Inner lighter highlight */}
-      <path
-        d="M24 10l9 3.2v7.5c0 6.8-3.5 11.8-9 14-5.5-2.2-9-7.2-9-14v-7.5L24 10z"
-        fill="#FFFFFF"
-        opacity="0.1"
-      />
-      {/* Sky Care Golden Airplane Emblem */}
-      <path
-        d="M24 15l2.2 5.5 6 1.5-5 3.5 1.5 6-4.7-3.5-4.7 3.5 1.5-6-5-3.5 6-1.5L24 15z"
-        fill="#FFCC00"
-      />
-      {/* Center White Safety Star */}
-      <circle cx="24" cy="24" r="1.8" fill="#FFFFFF" />
+      <image href="/images/ancillary/insurance.png" width="60" height="80" preserveAspectRatio="xMidYMid meet" />
     </svg>
   );
 }
@@ -662,54 +492,19 @@ export function EvoucherGiftIcon({ size = 32, className = '', ...props }: IconPr
   );
 }
 
-// 11. Icon SkyKIDS — Trẻ em bay một mình
+// 11. Icon SkyKIDS — Trẻ em bay một mình / Dịch vụ theo hành khách
 export function SkyKidsIcon({ size = 48, className = '', ...props }: IconProps) {
   return (
     <svg
       width={size}
       height={size}
-      viewBox="0 0 64 64"
+      viewBox="0 0 55 75"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       className={className}
       {...props}
     >
-      <defs>
-        <linearGradient
-          id="vjCapGrad"
-          x1="16"
-          y1="12"
-          x2="48"
-          y2="28"
-          gradientUnits="userSpaceOnUse"
-        >
-          <stop stopColor="#EC2029" />
-          <stop offset="1" stopColor="#991B1B" />
-        </linearGradient>
-      </defs>
-      {/* Pilot Cap */}
-      <path d="M18 24c0-6.6 6.3-12 14-12s14 5.4 14 12v3H18v-3z" fill="url(#vjCapGrad)" />
-      {/* Visor */}
-      <path d="M14 27h36c0 2-8 5-18 5s-18-3-18-5z" fill="#1F2937" />
-      {/* Gold Pilot Badge */}
-      <circle cx="32" cy="20" r="4.5" fill="#FFCC00" />
-      <path
-        d="M32 17l1.5 2 2.5 0.5-2 1.5 0.5 2.5-2.5-1.5-2.5 1.5 0.5-2.5-2-1.5 2.5-0.5z"
-        fill="#B45309"
-      />
-      {/* Kid Face */}
-      <circle cx="32" cy="38" r="14" fill="#FED7AA" />
-      {/* Cheeks blush */}
-      <circle cx="23" cy="40" r="2.5" fill="#FCA5A5" opacity="0.7" />
-      <circle cx="41" cy="40" r="2.5" fill="#FCA5A5" opacity="0.7" />
-      {/* Happy Eyes */}
-      <path d="M24 35c0.5-1.5 2.5-1.5 3 0" stroke="#374151" strokeWidth="2" strokeLinecap="round" />
-      <path d="M37 35c0.5-1.5 2.5-1.5 3 0" stroke="#374151" strokeWidth="2" strokeLinecap="round" />
-      {/* Big Smile */}
-      <path d="M27 41c1.5 3 6.5 3 8 0" stroke="#B91C1C" strokeWidth="2.2" strokeLinecap="round" />
-      {/* Airplane wings pin on collar */}
-      <path d="M22 54h20l-4 6H26l-4-6z" fill="#EC2029" />
-      <polygon points="32,54 34,58 32,60 30,58" fill="#FFCC00" />
+      <image href="/images/ancillary/priority.png" width="55" height="75" preserveAspectRatio="xMidYMid meet" />
     </svg>
   );
 }
@@ -720,43 +515,13 @@ export function PetTravelIcon({ size = 32, className = '', ...props }: IconProps
     <svg
       width={size}
       height={size}
-      viewBox="0 0 48 48"
+      viewBox="0 0 55 76"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       className={className}
       {...props}
     >
-      <defs>
-        <linearGradient
-          id="vjPetGrad"
-          x1="12"
-          y1="14"
-          x2="36"
-          y2="42"
-          gradientUnits="userSpaceOnUse"
-        >
-          <stop stopColor="#F59E0B" />
-          <stop offset="1" stopColor="#B45309" />
-        </linearGradient>
-      </defs>
-      {/* Pet Carrier Bag */}
-      <rect x="10" y="18" width="28" height="24" rx="6" fill="url(#vjPetGrad)" />
-      {/* Mesh Breathing Window */}
-      <circle cx="24" cy="30" r="7.5" fill="#FEF3C7" stroke="#92400E" strokeWidth="1.5" />
-      {/* Paw Print Inside */}
-      <ellipse cx="24" cy="32" rx="3" ry="2.2" fill="#78350F" />
-      <circle cx="21" cy="28" r="1.3" fill="#78350F" />
-      <circle cx="24" cy="27" r="1.3" fill="#78350F" />
-      <circle cx="27" cy="28" r="1.3" fill="#78350F" />
-      {/* Handle */}
-      <path
-        d="M19 18v-4c0-2.2 2.2-4 5-4s5 1.8 5 4v4"
-        stroke="#78350F"
-        strokeWidth="2.5"
-        strokeLinecap="round"
-      />
-      {/* Tag */}
-      <circle cx="34" cy="22" r="2" fill="#EC2029" />
+      <image href="/images/ancillary/pet.png" width="55" height="76" preserveAspectRatio="xMidYMid meet" />
     </svg>
   );
 }
@@ -767,82 +532,13 @@ export function PriorityFastTrackIcon({ size = 32, className = '', ...props }: I
     <svg
       width={size}
       height={size}
-      viewBox="0 0 48 48"
+      viewBox="0 0 55 75"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       className={className}
       {...props}
     >
-      <defs>
-        <linearGradient
-          id="vjPriorityGrad"
-          x1="10"
-          y1="10"
-          x2="38"
-          y2="38"
-          gradientUnits="userSpaceOnUse"
-        >
-          <stop stopColor="#EC2029" />
-          <stop offset="1" stopColor="#991B1B" />
-        </linearGradient>
-      </defs>
-      {/* Red Carpet */}
-      <path d="M16 42l4-24h8l4 24H16z" fill="url(#vjPriorityGrad)" />
-      <line
-        x1="24"
-        y1="18"
-        x2="24"
-        y2="42"
-        stroke="#FFCC00"
-        strokeWidth="1.5"
-        strokeDasharray="2 2"
-      />
-      {/* Stanchions (VIP Gold Posts) */}
-      <line
-        x1="13"
-        y1="22"
-        x2="13"
-        y2="38"
-        stroke="#CA8A04"
-        strokeWidth="2"
-        strokeLinecap="round"
-      />
-      <circle cx="13" cy="21" r="2.5" fill="#FFCC00" />
-      <rect x="11" y="38" width="4" height="2" rx="0.5" fill="#CA8A04" />
-
-      <line
-        x1="35"
-        y1="22"
-        x2="35"
-        y2="38"
-        stroke="#CA8A04"
-        strokeWidth="2"
-        strokeLinecap="round"
-      />
-      <circle cx="35" cy="21" r="2.5" fill="#FFCC00" />
-      <rect x="33" y="38" width="4" height="2" rx="0.5" fill="#CA8A04" />
-      {/* Velvet Rope */}
-      <path
-        d="M13 22c5 4 8 4 11 0"
-        stroke="#DC2626"
-        strokeWidth="2"
-        strokeLinecap="round"
-        fill="none"
-      />
-      <path
-        d="M24 22c3 4 8 4 11 0"
-        stroke="#DC2626"
-        strokeWidth="2"
-        strokeLinecap="round"
-        fill="none"
-      />
-      {/* SkyBoss / VIP Crown / Star */}
-      <polygon
-        points="24,6 26.5,12 32,8 30,15 18,15 16,8 21.5,12"
-        fill="#FFCC00"
-        stroke="#CA8A04"
-        strokeWidth="0.8"
-      />
+      <image href="/images/ancillary/priority.png" width="55" height="75" preserveAspectRatio="xMidYMid meet" />
     </svg>
   );
 }
