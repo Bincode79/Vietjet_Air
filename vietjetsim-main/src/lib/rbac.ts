@@ -71,7 +71,10 @@ export type Permission =
   | 'agency:create'
   | 'agency:edit'
   | 'agency:delete'
-  | 'agency:status_change';
+  | 'agency:status_change'
+  | 'checkin:list'
+  | 'checkin:view'
+  | 'checkin:cancel';
 
 export const PERMISSION_LABELS: Record<Permission, string> = {
   'user:list': 'Xem danh sách người dùng',
@@ -126,6 +129,9 @@ export const PERMISSION_LABELS: Record<Permission, string> = {
   'agency:edit': 'Chỉnh sửa đại lý',
   'agency:delete': 'Xóa đại lý',
   'agency:status_change': 'Thay đổi trạng thái đại lý',
+  'checkin:list': 'Xem danh sách check-in',
+  'checkin:view': 'Xem chi tiết check-in',
+  'checkin:cancel': 'Huỷ check-in',
 };
 
 // ═════════════════════════════════════════════════════════════════════
@@ -246,6 +252,13 @@ export const PERMISSION_CATEGORIES: PermissionCategory[] = [
       'discount:delete',
       'discount:status_change',
     ],
+  },
+  {
+    key: 'checkin',
+    name: 'checkin',
+    label: 'Làm thủ tục (check-in)',
+    icon: 'ClipboardDocumentCheckIcon',
+    permissions: ['checkin:list', 'checkin:view', 'checkin:cancel'],
   },
   {
     key: 'agency',
@@ -392,6 +405,8 @@ const OPS_PERMISSIONS = new Set<Permission>([
   'booking:list',
   'booking:view',
   'booking:status_change',
+  'checkin:list',
+  'checkin:view',
   'airport:manage',
   'announcement:crud',
   'user:list',
@@ -425,6 +440,8 @@ const SUPPORT_PERMISSIONS = new Set<Permission>([
   'booking:list',
   'booking:view',
   'booking:edit',
+  'checkin:list',
+  'checkin:view',
   'refund:list',
   'user:list',
   'user:view',

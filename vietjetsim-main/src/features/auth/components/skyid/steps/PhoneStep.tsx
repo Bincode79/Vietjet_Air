@@ -133,7 +133,7 @@ export default function PhoneStep({
             type="button"
             onClick={onSendLoginOtp}
             disabled={loading}
-            className="text-sm font-semibold text-[#e60a32] hover:underline cursor-pointer transition-colors disabled:cursor-not-allowed disabled:text-[#e60a32]/50"
+            className="text-sm font-semibold text-primary hover:underline cursor-pointer transition-colors disabled:cursor-not-allowed disabled:opacity-50"
           >
             Đăng nhập bằng mã OTP
           </button>

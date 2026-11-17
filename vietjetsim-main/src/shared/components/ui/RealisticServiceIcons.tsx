@@ -66,7 +66,12 @@ export function BaggageLuggageIcon({ size, width, height, className = '', ...pro
       className={className}
       {...props}
     >
-      <image href="/images/ancillary/baggage.png" width="60" height="80" preserveAspectRatio="xMidYMid meet" />
+      <image
+        href="/images/ancillary/baggage.png"
+        width="60"
+        height="80"
+        preserveAspectRatio="xMidYMid meet"
+      />
     </svg>
   );
 }
@@ -85,7 +90,12 @@ export function SeatArmchairIcon({ size, width, height, className = '', ...props
       className={className}
       {...props}
     >
-      <image href="/images/ancillary/seat.png" width="60" height="80" preserveAspectRatio="xMidYMid meet" />
+      <image
+        href="/images/ancillary/seat.png"
+        width="60"
+        height="80"
+        preserveAspectRatio="xMidYMid meet"
+      />
     </svg>
   );
 }
@@ -104,7 +114,12 @@ export function HotMealIcon({ size, width, height, className = '', ...props }: I
       className={className}
       {...props}
     >
-      <image href="/images/ancillary/meal.png" width="60" height="80" preserveAspectRatio="xMidYMid meet" />
+      <image
+        href="/images/ancillary/meal.png"
+        width="60"
+        height="80"
+        preserveAspectRatio="xMidYMid meet"
+      />
     </svg>
   );
 }
@@ -211,7 +226,12 @@ export function SkyCareInsuranceIcon({ size, width, height, className = '', ...p
       className={className}
       {...props}
     >
-      <image href="/images/ancillary/insurance.png" width="60" height="80" preserveAspectRatio="xMidYMid meet" />
+      <image
+        href="/images/ancillary/insurance.png"
+        width="60"
+        height="80"
+        preserveAspectRatio="xMidYMid meet"
+      />
     </svg>
   );
 }
@@ -335,7 +355,14 @@ export function AirportTaxiIcon({ size, width, height, className = '', ...props 
       {...props}
     >
       <defs>
-        <linearGradient id="vjTaxiPill" x1="30" y1="0" x2="30" y2="80" gradientUnits="userSpaceOnUse">
+        <linearGradient
+          id="vjTaxiPill"
+          x1="30"
+          y1="0"
+          x2="30"
+          y2="80"
+          gradientUnits="userSpaceOnUse"
+        >
           <stop stopColor="#FFDE00" />
           <stop offset="1" stopColor="#FFAE00" />
         </linearGradient>
@@ -344,12 +371,27 @@ export function AirportTaxiIcon({ size, width, height, className = '', ...props 
       <rect width="60" height="80" rx="30" fill="url(#vjTaxiPill)" />
 
       {/* Taxi Roof Sign */}
-      <rect x="25" y="24" width="10" height="4" rx="1.5" fill="#FFFFFF" stroke="#0284C7" strokeWidth="0.8" />
+      <rect
+        x="25"
+        y="24"
+        width="10"
+        height="4"
+        rx="1.5"
+        fill="#FFFFFF"
+        stroke="#0284C7"
+        strokeWidth="0.8"
+      />
       <rect x="27.5" y="25.5" width="5" height="1.2" fill="#0284C7" />
       {/* Car Cabin / Roof */}
-      <path d="M21 33 L24 27 C24.6 26 25.5 26 26.5 26 L33.5 26 C34.5 26 35.4 26 36 27 L39 33 Z" fill="#0284C7" />
+      <path
+        d="M21 33 L24 27 C24.6 26 25.5 26 26.5 26 L33.5 26 C34.5 26 35.4 26 36 27 L39 33 Z"
+        fill="#0284C7"
+      />
       {/* Windshield */}
-      <path d="M22.5 32.5 L25.2 28 C25.5 27.6 26 27.4 26.5 27.4 L33.5 27.4 C34 27.4 34.5 27.6 34.8 28 L37.5 32.5 Z" fill="#E0F2FE" />
+      <path
+        d="M22.5 32.5 L25.2 28 C25.5 27.6 26 27.4 26.5 27.4 L33.5 27.4 C34 27.4 34.5 27.6 34.8 28 L37.5 32.5 Z"
+        fill="#E0F2FE"
+      />
       {/* Car Body */}
       <rect x="14" y="33" width="32" height="17" rx="4" fill="#0284C7" />
       {/* Grille */}
@@ -453,7 +495,12 @@ export function SkyKidsIcon({ size, width, height, className = '', ...props }: I
       className={className}
       {...props}
     >
-      <image href="/images/ancillary/priority.png" width="55" height="75" preserveAspectRatio="xMidYMid meet" />
+      <image
+        href="/images/ancillary/priority.png"
+        width="55"
+        height="75"
+        preserveAspectRatio="xMidYMid meet"
+      />
     </svg>
   );
 }
@@ -472,13 +519,24 @@ export function PetTravelIcon({ size, width, height, className = '', ...props }:
       className={className}
       {...props}
     >
-      <image href="/images/ancillary/pet.png" width="55" height="76" preserveAspectRatio="xMidYMid meet" />
+      <image
+        href="/images/ancillary/pet.png"
+        width="55"
+        height="76"
+        preserveAspectRatio="xMidYMid meet"
+      />
     </svg>
   );
 }
 
 // 13. Icon Check-in Ưu tiên / Fast Track (Priority Service)
-export function PriorityFastTrackIcon({ size, width, height, className = '', ...props }: IconProps) {
+export function PriorityFastTrackIcon({
+  size,
+  width,
+  height,
+  className = '',
+  ...props
+}: IconProps) {
   const w = width ?? (size ? Math.round((Number(size) * 55) / 75) : 47);
   const h = height ?? size ?? 64;
   return (
@@ -491,7 +549,12 @@ export function PriorityFastTrackIcon({ size, width, height, className = '', ...
       className={className}
       {...props}
     >
-      <image href="/images/ancillary/priority.png" width="55" height="75" preserveAspectRatio="xMidYMid meet" />
+      <image
+        href="/images/ancillary/priority.png"
+        width="55"
+        height="75"
+        preserveAspectRatio="xMidYMid meet"
+      />
     </svg>
   );
 }

@@ -659,7 +659,9 @@ function FlightBookingClientInner({
               data-testid="tab-leg-outbound"
               onClick={() => setCurrentLeg('outbound')}
             >
-              <span>Chiều đi: {params.from} → {params.to}</span>
+              <span>
+                Chiều đi: {params.from} → {params.to}
+              </span>
               <span>{currentLeg === 'outbound' ? 'Đang chọn' : 'Chưa chọn'}</span>
             </button>
             <button
@@ -667,7 +669,9 @@ function FlightBookingClientInner({
               data-testid="tab-leg-inbound"
               onClick={() => setCurrentLeg('inbound')}
             >
-              <span>Chiều về: {params.to} → {params.from}</span>
+              <span>
+                Chiều về: {params.to} → {params.from}
+              </span>
               <span>{currentLeg === 'inbound' ? 'Đang chọn' : 'Chưa chọn'}</span>
             </button>
           </div>

@@ -1,0 +1,96 @@
+{
+  "package": {
+    "name": "vietjet-complete-20261117-132232.tar.gz",
+    "size_mb": 36,
+    "build_date": "2026-11-17T13:22:32+07:00",
+    "version": "1.0.0",
+    "status": "production-ready"
+  },
+  "requirements": {
+    "os": ["Ubuntu 20.04+", "Debian 11+"],
+    "nodejs": "18.17+ or 20.x",
+    "ram": "2GB minimum (4GB recommended)",
+    "storage": "10GB+ free",
+    "cpu": "1+ cores (2+ recommended)",
+    "software": ["PM2", "Nginx", "PostgreSQL 14+", "Certbot"]
+  },
+  "contents": {
+    "build": {
+      "framework": "Next.js 16.4.6",
+      "react": "19.0.3",
+      "typescript": "strict mode",
+      "api_routes": 84,
+      "pages": 22,
+      "components": 121,
+      "tests": 1215
+    },
+    "infrastructure": [
+      "PM2 configuration",
+      "Nginx reverse proxy config",
+      "SSL/TLS setup",
+      "Security headers",
+      "Gzip compression"
+    ],
+    "scripts": [
+      "backup.sh - Automated backups",
+      "update.sh - Zero-downtime updates",
+      "health-check.sh - System monitoring",
+      "quick-setup.sh - One-command setup"
+    ],
+    "documentation": [
+      "DEPLOYMENT_SUMMARY.md",
+      "DEPLOY_VPS_GUIDE.md",
+      "DEPLOYMENT_CHECKLIST.md",
+      "README_DEPLOYMENT.md",
+      "vps-scripts/README.md",
+      "DEPLOYMENT_INFO.txt"
+    ]
+  },
+  "features": [
+    "Flight search & booking",
+    "Seat selection & ancillary services",
+    "Multi-payment gateway",
+    "E-ticket & boarding pass",
+    "Real-time chat & voice support",
+    "Loyalty program",
+    "Admin dashboard (18 tabs, 68 permissions)",
+    "Responsive design (mobile/tablet/desktop)"
+  ],
+  "security": [
+    "JWT authentication with rotation",
+    "CSRF protection",
+    "Rate limiting",
+    "SQL injection prevention",
+    "XSS protection headers",
+    "RBAC (68 permissions)",
+    "2FA support",
+    "HTTPS enforced",
+    "TLS 1.2+",
+    "HSTS enabled"
+  ],
+  "deployment": {
+    "steps": 7,
+    "estimated_time": "30-60 minutes",
+    "difficulty": "intermediate",
+    "automation": "partial (with scripts)",
+    "rollback_support": true,
+    "zero_downtime_updates": true
+  },
+  "monitoring": {
+    "health_checks": 8,
+    "log_locations": [
+      "logs/pm2-out.log",
+      "logs/pm2-error.log",
+      "/var/log/nginx/access.log",
+      "/var/log/nginx/error.log"
+    ],
+    "monitoring_tools": ["PM2", "Health Check Script"],
+    "backup_retention": "7 days"
+  },
+  "support": {
+    "documentation": "complete",
+    "scripts": "ready",
+    "troubleshooting": "included",
+    "rollback_procedure": "automated"
+  }
+}

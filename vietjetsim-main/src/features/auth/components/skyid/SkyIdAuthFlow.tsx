@@ -172,7 +172,7 @@ export default function SkyIdAuthFlow({
             ? `Tài khoản của ${fullName} đã sẵn sàng. Chúc bạn có những trải nghiệm tuyệt vời!`
             : 'Chào mừng bạn đã trở lại Vietjet Air!',
       });
-      
+
       // Show success animation for 1.5s before redirect
       setTimeout(() => {
         onClose?.();
@@ -641,7 +641,7 @@ export default function SkyIdAuthFlow({
         <h1 className="vj-skyid-title">{title}</h1>
         {subtitle ? <p className="vj-skyid-subtitle mt-1">{subtitle}</p> : null}
         <div className="mt-4 text-left">{body}</div>
-        
+
         {/* Loading overlay */}
         {loading && (
           <div className="vj-skyid-loading-overlay">
@@ -649,28 +649,28 @@ export default function SkyIdAuthFlow({
             <p className="vj-skyid-loading-text">Đang xác thực...</p>
           </div>
         )}
-        
+
         {/* Success overlay */}
         {success && (
           <div className="vj-skyid-success-overlay">
             <div className="vj-skyid-success-icon">
               <svg width="60" height="60" viewBox="0 0 60 60">
-                <circle 
-                  className="vj-skyid-success-circle" 
-                  cx="30" 
-                  cy="30" 
-                  r="28" 
-                  stroke="#10B981" 
-                  strokeWidth="2" 
+                <circle
+                  className="vj-skyid-success-circle"
+                  cx="30"
+                  cy="30"
+                  r="28"
+                  stroke="#10B981"
+                  strokeWidth="2"
                   fill="none"
                 />
-                <path 
-                  className="vj-skyid-success-check" 
-                  d="M17 30l8 8 18-18" 
-                  stroke="#10B981" 
-                  strokeWidth="3" 
-                  strokeLinecap="round" 
-                  strokeLinejoin="round" 
+                <path
+                  className="vj-skyid-success-check"
+                  d="M17 30l8 8 18-18"
+                  stroke="#10B981"
+                  strokeWidth="3"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                   fill="none"
                 />
               </svg>

@@ -722,7 +722,10 @@ export default function PaymentClient() {
     if (bookingCode && bookingCode !== '—') return bookingCode;
     if (booking?.bookingCode && booking.bookingCode !== '—') return booking.bookingCode;
     if (bookingId && bookingId.length >= 6) {
-      return bookingId.replace(/[^a-zA-Z0-9]/g, '').slice(-6).toUpperCase();
+      return bookingId
+        .replace(/[^a-zA-Z0-9]/g, '')
+        .slice(-6)
+        .toUpperCase();
     }
     return '';
   }, [bookingCode, booking?.bookingCode, bookingId]);
@@ -735,9 +738,7 @@ export default function PaymentClient() {
       renderTransferNote(selectedAdminAccount?.transfer_note_template, {
         code:
           effectiveBookingCode ||
-          (bookingCodeLabel !== '—'
-            ? bookingCodeLabel
-            : booking?.flightNo || 'VJ'),
+          (bookingCodeLabel !== '—' ? bookingCodeLabel : booking?.flightNo || 'VJ'),
         originalAmount: booking?.total ?? 0,
         discountAmount,
         amount: total,
@@ -2045,7 +2046,9 @@ export default function PaymentClient() {
                     </div>
                   )}
                   {promoError && (
-                    <div className="mt-2 text-xs font-semibold text-red-600 font-koho">{promoError}</div>
+                    <div className="mt-2 text-xs font-semibold text-red-600 font-koho">
+                      {promoError}
+                    </div>
                   )}
                 </div>
 
@@ -2161,11 +2164,7 @@ export default function PaymentClient() {
                       {selectedAdminAccount && (
                         <div className="space-y-4">
                           <label className="block text-xs font-bold text-black uppercase tracking-wider mb-2 font-koho flex items-center gap-1.5">
-                            <Icon
-                              name="InformationCircleIcon"
-                              size={16}
-                              className="text-black"
-                            />
+                            <Icon name="InformationCircleIcon" size={16} className="text-black" />
                             Thông tin thanh toán
                           </label>
 
@@ -2337,9 +2336,7 @@ export default function PaymentClient() {
                         fallbackAmount={total}
                         fallbackPnr={
                           effectiveBookingCode ||
-                          (bookingCodeLabel !== '—'
-                            ? bookingCodeLabel
-                            : booking?.flightNo || 'VJ')
+                          (bookingCodeLabel !== '—' ? bookingCodeLabel : booking?.flightNo || 'VJ')
                         }
                         fallbackAddInfo={transferNote}
                         methodType={selectedMethodGroup}

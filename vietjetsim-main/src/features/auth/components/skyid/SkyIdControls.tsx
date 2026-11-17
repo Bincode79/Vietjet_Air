@@ -35,11 +35,7 @@ export function SkyIdSocialButtons({
         }
         className="vj-skyid-btn-ghost flex items-center justify-center gap-2"
       >
-        <svg
-          className="w-4 h-4 shrink-0 fill-current"
-          viewBox="0 0 170 170"
-          aria-hidden="true"
-        >
+        <svg className="w-4 h-4 shrink-0 fill-current" viewBox="0 0 170 170" aria-hidden="true">
           <path d="M150.37 130.25c-2.45 5.66-5.35 10.87-8.71 15.66-4.58 6.53-8.33 11.05-11.22 13.56-4.48 4.12-9.28 6.23-14.42 6.35-3.69 0-8.14-1.05-13.32-3.18-5.19-2.12-9.97-3.17-14.34-3.17-4.58 0-9.49 1.05-14.75 3.17-5.26 2.13-9.5 3.24-12.74 3.35-4.35.13-9.16-1.9-14.42-6.08-3.7-3.08-7.71-7.88-12.04-14.42-5.74-8.71-10.22-18.73-13.43-30.06-3.21-11.32-4.82-22.3-4.82-32.93 0-14.75 3.58-27.14 10.74-37.16 7.16-10.02 16.5-15.14 28.02-15.35 4.89 0 10.24 1.25 16.05 3.75 5.8 2.5 9.77 3.86 11.91 4.08 2.61-.43 6.94-1.9 13-4.4 6.06-2.5 11.45-3.64 16.18-3.43 11.7.54 21.09 4.67 28.18 12.39-10.45 6.3-15.56 15.01-15.33 26.13.22 8.7 3.65 15.89 10.3 21.57 6.65 5.68 14.45 8.75 23.4 9.21-2.4 7.4-5.3 14.7-8.7 21.9zM119.22 33.15c0-6.74 2.45-12.87 7.34-18.39 4.9-5.52 10.87-9.04 17.91-10.56-.11 1.74-.32 3.48-.64 5.22-.32 1.74-.86 3.48-1.61 5.22-1.63 4.13-4.13 8.04-7.5 11.74-3.37 3.7-7.28 6.3-11.74 7.82-.43-.33-.86-.65-1.28-1.05-.43-.4-.75-.82-.95-1.26-.98-1.95-1.47-4.43-1.47-7.44z" />
         </svg>
         <span>Apple</span>
@@ -81,8 +77,8 @@ export function SkyIdErrorNote({ message }: { message: string }) {
   return (
     <div className="vj-skyid-error-enhanced mt-3">
       <svg className="vj-skyid-error-icon" width="16" height="16" viewBox="0 0 16 16">
-        <circle cx="8" cy="8" r="7" stroke="currentColor" strokeWidth="1.5" fill="none"/>
-        <path d="M8 4v5M8 11v1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+        <circle cx="8" cy="8" r="7" stroke="currentColor" strokeWidth="1.5" fill="none" />
+        <path d="M8 4v5M8 11v1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
       </svg>
       <span>{message}</span>
     </div>

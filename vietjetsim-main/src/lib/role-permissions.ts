@@ -135,6 +135,9 @@ const KNOWN_PERMISSIONS = new Set<string>(
       'agency:edit',
       'agency:delete',
       'agency:status_change',
+      'checkin:list',
+      'checkin:view',
+      'checkin:cancel',
     ] as Permission[]
   ).map(String)
 );

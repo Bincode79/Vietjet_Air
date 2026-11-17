@@ -45,6 +45,8 @@ coverage/
 jest-test-results.json
 test-results/
 .playwright/
+playwright-report/
+*.tar.gz
 
 # Optional: if using IDEs
 .vscode/

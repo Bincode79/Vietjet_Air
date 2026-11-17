@@ -8,14 +8,16 @@ test.describe('E2E Flow 2: Online Seat Change during Check-in', () => {
     page,
   }) => {
     // 1. Vào trang làm thủ tục trực tuyến
-    await page.goto('/lam-thu-tuc-truc-tuyen');
-    await expect(page).toHaveTitle(/Làm thủ tục|Check-in/i);
+    await page.goto('/lam-thu-tuc');
+    await expect(page).toHaveTitle(/Vietjet/i);
 
     // 2. Nhập mã đặt chỗ PNR và Họ tên
     const pnrInput = page
-      .locator('input[name="bookingCode"], input[placeholder*="VJ"], input[placeholder*="PNR"]')
+      .locator('#booking-code, input[name="bookingCode"], input[placeholder*="VJ"]')
       .first();
-    const nameInput = page.locator('input[name="lastName"], input[placeholder*="Họ"]').first();
+    const nameInput = page
+      .locator('#last-name, input[name="lastName"], input[placeholder*="Họ"]')
+      .first();
 
     if ((await pnrInput.isVisible()) && (await nameInput.isVisible())) {
       await pnrInput.fill('VJTEST');

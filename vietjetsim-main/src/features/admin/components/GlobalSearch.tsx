@@ -1,10 +1,15 @@
 'use client';
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Icon } from '@/shared/components/ui';
-import { listAdminFlights, listUsers, listAdminBookings } from '@/features/admin';
+import {
+  listAdminFlights,
+  listUsers,
+  listAdminBookings,
+  listAdminCheckins,
+} from '@/features/admin';
 
 interface SearchResult {
-  type: 'flight' | 'user' | 'booking';
+  type: 'flight' | 'user' | 'booking' | 'checkin';
   id: string;
   title: string;
   subtitle: string;
@@ -22,9 +27,9 @@ export default function GlobalSearch({ isOpen, onClose, onSelectResult }: Global
   const [results, setResults] = useState<SearchResult[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const [activeCategory, setActiveCategory] = useState<'all' | 'flight' | 'user' | 'booking'>(
-    'all'
-  );
+  const [activeCategory, setActiveCategory] = useState<
+    'all' | 'flight' | 'user' | 'booking' | 'checkin'
+  >('all');
   const inputRef = useRef<HTMLInputElement>(null);
   const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -49,10 +54,11 @@ export default function GlobalSearch({ isOpen, onClose, onSelectResult }: Global
     try {
       // Failures are tolerated per source: a search still returns whatever the
       // other two endpoints produced.
-      const [flights, users, bookings] = await Promise.all([
+      const [flights, users, bookings, checkins] = await Promise.all([
         listAdminFlights({ search: searchQuery, limit: 5 }).catch(() => null),
         listUsers({ search: searchQuery, limit: 5 }).catch(() => null),
         listAdminBookings({ search: searchQuery, limit: 5 }).catch(() => null),
+        listAdminCheckins({ search: searchQuery, limit: 5 }).catch(() => null),
       ]);
 
       const newResults: SearchResult[] = [];
@@ -93,6 +99,17 @@ export default function GlobalSearch({ isOpen, onClose, onSelectResult }: Global
             booking.user_email ||
             '',
           status: booking.status,
+        });
+      });
+
+      checkins?.checkins?.slice(0, 5).forEach((ci) => {
+        newResults.push({
+          type: 'checkin',
+          id: ci.id,
+          // Mã check-in, không phải row id — operator đối chiếu với thẻ lên tàu.
+          title: ci.check_in_number || ci.seat_number,
+          subtitle: `${ci.passenger_name} · ${ci.flight_no} · ghế ${ci.seat_number}`,
+          status: ci.status,
         });
       });
 
@@ -161,6 +178,8 @@ export default function GlobalSearch({ isOpen, onClose, onSelectResult }: Global
         return 'UsersIcon';
       case 'booking':
         return 'TicketIcon';
+      case 'checkin':
+        return 'ClipboardDocumentCheckIcon';
     }
   };
 
@@ -172,6 +191,8 @@ export default function GlobalSearch({ isOpen, onClose, onSelectResult }: Global
         return { bg: 'bg-blue-100', text: 'text-blue-600', label: 'Người dùng' };
       case 'booking':
         return { bg: 'bg-amber-100', text: 'text-amber-600', label: 'Đặt vé' };
+      case 'checkin':
+        return { bg: 'bg-emerald-100', text: 'text-emerald-600', label: 'Check-in' };
     }
   };
 
@@ -203,6 +224,7 @@ export default function GlobalSearch({ isOpen, onClose, onSelectResult }: Global
     flight: results.filter((r) => r.type === 'flight').length,
     user: results.filter((r) => r.type === 'user').length,
     booking: results.filter((r) => r.type === 'booking').length,
+    checkin: results.filter((r) => r.type === 'checkin').length,
   };
 
   if (!isOpen) return null;
@@ -271,11 +293,12 @@ export default function GlobalSearch({ isOpen, onClose, onSelectResult }: Global
             { id: 'flight', label: 'Chuyến bay' },
             { id: 'user', label: 'Người dùng' },
             { id: 'booking', label: 'Đặt vé' },
+            { id: 'checkin', label: 'Check-in' },
           ].map((cat) => (
             <button
               key={cat.id}
               onClick={() => {
-                setActiveCategory(cat.id as 'all' | 'flight' | 'user' | 'booking');
+                setActiveCategory(cat.id as 'all' | 'flight' | 'user' | 'booking' | 'checkin');
                 setSelectedIndex(0);
               }}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all ${

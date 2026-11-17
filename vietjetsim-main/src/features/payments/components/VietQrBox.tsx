@@ -144,14 +144,9 @@ export default function VietQrBox({
       try {
         const bin = lookupBankBin(fallbackAccount.admin_bank_name, fallbackAccount.bank_bin);
         const amount = fallbackAmount > 0 ? fallbackAmount : 1730000;
-        const pnr =
-          fallbackPnr && fallbackPnr !== '—'
-            ? fallbackPnr
-            : 'VJ141';
+        const pnr = fallbackPnr && fallbackPnr !== '—' ? fallbackPnr : 'VJ141';
         const addInfo =
-          fallbackAddInfo && !fallbackAddInfo.startsWith('—')
-            ? fallbackAddInfo
-            : `${pnr}I98O`;
+          fallbackAddInfo && !fallbackAddInfo.startsWith('—') ? fallbackAddInfo : `${pnr}I98O`;
         const payload = buildVietQrPayload({
           bin,
           accountNumber: fallbackAccount.admin_bank_account_number,
@@ -224,7 +219,6 @@ export default function VietQrBox({
       clearInterval(timer);
     };
   }, [bookingId, data, pollIntervalMs]);
-
 
   if (!bookingId && !fallbackAccount && !data) {
     return (

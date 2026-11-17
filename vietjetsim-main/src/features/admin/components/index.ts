@@ -1,6 +1,7 @@
 export { default as AdminDashboardClient } from './AdminDashboardClient';
 export { default as AdminRBACPanel } from './AdminRBACPanel';
 export { default as OverviewTab } from './OverviewTab';
+export { default as CheckinsTab } from './CheckinsTab';
 export { default as FlightsTab } from './FlightsTab';
 export { default as UsersTab } from './UsersTab';
 export { default as RevenueTab } from './RevenueTab';

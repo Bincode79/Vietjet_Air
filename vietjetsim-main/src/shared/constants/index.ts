@@ -70,6 +70,7 @@ export const API_ENDPOINTS = {
     BANK_ACCOUNT: '/api/quan-tri/tai-khoan-ngan-hang/:id',
     REFUNDS: '/api/quan-tri/hoan-tien',
     TRANSACTIONS: '/api/quan-tri/giao-dich',
+    CHECKINS: '/api/quan-tri/lam-thu-tuc',
     ANNOUNCEMENTS: '/api/quan-tri/thong-bao',
     ANNOUNCEMENT: '/api/quan-tri/thong-bao/:id',
     SETTINGS: '/api/quan-tri/cai-dat',

@@ -302,4 +302,24 @@ export interface AdminRbacAuditRow {
   created_at: string;
 }
 
+/** Row shape of `GET /api/quan-tri/lam-thu-tuc` (admin check-in list). */
+export interface AdminCheckin {
+  id: string;
+  booking_id: string;
+  booking_code: string | null;
+  passenger_name: string;
+  seat_number: string;
+  check_in_number: string;
+  boarding_pass_number: string | null;
+  flight_no: string;
+  from_code: string;
+  to_code: string;
+  depart_time: string;
+  gate: string | null;
+  terminal: string | null;
+  status: string;
+  check_in_time: string;
+  user_email: string | null;
+}
+
 export * from './dashboard';

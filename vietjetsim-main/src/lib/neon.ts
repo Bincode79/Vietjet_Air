@@ -1769,8 +1769,7 @@ function createMockSql(): SqlClient {
 
       // Đồng bộ `seats.check_in_status` — boarding pass đọc ghế này.
       const seat = mockSeats.find(
-        (s) =>
-          String(s.booking_id) === row.booking_id && String(s.seat_number) === row.seat_number
+        (s) => String(s.booking_id) === row.booking_id && String(s.seat_number) === row.seat_number
       );
       if (seat) {
         seat.check_in_status = 'checked_in';
@@ -1968,11 +1967,7 @@ function createMockSql(): SqlClient {
    *   ILIKE trên),
    * - `?` ⇒ tham số kế tiếp theo thứ tự xuất hiện.
    */
-  const matchFlightWhere = (
-    flight: MockResult,
-    wherePart: string,
-    values: unknown[]
-  ): boolean => {
+  const matchFlightWhere = (flight: MockResult, wherePart: string, values: unknown[]): boolean => {
     if (!wherePart) return true;
 
     let positional = 0;

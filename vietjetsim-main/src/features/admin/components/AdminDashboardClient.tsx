@@ -25,6 +25,7 @@ import {
   BankAccountsTab,
   AuditLogsTab,
   TransactionsTab,
+  CheckinsTab,
 } from '@/features/admin';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/useToast';
@@ -57,6 +58,7 @@ export type AdminTab =
   | 'settings'
   | 'audit_logs'
   | 'transactions'
+  | 'checkins'
   | 'banks'
   | 'discounts'
   | 'agencies';
@@ -90,6 +92,12 @@ const NAV_ITEMS: {
   { id: 'discounts', label: 'Mã giảm giá', icon: 'TicketIcon', category: 'management' },
   { id: 'agencies', label: 'Đại lý', icon: 'BuildingOfficeIcon', category: 'management' },
   { id: 'transactions', label: 'Giao dịch', icon: 'CurrencyDollarIcon', category: 'management' },
+  {
+    id: 'checkins',
+    label: 'Làm thủ tục',
+    icon: 'ClipboardDocumentListIcon',
+    category: 'management',
+  },
   { id: 'banks', label: 'Ngân hàng', icon: 'BanknotesIcon', category: 'management' },
   { id: 'revenue', label: 'Doanh thu', icon: 'ChartBarIcon', category: 'management' },
   { id: 'refunds', label: 'Hoàn tiền', icon: 'BanknotesIcon', category: 'management' },
@@ -129,6 +137,7 @@ const TAB_LABELS: Record<AdminTab, string> = {
   settings: 'Cài đặt hệ thống',
   audit_logs: 'Nhật ký hoạt động',
   transactions: 'Lịch sử giao dịch',
+  checkins: 'Quản lý làm thủ tục',
   banks: 'Quản lý tài khoản ngân hàng',
   discounts: 'Quản lý mã giảm giá',
   agencies: 'Quản lý đại lý',
@@ -284,6 +293,9 @@ export default function AdminDashboardClient() {
         break;
       case 'booking':
         setActiveTab('bookings');
+        break;
+      case 'checkin':
+        setActiveTab('checkins');
         break;
     }
   };
@@ -776,6 +788,12 @@ export default function AdminDashboardClient() {
             {activeTab === 'transactions' && (
               <ErrorBoundary inline variant="api">
                 <TransactionsTab onToast={toast} />
+              </ErrorBoundary>
+            )}
+
+            {activeTab === 'checkins' && (
+              <ErrorBoundary inline variant="api">
+                <CheckinsTab onToast={toast} />
               </ErrorBoundary>
             )}
 

@@ -105,7 +105,9 @@ export default function AncillaryServicesStep({
                 </span>
                 {isRoundTrip && (
                   <span className="flex items-center gap-1.5">
-                    {returnFlight?.from || flight.to} <span className="text-primary text-xs">✈</span> {returnFlight?.to || flight.from}
+                    {returnFlight?.from || flight.to}{' '}
+                    <span className="text-primary text-xs">✈</span>{' '}
+                    {returnFlight?.to || flight.from}
                   </span>
                 )}
               </div>
@@ -138,11 +140,14 @@ export default function AncillaryServicesStep({
               </div>
               <div className="flex items-center gap-4 sm:gap-8 text-2xs sm:text-xs font-bold text-gray-700 mt-1.5 pt-1.5 border-t border-gray-100 font-koho">
                 <span className="flex items-center gap-1.5">
-                  {flight.from} <span className="text-primary text-xs">✈</span> {flight.to} {baggageLabel ? `(${baggageLabel})` : ''}
+                  {flight.from} <span className="text-primary text-xs">✈</span> {flight.to}{' '}
+                  {baggageLabel ? `(${baggageLabel})` : ''}
                 </span>
                 {isRoundTrip && (
                   <span className="flex items-center gap-1.5">
-                    {returnFlight?.from || flight.to} <span className="text-primary text-xs">✈</span> {returnFlight?.to || flight.from}{' '}
+                    {returnFlight?.from || flight.to}{' '}
+                    <span className="text-primary text-xs">✈</span>{' '}
+                    {returnFlight?.to || flight.from}{' '}
                     {returnBaggageLabel ? `(${returnBaggageLabel})` : ''}
                   </span>
                 )}
@@ -178,7 +183,9 @@ export default function AncillaryServicesStep({
                 </span>
                 {isRoundTrip && (
                   <span className="flex items-center gap-1.5">
-                    {returnFlight?.from || flight.to} <span className="text-primary text-xs">✈</span> {returnFlight?.to || flight.from}
+                    {returnFlight?.from || flight.to}{' '}
+                    <span className="text-primary text-xs">✈</span>{' '}
+                    {returnFlight?.to || flight.from}
                   </span>
                 )}
               </div>
@@ -203,14 +210,18 @@ export default function AncillaryServicesStep({
               <h3 className="font-koho text-sm sm:text-base font-bold text-gray-900 group-hover:text-primary transition-colors leading-snug">
                 Dịch vụ Taxi
               </h3>
-              <div className="font-koho text-sm sm:text-base font-bold text-primary mt-0.5">0 VND</div>
+              <div className="font-koho text-sm sm:text-base font-bold text-primary mt-0.5">
+                0 VND
+              </div>
               <div className="flex items-center gap-4 sm:gap-8 text-2xs sm:text-xs font-bold text-gray-700 mt-1.5 pt-1.5 border-t border-gray-100 font-koho">
                 <span className="flex items-center gap-1.5">
                   {flight.from} <span className="text-primary text-xs">✈</span> {flight.to}
                 </span>
                 {isRoundTrip && (
                   <span className="flex items-center gap-1.5">
-                    {returnFlight?.from || flight.to} <span className="text-primary text-xs">✈</span> {returnFlight?.to || flight.from}
+                    {returnFlight?.from || flight.to}{' '}
+                    <span className="text-primary text-xs">✈</span>{' '}
+                    {returnFlight?.to || flight.from}
                   </span>
                 )}
               </div>
@@ -248,7 +259,9 @@ export default function AncillaryServicesStep({
                 </span>
                 {isRoundTrip && (
                   <span className="flex items-center gap-1.5">
-                    {returnFlight?.from || flight.to} <span className="text-primary text-xs">✈</span> {returnFlight?.to || flight.from}
+                    {returnFlight?.from || flight.to}{' '}
+                    <span className="text-primary text-xs">✈</span>{' '}
+                    {returnFlight?.to || flight.from}
                   </span>
                 )}
               </div>
@@ -281,14 +294,18 @@ export default function AncillaryServicesStep({
               <p className="font-koho text-xs text-gray-500 mt-0.5 font-normal">
                 Hãy lựa chọn dịch vụ
               </p>
-              <div className="font-koho text-sm sm:text-base font-bold text-primary mt-0.5">0 VND</div>
+              <div className="font-koho text-sm sm:text-base font-bold text-primary mt-0.5">
+                0 VND
+              </div>
               <div className="flex items-center gap-4 sm:gap-8 text-2xs sm:text-xs font-bold text-gray-700 mt-1.5 pt-1.5 border-t border-gray-100 font-koho">
                 <span className="flex items-center gap-1.5">
                   {flight.from} <span className="text-primary text-xs">✈</span> {flight.to}
                 </span>
                 {isRoundTrip && (
                   <span className="flex items-center gap-1.5">
-                    {returnFlight?.from || flight.to} <span className="text-primary text-xs">✈</span> {returnFlight?.to || flight.from}
+                    {returnFlight?.from || flight.to}{' '}
+                    <span className="text-primary text-xs">✈</span>{' '}
+                    {returnFlight?.to || flight.from}
                   </span>
                 )}
               </div>
@@ -321,14 +338,18 @@ export default function AncillaryServicesStep({
               <p className="font-koho text-xs text-gray-500 mt-0.5 font-normal">
                 Thú cưng ơi, bay thôi!
               </p>
-              <div className="font-koho text-sm sm:text-base font-bold text-primary mt-0.5">0 VND</div>
+              <div className="font-koho text-sm sm:text-base font-bold text-primary mt-0.5">
+                0 VND
+              </div>
               <div className="flex items-center gap-4 sm:gap-8 text-2xs sm:text-xs font-bold text-gray-700 mt-1.5 pt-1.5 border-t border-gray-100 font-koho">
                 <span className="flex items-center gap-1.5">
                   {flight.from} <span className="text-primary text-xs">✈</span> {flight.to}
                 </span>
                 {isRoundTrip && (
                   <span className="flex items-center gap-1.5">
-                    {returnFlight?.from || flight.to} <span className="text-primary text-xs">✈</span> {returnFlight?.to || flight.from}
+                    {returnFlight?.from || flight.to}{' '}
+                    <span className="text-primary text-xs">✈</span>{' '}
+                    {returnFlight?.to || flight.from}
                   </span>
                 )}
               </div>

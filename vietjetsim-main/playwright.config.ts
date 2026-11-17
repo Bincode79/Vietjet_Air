@@ -34,10 +34,12 @@ export default defineConfig({
       use: { ...devices['iPhone 14'] },
     },
   ],
-  webServer: {
-    command: 'npm run start',
-    url: 'http://localhost:4028',
-    reuseExistingServer: !process.env.CI,
-    timeout: 60_000,
-  },
+  webServer: process.env.PLAYWRIGHT_BASE_URL
+    ? undefined
+    : {
+        command: 'npm run start',
+        url: 'http://localhost:4028',
+        reuseExistingServer: !process.env.CI,
+        timeout: 60_000,
+      },
 });

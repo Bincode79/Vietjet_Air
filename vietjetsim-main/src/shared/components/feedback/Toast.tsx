@@ -41,14 +41,14 @@ const TYPE_CONFIG: Record<
   }
 > = {
   success: {
-    bar: 'bg-[#65a30d]',
-    bg: 'bg-[#bef264] border-2 border-[#65a30d] shadow-xl shadow-lime-500/30',
-    iconBg: 'bg-[#65a30d] shadow-md shadow-lime-800/30',
+    bar: 'bg-lime-600',
+    bg: 'bg-lime-200 border-2 border-lime-600 shadow-xl shadow-lime-500/30',
+    iconBg: 'bg-lime-600 shadow-md shadow-lime-800/30',
     iconColor: 'text-white',
     titleColor: 'text-black font-black',
     messageColor: 'text-black font-semibold',
     closeBtn: 'text-black/80 hover:text-black hover:bg-lime-400/50',
-    progressColor: 'bg-[#4d7c0f]',
+    progressColor: 'bg-lime-700',
     defaultIcon: (
       <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 text-white">
         <path
@@ -283,8 +283,10 @@ export interface ToastContainerProps {
 }
 
 const POSITION_CLASSES: Record<NonNullable<ToastContainerProps['position']>, string> = {
-  'top-right': 'top-[108px] sm:top-[88px] right-3 sm:right-6 left-3 sm:left-auto items-center sm:items-end',
-  'top-left': 'top-[108px] sm:top-[88px] left-3 sm:left-6 right-3 sm:right-auto items-center sm:items-start',
+  'top-right':
+    'top-[108px] sm:top-[88px] right-3 sm:right-6 left-3 sm:left-auto items-center sm:items-end',
+  'top-left':
+    'top-[108px] sm:top-[88px] left-3 sm:left-6 right-3 sm:right-auto items-center sm:items-start',
   'bottom-right': 'bottom-4 right-3 sm:right-4 left-3 sm:left-auto items-center sm:items-end',
   'bottom-left': 'bottom-4 left-3 sm:left-4 right-3 sm:right-auto items-center sm:items-start',
   'top-center': 'top-[108px] sm:top-[88px] left-1/2 -translate-x-1/2 items-center px-2',

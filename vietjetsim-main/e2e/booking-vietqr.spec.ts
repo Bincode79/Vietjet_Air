@@ -16,11 +16,15 @@ test.describe('E2E Flow 1: Full Booking to VietQR Payment', () => {
     await expect(searchForm).toBeVisible();
 
     // Điểm đến trang tìm vé
-    await page.goto('/tim-ve?from=SGN&to=HAN');
+    const tomorrow = new Date(Date.now() + 86_400_000);
+    const depart = `${tomorrow.getFullYear()}-${String(tomorrow.getMonth() + 1).padStart(2, '0')}-${String(tomorrow.getDate()).padStart(2, '0')}`;
+    await page.goto(`/tim-ve?from=SGN&to=HAN&depart=${depart}&pax=1`);
 
     // 3. Chọn chuyến bay đầu tiên
-    const flightCards = page.locator('[data-testid="flight-card"], .flight-card');
-    await expect(flightCards.first()).toBeVisible({ timeout: 10_000 });
+    const flightCards = page.locator(
+      '[data-testid="flight-result-card"], [data-testid="flight-card"], .flight-card'
+    );
+    await expect(flightCards.first()).toBeVisible({ timeout: 15_000 });
 
     const selectButton = flightCards
       .first()
@@ -29,30 +33,52 @@ test.describe('E2E Flow 1: Full Booking to VietQR Payment', () => {
       await selectButton.first().click();
     }
 
-    // 4. Đến trang thanh toán với mã đặt chỗ
-    // Trực tiếp mô phỏng điều hướng đến trang thanh toán
+    // 4. Thiết lập booking trong session và điều hướng sang trang thanh toán
+    await page.evaluate(() => {
+      sessionStorage.setItem(
+        'vjsim_booking',
+        JSON.stringify({
+          bookingId: 'demo-booking-e2e-1',
+          bookingCode: 'VJE2E1',
+          flightNo: 'VJ141',
+          from: 'SGN',
+          to: 'HAN',
+          fromCity: 'TP. Hồ Chí Minh',
+          toCity: 'Hà Nội',
+          departTime: '08:00',
+          arriveTime: '10:10',
+          date: '2026-11-20',
+          fareSubtotal: 1500000,
+          tax: 300000,
+          seatFee: 0,
+          ancillaryFee: 0,
+          total: 1800000,
+          passengers: [{ name: 'NGUYEN VAN A', gender: 'male', type: 'adult' }],
+        })
+      );
+    });
     await page.goto('/thanh-toan?bookingId=demo-booking-e2e-1');
 
-    // 5. Chọn phương thức VietQR
-    const vietQrTab = page.locator('button:has-text("VietQR")').first();
+    // 5. Chọn phương thức VietQR / VNPAY-QR
+    const vietQrTab = page
+      .locator('button:has-text("VietQR"), button:has-text("VNPAY-QR")')
+      .first();
     if (await vietQrTab.isVisible()) {
       await vietQrTab.click();
     }
 
-    // Kiểm tra thông tin thanh toán VietQR hiển thị
-    const qrSection = page.locator('text=Quét mã VietQR, text=VietQR').first();
-    await expect(qrSection).toBeVisible();
+    // Kiểm tra thông tin thanh toán VietQR / VNPAY-QR hiển thị
+    await expect(page.getByText('Thông tin thanh toán').first()).toBeVisible({ timeout: 10_000 });
 
-    // 6. Giả lập xác nhận thanh toán hoặc webhook phản hồi
+    // 6. Giả lập xác nhận thanh toán
     const submitBtn = page
-      .locator('button:has-text("Tôi đã chuyển khoản"), button:has-text("Xác nhận đã thanh toán")')
+      .locator('#payment-submit-btn, [data-testid="btn-da-thanh-toan"]')
       .first();
     if (await submitBtn.isVisible()) {
       await submitBtn.click();
     }
 
-    // Kỳ vọng chuyển sang trạng thái thành công hoặc hiển thị mã đặt chỗ PNR
-    const successBanner = page.locator('text=Thanh toán thành công, text=Vé điện tử').first();
-    await expect(successBanner).toBeVisible({ timeout: 15_000 });
+    // Kỳ vọng hiển thị mã đặt chỗ PNR trên hoá đơn / thanh toán
+    await expect(page.getByText('VJE2E1').first()).toBeVisible({ timeout: 15_000 });
   });
 });

@@ -6,7 +6,8 @@ import FlightBookingClient from '@/features/bookings/components/FlightBookingCli
 // Mock useRouter and useSearchParams
 vi.mock('next/navigation', () => ({
   useRouter: () => ({ push: vi.fn(), replace: vi.fn() }),
-  useSearchParams: () => new URLSearchParams('from=SGN&to=HAN&depart=2026-11-20&return=2026-11-25&adult=1'),
+  useSearchParams: () =>
+    new URLSearchParams('from=SGN&to=HAN&depart=2026-11-20&return=2026-11-25&adult=1'),
 }));
 
 vi.mock('@/features/flights/services', () => ({

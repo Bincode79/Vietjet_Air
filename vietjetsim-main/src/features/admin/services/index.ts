@@ -4,6 +4,7 @@ import type {
   AdminAirportInput,
   AdminAnalytics,
   AdminAuditLog,
+  AdminCheckin,
   AdminRbacAuditRow,
   AdminRoleRow,
   AdminAnnouncement,
@@ -171,6 +172,19 @@ export function updateAdminBookingStatus(bookingId: string, status: string) {
       body: { bookingId, status },
     }
   );
+}
+
+// ─── Check-ins (làm thủ tục) ───────────────────────────────────────────────
+
+export function listAdminCheckins(query: AdminListQuery = {}) {
+  return apiRequest<AdminList<'checkins', AdminCheckin>>(`${EP.CHECKINS}${buildQuery(query)}`);
+}
+
+export function cancelAdminCheckin(checkinId: string) {
+  return apiRequest<{ success: boolean; message?: string }>(EP.CHECKINS, {
+    method: 'PATCH',
+    body: { checkinId, action: 'cancel' },
+  });
 }
 
 // ─── Discounts ──────────────────────────────────────────────────────────────

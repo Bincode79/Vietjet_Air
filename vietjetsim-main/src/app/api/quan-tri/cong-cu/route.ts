@@ -275,6 +275,23 @@ const TOOLS: Record<
       };
     },
   },
+
+  'release-stuck-seat-locks': {
+    label: 'Giải phóng ghế bị khoá kẹt',
+    description: 'Xoá các lock ghế đã hết hạn (expires_at quá khứ) để mở ghế cho khách',
+    category: 'booking',
+    execute: async (_params, _adminId) => {
+      // Chỉ xoá lock HẾT HẠN — lock còn sống thuộc về phiên đang giữ ghế,
+      // xoá nhầm sẽ cho hai khách đặt trùng một ghế.
+      const deleted = (await sql`
+        DELETE FROM seat_locks WHERE expires_at < NOW() RETURNING id
+      `) as Array<{ id: string }>;
+      return {
+        summary: `Đã giải phóng ${deleted.length} ghế bị khoá kẹt (lock hết hạn)`,
+        status: 'success' as const,
+      };
+    },
+  },
 };
 
 // ─── GET: List tools + recent logs ─────────────────────────────────────────
