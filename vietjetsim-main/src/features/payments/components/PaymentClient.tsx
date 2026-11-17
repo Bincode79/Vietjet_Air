@@ -2887,7 +2887,7 @@ export default function PaymentClient() {
                     Mã khuyến mãi
                   </label>
                   <div className="flex items-center gap-2">
-                    <div className="vj-lookup-field flex-1 mt-2">
+                    <div className="vj-lookup-field relative flex-1 mt-2 flex items-center h-[42px] px-3 bg-white border border-gray-300 rounded-lg shadow-2xs focus-within:border-primary focus-within:ring-1 focus-within:ring-primary transition-all">
                       <input
                         id="promo-code-input"
                         name="promoCode"
@@ -2899,9 +2899,16 @@ export default function PaymentClient() {
                         }}
                         placeholder=" "
                         disabled={promoApplied}
-                        className={`vj-lookup-input font-mono uppercase font-bold text-black !text-black disabled:opacity-50 ${promoApplied ? 'form-input-valid' : ''}`}
+                        className={`vj-lookup-input font-mono uppercase font-bold text-black !text-black !border-b-0 w-full disabled:opacity-50 ${promoApplied ? 'form-input-valid' : ''}`}
                       />
-                      <label htmlFor="promo-code-input" className="vj-lookup-label font-bold text-black !text-black font-koho">
+                      <label
+                        htmlFor="promo-code-input"
+                        className={`vj-lookup-label font-medium font-koho pointer-events-none transition-all ${
+                          promoCode
+                            ? '-top-2 bg-white px-1 text-3xs font-medium text-gray-500 !text-gray-500'
+                            : 'left-3 text-sm text-gray-400 !text-gray-400'
+                        }`}
+                      >
                         VJ2026
                       </label>
                     </div>
