@@ -108,8 +108,10 @@ export function renderTransferNote(
   return tmpl.replace(TOKEN_PATTERN, (match) => {
     if (!KNOWN_TOKENS.has(match)) return match;
     switch (match) {
-      case '{code}':
-        return vars.code ?? '';
+      case '{code}': {
+        const c = vars.code?.trim();
+        return c && c !== '—' ? c : '';
+      }
       case '{amount}':
         return renderAmount(vars.amount);
       case '{original}':

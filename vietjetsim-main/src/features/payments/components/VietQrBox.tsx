@@ -74,43 +74,24 @@ export default function VietQrBox({
   const [qrSvg, setQrSvg] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [pollState, setPollState] = useState<PollState>('waiting');
-  const [copiedField, setCopiedField] = useState<string | null>(null);
-  const [simulatingWebhook, setSimulatingWebhook] = useState(false);
   const onPaidRef = useRef(onPaid);
   onPaidRef.current = onPaid;
 
-  const handleSimulateBankWebhook = useCallback(async () => {
-    if (!bookingId || simulatingWebhook) return;
-    setSimulatingWebhook(true);
-    try {
-      const res = await fetch('/api/thanh-toan/webhook/vietqr', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-webhook-secret': 'vietqr-dev-webhook-secret',
-        },
-        body: JSON.stringify({
-          bookingId,
-          bookingCode: data?.pnr || undefined,
-          amount: data?.amount,
-          transferNote: data?.addInfo,
-          transactionId: 'TXN-' + Math.random().toString(36).substring(2, 9).toUpperCase(),
-        }),
-      });
+  const effectivePnr =
+    data?.pnr && data.pnr !== '—'
+      ? data.pnr
+      : fallbackPnr && fallbackPnr !== '—'
+        ? fallbackPnr
+        : 'VJ';
 
-      const json = await res.json();
-      if (res.ok && json.success) {
-        setPollState('paid');
-        onPaidRef.current?.();
-      } else {
-        console.warn('Webhook simulation error:', json);
-      }
-    } catch (err) {
-      console.error('Webhook simulation failed:', err);
-    } finally {
-      setSimulatingWebhook(false);
-    }
-  }, [bookingId, data, simulatingWebhook]);
+  const displayAddInfo =
+    data?.addInfo && data.addInfo !== '—'
+      ? data.addInfo.startsWith('—')
+        ? data.addInfo.replace(/^—+/, effectivePnr)
+        : data.addInfo
+      : fallbackPnr && fallbackPnr !== '—'
+        ? `${fallbackPnr}I98O`
+        : '—';
 
   // Render QR SVG từ payload EMVCo
   const generateQrFromPayload = useCallback(async (payloadString: string) => {
@@ -163,8 +144,14 @@ export default function VietQrBox({
       try {
         const bin = lookupBankBin(fallbackAccount.admin_bank_name, fallbackAccount.bank_bin);
         const amount = fallbackAmount > 0 ? fallbackAmount : 1730000;
-        const pnr = fallbackPnr || 'VJ141';
-        const addInfo = fallbackAddInfo || `VJ ${pnr}`;
+        const pnr =
+          fallbackPnr && fallbackPnr !== '—'
+            ? fallbackPnr
+            : 'VJ141';
+        const addInfo =
+          fallbackAddInfo && !fallbackAddInfo.startsWith('—')
+            ? fallbackAddInfo
+            : `${pnr}I98O`;
         const payload = buildVietQrPayload({
           bin,
           accountNumber: fallbackAccount.admin_bank_account_number,
@@ -238,16 +225,6 @@ export default function VietQrBox({
     };
   }, [bookingId, data, pollIntervalMs]);
 
-  const copyToClipboard = useCallback(async (text: string, fieldName: string) => {
-    if (!text) return;
-    try {
-      await navigator.clipboard.writeText(text);
-      setCopiedField(fieldName);
-      setTimeout(() => setCopiedField(null), 2500);
-    } catch {
-      // Clipboard bị chặn
-    }
-  }, []);
 
   if (!bookingId && !fallbackAccount && !data) {
     return (
@@ -337,17 +314,10 @@ export default function VietQrBox({
             )}
 
             {/* Dòng hướng dẫn thanh toán */}
-            <p className="mt-3 text-center text-xs sm:text-sm font-bold text-gray-800 leading-snug px-2">
+            <p className="mt-3 text-center text-xs sm:text-sm font-bold text-gray-800 leading-snug px-2 font-koho">
               Anh / Chị thanh toán theo nội dung số tiền trên hoá đơn giúp em . Thanh toán xong cho
               em xin biên lai thanh toán thành công để em xác nhận cho mình ạ .
             </p>
-
-            {/* Bank name pill */}
-            <div className="mt-2 text-center">
-              <span className="text-2xs font-bold text-gray-600 bg-gray-100 px-3 py-0.5 rounded-md border border-gray-200">
-                Ngân hàng {data?.bank.name ?? 'VIB'} • Chuẩn {methodLabel} / NAPAS 247
-              </span>
-            </div>
           </div>
         </div>
 
@@ -364,8 +334,8 @@ export default function VietQrBox({
 
         {/* Thông tin thanh toán chi tiết (STK Admin, Tên, Số tiền, Nội dung) */}
         <div className="w-full mt-6 space-y-2.5 bg-slate-50/50 p-4 sm:p-5 rounded-2xl border border-gray-200 shadow-xs">
-          <div className="flex items-center justify-between pb-2 border-b border-blue-200/60">
-            <span className="text-xs font-black uppercase tracking-wider text-vj-bank-blue font-koho flex items-center gap-1.5">
+          <div className="flex items-center justify-between pb-2 border-b border-gray-200">
+            <span className="text-xs font-black uppercase tracking-wider text-black font-koho flex items-center gap-1.5">
               <Icon name="InformationCircleIcon" size={16} />
               Thông tin thanh toán
             </span>
@@ -389,17 +359,6 @@ export default function VietQrBox({
                 </span>
               </div>
             </div>
-            <button
-              type="button"
-              onClick={() => copyToClipboard(data?.bank.accountNumber ?? '', 'stk')}
-              className="flex shrink-0 cursor-pointer items-center gap-1.5 rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 text-xs font-bold text-vj-bank-blue transition-all hover:bg-blue-100 active:scale-95"
-            >
-              <Icon
-                name={copiedField === 'stk' ? 'CheckCircleIcon' : 'ClipboardDocumentIcon'}
-                size={14}
-              />
-              <span>{copiedField === 'stk' ? 'Đã sao chép' : 'Sao chép'}</span>
-            </button>
           </div>
 
           {/* Hàng 2: Số tiền thanh toán */}
@@ -422,23 +381,9 @@ export default function VietQrBox({
                   <span>Nội dung chuyển khoản (bắt buộc)</span>
                 </span>
                 <span className="block font-bold font-sans text-gray-900 text-base sm:text-lg tracking-wider break-all select-all">
-                  {data?.addInfo ?? '—'}
-                </span>
-                <span className="inline-block mt-1 text-xs2 font-semibold text-amber-800 bg-amber-100/90 border border-amber-300 rounded px-1.5 py-0.5">
-                  (Lưu ý: ký tự &quot;O&quot; là chữ O in hoa, không phải số 0)
+                  {displayAddInfo}
                 </span>
               </div>
-              <button
-                type="button"
-                onClick={() => copyToClipboard(data?.addInfo ?? '', 'note')}
-                className="flex shrink-0 cursor-pointer items-center gap-1.5 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs font-bold text-red-600 transition-all hover:bg-red-100 active:scale-95"
-              >
-                <Icon
-                  name={copiedField === 'note' ? 'CheckCircleIcon' : 'ClipboardDocumentIcon'}
-                  size={14}
-                />
-                <span>{copiedField === 'note' ? 'Đã sao chép' : 'Sao chép'}</span>
-              </button>
             </div>
             <p className="text-3xs text-gray-500 mt-1 italic">
               * Mã QR chuẩn bảo mật NAPAS 247 tự động nhận diện STK và tên thụ hưởng. Quý khách vui
@@ -494,39 +439,6 @@ export default function VietQrBox({
             để quét mã thanh toán.
           </p>
         </div>
-
-        {/* Giả lập Webhook ngân hàng (Sandbox / Testing helper) */}
-        {bookingId && (
-          <div className="mt-4 w-full pt-3 border-t border-dashed border-gray-200 flex flex-col items-center">
-            <button
-              type="button"
-              disabled={simulatingWebhook || pollState === 'paid'}
-              onClick={handleSimulateBankWebhook}
-              className="group inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 transition-all shadow-xs cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <Icon
-                name="BoltIcon"
-                size={15}
-                className={
-                  simulatingWebhook
-                    ? 'animate-spin text-emerald-600'
-                    : 'text-emerald-600 group-hover:scale-110 transition-transform'
-                }
-              />
-              <span>
-                {simulatingWebhook
-                  ? 'Đang gửi Webhook ngân hàng...'
-                  : pollState === 'paid'
-                    ? 'Đã xác nhận thanh toán thành công'
-                    : 'Giả lập ngân hàng thanh toán thành công (Webhook VietQR)'}
-              </span>
-            </button>
-            <span className="text-2xs text-gray-500 mt-1">
-              (Tự động chuyển trạng thái vé sang &quot;Đã thanh toán&quot; và mở vé điện tử ngay tức
-              thì)
-            </span>
-          </div>
-        )}
       </div>
     </div>
   );

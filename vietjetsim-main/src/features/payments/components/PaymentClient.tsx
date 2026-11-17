@@ -387,6 +387,7 @@ export default function PaymentClient() {
   // Read booking data from sessionStorage (set by FlightBookingClient)
   const [booking, setBooking] = useState<{
     bookingId?: string;
+    bookingCode?: string;
     returnBookingId?: string;
     contactEmail?: string;
     contactPhone?: string;
@@ -416,7 +417,11 @@ export default function PaymentClient() {
     try {
       const stored = sessionStorage.getItem('vjsim_booking');
       if (stored) {
-        setBooking(JSON.parse(stored));
+        const parsed = JSON.parse(stored);
+        setBooking(parsed);
+        if (parsed.bookingCode && parsed.bookingCode !== '—') {
+          setBookingCode(parsed.bookingCode);
+        }
       }
       // Không có `vjsim_booking` ⇒ khách chưa có đơn đặt vé nào. Trước đây
       // nhánh `else` dựng một booking giả (VJ141 SGN→HAN, NGUYỄN VĂN AN,
@@ -713,13 +718,26 @@ export default function PaymentClient() {
     }
   }, [booking, moviFullName]);
 
+  const effectiveBookingCode = useMemo(() => {
+    if (bookingCode && bookingCode !== '—') return bookingCode;
+    if (booking?.bookingCode && booking.bookingCode !== '—') return booking.bookingCode;
+    if (bookingId && bookingId.length >= 6) {
+      return bookingId.replace(/[^a-zA-Z0-9]/g, '').slice(-6).toUpperCase();
+    }
+    return '';
+  }, [bookingCode, booking?.bookingCode, bookingId]);
+
   // Transfer content the customer must paste into their bank app. Admins
   // control the template (Admin → Ngân hàng); the amounts are rendered without
   // thousand separators so a receiving bank cannot misread them.
   const transferNote = useMemo(
     () =>
       renderTransferNote(selectedAdminAccount?.transfer_note_template, {
-        code: bookingCodeLabel,
+        code:
+          effectiveBookingCode ||
+          (bookingCodeLabel !== '—'
+            ? bookingCodeLabel
+            : booking?.flightNo || 'VJ'),
         originalAmount: booking?.total ?? 0,
         discountAmount,
         amount: total,
@@ -727,7 +745,9 @@ export default function PaymentClient() {
       }),
     [
       selectedAdminAccount?.transfer_note_template,
+      effectiveBookingCode,
       bookingCodeLabel,
+      booking?.flightNo,
       booking?.total,
       discountAmount,
       total,
@@ -1794,49 +1814,6 @@ export default function PaymentClient() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Payment Form */}
             <div className="lg:col-span-2 space-y-4">
-              {/* Checkbox: Mã khuyến mãi hoặc phiếu quà tặng matching Screenshot 3 */}
-              <div className="bg-white rounded-xl border border-gray-200/90 p-4 shadow-2xs">
-                <label className="flex items-center gap-3 cursor-pointer select-none">
-                  <input
-                    type="checkbox"
-                    checked={hasPromoChecked}
-                    onChange={(e) => setHasPromoChecked(e.target.checked)}
-                    className="w-5 h-5 rounded border-gray-300 text-red-600 focus:ring-red-500 cursor-pointer accent-red-600"
-                  />
-                  <span className="text-sm font-extrabold text-gray-900">
-                    Mã khuyến mãi hoặc phiếu quà tặng
-                  </span>
-                </label>
-                {hasPromoChecked && (
-                  <div className="mt-3 pt-3 border-t border-gray-100 flex gap-2">
-                    <input
-                      type="text"
-                      value={promoCode}
-                      onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
-                      placeholder="Nhập mã khuyến mãi"
-                      className="flex-1 px-3 py-2 border border-gray-200 rounded-lg text-xs uppercase font-bold outline-none focus:border-red-500"
-                    />
-                    <button
-                      type="button"
-                      onClick={applyPromo}
-                      disabled={isApplyingPromo || !promoCode.trim()}
-                      className="bg-red-600 hover:bg-red-700 disabled:opacity-50 text-white font-bold text-xs px-4 py-2 rounded-lg cursor-pointer transition-colors"
-                    >
-                      {isApplyingPromo ? 'Đang kiểm tra...' : 'Áp dụng'}
-                    </button>
-                  </div>
-                )}
-                {promoApplied && promoData && (
-                  <div className="mt-2 text-xs font-bold text-green-700 flex items-center gap-1">
-                    <span>✓</span> Đã áp dụng mã {promoData.code}: -
-                    {promoData.discountAmount.toLocaleString('vi-VN')} VND
-                  </div>
-                )}
-                {promoError && (
-                  <div className="mt-2 text-xs font-semibold text-red-600">{promoError}</div>
-                )}
-              </div>
-
               {/* Payment Method Card */}
               <div className="bg-white rounded-2xl border border-[var(--border)] p-4 sm:p-5 shadow-sm">
                 <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
@@ -2104,6 +2081,49 @@ export default function PaymentClient() {
                   </div>
                 </div>
 
+                {/* Giao diện áp mã giảm giá — Đặt trước QR thanh toán */}
+                <div className="mb-5 rounded-xl border border-gray-200/90 bg-slate-50/70 p-4 shadow-2xs">
+                  <label className="flex items-center gap-3 cursor-pointer select-none">
+                    <input
+                      type="checkbox"
+                      checked={hasPromoChecked}
+                      onChange={(e) => setHasPromoChecked(e.target.checked)}
+                      className="w-5 h-5 rounded border-gray-300 text-red-600 focus:ring-red-500 cursor-pointer accent-red-600"
+                    />
+                    <span className="text-sm font-extrabold text-gray-900 font-koho">
+                      Mã khuyến mãi hoặc phiếu quà tặng
+                    </span>
+                  </label>
+                  {hasPromoChecked && (
+                    <div className="mt-3 pt-3 border-t border-gray-200/80 flex gap-2 font-koho">
+                      <input
+                        type="text"
+                        value={promoCode}
+                        onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
+                        placeholder="Nhập mã khuyến mãi"
+                        className="flex-1 px-3 py-2 bg-white border border-gray-300 rounded-lg text-xs uppercase font-bold outline-none focus:border-red-500 font-koho"
+                      />
+                      <button
+                        type="button"
+                        onClick={applyPromo}
+                        disabled={isApplyingPromo || !promoCode.trim()}
+                        className="bg-red-600 hover:bg-red-700 disabled:opacity-50 text-white font-bold text-xs px-4 py-2 rounded-lg cursor-pointer transition-colors font-koho"
+                      >
+                        {isApplyingPromo ? 'Đang kiểm tra...' : 'Áp dụng'}
+                      </button>
+                    </div>
+                  )}
+                  {promoApplied && promoData && (
+                    <div className="mt-2 text-xs font-bold text-green-700 flex items-center gap-1 font-koho">
+                      <span>✓</span> Đã áp dụng mã {promoData.code}: -
+                      {promoData.discountAmount.toLocaleString('vi-VN')} VND
+                    </div>
+                  )}
+                  {promoError && (
+                    <div className="mt-2 text-xs font-semibold text-red-600 font-koho">{promoError}</div>
+                  )}
+                </div>
+
                 <form onSubmit={handlePayment}>
                   {/* Card Form */}
                   {paymentMethod === 'card' && (
@@ -2215,11 +2235,11 @@ export default function PaymentClient() {
                       {/* Transfer Instructions Redesign */}
                       {selectedAdminAccount && (
                         <div className="space-y-4">
-                          <label className="block text-xs font-bold text-[var(--foreground)] uppercase tracking-wider mb-2 font-koho flex items-center gap-1.5">
+                          <label className="block text-xs font-bold text-black uppercase tracking-wider mb-2 font-koho flex items-center gap-1.5">
                             <Icon
                               name="InformationCircleIcon"
                               size={16}
-                              className="text-vj-bank-blue"
+                              className="text-black"
                             />
                             Thông tin thanh toán
                           </label>
@@ -2339,7 +2359,10 @@ export default function PaymentClient() {
                                 fallbackAccount={selectedAdminAccount}
                                 fallbackAmount={total}
                                 fallbackPnr={
-                                  bookingCodeLabel !== '—' ? bookingCodeLabel : booking.flightNo
+                                  effectiveBookingCode ||
+                                  (bookingCodeLabel !== '—'
+                                    ? bookingCodeLabel
+                                    : booking?.flightNo || 'VJ')
                                 }
                                 fallbackAddInfo={transferNote}
                                 showBankHeader={false}
@@ -2370,8 +2393,8 @@ export default function PaymentClient() {
                   {paymentMethod === 'vietqr' && (
                     <div className="space-y-4">
                       <div className="flex items-center justify-between pb-1">
-                        <label className="text-xs font-bold text-gray-800 uppercase tracking-wider font-koho flex items-center gap-1.5">
-                          <Icon name="QrCodeIcon" size={16} className="text-vj-bank-blue" />
+                        <label className="text-xs font-bold text-black uppercase tracking-wider font-koho flex items-center gap-1.5">
+                          <Icon name="QrCodeIcon" size={16} className="text-black" />
                           {selectedMethodGroup === 'vnpay_qr'
                             ? 'Thông tin thanh toán (Mã QR VNPAY-QR)'
                             : 'Thông tin thanh toán (Mã QR thanh toán VietQR)'}
@@ -2387,7 +2410,12 @@ export default function PaymentClient() {
                         onPaid={handlePaymentSuccessFromWebhook}
                         fallbackAccount={selectedAdminAccount}
                         fallbackAmount={total}
-                        fallbackPnr={bookingCodeLabel !== '—' ? bookingCodeLabel : booking.flightNo}
+                        fallbackPnr={
+                          effectiveBookingCode ||
+                          (bookingCodeLabel !== '—'
+                            ? bookingCodeLabel
+                            : booking?.flightNo || 'VJ')
+                        }
                         fallbackAddInfo={transferNote}
                         methodType={selectedMethodGroup}
                       />
