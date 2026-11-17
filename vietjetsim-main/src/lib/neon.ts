@@ -2067,7 +2067,7 @@ function createMockSql(): SqlClient {
     // ── `SELECT COUNT(*) as total FROM flights` (đếm tổng cho phân trang) ───
     if (q.includes('count(*)') && q.includes('from flights')) {
       const wherePart = q.slice(q.indexOf('where'));
-      const filtered = mockFlights.filter((f) => matchFlightWhere(f, wherePart, values, 0));
+      const filtered = mockFlights.filter((f) => matchFlightWhere(f, wherePart, values));
       return [{ total: filtered.length }];
     }
 
@@ -2090,7 +2090,7 @@ function createMockSql(): SqlClient {
       const whereIdx = q.indexOf('where');
       const hasWhere = whereIdx >= 0;
       const wherePart = hasWhere ? q.slice(whereIdx) : '';
-      const filtered = mockFlights.filter((f) => matchFlightWhere(f, wherePart, values, 0));
+      const filtered = mockFlights.filter((f) => matchFlightWhere(f, wherePart, values));
 
       // `LIMIT $n OFFSET $m` — hai tham số cuối của `getAllFlights`.
       if (hasWhere && /limit\s+\$\d+\s+offset\s+\$\d+/.test(q)) {
