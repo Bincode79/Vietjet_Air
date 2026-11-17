@@ -522,10 +522,10 @@ export default function MyFlightsPage() {
                           Cột bắt đầu tại `x=120`; H2 lệch `+105px`, khối ô nhập
                           lệch thêm `+15px` (site thật `x=240`). */}
                       <div className="flex flex-col pt-10.5 xl:pl-26.25">
-                        <h2 className="text-xl font-semibold uppercase tracking-tight text-gray-900">
+                        <h2 className="text-xl sm:text-2xl font-bold uppercase tracking-tight text-gray-950">
                           CHUYẾN BAY CỦA TÔI
                         </h2>
-                        <p className="mt-3 font-koho text-base font-medium leading-[24px] text-[var(--vj-text)]">
+                        <p className="mt-3 font-koho text-base font-semibold leading-[24px] text-gray-800">
                           Bạn muốn xem chuyến bay đã đặt, đổi lịch trình bay hay mua thêm dịch vụ
                           hành lý, chỗ ngồi, suất ăn..., vui lòng điền thông tin bên dưới:
                         </p>
@@ -612,17 +612,17 @@ export default function MyFlightsPage() {
                         </div>
                       </div>
 
-                      {/* Cột phải: banner `570×496` bo `5px` — đo được ở site thật
-                          (`x=735`, tức lệch `+15px` so với mép cột `x=720`). */}
-                      <div className="flex items-start pt-10.5 xl:pl-3.75">
-                        <div className="relative h-[496px] w-[570px] overflow-hidden rounded-5xs shadow-vj-blue-lg">
+                      {/* Cột phải: banner ngoại tệ hiển thị theo đúng tỷ lệ ảnh 480:648 */}
+                      <div className="flex items-center justify-center pt-6 xl:pt-10.5 xl:pl-6">
+                        <div className="relative aspect-[480/648] w-full max-w-[420px] xl:max-w-[460px] overflow-hidden rounded-xl shadow-vj-blue-lg">
                           <AppImage
                             src="/images/hero/banner-chuyenbay-ngoai-te.jpg"
                             alt="Mua ngoại tệ dễ dàng khi đặt vé"
                             fill
                             priority
                             quality={95}
-                            sizes="570px"
+                            sizes="(min-width: 1280px) 460px, (min-width: 640px) 420px, 370px"
+                            className="object-contain"
                           />
                         </div>
                       </div>
@@ -655,7 +655,7 @@ export default function MyFlightsPage() {
                           <div className="flex justify-center">
                             <Link
                               href="/dang-nhap?redirect=/chuyen-bay-cua-toi"
-                              className="w-full py-2.5 rounded-xl bg-gray-100 hover:bg-vjyellow text-gray-400 hover:text-gray-900 text-center font-black text-xs border border-gray-200 transition-colors shadow-sm"
+                              className="w-full py-2.5 rounded-xl bg-vjyellow hover:brightness-105 active:scale-[0.99] text-gray-950 text-center font-black text-xs sm:text-sm border border-amber-300 transition-all shadow-sm"
                             >
                               Đăng nhập
                             </Link>

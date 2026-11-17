@@ -266,8 +266,8 @@ input[type='date'].vj-no-native-icon::-moz-calendar-picker-indicator {
   --vj-link-blue-rgb: 0 136 255;
   --vj-radius-field: 5px;
   --vj-radius-card: 12px;
-  /* Gạch chân ô nhập tra cứu (MUI underline) — đo 14/11/2026: 1px #D9D9D9. */
-  --vj-underline-border: #d9d9d9;
+  /* Gạch chân ô nhập tra cứu (MUI underline) — tăng độ tương phản để hiển thị rõ trường. */
+  --vj-underline-border: #64748b;
   /* Bo góc dải pill "Dịch vụ tra cứu" — đo 14/11/2026: 16px. */
   --vj-pill-strip-radius: 16px;
   --vj-radius-modal: 8px;
@@ -1892,9 +1892,10 @@ h6 {
 /* Khung card tra cứu — site thật (13/11/2026): nền rgba(255,255,255,.94),
    bo góc 12px, cao ~560px. */
 .vj-lookup-card {
-  background: var(--vj-lookup-card-bg);
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
   border-radius: var(--vj-radius-card);
-  box-shadow: 0 3px 12px rgba(0, 31, 62, 0.08);
+  box-shadow: 0 4px 20px -2px rgba(0, 31, 62, 0.08);
 }
 
 /* Nút "Tìm kiếm" 127×39 của site thật (đo trên DOM sống). */
@@ -2462,25 +2463,28 @@ h6 {
   background-image: url('/images/skyid/ic_checked.svg');
 }
 
-/* Ô nhập mã OTP — `input.pin-otp`. */
+/* Ô nhập mã OTP — thêm khung viền rõ nét theo yêu cầu */
 .vj-skyid-pin {
-  width: 35px;
-  height: 35px;
+  width: 42px;
+  height: 48px;
   padding: 0;
-  border: 0;
-  border-radius: 11px;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 8px;
   background-color: #ffffff;
-  background-image: linear-gradient(#000, #000);
-  background-position: center bottom 5px;
-  background-size: 30% 2px;
-  background-repeat: no-repeat;
-  box-shadow: none;
-  font-family: 'Verdana', ui-monospace, monospace;
-  font-size: 25px;
-  line-height: 50px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  font-family: 'KoHo', 'Verdana', ui-monospace, monospace;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 48px;
   text-align: center;
   color: var(--vj-skyid-ink);
   outline: none;
+  transition: all 160ms ease;
+}
+
+.vj-skyid-pin:focus {
+  border-color: #e60a32;
+  box-shadow: 0 0 0 3px rgba(230, 10, 50, 0.15);
 }
 
 /* Dòng "gửi lại mã" — `.gid-resend-otp` của SkyID (`14px/22px`).
@@ -3384,8 +3388,8 @@ h6 {
   font-family: 'KoHo', ui-sans-serif, system-ui, sans-serif;
   font-size: 16px;
   line-height: 21.28px;
-  font-weight: 500;
-  color: var(--vj-text);
+  font-weight: 600;
+  color: #111827;
 }
 
 .vj-lookup-field .vj-lookup-input:focus {
@@ -3405,7 +3409,7 @@ h6 {
   font-size: 16px;
   line-height: 21.28px;
   font-weight: 600;
-  color: var(--vj-text);
+  color: #374151;
   pointer-events: none;
   transition:
     top 160ms ease,
@@ -3421,8 +3425,8 @@ h6 {
   transform: none;
   font-size: 12px;
   line-height: 14px;
-  font-weight: 500;
-  color: var(--vj-text-gray);
+  font-weight: 700;
+  color: var(--primary);
 }
 
 /* Ở MOBILE site thật thu nhỏ cả chữ trong ô lẫn nhãn xuống 1pt:
@@ -3795,18 +3799,26 @@ select option {
 }
 
 .vj-btn-primary {
-  background: var(--primary);
-  color: white;
-  box-shadow: 0 2px 8px rgba(236, 32, 41, 0.28);
+  background-image: linear-gradient(
+    26.73deg,
+    rgb(249, 165, 26) 13.7%,
+    rgb(251, 182, 18) 29.8%,
+    rgb(255, 221, 0) 66.81%
+  );
+  color: #000000;
+  font-weight: 700;
+  box-shadow: 0 2px 8px rgba(255, 212, 0, 0.35);
+  border: 1px solid rgba(245, 130, 32, 0.3);
 }
 .vj-btn-primary:hover {
-  background: var(--primary-dark);
-  box-shadow: 0 6px 20px rgba(236, 32, 41, 0.45);
-  transform: translateY(-2px) scale(1.02);
+  background: #fbc02d;
+  color: #000000;
+  box-shadow: 0 4px 14px rgba(255, 212, 0, 0.5);
+  transform: translateY(-1px);
 }
 .vj-btn-primary:active {
   transform: translateY(0) scale(0.98);
-  box-shadow: 0 2px 8px rgba(236, 32, 41, 0.28);
+  box-shadow: 0 2px 8px rgba(255, 212, 0, 0.28);
 }
 
 .vj-btn-accent {

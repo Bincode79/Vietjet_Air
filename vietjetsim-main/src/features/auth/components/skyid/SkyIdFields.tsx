@@ -193,7 +193,7 @@ export function SkyIdPinInput({ length, value, onChange, id = 'skyid-otp' }: Sky
               onChange(next);
             }}
             aria-label={`Chữ số thứ ${index + 1}`}
-            className="vj-skyid-pin"
+            className="vj-skyid-pin border border-gray-300 rounded-lg focus:border-primary focus:ring-2 focus:ring-primary/20 shadow-xs"
             style={isFilled ? undefined : { backgroundImage: 'none' }}
           />
         );

@@ -2,7 +2,7 @@
 import React, { useEffect, useRef, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Icon } from '@/shared/components/ui';
-import { FlightResultsStep } from '@/features/flights';
+import { FlightResultsStep, getAirportCity } from '@/features/flights';
 import PassengerInfoStep from './PassengerInfoStep';
 import AncillaryServicesStep from './AncillaryServicesStep';
 import SeatSelectionDrawer from './SeatSelectionDrawer';
@@ -540,7 +540,111 @@ function FlightBookingClientInner({
 
   return (
     <div className="font-body">
-      {/* Booking progress steps */}
+      {/* Vietjet Header: Thông tin hành trình + 4 bước đặt vé (MUI parity) */}
+      <div className="w-full bg-white border-b border-gray-200 shadow-xs mb-4">
+        <div className="mx-auto max-w-[1240px] px-3 py-3 sm:px-6 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+          {/* Cột trái: Thông tin chuyến bay & sân bay */}
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-6 text-xs sm:text-sm font-koho">
+            <p className="font-bold text-gray-950 flex items-center gap-1.5">
+              <span>{isRoundTrip ? 'Chuyến bay khứ hồi' : 'Chuyến bay một chiều'}</span>
+              <span className="text-gray-400">|</span>
+              <span>{params.pax || '1'} Người lớn</span>
+              {Number(params.child || 0) > 0 && <span>, {params.child} Trẻ em</span>}
+              {Number(params.infant || 0) > 0 && <span>, {params.infant} Em bé</span>}
+            </p>
+
+            <div className="flex items-center gap-1.5 text-gray-800">
+              <svg viewBox="0 0 24 24" className="w-4 h-4 text-primary fill-current shrink-0">
+                <path d="M2.5 19h19v2h-19zm19.57-9.36c-.21-.8-1.04-1.28-1.84-1.06L14.92 10 8.86 3.65 6.94 4.16l3.87 6.36-4.5 1.2-1.78-1.42L3 10.7l2.12 3.67 15.63-4.18c.81-.22 1.29-1.05 1.07-1.85z" />
+              </svg>
+              <span className="font-semibold text-gray-500">Điểm khởi hành</span>
+              <span className="font-bold text-gray-950">
+                {getAirportCity(params.from || '')} ( {params.from?.toUpperCase()} )
+              </span>
+            </div>
+
+            <div className="flex items-center gap-1.5 text-gray-800">
+              <svg viewBox="0 0 24 24" className="w-4 h-4 text-primary fill-current shrink-0">
+                <path d="M2.5 19h19v2h-19zm16.84-3.15c.8.21 1.62-.26 1.84-1.06.21-.8-.26-1.63-1.06-1.84L4.49 8.77 2.37 12.44l1.52.41 1.78-1.42 4.5 1.2-3.87 6.36 1.92.51 6.06-6.35 5.31 1.42z" />
+              </svg>
+              <span className="font-semibold text-gray-500">Điểm đến</span>
+              <span className="font-bold text-gray-950">
+                {getAirportCity(params.to || '')} ( {params.to?.toUpperCase()} )
+              </span>
+            </div>
+          </div>
+
+          {/* Cột phải: 4 bước biểu tượng Vietjet */}
+          <div className="flex items-center gap-1 sm:gap-2 self-center md:self-auto shrink-0">
+            {/* Bước 1: Máy bay (Chọn chuyến bay) */}
+            <div
+              className={`flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 rounded-full transition-all ${
+                step === 1
+                  ? 'bg-primary text-white shadow-sm ring-2 ring-primary/20'
+                  : step > 1
+                    ? 'bg-red-50 text-primary'
+                    : 'bg-gray-100 text-gray-400'
+              }`}
+              title="Chọn chuyến bay"
+            >
+              <svg className="w-4 h-4 sm:w-5 sm:h-5 fill-current" viewBox="0 0 24 24">
+                <path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z" />
+              </svg>
+            </div>
+            <div className={`w-3 sm:w-5 h-0.5 ${step > 1 ? 'bg-primary' : 'bg-gray-200'}`} />
+
+            {/* Bước 2: Hành khách */}
+            <div
+              className={`flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 rounded-full transition-all ${
+                step === 2
+                  ? 'bg-primary text-white shadow-sm ring-2 ring-primary/20'
+                  : step > 2
+                    ? 'bg-red-50 text-primary'
+                    : 'bg-gray-100 text-gray-400'
+              }`}
+              title="Thông tin hành khách"
+            >
+              <svg className="w-4 h-4 sm:w-5 sm:h-5 fill-current" viewBox="0 0 24 24">
+                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+              </svg>
+            </div>
+            <div className={`w-3 sm:w-5 h-0.5 ${step > 2 ? 'bg-primary' : 'bg-gray-200'}`} />
+
+            {/* Bước 3: Dịch vụ bổ sung */}
+            <div
+              className={`flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 rounded-full transition-all ${
+                step === 3
+                  ? 'bg-primary text-white shadow-sm ring-2 ring-primary/20'
+                  : step > 3
+                    ? 'bg-red-50 text-primary'
+                    : 'bg-gray-100 text-gray-400'
+              }`}
+              title="Dịch vụ bổ sung"
+            >
+              <svg className="w-4 h-4 sm:w-5 sm:h-5 fill-current" viewBox="0 0 24 24">
+                <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z" />
+              </svg>
+            </div>
+            <div className={`w-3 sm:w-5 h-0.5 ${step > 3 ? 'bg-primary' : 'bg-gray-200'}`} />
+
+            {/* Bước 4: Thanh toán */}
+            <div
+              className={`flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 rounded-full transition-all ${
+                step === 4
+                  ? 'bg-primary text-white shadow-sm ring-2 ring-primary/20'
+                  : 'bg-gray-100 text-gray-400'
+              }`}
+              title="Thanh toán"
+            >
+              <svg className="w-4 h-4 sm:w-5 sm:h-5 fill-current" viewBox="0 0 24 24">
+                <path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z" />
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Booking progress steps (accessible) */}
       <div className="sr-only">
         <div className="mx-auto max-w-5xl px-3 py-3 sm:px-4 md:px-6">
           <nav
@@ -617,47 +721,91 @@ function FlightBookingClientInner({
           nó sẽ thu hẹp cột trái về 1024px-centered, lệch với số đo. */}
       <div className="mx-auto max-w-full">
         {step === 1 && isRoundTrip && (
-          <div className="mb-4 grid grid-cols-2 gap-2 p-1 bg-white/80 backdrop-blur-sm rounded-2xl border border-gray-200 shadow-xs">
-            <button
-              type="button"
-              data-testid="tab-leg-outbound"
-              onClick={() => setCurrentLeg('outbound')}
-              className={`flex flex-col items-center justify-center py-2 px-3 rounded-xl transition text-center cursor-pointer ${
-                currentLeg === 'outbound'
-                  ? 'bg-primary text-white shadow-xs font-bold'
-                  : 'text-gray-700 hover:bg-gray-100 font-medium'
-              }`}
-            >
-              <div className="flex items-center gap-1.5 text-xs sm:text-sm font-koho">
-                <span>Chiều đi: {params.from} → {params.to}</span>
+          <div className="rounded-vj bg-white border border-gray-200 shadow-sm p-2 sm:p-4 mb-3 mx-auto w-full max-w-lg">
+            {/* 1. Dual tabs: Các nút sử dụng nền vàng chữ đen in đậm */}
+            <div className="grid grid-cols-2 gap-2 p-1 bg-gray-100 rounded-xl border border-gray-200">
+              <button
+                type="button"
+                data-testid="tab-leg-outbound"
+                onClick={() => setCurrentLeg('outbound')}
+                className={`flex flex-col items-center justify-center py-2 px-3 rounded-lg transition text-center cursor-pointer ${
+                  currentLeg === 'outbound'
+                    ? 'bg-vjyellow text-black font-black shadow-xs border border-amber-300'
+                    : 'bg-white text-gray-700 hover:bg-gray-50 font-bold'
+                }`}
+              >
+                <div className="flex items-center gap-1.5 text-xs sm:text-sm font-koho font-bold">
+                  <span>Chiều đi: {params.from} → {params.to}</span>
+                </div>
+                <div className={`text-2xs mt-0.5 ${currentLeg === 'outbound' ? 'text-black font-semibold' : 'text-gray-500'}`}>
+                  {booking.selectedFlight
+                    ? `Đã chọn: ${booking.selectedFlight.flightNo} (${(booking.selectedFlight.fareClass || 'ECO').toUpperCase()})`
+                    : 'Đang chọn'}
+                </div>
+              </button>
+              <button
+                type="button"
+                data-testid="tab-leg-inbound"
+                onClick={() => setCurrentLeg('inbound')}
+                className={`flex flex-col items-center justify-center py-2 px-3 rounded-lg transition text-center cursor-pointer ${
+                  currentLeg === 'inbound'
+                    ? 'bg-vjyellow text-black font-black shadow-xs border border-amber-300'
+                    : 'bg-white text-gray-700 hover:bg-gray-50 font-bold'
+                }`}
+              >
+                <div className="flex items-center gap-1.5 text-xs sm:text-sm font-koho font-bold">
+                  <span>Chiều về: {params.to} → {params.from}</span>
+                </div>
+                <div className={`text-2xs mt-0.5 ${currentLeg === 'inbound' ? 'text-black font-semibold' : 'text-gray-500'}`}>
+                  {booking.returnFlight
+                    ? `Đã chọn: ${booking.returnFlight.flightNo} (${(booking.returnFlight.fareClass || 'ECO').toUpperCase()})`
+                    : currentLeg === 'inbound'
+                      ? 'Đang chọn'
+                      : 'Chưa chọn'}
+                </div>
+              </button>
+            </div>
+
+            {/* 2. Route information gộp: Nền đỏ chữ đen in đậm cho badge, tiêu đề in đậm, mô tả viết thường */}
+            <div className="pt-2 sm:pt-3">
+              <div className="flex items-center justify-center mb-1.5 sm:mb-2">
+                <span
+                  data-testid="flight-leg-badge"
+                  className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full text-xs font-black font-koho uppercase tracking-wide bg-red-600 text-black border border-red-700 shadow-xs"
+                >
+                  <span className="w-2 h-2 rounded-full bg-black animate-pulse" />
+                  {currentLeg === 'inbound' ? 'Chuyến bay chiều về' : 'Chuyến bay chiều đi'}
+                </span>
               </div>
-              <div className={`text-2xs mt-0.5 ${currentLeg === 'outbound' ? 'text-white/90' : 'text-gray-500'}`}>
-                {booking.selectedFlight
-                  ? `Đã chọn: ${booking.selectedFlight.flightNo} (${(booking.selectedFlight.fareClass || 'ECO').toUpperCase()})`
-                  : 'Đang chọn'}
+              <div className="flex items-center justify-between sm:justify-center gap-1 sm:gap-14">
+                <div className="text-center min-w-0 flex-1 sm:flex-initial">
+                  <div className="text-xl sm:text-3xl font-black text-gray-950 font-koho leading-none tracking-tight">
+                    {currentLeg === 'inbound' ? params.to?.toUpperCase() : params.from?.toUpperCase()}
+                  </div>
+                  <div className="text-xs2 sm:text-sm text-gray-600 font-medium mt-1 truncate">
+                    {getAirportCity((currentLeg === 'inbound' ? params.to : params.from) || '')}
+                  </div>
+                </div>
+
+                <div className="flex flex-col items-center justify-center gap-1.5 px-1 sm:px-8 shrink-0">
+                  <div className="w-8 sm:w-16 h-1 bg-primary-dark relative rounded-full">
+                    <span className="absolute right-0 -top-1 w-0 h-0 border-t-[3px] border-t-transparent border-b-[3px] border-b-transparent border-l-[7px] border-l-primary-dark" />
+                  </div>
+                  <div className="w-8 sm:w-16 h-1 bg-vj-line relative rounded-full">
+                    <span className="absolute left-0 -top-1 w-0 h-0 border-t-[3px] border-t-transparent border-b-[3px] border-b-transparent border-r-[7px] border-r-vj-line" />
+                  </div>
+                </div>
+
+                <div className="text-center min-w-0 flex-1 sm:flex-initial">
+                  <div className="text-xl sm:text-3xl font-black text-gray-950 font-koho leading-none tracking-tight">
+                    {currentLeg === 'inbound' ? params.from?.toUpperCase() : params.to?.toUpperCase()}
+                  </div>
+                  <div className="text-xs2 sm:text-sm text-gray-600 font-medium mt-1 truncate">
+                    {getAirportCity((currentLeg === 'inbound' ? params.from : params.to) || '')}
+                  </div>
+                </div>
               </div>
-            </button>
-            <button
-              type="button"
-              data-testid="tab-leg-inbound"
-              onClick={() => setCurrentLeg('inbound')}
-              className={`flex flex-col items-center justify-center py-2 px-3 rounded-xl transition text-center cursor-pointer ${
-                currentLeg === 'inbound'
-                  ? 'bg-primary text-white shadow-xs font-bold'
-                  : 'text-gray-700 hover:bg-gray-100 font-medium'
-              }`}
-            >
-              <div className="flex items-center gap-1.5 text-xs sm:text-sm font-koho">
-                <span>Chiều về: {params.to} → {params.from}</span>
-              </div>
-              <div className={`text-2xs mt-0.5 ${currentLeg === 'inbound' ? 'text-white/90' : 'text-gray-500'}`}>
-                {booking.returnFlight
-                  ? `Đã chọn: ${booking.returnFlight.flightNo} (${(booking.returnFlight.fareClass || 'ECO').toUpperCase()})`
-                  : currentLeg === 'inbound'
-                    ? 'Đang chọn'
-                    : 'Chưa chọn'}
-              </div>
-            </button>
+            </div>
           </div>
         )}
 
@@ -668,6 +816,7 @@ function FlightBookingClientInner({
                 key="outbound-step"
                 leg="outbound"
                 isRoundTrip={isRoundTrip}
+                hideRouteCard={isRoundTrip}
                 onSelect={(flight, isUserAction) =>
                   handleFlightSelect(flight, 'outbound', isUserAction ?? true)
                 }
@@ -685,6 +834,7 @@ function FlightBookingClientInner({
                 key="inbound-step"
                 leg="inbound"
                 isRoundTrip={isRoundTrip}
+                hideRouteCard={isRoundTrip}
                 onSelect={(flight, isUserAction) =>
                   handleFlightSelect(flight, 'inbound', isUserAction ?? true)
                 }

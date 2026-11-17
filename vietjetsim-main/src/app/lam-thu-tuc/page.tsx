@@ -339,10 +339,10 @@ function CheckInContent({ prefillBookingId }: { prefillBookingId: string }) {
                       mép cột `x=15`), nhãn `14px/600`. */}
                   <div className="flex flex-col justify-start px-3.75 pb-8 pt-3.35 lg:border-r lg:border-[var(--vj-field-border)] lg:px-0">
                     <div>
-                      <h1 className="hidden text-xl font-semibold uppercase leading-[26px] text-[var(--vj-text)] lg:block">
+                      <h1 className="hidden text-xl font-bold uppercase leading-[28px] text-gray-950 lg:block">
                         LÀM THỦ TỤC
                       </h1>
-                      <p className="mt-0 text-base font-medium leading-[21px] text-[var(--vj-text)] lg:leading-[20.8px]">
+                      <p className="mt-1 text-base font-semibold leading-[24px] text-gray-800">
                         Sẵn sàng cho chuyến bay vui vẻ, thoải mái, bạn có thể làm thủ tục chuyến bay
                         trực tuyến nhanh chóng và đơn giản.
                       </p>
@@ -425,57 +425,56 @@ function CheckInContent({ prefillBookingId }: { prefillBookingId: string }) {
                     </div>
                   </div>
 
-                  {/* Cột phải: Toàn bộ 16px/500 KoHo, line-height 24px, nhấn mạnh 16px/700 */}
-                  <div className="space-y-4 p-6 font-koho text-sm font-medium leading-[21px] text-[var(--vj-text)] sm:p-8 sm:text-base sm:leading-[24px]">
+                  {/* Cột phải: Hướng dẫn check-in tăng kích thước chữ và khoảng cách thoáng đạt, dễ đọc */}
+                  <div className="space-y-6 p-6 font-koho text-base font-medium leading-[26px] text-gray-900 sm:p-8 sm:text-lg sm:leading-[28px] lg:p-10">
                     <p>
                       Quý khách có thể chủ động làm thủ tục chuyến bay trực tuyến (Online Check-in)
                       trên website hoặc ứng dụng Vietjet Air từ{' '}
-                      <strong className="font-bold text-[var(--vj-text)]">
+                      <strong className="font-bold text-gray-950">
                         24 giờ đến 60 phút trước giờ khởi hành
                       </strong>{' '}
                       (thời gian kết thúc có thể thay đổi tùy sân bay).
                     </p>
 
                     <div>
-                      <h2 className="font-bold leading-[24px] text-[var(--vj-text)]">
+                      <h2 className="text-lg font-bold leading-[26px] text-gray-950 sm:text-xl sm:leading-[28px]">
                         Tiện lợi — nhanh chóng — tiết kiệm thời gian
                       </h2>
-                      <p className="mt-1">
+                      <p className="mt-1.5 text-base font-medium leading-[25px] text-gray-800 sm:text-lg sm:leading-[28px]">
                         Hoàn tất thủ tục mọi lúc, mọi nơi và hạn chế thời gian chờ đợi tại Quầy thủ
                         tục sân bay.
                       </p>
                     </div>
 
-                    {/* Khung hướng dẫn — đo được ở site thật: khối 3 cột, cột thứ
-                      hai là "Lưu ý quan trọng:", cột thứ ba là các mục I/II/III. */}
-                    <div className="overflow-hidden rounded-vj border border-vjyellow bg-white">
-                      <div className="grid grid-cols-1 divide-y divide-vjyellow md:grid-cols-3 md:divide-x md:divide-y-0">
-                        <div className="p-4 font-koho text-sm font-medium leading-[22px] text-[var(--vj-text)] sm:text-base sm:leading-[24px]">
-                          <h3 className="mb-2 font-bold leading-[24px] sm:mb-3">
+                    {/* Khung hướng dẫn — khối 3 cột viền vàng nổi bật */}
+                    <div className="overflow-hidden rounded-xl border-2 border-vjyellow bg-white shadow-sm">
+                      <div className="grid grid-cols-1 divide-y-2 divide-vjyellow md:grid-cols-3 md:divide-x-2 md:divide-y-0">
+                        <div className="p-4 sm:p-6 font-koho text-sm sm:text-base font-medium leading-[23px] sm:leading-[26px] text-gray-800">
+                          <h3 className="mb-2.5 font-bold text-base sm:text-lg leading-[24px] text-gray-950 sm:mb-3.5 sm:leading-[26px]">
                             Lưu ý sau khi Online Check-in:
                           </h3>
                           <div className="space-y-3 sm:space-y-4">
                             <div>
-                              <p className="font-bold leading-[22px] sm:leading-[24px]">
+                              <p className="font-bold text-gray-950 leading-[22px] sm:leading-[24px]">
                                 • Không có hành lý ký gửi:
                               </p>
-                              <p className="mt-1">
+                              <p className="mt-1 text-gray-700">
                                 Đối với chuyến bay nội địa tại Việt Nam, Quý khách chuẩn bị hành lý
                                 xách tay đúng quy định và di chuyển trực tiếp đến khu vực kiểm tra
                                 an ninh.
                               </p>
                             </div>
                             <div>
-                              <p className="font-bold leading-[22px] sm:leading-[24px]">
+                              <p className="font-bold text-gray-950 leading-[22px] sm:leading-[24px]">
                                 • Có hành lý ký gửi:
                               </p>
-                              <p className="mt-1">
+                              <p className="mt-1 text-gray-700">
                                 Vui lòng đến{' '}
-                                <strong className="font-bold text-[var(--vj-text)]">
+                                <strong className="font-bold text-gray-950">
                                   Quầy Online Check-in/Bag Drop
                                 </strong>{' '}
                                 để gửi hành lý. Quầy làm thủ tục chuyến bay nội địa{' '}
-                                <strong className="font-bold text-[var(--vj-text)]">
+                                <strong className="font-bold text-gray-950">
                                   đóng trước 40 phút
                                 </strong>{' '}
                                 so với giờ khởi hành (giờ đóng quầy quốc tế tùy sân bay).
@@ -483,54 +482,54 @@ function CheckInContent({ prefillBookingId }: { prefillBookingId: string }) {
                             </div>
                           </div>
                         </div>
-                        <div className="p-4 font-koho text-sm font-medium leading-[22px] text-[var(--vj-text)] sm:text-base sm:leading-[24px]">
-                          <h3 className="mb-2 font-bold leading-[24px] sm:mb-3">
+                        <div className="p-4 sm:p-6 font-koho text-sm sm:text-base font-medium leading-[23px] sm:leading-[26px] text-gray-800">
+                          <h3 className="mb-2.5 font-bold text-base sm:text-lg leading-[24px] text-gray-950 sm:mb-3.5 sm:leading-[26px]">
                             Lưu ý quan trọng:
                           </h3>
                           <div className="space-y-3">
                             <p>
                               Nếu có thay đổi chuyến bay sau khi đã Online Check-in, Quý khách cần
                               thực hiện{' '}
-                              <strong className="font-bold text-[var(--vj-text)]">
+                              <strong className="font-bold text-gray-950">
                                 Online Check-in lại để nhận Thẻ lên tàu bay mới
                               </strong>{' '}
                               và{' '}
-                              <strong className="font-bold text-[var(--vj-text)]">
+                              <strong className="font-bold text-gray-950">
                                 sử dụng đúng thẻ lên tàu bay của chuyến bay đang khởi hành
                               </strong>
                               .
                             </p>
-                            <p>
+                            <p className="text-gray-700">
                               Trong giờ cao điểm hoặc mùa lễ Tết, khu vực an ninh/xuất nhập cảnh có
                               thể đông; Quý khách nên đến sân bay sớm để đảm bảo hành trình thuận
                               lợi.
                             </p>
                           </div>
                         </div>
-                        <div className="p-4 font-koho text-sm font-medium leading-[22px] text-[var(--vj-text)] sm:text-base sm:leading-[24px]">
-                          <h3 className="mb-2 font-bold leading-[24px] text-[var(--vj-red)] sm:mb-3">
+                        <div className="p-4 sm:p-6 font-koho text-sm sm:text-base font-medium leading-[23px] sm:leading-[26px] text-gray-800">
+                          <h3 className="mb-2.5 font-bold text-base sm:text-lg leading-[24px] text-[var(--vj-red)] sm:mb-3.5 sm:leading-[26px]">
                             I. Các chuyến bay khai thác bởi Vietjet:
                           </h3>
                           <div className="space-y-3">
                             <p>
-                              <strong className="font-bold text-[var(--vj-text)]">
+                              <strong className="font-bold text-gray-950">
                                 1. Quy định chung:
                               </strong>{' '}
                               Quý khách cần chuẩn bị đầy đủ giấy tờ du lịch còn hạn, đáp ứng quy
                               định Xuất/Nhập cảnh và lưu trú.
                             </p>
-                            <p className="font-bold leading-[22px] sm:leading-[24px]">
+                            <p className="font-bold text-gray-950 leading-[22px] sm:leading-[24px]">
                               2. Chuyến bay nội địa:
                             </p>
-                            <p>
+                            <p className="text-gray-700">
                               Áp dụng cho các chuyến bay nội địa do Vietjet khai thác. Thời gian áp
                               dụng: từ 24 tiếng đến 60 phút trước giờ bay.
                             </p>
-                            <p className="font-bold leading-[22px] sm:leading-[24px]">
+                            <p className="font-bold text-gray-950 leading-[22px] sm:leading-[24px]">
                               3. Chuyến bay quốc tế:
                             </p>
-                            <p>Áp dụng các chuyến bay xuất phát từ:</p>
-                            <ul className="space-y-0.5 pl-6">
+                            <p className="text-gray-700">Áp dụng các chuyến bay xuất phát từ:</p>
+                            <ul className="space-y-1 pl-6 text-gray-800">
                               <li className="list-disc">Việt Nam</li>
                               <li className="list-disc">Úc</li>
                               <li className="list-disc">Ấn Độ</li>
@@ -544,12 +543,12 @@ function CheckInContent({ prefillBookingId }: { prefillBookingId: string }) {
                     </div>
 
                     {/* Mục II, III & phần lưu ý còn lại */}
-                    <div className="space-y-4 pt-2">
+                    <div className="space-y-4 pt-2 text-sm sm:text-base leading-[24px] sm:leading-[26px] text-gray-800">
                       <div>
-                        <p className="font-bold leading-[22px] text-[var(--vj-text)] sm:leading-[24px]">
+                        <p className="font-bold text-gray-950 leading-[22px] sm:leading-[24px]">
                           Thời gian áp dụng:
                         </p>
-                        <ul className="mt-1 space-y-0.5 pl-6">
+                        <ul className="mt-1 space-y-1 pl-6">
                           <li className="list-disc">Từ 24 tiếng đến 90 phút trước giờ bay.</li>
                           <li className="list-disc">
                             Chuyến bay quốc tế xuất phát từ Úc: Từ 24 tiếng đến 04 tiếng trước giờ
@@ -559,19 +558,19 @@ function CheckInContent({ prefillBookingId }: { prefillBookingId: string }) {
                       </div>
 
                       <p>
-                        <strong className="font-bold text-[var(--vj-text)]">
+                        <strong className="font-bold text-gray-950">
                           *Lưu ý quan trọng dành cho hành khách quốc tế đã làm thủ tục trực tuyến:
                         </strong>{' '}
                         Quy định này áp dụng bao gồm cả Quý khách không có hành lý ký gửi.
                       </p>
 
-                      <p>
+                      <p className="text-gray-700">
                         Để đảm bảo hành trình suôn sẻ, Quý khách vui lòng có mặt tại Quầy phục vụ
                         khách làm thủ tục trực tuyến trước giờ khởi hành 60 phút để nhân viên xác
                         thực các thông tin bao gồm:
                       </p>
 
-                      <div className="space-y-1 pl-4">
+                      <div className="space-y-1.5 pl-4 text-gray-800">
                         <p>Xác nhận lại thông tin chuyến bay với nhân viên hãng.</p>
                         <p>
                           Kiểm tra giấy tờ du lịch, giấy tờ xuất nhập cảnh theo quy định của điểm
@@ -605,7 +604,7 @@ function CheckInContent({ prefillBookingId }: { prefillBookingId: string }) {
                         </p>
                       </div>
 
-                      <p className="pt-2 font-medium text-[var(--vj-text)]">
+                      <p className="pt-2 font-semibold text-gray-900">
                         Xin cảm ơn và chúc Quý khách có chuyến đi vui vẻ!
                       </p>
                     </div>

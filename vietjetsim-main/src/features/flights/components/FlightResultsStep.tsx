@@ -188,6 +188,8 @@ export interface FlightResultsStepProps {
   leg?: 'outbound' | 'inbound';
   /** Whether this search is for a round-trip itinerary. */
   isRoundTrip?: boolean;
+  /** When true, omits rendering the route board because parent container merged it into unified header. */
+  hideRouteCard?: boolean;
 }
 
 const WEEKDAY_LABELS = ['Chủ nhật', 'Thứ hai', 'Thứ ba', 'Thứ tư', 'Thứ năm', 'Thứ sáu', 'Thứ bảy'];
@@ -260,48 +262,16 @@ function DateStrip({ value, onSelect }: { value?: string; onSelect?: (iso: strin
                 type="button"
                 onClick={() => onSelect?.(iso)}
                 aria-current="date"
-                className="relative flex h-[82px] sm:h-[95px] w-[114px] sm:w-[156px] shrink-0 flex-col items-center justify-center text-center cursor-pointer focus:outline-none focus:ring-0 z-10 transition-transform active:scale-95"
+                className="relative flex h-[82px] sm:h-[95px] w-[114px] sm:w-[156px] shrink-0 flex-col items-center justify-center text-center cursor-pointer focus:outline-none focus:ring-0 z-10 transition-transform active:scale-95 bg-[url('/images/flights/cloud-bg-4.webp')] bg-contain bg-center bg-no-repeat drop-shadow-[0_4px_10px_rgba(245,130,32,0.35)]"
               >
-                {/* Bông hoa vàng — viền đỏ cam, lớp trong vàng. */}
-                <svg
-                  viewBox="0 0 140 100"
-                  className="w-[72px] h-[56px] self-center mb-1 drop-shadow-[0_4px_10px_rgba(245,130,32,0.45)]"
-                  aria-hidden="true"
-                >
-                  {/* Lớp viền đỏ cam. */}
-                  <g fill="#F58220">
-                    <circle cx="70" cy="50" r="26" />
-                    <circle cx="70" cy="24" r="12" />
-                    <circle cx="70" cy="76" r="12" />
-                    <circle cx="45" cy="50" r="12" />
-                    <circle cx="95" cy="50" r="12" />
-                    <circle cx="50" cy="34" r="12" />
-                    <circle cx="90" cy="34" r="12" />
-                    <circle cx="50" cy="66" r="12" />
-                    <circle cx="90" cy="66" r="12" />
-                  </g>
-                  {/* Lớp nền vàng. */}
-                  <g fill="#FFD200">
-                    <circle cx="70" cy="50" r="22" />
-                    <circle cx="70" cy="24" r="10" />
-                    <circle cx="70" cy="76" r="10" />
-                    <circle cx="45" cy="50" r="10" />
-                    <circle cx="95" cy="50" r="10" />
-                    <circle cx="50" cy="34" r="10" />
-                    <circle cx="90" cy="34" r="10" />
-                    <circle cx="50" cy="66" r="10" />
-                    <circle cx="90" cy="66" r="10" />
-                  </g>
-                </svg>
-
-                <div className="relative z-10 flex flex-col items-center justify-center px-1">
-                  <span className="block text-2xs sm:text-sm2 font-bold text-vj-fare-gold-ink leading-tight">
+                <div className="relative z-10 flex flex-col items-center justify-center px-2 py-1">
+                  <span className="block text-2xs sm:text-xs font-bold text-amber-900 leading-tight">
                     {WEEKDAY_LABELS[day.getDay()]}
                   </span>
                   <span className="block text-xs sm:text-base font-black text-gray-950 leading-tight my-0.5">
                     {day.getDate()} tháng {day.getMonth() + 1}
                   </span>
-                  <span className="block text-3xs sm:text-sm2 font-medium text-gray-800 leading-tight">
+                  <span className="block text-3xs sm:text-xs font-semibold text-gray-800 leading-tight">
                     Từ <span className="font-bold text-vj-fare-red-ink">{price.split(' ')[0]}</span>{' '}
                     <span className="italic text-gray-700">000 VND</span>
                   </span>
@@ -465,6 +435,7 @@ export default function FlightResultsStep({
   onDateChange,
   leg = 'outbound',
   isRoundTrip = false,
+  hideRouteCard = false,
   // `pax` / `child` / `infant` vẫn nằm trong `FlightResultsStepProps` (hợp đồng
   // public của component) nhưng KHÔNG còn được dùng ở đây: thanh "Tổng tiền"
   // dính đáy do `FlightBookingResultsWrapper` render, và nó đã tự tính tổng từ
@@ -977,28 +948,18 @@ export default function FlightResultsStep({
           một `<main>` mỗi document. */}
       <div className="w-full min-w-0 space-y-4">
         {/* Route board — clean white card with opposing red and gray arrows matching sample */}
-        {search?.from && search?.to && (
+        {search?.from && search?.to && !hideRouteCard && (
           <div className="rounded-vj bg-white border border-gray-100 shadow-xs px-2.5 py-2.5 sm:px-8 sm:py-3.5 mb-2 mx-auto w-full max-w-xs sm:max-w-lg">
-            {/* Header chip: CHIỀU ĐI / CHIỀU VỀ */}
+            {/* Header chip: CHIỀU ĐI / CHIỀU VỀ — nền đỏ chữ đen in đậm */}
             <div className="flex items-center justify-center mb-1.5 sm:mb-2">
               <span
                 data-testid="flight-leg-badge"
-                className={`inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full text-xs font-bold font-koho uppercase tracking-wide ${
-                  leg === 'inbound'
-                    ? 'bg-amber-100 text-amber-800 border border-amber-300'
-                    : 'bg-red-50 text-primary border border-red-200'
-                }`}
+                className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full text-xs font-black font-koho uppercase tracking-wide bg-red-600 text-black border border-red-700 shadow-xs"
               >
-                <span
-                  className={`w-2 h-2 rounded-full ${
-                    leg === 'inbound' ? 'bg-amber-500' : 'bg-primary'
-                  } animate-pulse`}
-                />
+                <span className="w-2 h-2 rounded-full bg-black animate-pulse" />
                 {leg === 'inbound'
                   ? 'Chuyến bay chiều về'
-                  : isRoundTrip
-                    ? 'Chuyến bay chiều đi'
-                    : 'Chuyến bay chiều đi'}
+                  : 'Chuyến bay chiều đi'}
               </span>
             </div>
             <div className="flex items-center justify-between sm:justify-center gap-1 sm:gap-14">
