@@ -114,7 +114,9 @@ describe('Ô nhập tra cứu (khung viền 40px) — đo 14/11/2026', () => {
 
   it('focus viền khung đổi sang màu thương hiệu', () => {
     expect(ruleValue('.vj-lookup-field:focus-within', 'border-color')).toBe('var(--primary)');
-    expect(ruleValue('.vj-lookup-field:focus-within', 'box-shadow')).toBe('0 0 0 1px var(--primary)');
+    expect(ruleValue('.vj-lookup-field:focus-within', 'box-shadow')).toBe(
+      '0 0 0 1px var(--primary)'
+    );
   });
 });
 

@@ -368,7 +368,9 @@ export default function FlightBookingResultsWrapper({
               <div aria-hidden="true" className="flex-1" />
               <div className="relative w-[405px] shrink-0">
                 <div className="flex flex-col items-start">
-                  <span className="vj-total-bar-label font-bold text-black font-koho">Tổng tiền</span>
+                  <span className="vj-total-bar-label font-bold text-black font-koho">
+                    Tổng tiền
+                  </span>
                   <span className="vj-total-bar-amount font-bold text-black font-koho">
                     {totalBookingAmount.toLocaleString('vi-VN')} VND
                   </span>
