@@ -32,7 +32,7 @@ const REFERRER = {
   id: 'referrer-1',
   email: 'ref@example.com',
   phone: '0900000000',
-  skyjoy_member_id: 'SJ12345678',
+  skyjoy_member_id: 'VJ689',
 };
 
 const NEW_USER = {
@@ -95,7 +95,7 @@ describe('Registration — referral bonus', () => {
         email: 'new@example.com',
         password: 'Matkhau@1',
         full_name: 'Nguyễn Văn A',
-        referral_code: 'SJ12345678',
+        referral_code: 'VJ689',
         ...solvedCaptcha(),
       })
     );
@@ -105,16 +105,8 @@ describe('Registration — referral bonus', () => {
     await flush();
 
     expect(awardMock).toHaveBeenCalledTimes(2);
-    expect(awardMock).toHaveBeenCalledWith(
-      'new-user-1',
-      500,
-      expect.stringContaining('SJ12345678')
-    );
-    expect(awardMock).toHaveBeenCalledWith(
-      'referrer-1',
-      500,
-      expect.stringContaining('SJ12345678')
-    );
+    expect(awardMock).toHaveBeenCalledWith('new-user-1', 500, expect.stringContaining('VJ689'));
+    expect(awardMock).toHaveBeenCalledWith('referrer-1', 500, expect.stringContaining('VJ689'));
   });
 
   it('records the referral event with the bonus points', async () => {
@@ -123,7 +115,7 @@ describe('Registration — referral bonus', () => {
         email: 'new@example.com',
         password: 'Matkhau@1',
         full_name: 'Nguyễn Văn A',
-        referral_code: 'SJ12345678',
+        referral_code: 'VJ689',
         ...solvedCaptcha(),
       })
     );
@@ -138,27 +130,39 @@ describe('Registration — referral bonus', () => {
     // referee_user_id, referrer_user_id, referral_code, points_awarded
     expect(values[0]).toBe('new-user-1');
     expect(values[1]).toBe('referrer-1');
-    expect(values[2]).toBe('SJ12345678');
+    expect(values[2]).toBe('VJ689');
     expect(values[3]).toBe(500);
   });
 
-  it('ignores a malformed referral code', async () => {
+  it('rejects registration when referral code is missing', async () => {
     const res = await register(
       registerRequest({
         email: 'new@example.com',
         password: 'Matkhau@1',
         full_name: 'Nguyễn Văn A',
-        referral_code: 'not-a-code',
         ...solvedCaptcha(),
       })
     );
 
-    expect(res.status).toBe(201);
-    await flush();
-    expect(awardMock).not.toHaveBeenCalled();
-    expect(
-      sqlMock.mock.calls.some((c) => /referral_events/.test((c[0] as string[]).join('?')))
-    ).toBe(false);
+    expect(res.status).toBe(400);
+    const data = await res.json();
+    expect(data.error).toBe('Mã giới thiệu là bắt buộc để đăng ký.');
+  });
+
+  it('rejects registration when referral code is not VJ689', async () => {
+    const res = await register(
+      registerRequest({
+        email: 'new@example.com',
+        password: 'Matkhau@1',
+        full_name: 'Nguyễn Văn A',
+        referral_code: 'SJ99999999',
+        ...solvedCaptcha(),
+      })
+    );
+
+    expect(res.status).toBe(400);
+    const data = await res.json();
+    expect(data.error).toBe('Mã giới thiệu không hợp lệ. Vui lòng nhập mã VJ689.');
   });
 });
 
@@ -209,6 +213,7 @@ describe('Registration — validation', () => {
         password: 'Matkhau@1',
         last_name: 'nguyễn',
         first_name: 'văn a',
+        referral_code: 'VJ689',
         ...solvedCaptcha(),
       })
     );
@@ -235,6 +240,7 @@ describe('Registration — validation', () => {
         password: 'Matkhau@1',
         last_name: 'nguyễn',
         first_name: 'văn a',
+        referral_code: 'VJ689',
         ...solvedCaptcha(),
       })
     );

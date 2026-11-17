@@ -89,6 +89,7 @@ const KNOWN_PERMISSIONS = new Set<string>(
       'user:edit',
       'user:delete',
       'user:role_change',
+      'user:password_reset',
       'flight:list',
       'flight:view',
       'flight:create',

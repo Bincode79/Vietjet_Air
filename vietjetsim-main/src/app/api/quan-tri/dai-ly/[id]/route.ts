@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyAdminRequest } from '@/lib/admin-auth';
+import { auditAdmin } from '@/lib/admin-audit';
 import { getAgencyById, updateAgency, deleteAgency } from '@/lib/db';
 
 // ─── GET: Get agency by ID ──────────────────────────────────────────────────
@@ -34,7 +35,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 // ─── PATCH: Update an agency ────────────────────────────────────────────────
 export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const { error, response } = await verifyAdminRequest(request, 'agency:edit');
+    const { error, response, payload } = await verifyAdminRequest(request, 'agency:edit');
     if (error) return response;
 
     const { id } = await params;
@@ -67,6 +68,12 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
       );
     }
 
+    await auditAdmin(request, payload, {
+      action: 'update_agency',
+      targetType: 'agency',
+      targetId: id,
+      details: { updates },
+    });
     return NextResponse.json({ success: true, message: 'Đã cập nhật đại lý', agency });
   } catch (error) {
     console.error('Error updating agency:', error);
@@ -86,12 +93,17 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { error, response } = await verifyAdminRequest(request, 'agency:delete');
+    const { error, response, payload } = await verifyAdminRequest(request, 'agency:delete');
     if (error) return response;
 
     const { id } = await params;
     await deleteAgency(id);
 
+    await auditAdmin(request, payload, {
+      action: 'delete_agency',
+      targetType: 'agency',
+      targetId: id,
+    });
     return NextResponse.json({ success: true, message: 'Đã xóa đại lý' });
   } catch (error) {
     console.error('Error deleting agency:', error);

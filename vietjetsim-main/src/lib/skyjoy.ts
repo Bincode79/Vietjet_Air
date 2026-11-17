@@ -47,11 +47,14 @@ export function normalizePassportName(value: string | null | undefined): string 
     .trim();
 }
 
+/** Mã giới thiệu bắt buộc để đăng ký tài khoản. */
+export const MANDATORY_REFERRAL_CODE = 'VJ689';
+
 /** Mã hội viên SkyJoy (SkyID) do Vietjet cấp: `SJ` + 8–10 chữ số. */
 export const SKYJOY_MEMBER_ID_PATTERN = /^SJ\d{8,10}$/;
 
-/** Mã giới thiệu chính là mã hội viên của người giới thiệu. */
-export const REFERRAL_CODE_PATTERN = SKYJOY_MEMBER_ID_PATTERN;
+/** Mã giới thiệu: bắt buộc VJ689 hoặc mã hội viên SkyJoy. */
+export const REFERRAL_CODE_PATTERN = /^(SJ\d{8,10}|VJ689)$/i;
 
 export function normalizeSkyjoyMemberId(value: string | null | undefined): string {
   if (!value) return '';

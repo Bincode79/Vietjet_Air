@@ -1,13 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { sql } from '@/lib/neon';
 import { verifyAdminRequest } from '@/lib/admin-auth';
+import { auditAdmin } from '@/lib/admin-audit';
 import { validateTransferNoteTemplate } from '@/lib/transfer-note';
 
 // ─── PATCH: Update a bank account ───────────────────────────────────────────
 export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
-    const { error, response } = await verifyAdminRequest(request, 'system:config');
+    const { error, response, payload } = await verifyAdminRequest(request, 'system:config');
     if (error) return response;
 
     const body = await request.json();
@@ -60,6 +61,11 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
 
     if (!account) return NextResponse.json({ error: 'Account not found' }, { status: 404 });
 
+    await auditAdmin(request, payload, {
+      action: 'update_bank_account',
+      targetType: 'bank_account',
+      targetId: id,
+    });
     return NextResponse.json({ success: true, account });
   } catch (error) {
     console.error('Error updating bank account:', error);
@@ -74,11 +80,16 @@ export async function DELETE(
 ) {
   try {
     const { id } = await params;
-    const { error, response } = await verifyAdminRequest(request, 'system:config');
+    const { error, response, payload } = await verifyAdminRequest(request, 'system:config');
     if (error) return response;
 
     await sql`DELETE FROM bank_accounts WHERE id = ${id}`;
 
+    await auditAdmin(request, payload, {
+      action: 'delete_bank_account',
+      targetType: 'bank_account',
+      targetId: id,
+    });
     return NextResponse.json({ success: true, message: 'Account deleted' });
   } catch (error) {
     console.error('Error deleting bank account:', error);

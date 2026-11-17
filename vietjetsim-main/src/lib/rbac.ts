@@ -26,6 +26,7 @@ export type Permission =
   | 'user:edit'
   | 'user:delete'
   | 'user:role_change'
+  | 'user:password_reset'
   | 'flight:list'
   | 'flight:view'
   | 'flight:create'
@@ -83,6 +84,7 @@ export const PERMISSION_LABELS: Record<Permission, string> = {
   'user:edit': 'Chỉnh sửa thông tin user',
   'user:delete': 'Xóa người dùng',
   'user:role_change': 'Thay đổi role người dùng',
+  'user:password_reset': 'Đặt lại mật khẩu người dùng',
   'flight:list': 'Xem danh sách chuyến bay',
   'flight:view': 'Xem chi tiết chuyến bay',
   'flight:create': 'Tạo chuyến bay mới',
@@ -159,6 +161,7 @@ export const PERMISSION_CATEGORIES: PermissionCategory[] = [
       'user:edit',
       'user:delete',
       'user:role_change',
+      'user:password_reset',
     ],
   },
   {
@@ -411,6 +414,7 @@ const OPS_PERMISSIONS = new Set<Permission>([
   'announcement:crud',
   'user:list',
   'user:view',
+  'user:password_reset',
   'analytics:view',
   'report:generate',
 ]);

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { sql } from '@/lib/neon';
 import { verifyAdminRequest } from '@/lib/admin-auth';
+import { auditAdmin } from '@/lib/admin-audit';
 import { parsePaginationParams, getOffset } from '@/lib/pagination';
 
 // ─── GET: Get all announcements with pagination and filters ──────────────────
@@ -182,7 +183,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const { error, response } = await verifyAdminRequest(request, 'announcement:crud');
+    const { error, response, payload } = await verifyAdminRequest(request, 'announcement:crud');
     if (error) return response;
 
     const body = await request.json();
@@ -230,6 +231,12 @@ export async function POST(request: NextRequest) {
       RETURNING *
     `;
 
+    await auditAdmin(request, payload, {
+      action: 'create_announcement',
+      targetType: 'announcement',
+      targetId: String(announcement?.id ?? ''),
+      details: { title: announcement?.title, type: announcement?.type },
+    });
     return NextResponse.json(
       { success: true, announcement, message: 'Announcement created successfully' },
       { status: 201 }

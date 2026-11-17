@@ -1,8 +1,8 @@
 'use client';
 
 import React from 'react';
-import { SkyIdPhoneField } from '../SkyIdFields';
-import { type SkyIdCountry } from './types';
+import { SkyIdField, SkyIdPhoneField } from '../SkyIdFields';
+import { type IdentifierMode, type SkyIdCountry } from './types';
 
 /**
  * Bước 2 — nhập mật khẩu.
@@ -26,6 +26,7 @@ export interface PasswordStepProps {
   onSubmit: (event: React.FormEvent) => void;
   onBack: () => void;
   loading: boolean;
+  identifierMode?: IdentifierMode;
 }
 
 export default function PasswordStep({
@@ -39,18 +40,29 @@ export default function PasswordStep({
   onSubmit,
   onBack,
   loading,
+  identifierMode = 'phone',
 }: PasswordStepProps) {
   return (
     <form onSubmit={onSubmit} noValidate>
-      <SkyIdPhoneField
-        id="skyid-phone-echo"
-        label={identifierLabel}
-        value={identifier}
-        onChange={() => undefined}
-        flag={country.flag}
-        dial={country.dial}
-        readOnly
-      />
+      {identifierMode === 'account' ? (
+        <SkyIdField
+          id="skyid-account-echo"
+          label={identifierLabel}
+          value={identifier}
+          onChange={() => undefined}
+          readOnly
+        />
+      ) : (
+        <SkyIdPhoneField
+          id="skyid-phone-echo"
+          label={identifierLabel}
+          value={identifier}
+          onChange={() => undefined}
+          flag={country.flag}
+          dial={country.dial}
+          readOnly
+        />
+      )}
 
       <div className="mt-4 text-left">
         <label htmlFor="skyid-password" className="vj-skyid-label">

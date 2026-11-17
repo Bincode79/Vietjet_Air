@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { sql } from '@/lib/neon';
 import { verifyAdminRequest } from '@/lib/admin-auth';
+import { auditAdmin } from '@/lib/admin-audit';
 import {
   getAllRefunds,
   updateRefundStatus,
@@ -57,6 +58,11 @@ export async function PATCH(request: NextRequest) {
     if (action === 'set_feature_lock') {
       const enabled = Boolean(body.enabled);
       await setRefundFeatureEnabled(enabled, admin.userId);
+      await auditAdmin(request, admin, {
+        action: 'refund:set_feature_lock',
+        targetType: 'refund_settings',
+        details: { enabled },
+      });
       return NextResponse.json({ success: true, refundFeatureEnabled: enabled });
     }
 
@@ -71,6 +77,12 @@ export async function PATCH(request: NextRequest) {
     // ─── Show / hide a ticket on the customer's screen ────────────────────
     if (action === 'set_visibility') {
       const refund = await setRefundVisibility(refundId, Boolean(body.visible), admin.userId);
+      await auditAdmin(request, admin, {
+        action: 'refund:set_visibility',
+        targetType: 'refund',
+        targetId: refundId,
+        details: { visible: Boolean(body.visible) },
+      });
       if (!refund) {
         return NextResponse.json(
           { error: 'Not Found', message: 'Refund request not found' },
@@ -115,6 +127,12 @@ export async function PATCH(request: NextRequest) {
         );
       }
       const refund = await updateRefundDetails(refundId, fields, admin.userId);
+      await auditAdmin(request, admin, {
+        action: 'refund:update_details',
+        targetType: 'refund',
+        targetId: refundId,
+        details: { fields: Object.keys(fields) },
+      });
       if (!refund) {
         return NextResponse.json(
           { error: 'Not Found', message: 'Refund request not found' },
@@ -287,6 +305,12 @@ export async function PATCH(request: NextRequest) {
       );
     }
 
+    await auditAdmin(request, admin, {
+      action: 'refund:set_status',
+      targetType: 'refund',
+      targetId: refundId,
+      details: { status, note: operatorNote },
+    });
     return NextResponse.json({
       success: true,
       message: `Refund status updated to ${status}.${refundSummary}`,

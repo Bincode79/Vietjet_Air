@@ -120,7 +120,7 @@ export default function Footer() {
   return (
     // Nền trắng phủ pattern SVG (đo được trên site thật: background-color #fff
     // + footer-pattern.svg, background-size 300px cover).
-    <footer className="vj-footer-sky relative overflow-hidden text-xs">
+    <footer className="vj-footer-sky relative overflow-hidden text-xs pb-24 lg:pb-0">
       <div className="mx-auto w-full max-w-[1200px] px-4 pb-8 pt-15 sm:px-6 lg:px-0">
         {/* 5 cột — mỗi cột rộng 195px, cách nhau 98px. */}
         <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-5 lg:gap-6">

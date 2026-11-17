@@ -28,6 +28,7 @@ export interface SkyIdFieldProps {
   inputMode?: 'text' | 'tel' | 'email' | 'numeric';
   maxLength?: number;
   invalid?: boolean;
+  readOnly?: boolean;
   /** Tiện ích hiển thị bên phải (nút hiện/ẩn mật khẩu). */
   trailing?: React.ReactNode;
   className?: string;
@@ -45,6 +46,7 @@ export function SkyIdField({
   inputMode,
   maxLength,
   invalid = false,
+  readOnly = false,
   trailing,
   className = '',
 }: SkyIdFieldProps) {
@@ -65,6 +67,7 @@ export function SkyIdField({
           autoComplete={autoComplete}
           inputMode={inputMode}
           maxLength={maxLength}
+          readOnly={readOnly}
           aria-invalid={invalid || undefined}
           className="vj-skyid-input"
           style={trailing ? { paddingRight: 52 } : undefined}
@@ -128,7 +131,8 @@ export function SkyIdPhoneField({
         <div className="vj-skyid-phone-menu">
           <button
             type="button"
-            onClick={onToggleCountry}
+            onClick={readOnly ? undefined : onToggleCountry}
+            disabled={readOnly}
             aria-expanded={countryOpen}
             aria-haspopup="listbox"
             aria-label="Chọn mã quốc gia"
@@ -176,6 +180,46 @@ export interface SkyIdPinInputProps {
 export function SkyIdPinInput({ length, value, onChange, id = 'skyid-otp' }: SkyIdPinInputProps) {
   const digits = value.padEnd(length, ' ').slice(0, length).split('');
 
+  const handleChange = (index: number, rawVal: string) => {
+    const cleaned = rawVal.replace(/\D/g, '');
+    if (cleaned.length > 1) {
+      // Pasted string or autofill
+      const sliced = cleaned.slice(0, length);
+      onChange(sliced);
+      const nextIndex = Math.min(sliced.length, length - 1);
+      const targetInput = document.getElementById(nextIndex === 0 ? id : `${id}-${nextIndex}`);
+      targetInput?.focus();
+      return;
+    }
+
+    const newDigits = [...digits];
+    newDigits[index] = cleaned || ' ';
+    const nextVal = newDigits.join('').trimEnd();
+    onChange(nextVal);
+
+    if (cleaned && index < length - 1) {
+      const nextInput = document.getElementById(`${id}-${index + 1}`);
+      nextInput?.focus();
+    }
+  };
+
+  const handleKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Backspace') {
+      if (!digits[index] || digits[index] === ' ') {
+        if (index > 0) {
+          const prevInput = document.getElementById(index - 1 === 0 ? id : `${id}-${index - 1}`);
+          prevInput?.focus();
+        }
+      }
+    } else if (e.key === 'ArrowLeft' && index > 0) {
+      const prevInput = document.getElementById(index - 1 === 0 ? id : `${id}-${index - 1}`);
+      prevInput?.focus();
+    } else if (e.key === 'ArrowRight' && index < length - 1) {
+      const nextInput = document.getElementById(`${id}-${index + 1}`);
+      nextInput?.focus();
+    }
+  };
+
   return (
     <div className="flex justify-center gap-2" role="group" aria-label="Mã xác thực">
       {digits.map((digit, index) => {
@@ -186,12 +230,10 @@ export function SkyIdPinInput({ length, value, onChange, id = 'skyid-otp' }: Sky
             id={index === 0 ? id : `${id}-${index}`}
             inputMode="numeric"
             autoComplete={index === 0 ? 'one-time-code' : 'off'}
-            maxLength={length}
+            maxLength={index === 0 ? length : 1}
             value={isFilled ? digit : ''}
-            onChange={(e) => {
-              const next = e.target.value.replace(/\D/g, '').slice(0, length);
-              onChange(next);
-            }}
+            onChange={(e) => handleChange(index, e.target.value)}
+            onKeyDown={(e) => handleKeyDown(index, e)}
             aria-label={`Chữ số thứ ${index + 1}`}
             className="vj-skyid-pin border border-gray-300 rounded-lg focus:border-primary focus:ring-2 focus:ring-primary/20 shadow-xs"
             style={isFilled ? undefined : { backgroundImage: 'none' }}

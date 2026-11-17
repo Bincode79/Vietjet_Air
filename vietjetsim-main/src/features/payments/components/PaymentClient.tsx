@@ -1394,7 +1394,7 @@ export default function PaymentClient() {
                           <div className="flex items-center gap-4">
                             <div>
                               <div className="text-2xl font-black text-[var(--foreground)]">
-                                {booking.returnDepartTime || '14:00'}
+                                {booking.returnDepartTime || '—'}
                               </div>
                               <div className="text-xs font-semibold text-[var(--foreground-muted)]">
                                 {booking.to}
@@ -1415,7 +1415,7 @@ export default function PaymentClient() {
                             </div>
                             <div className="text-right">
                               <div className="text-2xl font-black text-[var(--foreground)]">
-                                {booking.returnArriveTime || '16:10'}
+                                {booking.returnArriveTime || '—'}
                               </div>
                               <div className="text-xs font-semibold text-[var(--foreground-muted)]">
                                 {booking.from}

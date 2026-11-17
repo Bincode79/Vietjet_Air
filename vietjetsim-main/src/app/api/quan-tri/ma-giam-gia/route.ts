@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyAdminRequest } from '@/lib/admin-auth';
+import { auditAdmin } from '@/lib/admin-audit';
 import { validateCsrfOrReject } from '@/lib/csrf';
 import { getAllDiscountCodes, createDiscountCode } from '@/lib/db';
 import { parsePaginationParams } from '@/lib/pagination';
@@ -140,6 +141,12 @@ export async function POST(request: NextRequest) {
       issued_by: payload.userId,
     });
 
+    await auditAdmin(request, payload, {
+      action: 'create_discount',
+      targetType: 'discount',
+      targetId: String(discount?.id ?? discount?.code ?? ''),
+      details: { code: discount?.code, type, value },
+    });
     return NextResponse.json(
       {
         success: true,

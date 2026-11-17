@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { sql } from '@/lib/neon';
 import { verifyAdminRequest } from '@/lib/admin-auth';
+import { auditAdmin } from '@/lib/admin-audit';
 import { parsePaginationParams, getOffset } from '@/lib/pagination';
 
 // ─── GET: Get all airports with pagination and search ─────────────────────────
@@ -77,7 +78,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const { error, response } = await verifyAdminRequest(request, 'airport:manage');
+    const { error, response, payload } = await verifyAdminRequest(request, 'airport:manage');
     if (error) return response;
 
     const body = await request.json();
@@ -116,6 +117,12 @@ export async function POST(request: NextRequest) {
       RETURNING id, code, name, city, country, created_at
     `;
 
+    await auditAdmin(request, payload, {
+      action: 'create_airport',
+      targetType: 'airport',
+      targetId: String(airport?.id ?? airport?.code ?? ''),
+      details: { code: airport?.code, name: airport?.name },
+    });
     return NextResponse.json(
       { success: true, airport, message: 'Airport created successfully' },
       { status: 201 }

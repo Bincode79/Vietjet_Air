@@ -35,6 +35,7 @@ vi.mock('@/lib/mail', () => ({
 
 vi.mock('@/lib/db', () => ({
   writeAuditLog: vi.fn().mockResolvedValue(true),
+  awardBookingLoyaltyPoints: vi.fn().mockResolvedValue(null),
 }));
 
 // Mutable booking state so a test can drive the same handler twice, and so the

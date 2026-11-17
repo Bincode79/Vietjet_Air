@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyAdminRequest } from '@/lib/admin-auth';
+import { auditAdmin } from '@/lib/admin-audit';
 import { getAllFlights, createFlight, updateFlight, deleteFlight } from '@/lib/db';
 import { parsePaginationParams, getPaginationMeta } from '@/lib/pagination';
 import { FLIGHT_NO_PATTERN, normalizeFlightNo } from '@/lib/flight-no';
@@ -38,7 +39,7 @@ export async function POST(request: NextRequest) {
   let attempted: { from_code?: string; to_code?: string; depart_time?: string } = {};
 
   try {
-    const { error, response } = await verifyAdminRequest(request, 'flight:create');
+    const { error, response, payload } = await verifyAdminRequest(request, 'flight:create');
     if (error) return response;
     const body = await request.json();
     const {
@@ -118,6 +119,12 @@ export async function POST(request: NextRequest) {
       available,
       aircraft: aircraft ? String(aircraft).trim() : null,
     });
+    await auditAdmin(request, payload, {
+      action: 'create_flight',
+      targetType: 'flight',
+      targetId: String(flight.id ?? normalizedFlightNo),
+      details: { flight_no: normalizedFlightNo, from_code, to_code, depart_time },
+    });
     return NextResponse.json(
       { success: true, message: 'Flight created successfully', flight },
       { status: 201 }
@@ -144,7 +151,7 @@ export async function POST(request: NextRequest) {
 
 export async function PUT(request: NextRequest) {
   try {
-    const { error, response } = await verifyAdminRequest(request, 'flight:edit');
+    const { error, response, payload } = await verifyAdminRequest(request, 'flight:edit');
     if (error) return response;
     const body = await request.json();
     const { flight_id, ...updates } = body;
@@ -159,6 +166,12 @@ export async function PUT(request: NextRequest) {
         { error: 'Not Found', message: 'Flight not found' },
         { status: 404 }
       );
+    await auditAdmin(request, payload, {
+      action: 'update_flight',
+      targetType: 'flight',
+      targetId: String(flight_id),
+      details: { fields: Object.keys(updates) },
+    });
     return NextResponse.json({
       success: true,
       message: 'Flight updated successfully',
@@ -172,7 +185,7 @@ export async function PUT(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
-    const { error, response } = await verifyAdminRequest(request, 'flight:delete');
+    const { error, response, payload } = await verifyAdminRequest(request, 'flight:delete');
     if (error) return response;
     const { searchParams } = new URL(request.url);
     const flightId = searchParams.get('flight_id');
@@ -182,6 +195,11 @@ export async function DELETE(request: NextRequest) {
         { status: 400 }
       );
     await deleteFlight(flightId);
+    await auditAdmin(request, payload, {
+      action: 'delete_flight',
+      targetType: 'flight',
+      targetId: flightId,
+    });
     return NextResponse.json({ success: true, message: 'Flight deleted successfully' });
   } catch (error) {
     // `deleteFlight` answers 409 when the flight still has bookings; keep that

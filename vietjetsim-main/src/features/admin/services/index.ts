@@ -86,6 +86,20 @@ export function listUsers(query: AdminListQuery = {}) {
   return apiRequest<AdminList<'users', AdminUser>>(`${EP.USERS}${buildQuery(query)}`);
 }
 
+export function createUser(input: {
+  email: string;
+  password: string;
+  full_name: string;
+  phone?: string | null;
+  role?: 'user' | 'admin';
+  skyjoy_member_id?: string | null;
+}) {
+  return apiRequest<{ success: boolean; user?: AdminUser; message?: string }>(EP.USERS, {
+    method: 'POST',
+    body: input,
+  });
+}
+
 export function updateUser(id: string, input: Partial<AdminUser>) {
   return apiRequest<{ success: boolean; user?: AdminUser; message?: string }>(
     withPathParams(EP.USER, { id }),
@@ -95,6 +109,31 @@ export function updateUser(id: string, input: Partial<AdminUser>) {
 
 export function deleteUser(id: string) {
   return apiRequest<{ success: boolean }>(withPathParams(EP.USER, { id }), { method: 'DELETE' });
+}
+
+export function resetUserPassword(id: string, newPassword: string) {
+  return apiRequest<{ success: boolean; message?: string }>(
+    `${withPathParams(EP.USER, { id })}/dat-lai-mat-khau`,
+    { method: 'POST', body: { newPassword } }
+  );
+}
+
+export interface AdminUserBooking {
+  id: string;
+  booking_code: string | null;
+  flight_no: string;
+  from_code: string;
+  to_code: string;
+  depart_time: string;
+  status: string;
+  total_price: number;
+  created_at: string;
+}
+
+export function listUserBookings(userId: string) {
+  return apiRequest<{ bookings: AdminUserBooking[]; total: number }>(
+    `${EP.BOOKINGS}?user_id=${encodeURIComponent(userId)}&limit=50`
+  );
 }
 
 // ─── Flights ────────────────────────────────────────────────────────────────

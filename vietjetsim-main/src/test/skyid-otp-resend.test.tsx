@@ -61,6 +61,7 @@ async function goToOtpStep() {
   fireEvent.change(screen.getByLabelText('Họ'), { target: { value: 'Nguyễn' } });
   fireEvent.change(screen.getByLabelText('Tên đệm và tên'), { target: { value: 'Văn A' } });
   fireEvent.change(screen.getByLabelText('Email'), { target: { value: 'a@b.com' } });
+  fireEvent.change(screen.getByLabelText(/Mã giới thiệu/), { target: { value: 'VJ689' } });
   fireEvent.click(screen.getByRole('checkbox'));
   fireEvent.click(screen.getByRole('button', { name: 'Đăng ký' }));
 

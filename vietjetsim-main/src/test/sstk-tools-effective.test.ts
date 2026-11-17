@@ -35,6 +35,7 @@ vi.mock('@/lib/db', () => ({
   getSstkLogs: vi.fn(async () => []),
   insertSstkLog: (...args: unknown[]) => insertSstkLog(...args),
   archiveOldRefunds: vi.fn(async () => 0),
+  writeAuditLog: vi.fn(async () => {}),
 }));
 
 vi.mock('@/lib/neon', () => ({

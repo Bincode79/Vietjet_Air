@@ -96,6 +96,51 @@ export default function CheckinsTab({ onToast }: { onToast?: ToastAPI }) {
     }
   };
 
+  const handleExportCsv = () => {
+    const header = [
+      'PNR',
+      'Hanh khach',
+      'Chuyen bay',
+      'Tuyen',
+      'Gio bay',
+      'Ghe',
+      'Ma check-in',
+      'The len tau',
+      'Cong',
+      'Nha ga',
+      'Trang thai',
+      'Gio check-in',
+    ];
+    const escape = (v: unknown) => `"${String(v ?? '').replace(/"/g, '""')}"`;
+    const lines = rows.map((r) =>
+      [
+        r.booking_code || r.booking_id,
+        r.passenger_name,
+        r.flight_no,
+        `${r.from_code}-${r.to_code}`,
+        r.depart_time,
+        r.seat_number,
+        r.check_in_number,
+        r.boarding_pass_number || '',
+        r.gate || '',
+        r.terminal || '',
+        r.status,
+        r.check_in_time,
+      ]
+        .map(escape)
+        .join(',')
+    );
+    const csv = '\uFEFF' + [header.join(','), ...lines].join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `checkin-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+    onToast?.success('Đã xuất CSV', `${rows.length} dòng check-in.`);
+  };
+
   return (
     <div className="space-y-5">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -108,6 +153,15 @@ export default function CheckinsTab({ onToast }: { onToast?: ToastAPI }) {
             {totalCount.toLocaleString('vi-VN')} lượt check-in · huỷ để mở lại ghế cho khách
           </p>
         </div>
+        <button
+          type="button"
+          onClick={handleExportCsv}
+          disabled={rows.length === 0}
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold text-white bg-emerald-500/20 border border-emerald-500/30 hover:bg-emerald-500/30 transition-all active:scale-95 disabled:opacity-40"
+        >
+          <Icon name="ArrowDownTrayIcon" size={14} />
+          Xuất CSV
+        </button>
         <button
           type="button"
           onClick={() => fetchRows(currentPage, debouncedSearch, filterStatus)}

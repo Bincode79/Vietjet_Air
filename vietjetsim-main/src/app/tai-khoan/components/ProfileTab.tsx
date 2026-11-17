@@ -233,13 +233,18 @@ export default function ProfileTab({ user }: { user: User }) {
 
     setIsChangingPassword(true);
     try {
-      // Mock API call
-      await new Promise((resolve) => setTimeout(resolve, 800));
+      await apiRequest<{ success: boolean; message?: string }>('/api/nguoi-dung/doi-mat-khau', {
+        method: 'POST',
+        body: {
+          currentPassword: passwordForm.currentPassword,
+          newPassword: passwordForm.newPassword,
+        },
+      });
       toast.success('Đổi mật khẩu thành công', 'Mật khẩu của bạn đã được cập nhật.');
       setPasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
       setShowPasswordForm(false);
-    } catch {
-      toast.error('Lỗi', 'Không thể đổi mật khẩu. Vui lòng thử lại.');
+    } catch (error) {
+      toast.error('Lỗi', getApiErrorMessage(error, 'Không thể đổi mật khẩu. Vui lòng thử lại.'));
     } finally {
       setIsChangingPassword(false);
     }

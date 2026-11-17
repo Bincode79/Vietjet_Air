@@ -28,6 +28,10 @@ interface Booking {
   status: BookingStatus;
   payMethod: string;
   createdAt: string;
+  /** 'outbound' = chặng đi, 'inbound' = chặng về (migration 045). */
+  legRole?: 'outbound' | 'inbound';
+  /** `trip_id` chung của cặp đi + về — dùng để nhóm hiển thị. */
+  tripId?: string | null;
 }
 
 /**
@@ -110,6 +114,8 @@ export default function BookingsTab({ onToast }: BookingsTabProps = {}) {
           status: (b.status as BookingStatus) || 'confirmed',
           payMethod: b.payment_method || '—',
           createdAt: b.created_at ? new Date(b.created_at).toLocaleString('vi-VN') : '—',
+          legRole: (b.leg_role as 'outbound' | 'inbound') || 'outbound',
+          tripId: b.trip_id ?? null,
         };
       });
       setBookings(mapped);
@@ -209,6 +215,7 @@ export default function BookingsTab({ onToast }: BookingsTabProps = {}) {
   const exportCSV = () => {
     const headers = [
       'Mã đặt chỗ',
+      'Chặng',
       'Khách hàng',
       'Chuyến bay',
       'Hành trình',
@@ -221,6 +228,7 @@ export default function BookingsTab({ onToast }: BookingsTabProps = {}) {
     ];
     const rows = sorted.map((b) => [
       b.id,
+      b.legRole === 'inbound' ? 'Về' : b.tripId ? 'Đi (khứ hồi)' : 'Một chiều',
       b.userName,
       b.flightNo,
       b.route,
@@ -811,6 +819,16 @@ export default function BookingsTab({ onToast }: BookingsTabProps = {}) {
                       <span className="font-mono font-bold text-sm text-indigo-400">
                         {booking.id}
                       </span>
+                      {booking.legRole === 'inbound' && (
+                        <span className="ml-2 text-2xs font-black px-2 py-0.5 rounded-full bg-sky-500/15 text-sky-300 border border-sky-500/30 uppercase tracking-wider">
+                          Chặng về
+                        </span>
+                      )}
+                      {booking.tripId && booking.legRole === 'outbound' && (
+                        <span className="ml-2 text-2xs font-black px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-300 border border-amber-500/30 uppercase tracking-wider">
+                          Khứ hồi
+                        </span>
+                      )}
                     </td>
                     <td className="px-6 py-5">
                       <div className="font-bold text-slate-200 text-sm group-hover:text-white transition-colors">

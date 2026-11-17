@@ -20,7 +20,7 @@ export default function PaymentModal({
   methodLabel = 'VietQR',
   subtotal,
   discount = 0,
-  convenienceFee = 108000,
+  convenienceFee = 0,
   grandTotal,
   onProceed,
 }: PaymentModalProps) {

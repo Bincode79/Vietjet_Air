@@ -1,6 +1,7 @@
 // Vietjet Air Database Layer
 import { sql } from '@/lib/neon';
 export { sql };
+import { generateSkyjoyMemberId } from '@/lib/skyjoy';
 import type { Permission } from '@/lib/rbac';
 import type { SeatLockRow } from '@/lib/seat-lock';
 import { SeatLockConflictError, classifySeatLocks, partitionSeatLocks } from '@/lib/seat-lock';
@@ -109,6 +110,8 @@ export interface UserRecord {
   bank_info?: string | Record<string, string | number> | null;
   /** Ghi chú vận hành của operator (migration 050). */
   operator_notes?: string | null;
+  /** Mã thành viên SkyJoy riêng của tài khoản (migration 027). */
+  skyjoy_member_id?: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -365,11 +368,13 @@ export async function createUser(
   password_hash: string,
   full_name: string,
   role: string = 'user',
-  phone: string | null = null
+  phone: string | null = null,
+  skyjoy_member_id: string | null = null
 ): Promise<UserRecord> {
+  const memberId = skyjoy_member_id || generateSkyjoyMemberId();
   const results = await sql`
-    INSERT INTO user_profiles (email, password_hash, full_name, role, phone)
-    VALUES (${email}, ${password_hash}, ${full_name}, ${role}, ${phone})
+    INSERT INTO user_profiles (email, password_hash, full_name, role, phone, skyjoy_member_id)
+    VALUES (${email}, ${password_hash}, ${full_name}, ${role}, ${phone}, ${memberId})
     RETURNING *
   `;
   return (results as UserRecord[])[0];
@@ -1451,6 +1456,7 @@ export async function getAllBookings(params?: {
   limit?: number;
   status?: string;
   search?: string;
+  userId?: string;
 }): Promise<{
   bookings: AdminBookingRow[];
   total: number;
@@ -1461,6 +1467,11 @@ export async function getAllBookings(params?: {
 
   let whereClause = 'WHERE 1=1';
   const filterValues: DbParam[] = [];
+
+  if (params?.userId) {
+    filterValues.push(params.userId);
+    whereClause += ` AND b.user_id = $${filterValues.length}`;
+  }
 
   if (params?.status) {
     filterValues.push(params.status);

@@ -40,6 +40,8 @@ export interface SkyIdAuthFlowProps {
    *  `popup` = chỉ phần form, để `<PopupFrame>` bọc ngoài (622×664). */
   variant?: 'overlay' | 'page' | 'popup';
   mode?: SkyIdMode;
+  /** Được gọi khi người dùng chuyển qua lại giữa chế độ đăng nhập và đăng ký. */
+  onModeChange?: (mode: SkyIdMode) => void;
   /** Đường dẫn quay lại sau khi đăng nhập/đăng ký thành công. */
   redirectTo?: string;
   onClose?: () => void;
@@ -75,6 +77,7 @@ function autoSolveCaptcha(token?: string): string {
 export default function SkyIdAuthFlow({
   variant = 'overlay',
   mode: initialMode = 'login',
+  onModeChange,
   redirectTo,
   onClose,
 }: SkyIdAuthFlowProps) {
@@ -298,6 +301,15 @@ export default function SkyIdAuthFlow({
       setError('Vui lòng nhập email để nhận mã xác thực');
       return;
     }
+    const cleanReferral = referralCode.trim().toUpperCase();
+    if (!cleanReferral) {
+      setError('Vui lòng nhập mã giới thiệu để đăng ký');
+      return;
+    }
+    if (cleanReferral !== 'VJ689') {
+      setError('Mã giới thiệu không hợp lệ. Vui lòng nhập mã VJ689');
+      return;
+    }
     if (!agree) {
       setError('Vui lòng đồng ý với Điều khoản dịch vụ và Chính sách bảo mật');
       return;
@@ -409,7 +421,7 @@ export default function SkyIdAuthFlow({
               : undefined,
           lastName: normalizePassportName(surname),
           firstName: normalizePassportName(givenName),
-          referralCode: referralCode.trim() || undefined,
+          referralCode: referralCode.trim().toUpperCase() || 'VJ689',
           otpCode,
           captchaToken: challenge?.token,
           captchaAnswer,
@@ -506,6 +518,7 @@ export default function SkyIdAuthFlow({
       {step === 'password' ? (
         <PasswordStep
           identifier={identifierMode === 'phone' ? phone : accountIdentifier}
+          identifierMode={identifierMode}
           identifierLabel={
             identifierMode === 'phone' ? 'Số điện thoại' : 'Email hoặc mã hội viên SkyJoy'
           }
@@ -609,7 +622,9 @@ export default function SkyIdAuthFlow({
           <button
             type="button"
             onClick={() => {
-              setMode(mode === 'register' ? 'login' : 'register');
+              const nextMode = mode === 'register' ? 'login' : 'register';
+              setMode(nextMode);
+              onModeChange?.(nextMode);
               setStep('phone');
               setIdentifierMode('phone');
               setError('');

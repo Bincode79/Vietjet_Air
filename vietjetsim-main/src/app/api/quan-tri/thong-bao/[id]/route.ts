@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { sql } from '@/lib/neon';
 import { verifyAdminRequest } from '@/lib/admin-auth';
+import { auditAdmin } from '@/lib/admin-audit';
 
 // ─── PATCH: Update an announcement ──────────────────────────────────────────
 
 export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const { error, response } = await verifyAdminRequest(request, 'announcement:crud');
+    const { error, response, payload } = await verifyAdminRequest(request, 'announcement:crud');
     if (error) return response;
 
     const { id } = await params;
@@ -76,6 +77,11 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
       RETURNING *
     `;
 
+    await auditAdmin(request, payload, {
+      action: 'update_announcement',
+      targetType: 'announcement',
+      targetId: id,
+    });
     return NextResponse.json({
       success: true,
       announcement,
@@ -97,7 +103,7 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { error, response } = await verifyAdminRequest(request, 'announcement:crud');
+    const { error, response, payload } = await verifyAdminRequest(request, 'announcement:crud');
     if (error) return response;
 
     const { id } = await params;
@@ -114,6 +120,11 @@ export async function DELETE(
       );
     }
 
+    await auditAdmin(request, payload, {
+      action: 'delete_announcement',
+      targetType: 'announcement',
+      targetId: id,
+    });
     return NextResponse.json({
       success: true,
       message: 'Announcement deleted successfully',

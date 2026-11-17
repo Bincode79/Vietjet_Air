@@ -19,8 +19,9 @@ export async function GET(request: NextRequest) {
     const { page, limit } = parsePaginationParams(searchParams);
     const status = searchParams.get('status') || undefined;
     const search = searchParams.get('search') || undefined;
+    const userId = searchParams.get('user_id') || undefined;
 
-    const { bookings, total } = await getAllBookings({ page, limit, status, search });
+    const { bookings, total } = await getAllBookings({ page, limit, status, search, userId });
 
     return NextResponse.json({
       bookings,

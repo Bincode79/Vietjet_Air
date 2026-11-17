@@ -3,7 +3,15 @@ import React, { useState } from 'react';
 import { Icon } from '@/shared/components/ui';
 import { Pagination } from '@/shared/components/ui';
 import { useAuth } from '@/contexts/AuthContext';
-import { deleteUser, listUsers, updateUser } from '@/features/admin';
+import {
+  createUser,
+  deleteUser,
+  listUserBookings,
+  listUsers,
+  resetUserPassword,
+  updateUser,
+} from '@/features/admin';
+import type { AdminUserBooking } from '@/features/admin';
 import { getApiErrorMessage } from '@/shared/services';
 
 interface ToastAPI {
@@ -37,6 +45,7 @@ interface User {
   operatorNotes?: string;
   lastLogin?: string;
   address?: string;
+  skyjoyMemberId?: string;
 }
 
 const STATUS_TABS: { value: 'all' | UserStatus; label: string; activeColor: string }[] = [
@@ -67,6 +76,7 @@ interface UserApiRow {
   operator_notes?: string | null;
   last_login?: string | null;
   address?: string | null;
+  skyjoy_member_id?: string | null;
 }
 
 export default function UsersTab({ onToast }: { onToast?: ToastAPI }) {
@@ -86,6 +96,18 @@ export default function UsersTab({ onToast }: { onToast?: ToastAPI }) {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [isSavingEdit, setIsSavingEdit] = useState(false);
+  // Modal tạo tài khoản mới (nút header "Tạo tài khoản hội viên").
+  const [showCreateForm, setShowCreateForm] = useState(false);
+  const [showCreatePassword, setShowCreatePassword] = useState(false);
+  const [createDraft, setCreateDraft] = useState({
+    full_name: '',
+    email: '',
+    phone: '',
+    password: '',
+    role: 'user' as 'user' | 'admin',
+    skyjoy_member_id: '',
+  });
+  const [isCreating, setIsCreating] = useState(false);
   const [togglingId, setTogglingId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [switchingRoleId, setSwitchingRoleId] = useState<string | null>(null);
@@ -95,6 +117,14 @@ export default function UsersTab({ onToast }: { onToast?: ToastAPI }) {
   // có `value` lẫn `onChange`, nên gõ vào không lưu gì cả.
   const [notesDraft, setNotesDraft] = useState('');
   const [isSavingNotes, setIsSavingNotes] = useState(false);
+  // Lịch sử đặt vé của user đang mở chi tiết.
+  const [userBookings, setUserBookings] = useState<AdminUserBooking[]>([]);
+  const [isLoadingUserBookings, setIsLoadingUserBookings] = useState(false);
+  // Form đặt lại mật khẩu.
+  const [showResetPw, setShowResetPw] = useState(false);
+  const [newPassword, setNewPassword] = useState('');
+  const [isResettingPw, setIsResettingPw] = useState(false);
+
   const { user: currentUser } = useAuth();
 
   const fetchUsers = async () => {
@@ -121,6 +151,7 @@ export default function UsersTab({ onToast }: { onToast?: ToastAPI }) {
           operatorNotes: u.operator_notes ?? undefined,
           lastLogin: u.last_login ? new Date(u.last_login).toLocaleString('vi-VN') : undefined,
           address: u.address ?? undefined,
+          skyjoyMemberId: u.skyjoy_member_id ?? undefined,
         }));
         setUsers(mapped);
       }
@@ -327,16 +358,25 @@ export default function UsersTab({ onToast }: { onToast?: ToastAPI }) {
       // Ghi thật vào DB. Trước đây hàm này chỉ cập nhật state cục bộ trong
       // `setTimeout` rồi báo "Cập nhật thành công" — không có gì được ghi, nên
       // mọi chỉnh sửa tên/email/điện thoại biến mất khi tải lại trang.
+      const original = users.find((u) => u.id === editingUser.id);
       const res = await updateUser(editingUser.id, {
         full_name: name,
         email,
         phone: phone || null,
+        // Đổi vai trò ngay trong form sửa (API [id] hỗ trợ, kể cả super_admin
+        // legacy — PATCH này cần quyền user:role_change chứ không phải route
+        // PATCH /nguoi-dung dành cho tự hạ cấp).
+        ...(editingUser.role !== original?.role ? { role: editingUser.role } : {}),
       });
 
       setUsers((prev) =>
-        prev.map((u) => (u.id === editingUser.id ? { ...u, name, email, phone } : u))
+        prev.map((u) =>
+          u.id === editingUser.id ? { ...u, name, email, phone, role: editingUser.role } : u
+        )
       );
-      setSelectedUser((prev) => (prev ? { ...prev, name, email, phone } : prev));
+      setSelectedUser((prev) =>
+        prev ? { ...prev, name, email, phone, role: editingUser.role } : prev
+      );
       setEditingUser(null);
       onToast?.success('Cập nhật thành công', `Thông tin của ${name} đã được lưu.`);
       void res;
@@ -345,6 +385,15 @@ export default function UsersTab({ onToast }: { onToast?: ToastAPI }) {
     } finally {
       setIsSavingEdit(false);
     }
+  };
+
+  const generateRandomPassword = () => {
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789!@#$%^&*';
+    let pwd = 'VJ@';
+    for (let i = 0; i < 9; i++) {
+      pwd += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    setCreateDraft((p) => ({ ...p, password: pwd + '9!' }));
   };
 
   const totalPages = Math.max(1, Math.ceil(sorted.length / pageSize));
@@ -368,13 +417,27 @@ export default function UsersTab({ onToast }: { onToast?: ToastAPI }) {
             </div>
           </h2>
         </div>
-        <button className="flex items-center justify-center gap-2 px-8 py-4 bg-primary hover:bg-primary-dark text-white rounded-2xl text-xs2 font-black uppercase tracking-[0.2em] shadow-xl shadow-primary/20 transition-all active:scale-95 group">
+        <button
+          type="button"
+          onClick={() => {
+            setCreateDraft({
+              full_name: '',
+              email: '',
+              phone: '',
+              password: '',
+              role: 'user',
+              skyjoy_member_id: '',
+            });
+            setShowCreateForm(true);
+          }}
+          className="flex items-center justify-center gap-2 px-8 py-4 bg-primary hover:bg-primary-dark text-white rounded-2xl text-xs2 font-black uppercase tracking-[0.2em] shadow-xl shadow-primary/20 transition-all active:scale-95 group cursor-pointer"
+        >
           <Icon
             name="PlusCircleIcon"
             size={18}
             className="transition-transform group-hover:rotate-90 duration-300"
           />
-          Thêm người dùng mới
+          Tạo tài khoản hội viên
         </button>
       </div>
 
@@ -640,6 +703,14 @@ export default function UsersTab({ onToast }: { onToast?: ToastAPI }) {
                       // Bản nháp ghi chú phải bắt đầu từ giá trị ĐÃ LƯU của
                       // hàng đang mở, không phải từ giá trị của hàng trước đó.
                       setNotesDraft(user.operatorNotes ?? '');
+                      // Tải lịch sử đặt vé + reset form mật khẩu.
+                      setShowResetPw(false);
+                      setNewPassword('');
+                      setIsLoadingUserBookings(true);
+                      listUserBookings(user.id)
+                        .then((d) => setUserBookings(d.bookings ?? []))
+                        .catch(() => setUserBookings([]))
+                        .finally(() => setIsLoadingUserBookings(false));
                     }}
                     className="border-b border-white/[0.03] hover:bg-white/[0.05] transition-all group cursor-pointer"
                   >
@@ -854,7 +925,7 @@ export default function UsersTab({ onToast }: { onToast?: ToastAPI }) {
                   </p>
                 </div>
 
-                <div className="flex gap-2">
+                <div className="flex gap-2 flex-wrap">
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
@@ -863,6 +934,15 @@ export default function UsersTab({ onToast }: { onToast?: ToastAPI }) {
                     className={`px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${selectedUser.status === 'active' ? 'bg-rose-500/10 text-rose-400 border border-rose-500/20 hover:bg-rose-500/20' : 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20'}`}
                   >
                     {selectedUser.status === 'active' ? 'Khoá tài khoản' : 'Mở khoá'}
+                  </button>
+                  <button
+                    onClick={() => {
+                      setShowResetPw((v) => !v);
+                      setNewPassword('');
+                    }}
+                    className="px-4 py-2 bg-amber-500/10 text-amber-300 border border-amber-500/20 hover:bg-amber-500/20 rounded-xl text-xs font-black uppercase tracking-widest transition-all"
+                  >
+                    Đặt lại mật khẩu
                   </button>
                   <button
                     onClick={(e) => {
@@ -874,6 +954,90 @@ export default function UsersTab({ onToast }: { onToast?: ToastAPI }) {
                     Sửa thông tin
                   </button>
                 </div>
+              </div>
+
+              {/* Form đặt lại mật khẩu */}
+              {showResetPw && (
+                <div className="mt-6 bg-amber-500/[0.06] border border-amber-500/20 rounded-2xl p-4">
+                  <label className="text-2xs font-black text-amber-300/80 uppercase tracking-[0.2em] mb-3 block">
+                    Đặt lại mật khẩu cho {selectedUser.email}
+                  </label>
+                  <div className="flex gap-2">
+                    <input
+                      type="password"
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      placeholder="Tối thiểu 8 ký tự: hoa + thường + số + ký tự đặc biệt"
+                      className="flex-1 bg-slate-950/60 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-amber-500/40"
+                    />
+                    <button
+                      type="button"
+                      disabled={isResettingPw || newPassword.length < 8}
+                      onClick={async () => {
+                        if (!confirm(`Đặt lại mật khẩu cho ${selectedUser.email}?`)) return;
+                        setIsResettingPw(true);
+                        try {
+                          await resetUserPassword(selectedUser.id, newPassword);
+                          onToast?.success(
+                            'Đã đặt lại mật khẩu',
+                            `Mật khẩu của ${selectedUser.email} đã được cập nhật.`
+                          );
+                          setNewPassword('');
+                          setShowResetPw(false);
+                        } catch (err) {
+                          onToast?.error(
+                            'Đặt lại thất bại',
+                            getApiErrorMessage(err, 'Không đặt lại được mật khẩu.')
+                          );
+                        } finally {
+                          setIsResettingPw(false);
+                        }
+                      }}
+                      className="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 rounded-xl text-xs font-black uppercase tracking-widest transition-all disabled:opacity-40"
+                    >
+                      {isResettingPw ? 'Đang lưu...' : 'Xác nhận'}
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* Lịch sử đặt vé */}
+              <div className="mt-8">
+                <label className="text-2xs font-black text-slate-500 uppercase tracking-[0.2em] mb-4 block">
+                  Lịch sử đặt vé ({userBookings.length})
+                </label>
+                {isLoadingUserBookings ? (
+                  <p className="text-xs text-slate-500 font-medium">Đang tải lịch sử...</p>
+                ) : userBookings.length === 0 ? (
+                  <p className="text-xs text-slate-500 font-medium">
+                    Người dùng chưa có đặt vé nào.
+                  </p>
+                ) : (
+                  <div className="space-y-2 max-h-64 overflow-y-auto pr-1">
+                    {userBookings.map((b) => (
+                      <div
+                        key={b.id}
+                        className="flex items-center justify-between gap-3 bg-white/[0.03] border border-white/5 rounded-xl px-4 py-2.5"
+                      >
+                        <div className="min-w-0">
+                          <p className="text-xs font-black text-white font-mono truncate">
+                            {b.booking_code || b.id}
+                          </p>
+                          <p className="text-2xs text-slate-400 font-bold truncate">
+                            {b.flight_no} · {b.from_code}→{b.to_code} ·{' '}
+                            {b.depart_time ? new Date(b.depart_time).toLocaleString('vi-VN') : '—'}
+                          </p>
+                        </div>
+                        <div className="text-right shrink-0">
+                          <p className="text-xs font-black text-emerald-300">
+                            {Number(b.total_price || 0).toLocaleString('vi-VN')}₫
+                          </p>
+                          <p className="text-2xs text-slate-500 font-bold uppercase">{b.status}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
 
               {/* Stats Grid */}
@@ -969,6 +1133,229 @@ export default function UsersTab({ onToast }: { onToast?: ToastAPI }) {
                 </section>
               </div>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Create Modal — admin tạo tài khoản thành viên / admin mới. */}
+      {showCreateForm && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between p-5 border-b border-stone-100">
+              <div>
+                <h3 className="font-bold text-stone-900 text-lg">Tạo tài khoản hội viên</h3>
+                <p className="text-xs text-stone-500 mt-0.5">
+                  Thêm thành viên SkyJoy hoặc tài khoản quản trị hệ thống
+                </p>
+              </div>
+              <button
+                onClick={() => setShowCreateForm(false)}
+                className="w-8 h-8 bg-stone-100 hover:bg-stone-200 rounded-lg flex items-center justify-center cursor-pointer transition-colors"
+              >
+                <Icon name="XMarkIcon" size={16} />
+              </button>
+            </div>
+            <form
+              onSubmit={async (e) => {
+                e.preventDefault();
+                const fullName = createDraft.full_name.trim();
+                const email = createDraft.email.trim();
+                const password = createDraft.password;
+                const phone = createDraft.phone.trim();
+                const skyjoyMemberId = createDraft.skyjoy_member_id.trim().toUpperCase();
+
+                if (fullName.length < 2) {
+                  onToast?.error('Lỗi nhập liệu', 'Họ tên phải có ít nhất 2 ký tự.');
+                  return;
+                }
+                if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                  onToast?.error('Lỗi nhập liệu', 'Email không hợp lệ.');
+                  return;
+                }
+                if (password.length < 8) {
+                  onToast?.error('Lỗi nhập liệu', 'Mật khẩu phải có ít nhất 8 ký tự.');
+                  return;
+                }
+                if (phone && !/^\+?\d[\d\s]{7,19}$/.test(phone)) {
+                  onToast?.error('Lỗi nhập liệu', 'Số điện thoại không hợp lệ.');
+                  return;
+                }
+                setIsCreating(true);
+                try {
+                  await createUser({
+                    email,
+                    password,
+                    full_name: fullName,
+                    phone: phone || null,
+                    role: createDraft.role,
+                    skyjoy_member_id: skyjoyMemberId || null,
+                  });
+                  setShowCreateForm(false);
+                  onToast?.success(
+                    'Tạo tài khoản thành công',
+                    `Đã tạo tài khoản cho ${fullName} (${email}) với vai trò ${createDraft.role === 'admin' ? 'Quản trị viên' : 'Hội viên SkyJoy'}.`
+                  );
+                  await fetchUsers();
+                } catch (err) {
+                  onToast?.error(
+                    'Không tạo được tài khoản',
+                    getApiErrorMessage(err, 'Vui lòng kiểm tra lại thông tin.')
+                  );
+                } finally {
+                  setIsCreating(false);
+                }
+              }}
+              className="p-5 space-y-4"
+            >
+              <div>
+                <label className="block text-xs font-semibold text-stone-400 uppercase tracking-wider mb-1">
+                  Họ tên *
+                </label>
+                <input
+                  type="text"
+                  value={createDraft.full_name}
+                  onChange={(e) => setCreateDraft((p) => ({ ...p, full_name: e.target.value }))}
+                  placeholder="NGUYEN VAN A"
+                  className="w-full px-3 py-2 bg-stone-50 border border-stone-200 rounded-lg text-sm form-input"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-stone-400 uppercase tracking-wider mb-1">
+                  Email *
+                </label>
+                <input
+                  type="email"
+                  value={createDraft.email}
+                  onChange={(e) => setCreateDraft((p) => ({ ...p, email: e.target.value }))}
+                  placeholder="hoivien@vietjetair.com"
+                  className="w-full px-3 py-2 bg-stone-50 border border-stone-200 rounded-lg text-sm form-input"
+                  required
+                />
+              </div>
+              <div>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="block text-xs font-semibold text-stone-400 uppercase tracking-wider">
+                    Mật khẩu khởi tạo *
+                  </label>
+                  <button
+                    type="button"
+                    onClick={generateRandomPassword}
+                    className="text-2xs font-bold text-primary hover:underline cursor-pointer"
+                  >
+                    Tạo ngẫu nhiên
+                  </button>
+                </div>
+                <div className="relative">
+                  <input
+                    type={showCreatePassword ? 'text' : 'password'}
+                    value={createDraft.password}
+                    onChange={(e) => setCreateDraft((p) => ({ ...p, password: e.target.value }))}
+                    placeholder="Tối thiểu 8 ký tự (hoa, thường, số, ký tự đặc biệt)"
+                    className="w-full px-3 py-2 pr-14 bg-stone-50 border border-stone-200 rounded-lg text-sm form-input"
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowCreatePassword((v) => !v)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-stone-500 hover:text-stone-800 cursor-pointer"
+                  >
+                    {showCreatePassword ? 'Ẩn' : 'Hiện'}
+                  </button>
+                </div>
+                <p className="text-2xs text-stone-400 mt-1">
+                  Gửi mật khẩu khởi tạo này cho thành viên để đăng nhập lần đầu.
+                </p>
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-stone-400 uppercase tracking-wider mb-1">
+                  Số điện thoại
+                </label>
+                <input
+                  type="tel"
+                  value={createDraft.phone}
+                  onChange={(e) => setCreateDraft((p) => ({ ...p, phone: e.target.value }))}
+                  placeholder="0901 234 567"
+                  className="w-full px-3 py-2 bg-stone-50 border border-stone-200 rounded-lg text-sm form-input"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-stone-400 uppercase tracking-wider mb-1">
+                  Mã hội viên SkyJoy (tùy chọn)
+                </label>
+                <input
+                  type="text"
+                  value={createDraft.skyjoy_member_id}
+                  onChange={(e) =>
+                    setCreateDraft((p) => ({
+                      ...p,
+                      skyjoy_member_id: e.target.value.toUpperCase(),
+                    }))
+                  }
+                  placeholder="Tự động cấp (SJ...) hoặc nhập mã"
+                  className="w-full px-3 py-2 bg-stone-50 border border-stone-200 rounded-lg text-sm form-input"
+                />
+                <p className="text-2xs text-stone-400 mt-1">
+                  Để trống để hệ thống tự động cấp mã SkyJoy hội viên mới (SJ + 8 chữ số).
+                </p>
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-stone-400 uppercase tracking-wider mb-1">
+                  Vai trò
+                </label>
+                <select
+                  value={createDraft.role}
+                  onChange={(e) =>
+                    setCreateDraft((p) => ({
+                      ...p,
+                      role: e.target.value as 'user' | 'admin',
+                    }))
+                  }
+                  className="w-full px-3 py-2 bg-stone-50 border border-stone-200 rounded-lg text-sm form-input"
+                >
+                  <option value="user">Hội viên SkyJoy (User)</option>
+                  <option value="admin">Quản trị viên (Hệ Thống)</option>
+                </select>
+              </div>
+              <div className="flex gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setShowCreateForm(false)}
+                  disabled={isCreating}
+                  className="flex-1 border border-stone-300 text-stone-600 font-semibold py-2.5 rounded-xl text-sm hover:bg-stone-50 transition-all disabled:opacity-50 cursor-pointer"
+                >
+                  Huỷ
+                </button>
+                <button
+                  type="submit"
+                  disabled={isCreating}
+                  className="flex-1 bg-primary hover:bg-primary-dark text-white font-bold py-2.5 rounded-xl text-sm transition-all disabled:opacity-60 cursor-pointer flex items-center justify-center gap-2"
+                >
+                  {isCreating ? (
+                    <>
+                      <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none">
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        />
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                        />
+                      </svg>
+                      Đang tạo...
+                    </>
+                  ) : (
+                    'Tạo tài khoản'
+                  )}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

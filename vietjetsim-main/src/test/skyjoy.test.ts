@@ -81,8 +81,10 @@ describe('SkyJoy member id', () => {
 });
 
 describe('Referral code', () => {
-  it('is exactly the member-id shape', () => {
+  it('is exactly the member-id shape or VJ689', () => {
     expect(isValidReferralCode('SJ12345678')).toBe(true);
+    expect(isValidReferralCode('VJ689')).toBe(true);
+    expect(isValidReferralCode('vj689')).toBe(true);
     expect(isValidReferralCode('not-a-code')).toBe(false);
     expect(isValidReferralCode(null)).toBe(false);
   });

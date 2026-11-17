@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyAdminRequest } from '@/lib/admin-auth';
+import { auditAdmin } from '@/lib/admin-audit';
 import { getFlightById, updateFlight, insertFlightUpdateLog } from '@/lib/db';
 import { FLIGHT_NO_PATTERN, normalizeFlightNo } from '@/lib/flight-no';
 
@@ -335,6 +336,12 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
     }
 
     // ─── 8. Return success response with change details ──────────────────
+    await auditAdmin(request, authResult.payload, {
+      action: 'update_flight',
+      targetType: 'flight',
+      targetId: flightId,
+      details: { flight_no: existingFlight.flight_no, fields: changes.map((c) => c.field) },
+    });
     return NextResponse.json({
       success: true,
       message: `Cập nhật thành công ${changes.length} trường của chuyến bay ${existingFlight.flight_no}`,

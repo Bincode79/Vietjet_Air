@@ -1,13 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { sql } from '@/lib/neon';
 import { verifyAdminRequest } from '@/lib/admin-auth';
+import { auditAdmin } from '@/lib/admin-audit';
 import type { AirportRecord } from '@/lib/db';
 
 // ─── PATCH: Update an airport ──────────────────────────────────────────────
 
 export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const { error, response } = await verifyAdminRequest(request, 'airport:manage');
+    const { error, response, payload } = await verifyAdminRequest(request, 'airport:manage');
     if (error) return response;
 
     const { id } = await params;
@@ -84,6 +85,11 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
     // through `sql.query()`.
     const [airport] = (await sql.query(updateQuery, values)) as AirportRecord[];
 
+    await auditAdmin(request, payload, {
+      action: 'update_airport',
+      targetType: 'airport',
+      targetId: id,
+    });
     return NextResponse.json({
       success: true,
       airport,
@@ -105,7 +111,7 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { error, response } = await verifyAdminRequest(request, 'airport:manage');
+    const { error, response, payload } = await verifyAdminRequest(request, 'airport:manage');
     if (error) return response;
 
     const { id } = await params;
@@ -143,6 +149,11 @@ export async function DELETE(
       );
     }
 
+    await auditAdmin(request, payload, {
+      action: 'delete_airport',
+      targetType: 'airport',
+      targetId: id,
+    });
     return NextResponse.json({
       success: true,
       message: 'Airport deleted successfully',

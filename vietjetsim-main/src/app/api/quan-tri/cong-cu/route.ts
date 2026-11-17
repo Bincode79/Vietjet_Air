@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyAdminRequest } from '@/lib/admin-auth';
+import { auditAdmin } from '@/lib/admin-audit';
+import { verifyAccessToken } from '@/lib/auth';
 import { isAdminRole } from '@/lib/roles';
 import type { FlightRecord } from '@/lib/db';
 import { getApiErrorMessage } from '@/shared/services';
@@ -329,6 +331,11 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   const authResult = await getAdminId(request);
   if (typeof authResult !== 'string') return authResult.error;
+  // Payload cho audit: giải mã lại token (getAdminId chỉ trả userId string).
+  const token = request.cookies?.get?.('access_token')?.value ?? '';
+  const adminPayload = verifyAccessToken(token) ?? {
+    userId: authResult,
+  };
 
   try {
     const body = await request.json();
@@ -345,6 +352,12 @@ export async function POST(request: NextRequest) {
 
     // Execute the tool
     const result = await tool.execute(params, authResult);
+    await auditAdmin(request, adminPayload, {
+      action: `sstk:${toolKey}`,
+      targetType: 'sstk_tool',
+      targetId: toolKey,
+      details: { label: tool.label, status: result.status, summary: result.summary },
+    });
 
     // Log execution
     try {

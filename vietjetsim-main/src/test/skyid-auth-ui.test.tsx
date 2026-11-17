@@ -111,6 +111,34 @@ describe('SkyID — vỏ giao diện xác thực thật của Vietjet', () => {
       'true'
     );
   });
+
+  it('nhập email rồi tiếp tục sẽ hiển thị ô tài khoản chỉ đọc ở bước mật khẩu', () => {
+    render(<LoginPage />);
+
+    fireEvent.click(screen.getByRole('tab', { name: 'Email / Mã hội viên' }));
+    fireEvent.change(screen.getByPlaceholderText('Nhập email hoặc mã hội viên'), {
+      target: { value: 'user@vietjetair.com' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Tiếp tục' }));
+
+    const accountEcho = screen.getByLabelText('Email hoặc mã hội viên SkyJoy');
+    expect(accountEcho).toBeInTheDocument();
+    expect(accountEcho).toHaveValue('user@vietjetair.com');
+    expect(accountEcho).toHaveAttribute('readonly');
+    expect(screen.getByLabelText('Mật khẩu')).toBeInTheDocument();
+  });
+
+  it('chuyển đổi qua lại giữa Đăng nhập và Đăng ký cập nhật tiêu đề popup', () => {
+    render(<LoginPage />);
+
+    expect(screen.getByText('Đăng nhập SkyJoy')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Đăng ký ngay' }));
+    expect(screen.getByText('Đăng ký SkyJoy')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Đăng nhập ngay' }));
+    expect(screen.getByText('Đăng nhập SkyJoy')).toBeInTheDocument();
+  });
 });
 
 describe('SkyID — luồng đăng ký', () => {
@@ -136,7 +164,7 @@ describe('SkyID — luồng đăng ký', () => {
     expect(screen.getByLabelText('Họ')).toBeInTheDocument();
     expect(screen.getByLabelText('Tên đệm và tên')).toBeInTheDocument();
     expect(screen.getByLabelText('Email')).toBeInTheDocument();
-    expect(screen.getByLabelText('Mã giới thiệu SkyJoy (nếu có)')).toBeInTheDocument();
+    expect(screen.getByLabelText('Mã giới thiệu (bắt buộc)')).toBeInTheDocument();
     expect(screen.getByLabelText('Ngày')).toBeInTheDocument();
     expect(screen.getByLabelText('Tháng')).toBeInTheDocument();
     expect(screen.getByLabelText('Năm')).toBeInTheDocument();
@@ -144,5 +172,48 @@ describe('SkyID — luồng đăng ký', () => {
     // Ô đồng ý đúng kích thước 18×18 của site thật.
     const consent = screen.getByRole('checkbox');
     expect(consent).toHaveClass('vj-skyid-consent');
+  });
+
+  it('bắt buộc phải có mã giới thiệu VJ689 mới đăng ký được', async () => {
+    render(<RegisterPage />);
+
+    fireEvent.change(screen.getByPlaceholderText('Nhập số điện thoại của bạn'), {
+      target: { value: '0912345678' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Tiếp tục' }));
+
+    fireEvent.change(screen.getByLabelText('Họ'), { target: { value: 'Nguyễn' } });
+    fireEvent.change(screen.getByLabelText('Tên đệm và tên'), { target: { value: 'Văn A' } });
+    fireEvent.change(screen.getByLabelText('Email'), { target: { value: 'a@b.com' } });
+    fireEvent.click(screen.getByRole('checkbox'));
+
+    // 1. Không nhập mã giới thiệu
+    fireEvent.click(screen.getByRole('button', { name: 'Đăng ký' }));
+    expect(screen.getByText('Vui lòng nhập mã giới thiệu để đăng ký')).toBeInTheDocument();
+
+    // 2. Nhập sai mã giới thiệu
+    fireEvent.change(screen.getByLabelText('Mã giới thiệu (bắt buộc)'), {
+      target: { value: 'SAICODE' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Đăng ký' }));
+    expect(
+      screen.getByText('Mã giới thiệu không hợp lệ. Vui lòng nhập mã VJ689')
+    ).toBeInTheDocument();
+
+    // 3. Nhập đúng mã VJ689 (không phân biệt hoa thường)
+    fireEvent.change(screen.getByLabelText('Mã giới thiệu (bắt buộc)'), {
+      target: { value: 'vj689' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Đăng ký' }));
+
+    await waitFor(() => {
+      expect(mockAuth.requestOtp).toHaveBeenCalledWith(
+        expect.objectContaining({
+          phone: '0912345678',
+          email: 'a@b.com',
+          purpose: 'register',
+        })
+      );
+    });
   });
 });

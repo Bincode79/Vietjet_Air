@@ -19,6 +19,7 @@ const mocks = vi.hoisted(() => ({
   updateRefundDetails: vi.fn(),
   isRefundFeatureEnabled: vi.fn(),
   setRefundFeatureEnabled: vi.fn(),
+  writeAuditLog: vi.fn().mockResolvedValue(undefined),
 }));
 
 vi.mock('@/lib/db', () => mocks);

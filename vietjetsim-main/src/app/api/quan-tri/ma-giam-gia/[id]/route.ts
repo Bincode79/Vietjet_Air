@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyAdminRequest } from '@/lib/admin-auth';
+import { auditAdmin } from '@/lib/admin-audit';
 import { getDiscountCodeById, updateDiscountCode, deleteDiscountCode } from '@/lib/db';
 
 // ─── GET: Get discount code by ID ───────────────────────────────────────────
@@ -34,7 +35,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 // ─── PATCH: Update a discount code ──────────────────────────────────────────
 export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const { error, response } = await verifyAdminRequest(request, 'discount:edit');
+    const { error, response, payload } = await verifyAdminRequest(request, 'discount:edit');
     if (error) return response;
 
     const { id } = await params;
@@ -49,6 +50,11 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
       );
     }
 
+    await auditAdmin(request, payload, {
+      action: 'update_discount',
+      targetType: 'discount',
+      targetId: id,
+    });
     return NextResponse.json({
       success: true,
       message: 'Discount code updated successfully',
@@ -72,12 +78,17 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { error, response } = await verifyAdminRequest(request, 'discount:delete');
+    const { error, response, payload } = await verifyAdminRequest(request, 'discount:delete');
     if (error) return response;
 
     const { id } = await params;
     await deleteDiscountCode(id);
 
+    await auditAdmin(request, payload, {
+      action: 'delete_discount',
+      targetType: 'discount',
+      targetId: id,
+    });
     return NextResponse.json({
       success: true,
       message: 'Discount code deleted successfully',

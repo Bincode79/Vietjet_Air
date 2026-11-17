@@ -119,6 +119,10 @@ export interface AdminBooking {
   status: string;
   total_price: number;
   created_at: string;
+  /** Chặng đi ('outbound') hay chặng về ('inbound') của trip khứ hồi. */
+  leg_role?: 'outbound' | 'inbound';
+  /** `trip_id` chung của cặp đi + về (migration 045). */
+  trip_id?: string | null;
   // Joined columns returned by `getAllBookings`.
   user_email?: string;
   user_name?: string;

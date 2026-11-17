@@ -25,11 +25,23 @@ export interface SignInPopupProps {
 }
 
 export default function SignInPopup({ mode = 'login', redirectTo, onClose }: SignInPopupProps) {
-  const title = mode === 'register' ? 'Đăng ký SkyJoy' : 'Đăng nhập SkyJoy';
+  const [currentMode, setCurrentMode] = React.useState<SkyIdMode>(mode);
+
+  React.useEffect(() => {
+    setCurrentMode(mode);
+  }, [mode]);
+
+  const title = currentMode === 'register' ? 'Đăng ký SkyJoy' : 'Đăng nhập SkyJoy';
 
   return (
     <PopupFrame title={title} onClose={onClose}>
-      <SkyIdAuthFlow variant="popup" mode={mode} redirectTo={redirectTo} onClose={onClose} />
+      <SkyIdAuthFlow
+        variant="popup"
+        mode={currentMode}
+        onModeChange={setCurrentMode}
+        redirectTo={redirectTo}
+        onClose={onClose}
+      />
     </PopupFrame>
   );
 }

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyAdminRequest } from '@/lib/admin-auth';
+import { auditAdmin } from '@/lib/admin-audit';
 import { validateCsrfOrReject } from '@/lib/csrf';
 import { getAllAgencies, createAgency } from '@/lib/db';
 import { parsePaginationParams } from '@/lib/pagination';
@@ -50,7 +51,7 @@ export async function POST(request: NextRequest) {
   if (csrfError) return csrfError;
 
   try {
-    const { error, response } = await verifyAdminRequest(request, 'agency:create');
+    const { error, response, payload } = await verifyAdminRequest(request, 'agency:create');
     if (error) return response;
 
     const body = await request.json();
@@ -94,6 +95,12 @@ export async function POST(request: NextRequest) {
       is_active: is_active !== false,
     });
 
+    await auditAdmin(request, payload, {
+      action: 'create_agency',
+      targetType: 'agency',
+      targetId: String(agency?.id ?? agency?.code ?? ''),
+      details: { code: agency?.code, name: agency?.name },
+    });
     return NextResponse.json({ success: true, message: 'Đã tạo đại lý', agency }, { status: 201 });
   } catch (error) {
     console.error('Error creating agency:', error);

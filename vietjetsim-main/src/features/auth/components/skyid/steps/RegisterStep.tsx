@@ -145,10 +145,11 @@ export default function RegisterStep({
 
       <SkyIdField
         id="skyid-referral"
-        label="Mã giới thiệu SkyJoy (nếu có)"
+        label="Mã giới thiệu (bắt buộc)"
         value={referralCode}
-        onChange={onReferralCodeChange}
-        placeholder="SJ12345678"
+        onChange={(v) => onReferralCodeChange(v.toUpperCase())}
+        placeholder="VJ689"
+        maxLength={20}
       />
 
       <label className="flex cursor-pointer select-none items-start gap-2 pt-1 text-xs text-[var(--vj-skyid-muted)]">

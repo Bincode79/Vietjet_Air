@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyAdminRequest } from '@/lib/admin-auth';
+import { auditAdmin } from '@/lib/admin-audit';
 import { sql } from '@/lib/neon';
 import {
   DEFAULT_VIETJET_DISCOUNT_VND,
@@ -232,35 +233,13 @@ export async function POST(req: NextRequest) {
 
     const updatedCount = Number(updateResult[0]?.count ?? totalMatched);
 
-    // Ghi Audit Log quản trị
-    try {
-      const adminEmail = payload?.email ?? 'admin';
-      const adminId = payload?.userId ?? 'admin';
-      const ipAddress =
-        req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
-        req.headers.get('x-real-ip') ||
-        'unknown';
-      const userAgent = req.headers.get('user-agent') || undefined;
-
-      await sql`
-        INSERT INTO audit_logs (
-          admin_email, admin_id, action, target_type, target_id,
-          details_json, ip_address, user_agent, status
-        )
-        VALUES (
-          ${adminEmail}, ${adminId}, 'flight:bulk_price_adjust', 'flights', 'multiple',
-          ${JSON.stringify({
-            filter,
-            action,
-            amount,
-            updatedCount,
-          })},
-          ${ipAddress}, ${userAgent}, 'success'
-        )
-      `;
-    } catch (logErr) {
-      console.error('[AUDIT-LOG-ERROR] Failed to write bulk price adjust log:', logErr);
-    }
+    // Ghi Audit Log quản trị (helper tập trung — fire-and-forget).
+    await auditAdmin(req, payload, {
+      action: 'flight:bulk_price_adjust',
+      targetType: 'flights',
+      targetId: 'multiple',
+      details: { filter, action, amount, updatedCount },
+    });
 
     return NextResponse.json({
       success: true,

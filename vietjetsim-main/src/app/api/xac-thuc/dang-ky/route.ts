@@ -13,9 +13,7 @@ import { sendRegistrationSuccessEmail } from '@/lib/mail';
 import {
   generateSkyjoyMemberId,
   isSalutation,
-  isValidReferralCode,
   normalizePassportName,
-  normalizeSkyjoyMemberId,
   REFERRAL_BONUS_POINTS,
 } from '@/lib/skyjoy';
 import { verifyPhoneOtp } from '@/lib/skyjoy-otp';
@@ -121,9 +119,20 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    const referralCode = isValidReferralCode(referral_code)
-      ? normalizeSkyjoyMemberId(referral_code)
-      : null;
+    const rawReferralCode = String(referral_code ?? '')
+      .trim()
+      .toUpperCase();
+    if (!rawReferralCode) {
+      return NextResponse.json({ error: 'Mã giới thiệu là bắt buộc để đăng ký.' }, { status: 400 });
+    }
+    if (rawReferralCode !== 'VJ689') {
+      return NextResponse.json(
+        { error: 'Mã giới thiệu không hợp lệ. Vui lòng nhập mã VJ689.' },
+        { status: 400 }
+      );
+    }
+
+    const referralCode = rawReferralCode;
 
     const password_hash = await hashPassword(password);
 

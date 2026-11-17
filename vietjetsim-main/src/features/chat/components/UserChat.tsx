@@ -669,8 +669,8 @@ export default function UserChat() {
               ? 'hidden sm:flex'
               : 'flex'
             : isOpen
-              ? 'bottom-[calc(70px+env(safe-area-inset-bottom))] right-2 hidden sm:flex sm:bottom-4 sm:right-4'
-              : 'bottom-[calc(70px+env(safe-area-inset-bottom))] right-2 flex transition-transform duration-200 hover:-translate-y-0.5 active:scale-95 sm:bottom-4 sm:right-4'
+              ? 'bottom-[calc(96px+env(safe-area-inset-bottom))] right-3 hidden sm:flex sm:bottom-4 sm:right-4'
+              : 'bottom-[calc(96px+env(safe-area-inset-bottom))] right-3 flex transition-transform duration-200 hover:-translate-y-0.5 active:scale-95 sm:bottom-4 sm:right-4'
         }`}
       >
         {isOpen ? (
@@ -737,7 +737,7 @@ export default function UserChat() {
 
       {/* Chat Window */}
       {isOpen && (
-        <div className="fixed inset-x-0 bottom-[calc(62px+env(safe-area-inset-bottom))] z-50 flex h-[min(580px,calc(100dvh-72px))] flex-col overflow-hidden rounded-t-vj-hero border border-gray-200 bg-white shadow-2xl sm:inset-x-auto sm:bottom-24 sm:right-6 sm:h-[620px] sm:w-[400px] sm:rounded-vj-hero">
+        <div className="fixed inset-x-0 bottom-0 z-50 flex h-[min(600px,calc(100dvh-64px))] pb-[env(safe-area-inset-bottom)] flex-col overflow-hidden rounded-t-vj-hero border border-gray-200 bg-white shadow-2xl sm:inset-x-auto sm:bottom-24 sm:right-6 sm:h-[620px] sm:w-[400px] sm:rounded-vj-hero sm:pb-0">
           {/* Header chuẩn Trợ lý ảo Amy */}
           <div className="relative flex flex-shrink-0 items-center justify-between border-b border-gray-100 bg-white px-4 py-3 shadow-xs">
             <div className="flex items-center gap-2.5">

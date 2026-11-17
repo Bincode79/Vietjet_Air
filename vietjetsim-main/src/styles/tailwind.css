@@ -2280,6 +2280,13 @@ h6 {
   box-shadow: none;
 }
 
+.vj-skyid-input[readonly] {
+  background-color: var(--surface-2, #f8fafc);
+  color: var(--vj-skyid-ink, #333333);
+  opacity: 0.9;
+  cursor: default;
+}
+
 /* Nhãn nổi của ô số điện thoại: căn lề trái đồng bộ */
 .vj-skyid-label-phone {
   margin-left: 0;
