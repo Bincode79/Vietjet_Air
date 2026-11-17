@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAvailableDepartDates, searchFlights } from '@/lib/db';
 import { getFareForClass } from '@/features/bookings/pricing';
+import { FARE_LADDER_RATIO } from '@/lib/flight-pricing-constants';
 
 export async function GET(request: NextRequest) {
   try {
@@ -45,7 +46,12 @@ export async function GET(request: NextRequest) {
     const enrichedFlights = flights.map((flight) => {
       const faresSource = {
         economyPrice: flight.economy_price ?? flight.price,
-        businessPrice: flight.business_price ?? Math.round(Number(flight.price || 0) * 2.5),
+        // Fallback giữ nguyên hệ số 2.77 của thang giá (FARE_LADDER_RATIO),
+        // không phải một hệ số khác — migration 030 NOT NULL khiến nhánh này
+        // gần như không bao giờ chạy, nhưng nếu chạy thì nó phải ra đúng giá
+        // business mà mọi tầng khác tính.
+        businessPrice:
+          flight.business_price ?? Math.round(Number(flight.price || 0) * FARE_LADDER_RATIO),
       };
       const ecoPrice = getFareForClass('eco', faresSource);
       const deluxePrice = getFareForClass('deluxe', faresSource);

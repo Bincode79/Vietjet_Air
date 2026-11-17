@@ -24,7 +24,10 @@ interface BaggageSelectionDrawerProps {
     label: string,
     returnPackageId?: string | null,
     returnLabel?: string,
-    returnFee?: number
+    returnFee?: number,
+    /** Cờ "Xách tay 9kg + ưu tiên" từng chặng — server cần để tính PRIORITY_BAGGAGE_FEE. */
+    outboundPriority?: boolean,
+    returnPriority?: boolean
   ) => void;
   isRoundTrip?: boolean;
 }
@@ -99,7 +102,16 @@ export default function BaggageSelectionDrawer({
         ? 'Xách tay 9kg'
         : 'Không mua thêm';
 
-    onConfirmBaggage(outboundPkgId, totalFee, outboundLabel, returnPkgId, returnLabel, returnFee);
+    onConfirmBaggage(
+      outboundPkgId,
+      totalFee,
+      outboundLabel,
+      returnPkgId,
+      returnLabel,
+      returnFee,
+      outboundPriority,
+      isRoundTrip ? returnPriority : false
+    );
     onClose();
   };
 

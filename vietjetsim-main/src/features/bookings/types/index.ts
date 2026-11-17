@@ -46,6 +46,15 @@ export interface CreateBookingInput {
   fareClass?: FareClassId;
   returnFareClass?: FareClassId;
   ancillaries?: string[];
+  /** Lựa chọn hành lý theo gói, từng chặng — server định giá lại từ catalogue. */
+  baggage?: {
+    outbound_package_id?: string | null;
+    outbound_priority?: boolean;
+    return_package_id?: string | null;
+    return_priority?: boolean;
+  };
+  /** Số lượng từng món ăn theo id trong `MEAL_OPTIONS` — server định giá lại. */
+  meals?: Record<string, number>;
   consents: BookingConsents;
 }
 

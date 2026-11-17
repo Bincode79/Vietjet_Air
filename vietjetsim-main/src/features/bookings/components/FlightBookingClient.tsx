@@ -121,6 +121,9 @@ function FlightBookingClientInner({
   const [baggageFee, setBaggageFee] = useState<number>(0);
   const [baggageLabel, setBaggageLabel] = useState<string>('');
   const [returnBaggageLabel, setReturnBaggageLabel] = useState<string>('');
+  // Cờ "Xách tay 9kg + ưu tiên" theo từng chặng — đi kèm vào payload để server
+  // định giá đúng `PRIORITY_BAGGAGE_FEE` thay vì đoán từ phí client gửi.
+  const [baggagePriority, setBaggagePriority] = useState({ outbound: false, return: false });
   const [isSeatDrawerOpen, setIsSeatDrawerOpen] = useState(false);
   const [isBaggageDrawerOpen, setIsBaggageDrawerOpen] = useState(false);
   const [isMealDrawerOpen, setIsMealDrawerOpen] = useState(false);
@@ -313,7 +316,10 @@ function FlightBookingClientInner({
     fee: number,
     label: string,
     returnPackageId?: string | null,
-    retLabel?: string
+    retLabel?: string,
+    _returnFee?: number,
+    outboundPriority?: boolean,
+    returnPriority?: boolean
   ) => {
     setBooking((b) => ({
       ...b,
@@ -322,6 +328,7 @@ function FlightBookingClientInner({
     }));
     setBaggageFee(fee);
     setBaggageLabel(label);
+    setBaggagePriority({ outbound: !!outboundPriority, return: !!returnPriority });
     if (retLabel) setReturnBaggageLabel(retLabel);
     if (fee > 0) {
       toast.success(
@@ -417,6 +424,19 @@ function FlightBookingClientInner({
       if (booking.hasInsurance) ancillaries.push('insurance');
       if (mealFee > 0) ancillaries.push('meal');
 
+      // Dịch vụ gửi theo LỰA CHỌN, không phải theo tiền: gói hành lý (id +
+      // cờ ưu tiên, từng chặng) và số lượng từng món. Server định giá lại từ
+      // catalogue của `pricing.ts` — cùng nguồn với số tiền drawer đã báo,
+      // nên hai bên không thể lệch nhau. `ancillaries` giữ lại làm fallback
+      // cho client cũ chỉ gửi id.
+      const baggageSelection = {
+        outbound_package_id: booking.selectedBaggage || null,
+        outbound_priority: baggagePriority.outbound,
+        return_package_id: booking.returnBaggage || null,
+        return_priority: baggagePriority.return,
+      };
+      const mealSelection = { ...selectedMeals };
+
       // Form đặt vé tách "Họ" và "Tên đệm & tên" thành hai ô; vé, check-in và
       // email cần một chuỗi tên đầy đủ, nên ghép lại trước khi gửi.
       const passengers = booking.passengers.map((passenger) => ({
@@ -434,6 +454,8 @@ function FlightBookingClientInner({
         fareClass: selectedFlight.fareClass ?? 'eco',
         returnFareClass: returnFlight?.fareClass ?? 'eco',
         ancillaries,
+        baggage: baggageSelection,
+        meals: mealSelection,
         consents,
       });
       const bookingId = data.booking.id;

@@ -12,10 +12,15 @@ import {
 import { parsePaginationParams, getPaginationMeta } from '@/lib/pagination';
 import {
   ANCILLARY_OPTIONS,
+  BAGGAGE_PACKAGES,
   FARE_CLASSES,
   FARE_RATE_BY_TYPE,
+  OVERSIZED_BAGGAGE,
+  PRIORITY_BAGGAGE_FEE,
   TAX_AND_FEE_RATE,
+  TRAVEL_SAFE_INSURANCE_PRICE,
   getFareForClass,
+  getMealPrice,
   getSeatCharge,
   type AncillaryId,
   type FareClassId,
@@ -81,6 +86,8 @@ export async function POST(request: NextRequest) {
       fareClass: requestedFareClass,
       returnFareClass: requestedReturnFareClass,
       ancillaries,
+      baggage,
+      meals,
       consents,
     } = (await request.json()) as {
       flight_id?: string;
@@ -92,6 +99,13 @@ export async function POST(request: NextRequest) {
       fareClass?: FareClassId;
       returnFareClass?: FareClassId;
       ancillaries?: AncillaryId[];
+      baggage?: {
+        outbound_package_id?: string | null;
+        outbound_priority?: boolean;
+        return_package_id?: string | null;
+        return_priority?: boolean;
+      };
+      meals?: Record<string, number>;
       consents?: {
         marketing?: boolean;
         survey?: boolean;
@@ -228,19 +242,93 @@ export async function POST(request: NextRequest) {
     }));
     const seatFee = seatRows.reduce((sum, seat) => sum + seat.price, 0);
 
-    // Services are priced from the catalogue and charged per seated passenger
-    // (an infant rides on a lap, so none apply to one). The client only says
-    // which ids it wants.
+    // Services are priced from the catalogues, never from the request. The
+    // client says WHICH package it picked and HOW MANY of each meal — never
+    // what they cost. An id the catalogue does not know is a 400, not a
+    // silent 0₫: a made-up id means the request is not describing something
+    // this flight sells. A body carrying only the legacy flat ids (no package
+    // ids, no meals map) keeps working through the `ANCILLARY_OPTIONS`
+    // fallback.
     const seatedCount = counts.adult + counts.child;
-    const requestedAncillaries = (ancillaries || []).filter((id): id is AncillaryId =>
-      ANCILLARY_OPTIONS.some((option) => option.id === id)
+    const BAGGAGE_CATALOG = [...BAGGAGE_PACKAGES, ...OVERSIZED_BAGGAGE];
+    const requestedAncillaryIds = new Set(
+      (ancillaries || []).filter((id): id is AncillaryId =>
+        ANCILLARY_OPTIONS.some((option) => option.id === id)
+      )
     );
-    const ancillaryRows = requestedAncillaries.map((id) => ({
-      option_id: id,
-      unit_price: ANCILLARY_OPTIONS.find((option) => option.id === id)!.price,
-      quantity: seatedCount,
-    }));
-    const ancillaryFee = ancillaryRows.reduce((sum, row) => sum + row.unit_price * row.quantity, 0);
+    const ancillaryRows: { option_id: string; unit_price: number; quantity: number }[] = [];
+
+    // ─── Hành lý: giá gói + phụ phí ưu tiên, từng chặng ──────────────────────
+    const hasBaggageSelection = Boolean(
+      baggage &&
+      (baggage.outbound_package_id ||
+        baggage.return_package_id ||
+        baggage.outbound_priority ||
+        baggage.return_priority)
+    );
+    let baggageFee = 0;
+    if (hasBaggageSelection && baggage) {
+      const lookupPackage = (packageId?: string | null): { found: boolean; price: number } => {
+        if (!packageId) return { found: true, price: 0 };
+        const pkg = BAGGAGE_CATALOG.find((item) => item.id === packageId);
+        return pkg ? { found: true, price: pkg.price } : { found: false, price: 0 };
+      };
+      const outboundPkg = lookupPackage(baggage.outbound_package_id);
+      const returnPkg = lookupPackage(baggage.return_package_id);
+      if (!outboundPkg.found || !returnPkg.found) {
+        return NextResponse.json(
+          { error: 'Invalid baggage package', message: 'Gói hành lý không tồn tại.' },
+          { status: 400 }
+        );
+      }
+      baggageFee =
+        outboundPkg.price +
+        returnPkg.price +
+        (baggage.outbound_priority ? PRIORITY_BAGGAGE_FEE : 0) +
+        (baggage.return_priority ? PRIORITY_BAGGAGE_FEE : 0);
+      if (baggageFee > 0) {
+        ancillaryRows.push({ option_id: 'baggage', unit_price: baggageFee, quantity: 1 });
+      }
+    } else if (requestedAncillaryIds.has('baggage')) {
+      const legacy = ANCILLARY_OPTIONS.find((option) => option.id === 'baggage')!;
+      baggageFee = legacy.price * seatedCount;
+      ancillaryRows.push({ option_id: 'baggage', unit_price: legacy.price, quantity: seatedCount });
+    }
+
+    // ─── Suất ăn: giá từng món × số lượng ────────────────────────────────────
+    let mealFee = 0;
+    const mealEntries = Object.entries(meals ?? {}).filter(([, qty]) => Math.round(qty) > 0);
+    if (mealEntries.length > 0) {
+      for (const [mealId, rawQty] of mealEntries) {
+        const price = getMealPrice(mealId);
+        if (price === null) {
+          return NextResponse.json(
+            { error: 'Invalid meal', message: 'Món ăn không tồn tại trong danh mục.' },
+            { status: 400 }
+          );
+        }
+        const quantity = Math.round(rawQty);
+        mealFee += price * quantity;
+        ancillaryRows.push({ option_id: mealId, unit_price: price, quantity });
+      }
+    } else if (requestedAncillaryIds.has('meal')) {
+      const legacy = ANCILLARY_OPTIONS.find((option) => option.id === 'meal')!;
+      mealFee = legacy.price * seatedCount;
+      ancillaryRows.push({ option_id: 'meal', unit_price: legacy.price, quantity: seatedCount });
+    }
+
+    // ─── Bảo hiểm Travel Safe: một lần mỗi booking, giá catalogue ────────────
+    let insuranceFee = 0;
+    if (requestedAncillaryIds.has('insurance')) {
+      insuranceFee = TRAVEL_SAFE_INSURANCE_PRICE;
+      ancillaryRows.push({
+        option_id: 'insurance',
+        unit_price: TRAVEL_SAFE_INSURANCE_PRICE,
+        quantity: 1,
+      });
+    }
+
+    const ancillaryFee = baggageFee + mealFee + insuranceFee;
 
     // Return flight validation & pricing for round-trip bookings
     let returnFlight = null;

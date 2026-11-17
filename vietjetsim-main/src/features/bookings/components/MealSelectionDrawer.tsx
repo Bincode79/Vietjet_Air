@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { Flight } from '@/features/bookings/types/booking-flow';
+import { MEAL_OPTIONS } from '@/features/bookings/pricing';
 import { RiCloseLine, RiAddLine } from 'react-icons/ri';
 import { HotMealIcon, MealDishIllustration } from '@/shared/components/ui/RealisticServiceIcons';
 
@@ -12,44 +13,10 @@ export interface SelectedMeal {
   quantity: number;
 }
 
-const COMBO_MEALS = [
-  {
-    id: 'meal-my-y',
-    name: 'Combo Mỳ Ý và Nước suối và Hạt điều',
-    price: 119000,
-    desc: 'Mỳ Ý sốt bò bằm đậm đà, hạt điều giòn bùi cùng nước suối tinh khiết.',
-  },
-  {
-    id: 'meal-com-chien-thai',
-    name: 'Combo Cơm chiên Thái và Nước suối và Hạt điều',
-    price: 119000,
-    desc: 'Cơm chiên kiểu Thái chua cay đậm vị, kèm hạt điều và nước suối.',
-  },
-  {
-    id: 'meal-mien-xao-tom-cua',
-    name: 'Combo Miến xào Tôm cua và Nước suối và Hạt điều',
-    price: 119000,
-    desc: 'Miến xào dai mềm hòa quyện tôm thịt cua ngọt lành, hạt điều và nước suối.',
-  },
-  {
-    id: 'meal-bun-xao-singapore',
-    name: 'Combo Bún xào Singapore và Nước suối và Hạt điều',
-    price: 119000,
-    desc: 'Bún xào Singapore sốt cà ri thơm lừng, thịt xá xíu, tôm và rau củ.',
-  },
-  {
-    id: 'meal-com-chien-duong-chau',
-    name: 'Combo Cơm chiên dương châu chay và Nước suối và Hạt điều',
-    price: 119000,
-    desc: 'Cơm chiên thanh đạm cùng nấm, rau củ tươi ngon phù hợp ăn chay.',
-  },
-  {
-    id: 'meal-xoi-khuc-gio',
-    name: 'Combo Xôi khúc giò, hạt điều và nước suối',
-    price: 119000,
-    desc: 'Xôi khúc dẻo thơm đậu xanh hạt tiêu ăn kèm giò lụa thơm ngậy.',
-  },
-];
+// Catalogue suất ăn sống trong `features/bookings/pricing.ts` — cùng nguồn với
+// cái server dùng để định giá, để số tiền hiển thị và số tiền bị thu không thể
+// tách nhau. Drawer chỉ vẽ danh sách.
+const COMBO_MEALS = MEAL_OPTIONS;
 
 interface MealSelectionDrawerProps {
   isOpen: boolean;

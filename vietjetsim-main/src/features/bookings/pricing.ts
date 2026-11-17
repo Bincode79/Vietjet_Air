@@ -110,6 +110,61 @@ export const OVERSIZED_BAGGAGE: readonly BaggagePackage[] = [
   { id: 'hlqk-30', weight: 30, label: 'Kiện HLQK 30kg', price: 550000 },
 ];
 
+/** Phụ phí "Xách tay 9kg + ưu tiên lên máy bay" — tính theo từng chặng. */
+export const PRIORITY_BAGGAGE_FEE = 230000;
+
+/** Mọi gói hành lý bán được, giá do module này quyết định. */
+export const BAGGAGE_CATALOG: readonly BaggagePackage[] = [
+  ...BAGGAGE_PACKAGES,
+  ...OVERSIZED_BAGGAGE,
+];
+
+export function getBaggagePackagePrice(packageId: string): number | null {
+  return BAGGAGE_CATALOG.find((pkg) => pkg.id === packageId)?.price ?? null;
+}
+
+export interface MealOption {
+  id: string;
+  name: string;
+  price: number;
+}
+
+/**
+ * Các combo suất ăn bán trên bước dịch vụ bổ sung.
+ *
+ * Catalogue sống ở đây chứ không trong `MealSelectionDrawer` — cùng lý do với
+ * giá ghế: bảng giá của drawer từng tách khỏi cái server thu, và khách thấy
+ * một số tiền nhưng bị tính một số tiền khác. Client chỉ gửi id và số lượng.
+ */
+export const MEAL_OPTIONS: readonly MealOption[] = [
+  { id: 'meal-my-y', name: 'Combo Mỳ Ý và Nước suối và Hạt điều', price: 119000 },
+  {
+    id: 'meal-com-chien-thai',
+    name: 'Combo Cơm chiên Thái và Nước suối và Hạt điều',
+    price: 119000,
+  },
+  {
+    id: 'meal-mien-xao-tom-cua',
+    name: 'Combo Miến xào Tôm cua và Nước suối và Hạt điều',
+    price: 119000,
+  },
+  {
+    id: 'meal-bun-xao-singapore',
+    name: 'Combo Bún xào Singapore và Nước suối và Hạt điều',
+    price: 119000,
+  },
+  {
+    id: 'meal-com-chien-duong-chau',
+    name: 'Combo Cơm chiên dương châu chay và Nước suối và Hạt điều',
+    price: 119000,
+  },
+  { id: 'meal-xoi-khuc-gio', name: 'Combo Xôi khúc giò, hạt điều và nước suối', price: 119000 },
+];
+
+export function getMealPrice(mealId: string): number | null {
+  return MEAL_OPTIONS.find((meal) => meal.id === mealId)?.price ?? null;
+}
+
 export const TRAVEL_SAFE_INSURANCE_PRICE = 72000;
 
 export interface PriceBreakdownInput {
