@@ -331,17 +331,13 @@ export default function HeroBookingWidget() {
               </button>
             </div>
 
-            {/* Ô 3: Hành khách — hộp trắng 342×48px, bo góc 10px, nền trắng
-                đồng nhất với Ô 1/Ô 2/Ô 4. Trước đây nền trong suốt nên nhãn
-                xám `rgb(107,117,128)` nằm trên nền đỏ gradient, tương phản
-                quá thấp và lệch về phía trong so với các ô còn lại.
-                MOBILE (390×844): site thật KHÔNG hiện hàng này (thân panel chỉ
-                có 2 ô sân bay/ngày) → ẩn hoàn toàn ở dưới `lg`. */}
+            {/* Ô 3: Hành khách (Số lượng khách) — hộp trắng 342×48px, bo góc 10px, nền trắng.
+                Bổ sung hiển thị trên cả mobile và desktop theo yêu cầu. */}
             <PassengerPicker
               value={pax}
               onChange={setPax}
               variant="hero"
-              className="mt-2.75 hidden h-[48px] w-full lg:block"
+              className="mt-2.75 block h-[48px] w-full"
             />
 
             {/* Ô 4: Mã khuyến mại — hộp trắng 342×48px, bo góc 10px.

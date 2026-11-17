@@ -141,7 +141,7 @@ export default function PassengerPicker({
         isBar
           ? (className ?? '')
           : isHero
-            ? (className ?? 'mt-2.75 hidden h-[48px] w-full lg:block')
+            ? (className ?? 'mt-2.75 block h-[48px] w-full')
             : (className ?? 'mt-2.5')
       }`}
     >

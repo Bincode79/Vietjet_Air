@@ -81,7 +81,7 @@ export default function PhoneStep({
               role="tab"
               aria-selected={identifierMode === tab.id}
               onClick={() => onIdentifierModeChange(tab.id)}
-              className={`flex-1 cursor-pointer rounded-md px-3 py-1.5 text-sm font-semibold transition ${
+              className={`flex-1 cursor-pointer rounded-md px-2 sm:px-3 py-1.5 text-xs sm:text-sm font-semibold transition whitespace-nowrap ${
                 identifierMode === tab.id
                   ? 'bg-white text-[var(--vj-skyid-ink)] shadow-sm'
                   : 'text-[var(--vj-skyid-muted)] hover:text-[var(--vj-skyid-ink)]'
@@ -126,14 +126,14 @@ export default function PhoneStep({
       {/* Đường vào thay thế: quên mật khẩu và đăng nhập bằng OTP. */}
       {mode === 'login' ? (
         <div className="mt-4 flex items-center justify-between gap-3">
-          <Link href="/quen-mat-khau" className="vj-skyid-link">
+          <Link href="/quen-mat-khau" className="vj-skyid-link text-sm">
             Quên mật khẩu?
           </Link>
           <button
             type="button"
             onClick={onSendLoginOtp}
-            disabled={loading || !canContinue}
-            className="vj-skyid-link disabled:cursor-not-allowed disabled:text-[var(--vj-modal-disabled-ink)]"
+            disabled={loading}
+            className="text-sm font-semibold text-[#e60a32] hover:underline cursor-pointer transition-colors disabled:cursor-not-allowed disabled:text-[#e60a32]/50"
           >
             Đăng nhập bằng mã OTP
           </button>

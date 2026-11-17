@@ -41,16 +41,16 @@ const TYPE_CONFIG: Record<
   }
 > = {
   success: {
-    bar: 'bg-emerald-500',
-    bg: 'bg-emerald-50 border-2 border-emerald-500 shadow-xl shadow-emerald-500/20',
-    iconBg: 'bg-emerald-600 shadow-md shadow-emerald-600/30',
-    iconColor: 'text-white',
-    titleColor: 'text-emerald-950 font-bold',
-    messageColor: 'text-emerald-800 font-medium',
-    closeBtn: 'text-emerald-700 hover:text-emerald-950 hover:bg-emerald-100',
-    progressColor: 'bg-emerald-500',
+    bar: 'bg-[#84cc16]',
+    bg: 'bg-[#f7fee7] border-2 border-[#84cc16] shadow-xl shadow-lime-500/20',
+    iconBg: 'bg-[#84cc16] shadow-md shadow-lime-600/30',
+    iconColor: 'text-black',
+    titleColor: 'text-black font-bold',
+    messageColor: 'text-black font-medium',
+    closeBtn: 'text-black/70 hover:text-black hover:bg-lime-200',
+    progressColor: 'bg-[#84cc16]',
     defaultIcon: (
-      <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
+      <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 text-black">
         <path
           fillRule="evenodd"
           d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"

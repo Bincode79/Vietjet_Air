@@ -91,6 +91,7 @@ export default function PopupFrame({
             <Link
               key={item.label}
               href={item.href}
+              onClick={onClose}
               className={`vj-popup-nav-item${item.active ? ' is-active' : ''}`}
               aria-current={item.active ? 'page' : undefined}
             >

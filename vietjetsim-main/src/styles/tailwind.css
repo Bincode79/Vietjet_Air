@@ -2356,14 +2356,15 @@ h6 {
   font-family: 'JambonoMedium', 'KoHo', ui-sans-serif, system-ui, sans-serif;
   font-size: 16px;
   line-height: 24px;
-  font-weight: 500;
-  color: var(--vj-skyid-ink);
+  font-weight: 700;
+  color: #111111 !important;
   cursor: pointer;
   transition: background-color 160ms ease;
 }
 
 .vj-skyid-btn:hover:not(:disabled) {
   background-color: var(--vj-skyid-gold-hover);
+  color: #111111 !important;
 }
 
 .vj-skyid-btn:focus-visible {
@@ -2373,7 +2374,8 @@ h6 {
 
 .vj-skyid-btn:disabled {
   background-color: var(--vj-skyid-disabled-bg);
-  color: var(--vj-skyid-disabled-ink);
+  color: #111111 !important;
+  opacity: 0.75;
   cursor: not-allowed;
 }
 
@@ -4969,15 +4971,29 @@ select option {
 /* Mobile optimizations */
 @media (max-width: 640px) {
   .vj-popup-frame {
-    max-height: 95vh;
+    width: calc(100vw - 24px);
+    max-height: 94vh;
+    height: auto;
   }
   
   .vj-popup-body {
-    padding-top: 32px;
+    padding-top: 16px;
+    padding-bottom: 24px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
   
+  .vj-popup-viewport {
+    max-width: 100%;
+    width: 100%;
+    padding-bottom: 16px;
+  }
+
   .vj-skyid-popup-card {
-    padding: 24px 20px;
+    width: 100%;
+    max-width: 100%;
+    padding: 20px 16px 24px;
+    margin-bottom: 8px;
   }
   
   .vj-skyid-title {
@@ -4989,21 +5005,28 @@ select option {
   }
   
   .vj-skyid-btn {
-    height: 44px;
+    min-height: 42px;
+    height: 42px;
     font-size: 15px;
+    font-weight: 700;
   }
   
   .vj-skyid-input {
-    height: 44px;
+    height: 40px;
     font-size: 15px;
   }
   
   .vj-skyid-phone {
-    height: 44px;
+    height: 40px;
   }
   
   .vj-skyid-input-phone {
-    height: 44px;
+    height: 40px;
     font-size: 15px;
+  }
+
+  .vj-popup-nav-label {
+    font-size: 9.5px;
+    line-height: 12px;
   }
 }
