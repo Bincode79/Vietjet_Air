@@ -73,7 +73,7 @@ export default function AncillaryServicesStep({
     <div className="space-y-4 pb-28">
       {/* Tiêu đề khối — site thật: 18px/600 (đo 13/11/2026) */}
       <div className="mb-2">
-        <h2 className="text-lg font-semibold text-vj-text tracking-tight">
+        <h2 className="font-koho text-base sm:text-lg font-bold text-emerald-700 italic tracking-tight">
           Đừng quên mua hành lý, suất ăn, chọn chỗ ngồi và hơn thế nữa...
         </h2>
       </div>
@@ -85,27 +85,27 @@ export default function AncillaryServicesStep({
           onClick={onOpenSeatDrawer}
           className="group cursor-pointer rounded-2xl bg-white border border-gray-200/80 p-3.5 sm:p-4 shadow-xs hover:shadow-md hover:border-amber-300 transition-all flex items-center justify-between"
         >
-          <div className="flex items-center gap-3.5 sm:gap-4 min-w-0">
+          <div className="flex items-center gap-3.5 sm:gap-4 min-w-0 flex-1">
             <div className="shrink-0 flex items-center justify-center group-hover:scale-105 transition-transform">
               <SeatArmchairIcon width={50} height={66} className="drop-shadow-xs" />
             </div>
-            <div className="min-w-0">
-              <h3 className="text-base font-bold text-gray-950 group-hover:text-primary transition-colors">
+            <div className="min-w-0 flex-1">
+              <h3 className="font-koho text-sm sm:text-base font-bold text-gray-900 group-hover:text-primary transition-colors leading-snug">
                 Chọn chỗ ngồi yêu thích
               </h3>
-              <p className="text-xs sm:text-sm text-gray-500 mt-0.5">
+              <p className="font-koho text-xs text-gray-500 mt-0.5 font-normal">
                 Hãy chọn chỗ ngồi yêu thích của bạn
               </p>
-              <div className="text-sm sm:text-base font-bold text-primary mt-0.5">
+              <div className="font-koho text-sm sm:text-base font-bold text-primary mt-0.5">
                 {seatFee > 0 ? `${seatFee.toLocaleString('vi-VN')} VND` : '0 VND'}
               </div>
-              <div className="flex items-center gap-3 text-3xs font-bold text-gray-700 mt-1 border-t border-gray-100 pt-1">
-                <span>
-                  {flight.from} → {flight.to}
+              <div className="flex items-center gap-4 sm:gap-8 text-2xs sm:text-xs font-bold text-gray-700 mt-1.5 pt-1.5 border-t border-gray-100 font-koho">
+                <span className="flex items-center gap-1.5">
+                  {flight.from} <span className="text-primary text-xs">✈</span> {flight.to}
                 </span>
                 {isRoundTrip && (
-                  <span>
-                    {returnFlight?.from || flight.to} → {returnFlight?.to || flight.from}
+                  <span className="flex items-center gap-1.5">
+                    {returnFlight?.from || flight.to} <span className="text-primary text-xs">✈</span> {returnFlight?.to || flight.from}
                   </span>
                 )}
               </div>
@@ -122,27 +122,27 @@ export default function AncillaryServicesStep({
           onClick={onOpenBaggageDrawer}
           className="group cursor-pointer rounded-2xl bg-white border border-gray-200/80 p-3.5 sm:p-4 shadow-xs hover:shadow-md hover:border-amber-300 transition-all flex items-center justify-between"
         >
-          <div className="flex items-center gap-3.5 sm:gap-4 min-w-0">
+          <div className="flex items-center gap-3.5 sm:gap-4 min-w-0 flex-1">
             <div className="shrink-0 flex items-center justify-center group-hover:scale-105 transition-transform">
               <BaggageLuggageIcon width={50} height={66} className="drop-shadow-xs" />
             </div>
-            <div className="min-w-0">
-              <h3 className="text-base font-bold text-gray-950 group-hover:text-primary transition-colors">
+            <div className="min-w-0 flex-1">
+              <h3 className="font-koho text-sm sm:text-base font-bold text-gray-900 group-hover:text-primary transition-colors leading-snug">
                 Chọn hành lý/Dịch vụ nối chuyến
               </h3>
-              <p className="text-xs sm:text-sm text-gray-500 mt-0.5">
+              <p className="font-koho text-xs text-gray-500 mt-0.5 font-normal">
                 Hãy lựa chọn gói hành lý phù hợp
               </p>
-              <div className="text-sm sm:text-base font-bold text-primary mt-0.5">
+              <div className="font-koho text-sm sm:text-base font-bold text-primary mt-0.5">
                 {baggageFee > 0 ? `${baggageFee.toLocaleString('vi-VN')} VND` : '0 VND'}
               </div>
-              <div className="flex items-center gap-3 text-3xs font-bold text-gray-700 mt-1 border-t border-gray-100 pt-1">
-                <span>
-                  {flight.from} → {flight.to} {baggageLabel ? `(${baggageLabel})` : ''}
+              <div className="flex items-center gap-4 sm:gap-8 text-2xs sm:text-xs font-bold text-gray-700 mt-1.5 pt-1.5 border-t border-gray-100 font-koho">
+                <span className="flex items-center gap-1.5">
+                  {flight.from} <span className="text-primary text-xs">✈</span> {flight.to} {baggageLabel ? `(${baggageLabel})` : ''}
                 </span>
                 {isRoundTrip && (
-                  <span>
-                    {returnFlight?.from || flight.to} → {returnFlight?.to || flight.from}{' '}
+                  <span className="flex items-center gap-1.5">
+                    {returnFlight?.from || flight.to} <span className="text-primary text-xs">✈</span> {returnFlight?.to || flight.from}{' '}
                     {returnBaggageLabel ? `(${returnBaggageLabel})` : ''}
                   </span>
                 )}
@@ -160,25 +160,25 @@ export default function AncillaryServicesStep({
           onClick={onOpenMealDrawer}
           className="group cursor-pointer rounded-2xl bg-white border border-gray-200/80 p-3.5 sm:p-4 shadow-xs hover:shadow-md hover:border-amber-300 transition-all flex items-center justify-between"
         >
-          <div className="flex items-center gap-3.5 sm:gap-4 min-w-0">
+          <div className="flex items-center gap-3.5 sm:gap-4 min-w-0 flex-1">
             <div className="shrink-0 flex items-center justify-center group-hover:scale-105 transition-transform">
               <HotMealIcon width={50} height={66} className="drop-shadow-xs" />
             </div>
-            <div className="min-w-0">
-              <h3 className="text-base font-bold text-gray-950 group-hover:text-primary transition-colors">
+            <div className="min-w-0 flex-1">
+              <h3 className="font-koho text-sm sm:text-base font-bold text-gray-900 group-hover:text-primary transition-colors leading-snug">
                 Chọn suất ăn
               </h3>
-              <p className="text-xs font-bold italic text-red-600 mt-0.5">jet café</p>
-              <div className="text-sm sm:text-base font-bold text-primary mt-0.5">
+              <p className="font-koho text-xs font-bold italic text-red-600 mt-0.5">jet café</p>
+              <div className="font-koho text-sm sm:text-base font-bold text-primary mt-0.5">
                 {mealFee > 0 ? `${mealFee.toLocaleString('vi-VN')} VND` : '0 VND'}
               </div>
-              <div className="flex items-center gap-3 text-3xs font-bold text-gray-700 mt-1 border-t border-gray-100 pt-1">
-                <span>
-                  {flight.from} → {flight.to}
+              <div className="flex items-center gap-4 sm:gap-8 text-2xs sm:text-xs font-bold text-gray-700 mt-1.5 pt-1.5 border-t border-gray-100 font-koho">
+                <span className="flex items-center gap-1.5">
+                  {flight.from} <span className="text-primary text-xs">✈</span> {flight.to}
                 </span>
                 {isRoundTrip && (
-                  <span>
-                    {returnFlight?.from || flight.to} → {returnFlight?.to || flight.from}
+                  <span className="flex items-center gap-1.5">
+                    {returnFlight?.from || flight.to} <span className="text-primary text-xs">✈</span> {returnFlight?.to || flight.from}
                   </span>
                 )}
               </div>
@@ -195,18 +195,25 @@ export default function AncillaryServicesStep({
           onClick={onOpenTaxiDrawer}
           className="group cursor-pointer rounded-2xl bg-white border border-gray-200/80 p-3.5 sm:p-4 shadow-xs hover:shadow-md hover:border-amber-300 transition-all flex items-center justify-between"
         >
-          <div className="flex items-center gap-3.5 sm:gap-4 min-w-0">
+          <div className="flex items-center gap-3.5 sm:gap-4 min-w-0 flex-1">
             <div className="shrink-0 flex items-center justify-center group-hover:scale-105 transition-transform">
               <AirportTaxiIcon width={50} height={66} className="drop-shadow-xs" />
             </div>
-            <div className="min-w-0">
-              <h3 className="text-base font-bold text-gray-950 group-hover:text-primary transition-colors">
+            <div className="min-w-0 flex-1">
+              <h3 className="font-koho text-sm sm:text-base font-bold text-gray-900 group-hover:text-primary transition-colors leading-snug">
                 Dịch vụ Taxi
               </h3>
-              <p className="text-xs sm:text-sm text-gray-500 mt-0.5">
-                Đưa đón sân bay thuận tiện, giá ưu đãi
-              </p>
-              <div className="text-sm sm:text-base font-bold text-primary mt-0.5">0 VND</div>
+              <div className="font-koho text-sm sm:text-base font-bold text-primary mt-0.5">0 VND</div>
+              <div className="flex items-center gap-4 sm:gap-8 text-2xs sm:text-xs font-bold text-gray-700 mt-1.5 pt-1.5 border-t border-gray-100 font-koho">
+                <span className="flex items-center gap-1.5">
+                  {flight.from} <span className="text-primary text-xs">✈</span> {flight.to}
+                </span>
+                {isRoundTrip && (
+                  <span className="flex items-center gap-1.5">
+                    {returnFlight?.from || flight.to} <span className="text-primary text-xs">✈</span> {returnFlight?.to || flight.from}
+                  </span>
+                )}
+              </div>
             </div>
           </div>
           <RiArrowRightSLine
@@ -224,27 +231,26 @@ export default function AncillaryServicesStep({
               : 'bg-white border-gray-200/80 hover:border-amber-300'
           }`}
         >
-          <div className="flex items-center gap-3.5 sm:gap-4 flex-1 pr-2 min-w-0">
+          <div className="flex items-center gap-3.5 sm:gap-4 min-w-0 flex-1">
             <div className="shrink-0 flex items-center justify-center group-hover:scale-105 transition-transform">
               <SkyCareInsuranceIcon width={50} height={66} className="drop-shadow-xs" />
             </div>
-            <div className="min-w-0">
-              <div className="flex items-center gap-2 flex-wrap">
-                <h3 className="text-base font-bold text-gray-950 group-hover:text-primary transition-colors">
-                  Bảo hiểm du lịch Vietjet Travel Safe
-                </h3>
-                <span className="text-sm sm:text-base font-bold text-primary">
-                  {insuranceFee.toLocaleString('vi-VN')} VND
-                </span>
+            <div className="min-w-0 flex-1">
+              <h3 className="font-koho text-sm sm:text-base font-bold text-gray-900 group-hover:text-primary transition-colors leading-snug">
+                Bảo hiểm du lịch Vietjet Travel Safe
+              </h3>
+              <div className="font-koho text-sm sm:text-base font-bold text-primary mt-0.5">
+                {hasInsurance ? `${insuranceFee.toLocaleString('vi-VN')} VND` : '0 VND'}
               </div>
-              <div className="text-xs text-gray-500 mt-0.5 space-y-0.5">
-                <span className="font-bold text-gray-700 block">
-                  {flight.from} → {flight.to}
+              <div className="flex items-center gap-4 sm:gap-8 text-2xs sm:text-xs font-bold text-gray-700 mt-1.5 pt-1.5 border-t border-gray-100 font-koho">
+                <span className="flex items-center gap-1.5">
+                  {flight.from} <span className="text-primary text-xs">✈</span> {flight.to}
                 </span>
-                <p className="line-clamp-2 text-2xs sm:text-xs">
-                  Bảo hiểm du lịch. Giấy chứng nhận bảo hiểm sẽ được cấp cùng vé máy bay, và không
-                  thể cấp lại sau chuyến bay.
-                </p>
+                {isRoundTrip && (
+                  <span className="flex items-center gap-1.5">
+                    {returnFlight?.from || flight.to} <span className="text-primary text-xs">✈</span> {returnFlight?.to || flight.from}
+                  </span>
+                )}
               </div>
             </div>
           </div>
@@ -259,20 +265,33 @@ export default function AncillaryServicesStep({
           onClick={onOpenPassengerServicesDrawer}
           className="group cursor-pointer rounded-2xl bg-white border border-gray-200/80 p-3.5 sm:p-4 shadow-xs hover:shadow-md hover:border-amber-300 transition-all flex items-center justify-between"
         >
-          <div className="flex items-center gap-3.5 sm:gap-4 min-w-0">
+          <div className="flex items-center gap-3.5 sm:gap-4 min-w-0 flex-1">
             <div className="shrink-0 flex items-center justify-center group-hover:scale-105 transition-transform">
               <SkyKidsIcon width={50} height={66} className="drop-shadow-xs" />
             </div>
-            <div className="min-w-0">
+            <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2">
-                <h3 className="text-base font-bold text-gray-950 group-hover:text-primary transition-colors">
+                <h3 className="font-koho text-sm sm:text-base font-bold text-gray-900 group-hover:text-primary transition-colors leading-snug">
                   Dịch vụ theo hành khách
                 </h3>
-                <span className="text-3xs bg-primary text-white font-bold px-1.5 py-0.5 rounded-full uppercase tracking-wider">
+                <span className="text-3xs bg-primary text-white font-bold px-1.5 py-0.5 rounded-full uppercase tracking-wider font-koho">
                   New
                 </span>
               </div>
-              <p className="text-xs sm:text-sm text-gray-500 mt-0.5">Hãy chọn dịch vụ</p>
+              <p className="font-koho text-xs text-gray-500 mt-0.5 font-normal">
+                Hãy lựa chọn dịch vụ
+              </p>
+              <div className="font-koho text-sm sm:text-base font-bold text-primary mt-0.5">0 VND</div>
+              <div className="flex items-center gap-4 sm:gap-8 text-2xs sm:text-xs font-bold text-gray-700 mt-1.5 pt-1.5 border-t border-gray-100 font-koho">
+                <span className="flex items-center gap-1.5">
+                  {flight.from} <span className="text-primary text-xs">✈</span> {flight.to}
+                </span>
+                {isRoundTrip && (
+                  <span className="flex items-center gap-1.5">
+                    {returnFlight?.from || flight.to} <span className="text-primary text-xs">✈</span> {returnFlight?.to || flight.from}
+                  </span>
+                )}
+              </div>
             </div>
           </div>
           <RiArrowRightSLine
@@ -286,22 +305,33 @@ export default function AncillaryServicesStep({
           onClick={onOpenPetDrawer}
           className="group cursor-pointer rounded-2xl bg-white border border-gray-200/80 p-3.5 sm:p-4 shadow-xs hover:shadow-md hover:border-amber-300 transition-all flex items-center justify-between"
         >
-          <div className="flex items-center gap-3.5 sm:gap-4 min-w-0">
+          <div className="flex items-center gap-3.5 sm:gap-4 min-w-0 flex-1">
             <div className="shrink-0 flex items-center justify-center group-hover:scale-105 transition-transform">
               <PetTravelIcon width={50} height={66} className="drop-shadow-xs" />
             </div>
-            <div className="min-w-0">
+            <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2">
-                <h3 className="text-base font-bold text-gray-950 group-hover:text-primary transition-colors">
+                <h3 className="font-koho text-sm sm:text-base font-bold text-gray-900 group-hover:text-primary transition-colors leading-snug">
                   Mang theo thú cưng
                 </h3>
-                <span className="text-3xs bg-primary text-white font-bold px-1.5 py-0.5 rounded-full uppercase tracking-wider">
+                <span className="text-3xs bg-primary text-white font-bold px-1.5 py-0.5 rounded-full uppercase tracking-wider font-koho">
                   New
                 </span>
               </div>
-              <p className="text-xs sm:text-sm text-gray-500 mt-0.5">
-                Thú cưng ơi, bay thôi! Dịch vụ vận chuyển thú cưng trên chuyến bay
+              <p className="font-koho text-xs text-gray-500 mt-0.5 font-normal">
+                Thú cưng ơi, bay thôi!
               </p>
+              <div className="font-koho text-sm sm:text-base font-bold text-primary mt-0.5">0 VND</div>
+              <div className="flex items-center gap-4 sm:gap-8 text-2xs sm:text-xs font-bold text-gray-700 mt-1.5 pt-1.5 border-t border-gray-100 font-koho">
+                <span className="flex items-center gap-1.5">
+                  {flight.from} <span className="text-primary text-xs">✈</span> {flight.to}
+                </span>
+                {isRoundTrip && (
+                  <span className="flex items-center gap-1.5">
+                    {returnFlight?.from || flight.to} <span className="text-primary text-xs">✈</span> {returnFlight?.to || flight.from}
+                  </span>
+                )}
+              </div>
             </div>
           </div>
           <RiArrowRightSLine
