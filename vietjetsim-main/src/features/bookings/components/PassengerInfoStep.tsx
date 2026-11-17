@@ -73,15 +73,22 @@ function UnderlineField({
   id,
   label,
   filled = false,
+  hasPrefix = false,
   children,
 }: {
   id: string;
   label: string;
   filled?: boolean;
+  hasPrefix?: boolean;
   children: React.ReactNode;
 }) {
+  const isFilled = filled || hasPrefix;
   return (
-    <div className="vj-underline-field relative" data-filled={filled ? 'true' : 'false'}>
+    <div
+      className="vj-underline-field relative"
+      data-filled={isFilled ? 'true' : 'false'}
+      data-has-prefix={hasPrefix ? 'true' : 'false'}
+    >
       {children}
       <label htmlFor={id} className="vj-underline-label">
         {label}
@@ -495,7 +502,8 @@ export default function PassengerInfoStep({
                         <UnderlineField
                           id={`passenger-${i}-phone`}
                           label="Số điện thoại"
-                          filled={!!p.phone}
+                          filled
+                          hasPrefix
                         >
                           <span className="flex items-center gap-1 pr-2 text-base font-medium text-vj-text select-none shrink-0">
                             {getCountryDialCode(p.countryCode)}{' '}

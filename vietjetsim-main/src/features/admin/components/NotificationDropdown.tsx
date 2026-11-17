@@ -169,8 +169,7 @@ export default function NotificationDropdown({
         <Icon name="BellIcon" size={18} className="text-slate-400" />
         {unreadCount > 0 && (
           <span
-            className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 flex items-center justify-center text-2xs font-bold text-white rounded-full animate-pulse"
-            style={{ background: '#ef4444' }}
+            className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 flex items-center justify-center text-2xs font-black text-white bg-primary rounded-full animate-pulse shadow-xs"
           >
             {unreadCount > 99 ? '99+' : unreadCount}
           </span>
@@ -179,10 +178,8 @@ export default function NotificationDropdown({
 
       {isOpen && (
         <div
-          className="absolute right-0 top-full mt-2 w-96 max-h-[480px] rounded-2xl shadow-2xl overflow-hidden z-50"
+          className="absolute right-0 top-full mt-2 w-96 max-h-[480px] rounded-2xl shadow-2xl overflow-hidden z-50 bg-[#1e293b] border border-slate-700/60"
           style={{
-            background: 'linear-gradient(180deg, #1e293b 0%, #0f172a 100%)',
-            border: '1px solid rgba(148, 163, 184, 0.1)',
             animation: 'slideDown 0.2s ease-out',
           }}
         >
@@ -200,15 +197,13 @@ export default function NotificationDropdown({
           `}</style>
 
           <div
-            className="flex items-center justify-between px-4 py-3 border-b"
-            style={{ borderColor: 'rgba(148, 163, 184, 0.1)' }}
+            className="flex items-center justify-between px-4 py-3 border-b border-slate-700/60"
           >
             <div className="flex items-center gap-2">
-              <h3 className="font-bold text-white text-sm">Thông báo</h3>
+              <h3 className="font-black text-white text-sm">Thông báo</h3>
               {unreadCount > 0 && (
                 <span
-                  className="text-xs2 font-semibold px-2 py-0.5 rounded-full"
-                  style={{ background: 'rgba(239, 68, 68, 0.2)', color: '#F5717A' }}
+                  className="text-xs2 font-bold px-2 py-0.5 rounded-full bg-red-600/30 text-red-400 border border-red-500/30"
                 >
                   {unreadCount} mới
                 </span>
@@ -219,7 +214,7 @@ export default function NotificationDropdown({
                 <button
                   onClick={markAllAsRead}
                   disabled={isMarkingAllRead}
-                  className="text-xs text-indigo-400 hover:text-indigo-300 font-medium transition-colors disabled:opacity-50"
+                  className="text-xs text-amber-400 hover:text-amber-300 font-bold transition-colors disabled:opacity-50"
                 >
                   {isMarkingAllRead ? 'Đang xử lý...' : 'Đọc tất cả'}
                 </button>

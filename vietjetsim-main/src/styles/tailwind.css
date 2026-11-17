@@ -1837,23 +1837,30 @@ h6 {
   left: 0;
   top: 50%;
   transform: translateY(-50%);
-  font-size: 16px;
-  line-height: 21.28px;
+  font-size: 15px;
+  line-height: 20px;
   font-weight: 500;
-  color: var(--vj-currency-gray, #6d6e71);
+  color: #64748b;
   pointer-events: none;
   transition:
-    font-size 140ms ease,
-    transform 140ms ease,
-    color 140ms ease;
+    top 160ms ease,
+    transform 160ms ease,
+    font-size 160ms ease,
+    font-weight 160ms ease,
+    color 160ms ease;
+  transform-origin: top left;
 }
 
 .vj-underline-field:focus-within .vj-underline-label,
-.vj-underline-field[data-filled='true'] .vj-underline-label {
-  font-size: 8px;
-  line-height: 10px;
-  transform: translateY(-180%);
-  color: var(--vj-currency-gray, #6d6e71);
+.vj-underline-field[data-filled='true'] .vj-underline-label,
+.vj-underline-field[data-has-prefix='true'] .vj-underline-label,
+.vj-underline-field:has(.select-none) .vj-underline-label {
+  top: 0;
+  transform: translateY(-75%);
+  font-size: 11px;
+  line-height: 14px;
+  font-weight: 700;
+  color: #111827;
 }
 
 /* Dải tab trắng 50px của trang tra cứu (site thật: 16px/700 uppercase). */

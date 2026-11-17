@@ -46,7 +46,7 @@ const TYPE_CONFIG: Record<
     iconBg: 'bg-[#65a30d] shadow-md shadow-lime-800/30',
     iconColor: 'text-white',
     titleColor: 'text-black font-black',
-    messageColor: 'text-black font-bold',
+    messageColor: 'text-black font-semibold',
     closeBtn: 'text-black/80 hover:text-black hover:bg-lime-400/50',
     progressColor: 'bg-[#4d7c0f]',
     defaultIcon: (
@@ -60,16 +60,16 @@ const TYPE_CONFIG: Record<
     ),
   },
   error: {
-    bar: 'bg-red-500',
-    bg: 'bg-red-50 border-2 border-red-500 shadow-xl shadow-red-500/20',
-    iconBg: 'bg-red-600 shadow-md shadow-red-600/30',
+    bar: 'bg-primary',
+    bg: 'bg-white border-2 border-primary shadow-xl shadow-red-600/15',
+    iconBg: 'bg-primary shadow-md shadow-red-700/30',
     iconColor: 'text-white',
-    titleColor: 'text-red-950 font-bold',
-    messageColor: 'text-red-800 font-medium',
-    closeBtn: 'text-red-700 hover:text-red-950 hover:bg-red-100',
-    progressColor: 'bg-red-500',
+    titleColor: 'text-primary font-black',
+    messageColor: 'text-gray-900 font-medium',
+    closeBtn: 'text-gray-500 hover:text-primary hover:bg-red-50',
+    progressColor: 'bg-primary',
     defaultIcon: (
-      <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
+      <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 text-white">
         <path
           fillRule="evenodd"
           d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
@@ -80,15 +80,15 @@ const TYPE_CONFIG: Record<
   },
   warning: {
     bar: 'bg-amber-500',
-    bg: 'bg-amber-50 border-2 border-amber-400 shadow-xl shadow-amber-500/20',
-    iconBg: 'bg-amber-500 shadow-md shadow-amber-500/30',
-    iconColor: 'text-white',
-    titleColor: 'text-amber-950 font-bold',
-    messageColor: 'text-amber-800 font-medium',
-    closeBtn: 'text-amber-700 hover:text-amber-950 hover:bg-amber-100',
+    bg: 'bg-amber-50/95 border-2 border-amber-400 shadow-xl shadow-amber-500/20',
+    iconBg: 'bg-vjyellow text-black shadow-md shadow-amber-500/30',
+    iconColor: 'text-black',
+    titleColor: 'text-amber-950 font-black',
+    messageColor: 'text-gray-900 font-medium',
+    closeBtn: 'text-amber-800 hover:text-amber-950 hover:bg-amber-100',
     progressColor: 'bg-amber-500',
     defaultIcon: (
-      <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
+      <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 text-black font-bold">
         <path
           fillRule="evenodd"
           d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
@@ -98,16 +98,16 @@ const TYPE_CONFIG: Record<
     ),
   },
   info: {
-    bar: 'bg-blue-500',
-    bg: 'bg-blue-50 border-2 border-blue-400 shadow-xl shadow-blue-500/20',
-    iconBg: 'bg-blue-600 shadow-md shadow-blue-600/30',
+    bar: 'bg-sky-500',
+    bg: 'bg-white border-2 border-sky-400 shadow-xl shadow-sky-500/15',
+    iconBg: 'bg-sky-600 shadow-md shadow-sky-600/30',
     iconColor: 'text-white',
-    titleColor: 'text-blue-950 font-bold',
-    messageColor: 'text-blue-800 font-medium',
-    closeBtn: 'text-blue-700 hover:text-blue-950 hover:bg-blue-100',
-    progressColor: 'bg-blue-500',
+    titleColor: 'text-sky-950 font-black',
+    messageColor: 'text-gray-900 font-medium',
+    closeBtn: 'text-gray-500 hover:text-sky-950 hover:bg-sky-50',
+    progressColor: 'bg-sky-500',
     defaultIcon: (
-      <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
+      <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 text-white">
         <path
           fillRule="evenodd"
           d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
@@ -117,16 +117,16 @@ const TYPE_CONFIG: Record<
     ),
   },
   promo: {
-    bar: 'bg-gradient-to-r from-red-600 via-pink-500 to-amber-500',
-    bg: 'bg-white border-2 border-red-300 shadow-xl shadow-red-500/10',
-    iconBg: 'bg-gradient-to-br from-red-600 to-amber-500',
-    iconColor: 'text-white',
-    titleColor: 'text-gray-950 font-bold',
-    messageColor: 'text-gray-700',
-    closeBtn: 'text-gray-500 hover:text-gray-900 hover:bg-gray-100',
-    progressColor: 'bg-gradient-to-r from-red-600 to-amber-500',
+    bar: 'bg-gradient-to-r from-primary via-red-500 to-vjyellow',
+    bg: 'bg-gradient-to-br from-amber-50/70 via-white to-red-50/70 border-2 border-amber-400 shadow-xl shadow-amber-500/20',
+    iconBg: 'bg-vjyellow text-black shadow-md shadow-amber-400/30',
+    iconColor: 'text-black',
+    titleColor: 'text-gray-950 font-black',
+    messageColor: 'text-gray-800 font-medium',
+    closeBtn: 'text-gray-600 hover:text-gray-950 hover:bg-amber-100',
+    progressColor: 'bg-gradient-to-r from-primary to-vjyellow',
     defaultIcon: (
-      <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
+      <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 text-black">
         <path
           fillRule="evenodd"
           d="M5 2a2 2 0 00-2 2v14l3.5-2 3.5 2 3.5-2 3.5 2V4a2 2 0 00-2-2H5zm4.707 3.707a1 1 0 00-1.414-1.414l-3 3a1 1 0 000 1.414l3 3a1 1 0 001.414-1.414L8.414 10l1.293-1.293zm2.586 0L13.586 7l-1.293 1.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 00-1.414 1.414L13.586 7l-1.293-1.293z"
@@ -232,13 +232,11 @@ function ToastNotification({ toast, onDismiss }: ToastProps) {
                     action.onClick();
                     dismiss();
                   }}
-                  className={`text-xs font-semibold px-3 py-1.5 rounded-md transition-all duration-150 active:scale-95 font-['KoHo',sans-serif]
+                  className={`text-xs px-3 py-1.5 rounded-lg transition-all duration-150 active:scale-95 font-['KoHo',sans-serif]
                     ${
-                      action.variant === 'accent'
-                        ? 'bg-[var(--accent)] text-[var(--vj-navy)] hover:bg-vj-gold-ink-6 shadow-sm'
-                        : action.variant === 'ghost'
-                          ? 'text-[var(--foreground-muted)] hover:text-[var(--vj-navy)] hover:bg-[var(--vj-sky)]'
-                          : 'bg-[var(--primary)] text-white hover:bg-primary-dark shadow-sm'
+                      action.variant === 'ghost'
+                        ? 'text-gray-700 hover:text-black hover:bg-black/5 font-bold'
+                        : 'bg-vjyellow text-gray-950 font-black border border-amber-300 shadow-xs hover:brightness-105'
                     }
                   `}
                 >
