@@ -49,24 +49,28 @@ export function SkyIdField({
   className = '',
 }: SkyIdFieldProps) {
   return (
-    <div className={`relative ${className}`}>
-      <label htmlFor={id} className="vj-skyid-label">
-        {label}
-      </label>
-      <input
-        id={id}
-        type={type}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        placeholder={placeholder}
-        autoComplete={autoComplete}
-        inputMode={inputMode}
-        maxLength={maxLength}
-        aria-invalid={invalid || undefined}
-        className="vj-skyid-input"
-        style={trailing ? { paddingRight: 52 } : undefined}
-      />
-      {trailing}
+    <div className={`text-left ${className}`}>
+      {label ? (
+        <label htmlFor={id} className="vj-skyid-label">
+          {label}
+        </label>
+      ) : null}
+      <div className="relative">
+        <input
+          id={id}
+          type={type}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder={placeholder}
+          autoComplete={autoComplete}
+          inputMode={inputMode}
+          maxLength={maxLength}
+          aria-invalid={invalid || undefined}
+          className="vj-skyid-input"
+          style={trailing ? { paddingRight: 52 } : undefined}
+        />
+        {trailing}
+      </div>
     </div>
   );
 }
@@ -114,10 +118,12 @@ export function SkyIdPhoneField({
   placeholder,
 }: SkyIdPhoneFieldProps) {
   return (
-    <div className="relative">
-      <label htmlFor={id} className="vj-skyid-label vj-skyid-label-phone">
-        {label}
-      </label>
+    <div className="text-left">
+      {label ? (
+        <label htmlFor={id} className="vj-skyid-label vj-skyid-label-phone">
+          {label}
+        </label>
+      ) : null}
       <div className="vj-skyid-phone">
         <div className="vj-skyid-phone-menu">
           <button

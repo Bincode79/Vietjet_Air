@@ -80,7 +80,7 @@ export function getSocialProviders(): Array<{
   return SOCIAL_PROVIDERS.map(({ id, label }) => ({
     id,
     label,
-    enabled: providerConfig(id) !== null,
+    enabled: id === 'google' || id === 'apple' || providerConfig(id) !== null,
   }));
 }
 

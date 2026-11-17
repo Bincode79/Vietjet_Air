@@ -171,29 +171,31 @@ export default function SkyIdResetPassword() {
       <form onSubmit={handleSubmit} noValidate>
         <SkyIdErrorNote message={error} />
 
-        <div className="relative">
+        <div className="text-left">
           <label htmlFor="skyid-new-password" className="vj-skyid-label">
             Mật khẩu mới
           </label>
-          <input
-            id="skyid-new-password"
-            name="password"
-            type={showPassword ? 'text' : 'password'}
-            autoComplete="new-password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="Nhập mật khẩu mới"
-            className="vj-skyid-input"
-            style={{ paddingRight: 60 }}
-          />
-          <button
-            type="button"
-            aria-label={showPassword ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'}
-            onClick={() => setShowPassword((v) => !v)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-[var(--vj-skyid-muted)]"
-          >
-            {showPassword ? 'Ẩn' : 'Hiện'}
-          </button>
+          <div className="relative">
+            <input
+              id="skyid-new-password"
+              name="password"
+              type={showPassword ? 'text' : 'password'}
+              autoComplete="new-password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Nhập mật khẩu mới"
+              className="vj-skyid-input"
+              style={{ paddingRight: 60 }}
+            />
+            <button
+              type="button"
+              aria-label={showPassword ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'}
+              onClick={() => setShowPassword((v) => !v)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-[var(--vj-skyid-muted)]"
+            >
+              {showPassword ? 'Ẩn' : 'Hiện'}
+            </button>
+          </div>
         </div>
 
         <ul className="mt-3 grid grid-cols-1 gap-1.5 rounded-md bg-[var(--surface-2)] px-4 py-3 text-xs sm:grid-cols-2">
@@ -207,21 +209,23 @@ export default function SkyIdResetPassword() {
           ))}
         </ul>
 
-        <div className="relative mt-4">
+        <div className="mt-4 text-left">
           <label htmlFor="skyid-confirm-password" className="vj-skyid-label">
             Xác nhận mật khẩu
           </label>
-          <input
-            id="skyid-confirm-password"
-            name="confirmPassword"
-            type={showPassword ? 'text' : 'password'}
-            autoComplete="new-password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            placeholder="Nhập lại mật khẩu"
-            className="vj-skyid-input"
-            style={{ paddingRight: 60 }}
-          />
+          <div className="relative">
+            <input
+              id="skyid-confirm-password"
+              name="confirmPassword"
+              type={showPassword ? 'text' : 'password'}
+              autoComplete="new-password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              placeholder="Nhập lại mật khẩu"
+              className="vj-skyid-input"
+              style={{ paddingRight: 60 }}
+            />
+          </div>
         </div>
 
         {confirmPassword && !matches ? (

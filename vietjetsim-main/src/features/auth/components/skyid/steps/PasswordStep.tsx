@@ -52,28 +52,30 @@ export default function PasswordStep({
         readOnly
       />
 
-      <div className="relative mt-4">
+      <div className="mt-4 text-left">
         <label htmlFor="skyid-password" className="vj-skyid-label">
           Mật khẩu
         </label>
-        <input
-          id="skyid-password"
-          type={showPassword ? 'text' : 'password'}
-          autoComplete="current-password"
-          value={password}
-          onChange={(e) => onPasswordChange(e.target.value)}
-          placeholder="Nhập mật khẩu"
-          className="vj-skyid-input"
-          style={{ paddingRight: 60 }}
-        />
-        <button
-          type="button"
-          onClick={onTogglePassword}
-          aria-label={showPassword ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'}
-          className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-[var(--vj-skyid-muted)]"
-        >
-          {showPassword ? 'Ẩn' : 'Hiện'}
-        </button>
+        <div className="relative">
+          <input
+            id="skyid-password"
+            type={showPassword ? 'text' : 'password'}
+            autoComplete="current-password"
+            value={password}
+            onChange={(e) => onPasswordChange(e.target.value)}
+            placeholder="Nhập mật khẩu"
+            className="vj-skyid-input"
+            style={{ paddingRight: 60 }}
+          />
+          <button
+            type="button"
+            onClick={onTogglePassword}
+            aria-label={showPassword ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-[var(--vj-skyid-muted)]"
+          >
+            {showPassword ? 'Ẩn' : 'Hiện'}
+          </button>
+        </div>
       </div>
 
       <div className="mt-5 flex flex-col items-center gap-3">

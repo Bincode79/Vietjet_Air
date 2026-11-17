@@ -2216,33 +2216,31 @@ h6 {
   color: var(--vj-skyid-muted);
 }
 
-/* Nhãn nổi trên ô nhập — `.form-label` của SkyID. */
+/* Nhãn nổi trên ô nhập — `.form-label` của SkyID (hiển thị rõ ràng phía trên ô nhập). */
 .vj-skyid-label {
-  position: absolute;
-  left: 0;
-  top: 10px;
+  display: block;
   user-select: none;
-  pointer-events: none;
-  padding-left: 10px;
   font-family: 'KoHo', ui-sans-serif, system-ui, sans-serif;
-  font-size: 16px;
-  line-height: 12px;
-  font-weight: 500;
+  font-size: 13px;
+  line-height: 18px;
+  font-weight: 600;
   color: var(--vj-skyid-ink);
+  margin-bottom: 6px;
+  text-align: left;
 }
 
 /* Ô nhập — `input.form-control`. */
 .vj-skyid-input {
   width: 100%;
-  height: 32px;
-  padding: 5px 10px;
+  height: 38px;
+  padding: 6px 12px;
   border: 1px solid var(--vj-skyid-border);
   border-radius: var(--vj-skyid-radius-input);
   background-color: #ffffff;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   font-family: 'KoHo', ui-sans-serif, system-ui, sans-serif;
-  font-size: 16px;
-  line-height: 24px;
+  font-size: 15px;
+  line-height: 22px;
   color: var(--vj-skyid-ink);
   outline: none;
   transition:
@@ -2266,10 +2264,9 @@ h6 {
   box-shadow: none;
 }
 
-/* Nhãn nổi của ô số điện thoại: dịch sang mép trái vùng gõ số (sau cờ),
-   đúng như site thật (nhãn ở `x = 85px` khi cờ chiếm 90px). */
+/* Nhãn nổi của ô số điện thoại: căn lề trái đồng bộ */
 .vj-skyid-label-phone {
-  left: 85px;
+  margin-left: 0;
 }
 
 /* Ô nhập có cờ + mã quốc gia (intl-tel).
@@ -2286,19 +2283,19 @@ h6 {
   display: flex;
   align-items: center;
   width: 100%;
-  height: 32px;
+  height: 38px;
   border: 0;
   border-radius: var(--vj-skyid-radius-input);
   background-color: #ffffff;
   box-shadow:
     inset 0 0 0 1px var(--vj-skyid-border),
-    0 4px 20px rgba(0, 0, 0, 0.15);
+    0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 .vj-skyid-phone:focus-within {
   box-shadow:
     inset 0 0 0 1px var(--vj-skyid-border-focus),
-    0 4px 20px rgba(0, 0, 0, 0.15);
+    0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 /* Nút mở danh sách mã quốc gia — nằm trong ô nhập nhưng cho phép dropdown
