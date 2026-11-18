@@ -461,7 +461,7 @@ export default function PassengerInfoStep({
                       <UnderlineField
                         id={`passenger-${i}-dob`}
                         label="Ngày sinh (DD/MM/YYYY)"
-                        filled
+                        filled={!!p.dob}
                       >
                         <input
                           id={`passenger-${i}-dob`}
@@ -470,7 +470,6 @@ export default function PassengerInfoStep({
                           value={p.dob}
                           onChange={(e) => updatePassenger(i, 'dob', e.target.value)}
                           required
-                          className="opacity-70"
                         />
                       </UnderlineField>
                     </div>
@@ -483,7 +482,6 @@ export default function PassengerInfoStep({
                             value={p.countryCode}
                             onChange={(e) => updatePassenger(i, 'countryCode', e.target.value)}
                             required
-                            className="opacity-70"
                           >
                             {COUNTRY_DIAL_CODES.map((country) => (
                               <option key={country.code} value={country.code}>
@@ -499,11 +497,11 @@ export default function PassengerInfoStep({
                   {/* Số điện thoại & Email */}
                   {isAdult && (
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div className="opacity-70">
+                      <div>
                         <UnderlineField
                           id={`passenger-${i}-phone`}
                           label="Số điện thoại"
-                          filled
+                          filled={!!p.phone}
                           hasPrefix
                         >
                           <span className="flex items-center gap-1 pr-2 text-base font-medium text-vj-text select-none shrink-0">
@@ -676,9 +674,7 @@ export default function PassengerInfoStep({
                         <input
                           type="checkbox"
                           checked={consents.survey}
-                          onChange={(e) =>
-                            setConsents((c) => ({ ...c, survey: e.target.checked }))
-                          }
+                          onChange={(e) => setConsents((c) => ({ ...c, survey: e.target.checked }))}
                           className={CHECKBOX_CLASS}
                         />
                         <span>Thực hiện khảo sát và chăm sóc khách hàng</span>

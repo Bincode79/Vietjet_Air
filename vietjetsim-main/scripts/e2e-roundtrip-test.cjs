@@ -212,6 +212,16 @@ async function runDevice(browser, device, report) {
     await wait(1000);
     ok(report, device, 4, 'Đã điền đầy đủ thông tin hành khách (bao gồm CCCD/Hộ chiếu)');
 
+    // Ảnh bổ sung: trạng thái đã điền — dùng để soi nhãn nổi, căn hàng giữa các
+    // ô và thanh đáy (những lỗi chỉ hiện khi ô có dữ liệu).
+    await page.evaluate(() => {
+      document.querySelector('#passenger-0-name')?.scrollIntoView({ block: 'center' });
+    });
+    await wait(400);
+    await page.screenshot({
+      path: path.join(OUT_DIR, `03b-${device}-step2-passengers-filled.png`),
+    });
+
     // Submit form hành khách -> chuyển sang bước dịch vụ bổ sung (step 3)
     const submitBtn = await page.waitForSelector(
       'button[type="submit"][form="passenger-info-form"]',

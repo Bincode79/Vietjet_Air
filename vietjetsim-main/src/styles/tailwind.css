@@ -1831,6 +1831,17 @@ h6 {
   cursor: pointer;
 }
 
+/* Chrome luôn vẽ "mm/dd/yyyy" trong ô ngày rỗng, trong khi mọi ô rỗng khác chỉ
+ * hiện nhãn nổi ở giữa. Ẩn phần chữ đó khi ô chưa có giá trị để nhãn "Ngày
+ * sinh (DD/MM/YYYY)" không đè lên; hiện lại khi người dùng focus vào ô. */
+.vj-underline-field[data-filled='false'] input[type='date']::-webkit-datetime-edit {
+  color: transparent;
+}
+
+.vj-underline-field[data-filled='false']:focus-within input[type='date']::-webkit-datetime-edit {
+  color: var(--foreground);
+}
+
 .vj-underline-field input::placeholder {
   color: var(--vj-field-placeholder);
   opacity: 1;
