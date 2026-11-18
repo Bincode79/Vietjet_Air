@@ -38,7 +38,7 @@
       }
     ],
     "errors": [],
-    "bookingId": "9fcb1d91-be44-4d78-a6f7-bd4a2dd84770",
+    "bookingId": "2690c964-d165-41d4-a5dd-2497126583ed",
     "totalAmount": "1.980.000",
     "passed": true
   },
@@ -60,22 +60,34 @@
         "status": "OK"
       },
       {
-        "step": 99,
-        "name": 99,
-        "status": "FAILED",
-        "error": "Lỗi điều khiển trình duyệt: No element found for selector: #passenger-0-name"
+        "step": 4,
+        "name": 4,
+        "status": "OK"
+      },
+      {
+        "step": 6,
+        "name": 6,
+        "status": "OK"
+      },
+      {
+        "step": 7,
+        "name": 7,
+        "status": "OK"
+      },
+      {
+        "step": 8,
+        "name": 8,
+        "status": "OK"
       }
     ],
-    "errors": [
-      "Lỗi điều khiển trình duyệt: No element found for selector: #passenger-0-name"
-    ],
-    "bookingId": "9fcb1d91-be44-4d78-a6f7-bd4a2dd84770",
-    "totalAmount": "1.980.000",
-    "passed": false
+    "errors": [],
+    "bookingId": "ea2aa900-7c46-4bcc-a613-4d02dc46a56e",
+    "totalAmount": "3.143.162",
+    "passed": true
   },
   "overall": {
-    "passed": false,
-    "desktopBookingId": "9fcb1d91-be44-4d78-a6f7-bd4a2dd84770",
-    "mobileBookingId": "9fcb1d91-be44-4d78-a6f7-bd4a2dd84770"
+    "passed": true,
+    "desktopBookingId": "2690c964-d165-41d4-a5dd-2497126583ed",
+    "mobileBookingId": "ea2aa900-7c46-4bcc-a613-4d02dc46a56e"
   }
 }

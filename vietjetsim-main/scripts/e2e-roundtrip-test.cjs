@@ -9,8 +9,7 @@ const OUT_DIR = path.resolve(__dirname, '..', 'docs', 'qa', 'e2e-roundtrip');
 
 fs.mkdirSync(OUT_DIR, { recursive: true });
 
-const SEARCH_URL =
-  `${BASE_URL}/tim-ve?from=SGN&to=HAN&depart=2026-11-20&return=2026-11-25&pax=1`;
+const SEARCH_URL = `${BASE_URL}/tim-ve?from=SGN&to=HAN&depart=2026-11-20&return=2026-11-25&pax=1`;
 
 const PASSENGER_DATA = {
   name: 'NGUYEN',
@@ -40,6 +39,32 @@ async function wait(ms) {
   return new Promise((r) => setTimeout(r, ms));
 }
 
+async function setReactInputValue(page, selector, value) {
+  // Tìm và gán giá trị trong MỘT lệnh evaluate duy nhất, tránh khoảng trống
+  // giữa waitForSelector và evaluate mà React có thể re-render xóa phần tử
+  // khỏi DOM (đặc biệt trên mobile viewport sau khi bật/tắt radio).
+  // Dùng descriptor setter để cập nhật đúng state của React controlled component.
+  await page.evaluate(
+    (sel, val) => {
+      const el = document.querySelector(sel);
+      if (!el) throw new Error(`Element ${sel} not found`);
+      el.scrollIntoView({ block: 'center' });
+      const prototype = Object.getPrototypeOf(el);
+      const descriptor = Object.getOwnPropertyDescriptor(prototype, 'value');
+      if (descriptor && descriptor.set) {
+        descriptor.set.call(el, val);
+      } else {
+        el.value = val;
+      }
+      el.dispatchEvent(new Event('input', { bubbles: true }));
+      el.dispatchEvent(new Event('change', { bubbles: true }));
+      el.dispatchEvent(new Event('blur', { bubbles: true }));
+    },
+    selector,
+    value
+  );
+}
+
 async function clickNext(page) {
   const buttons = await page.$$('button.vj-cta');
   console.log(`[clickNext] found ${buttons.length} button.vj-cta`);
@@ -49,7 +74,9 @@ async function clickNext(page) {
     const visible = box ? `(${box.width}x${box.height})` : 'hidden';
     const text = await btn.evaluate((b) => b.textContent || '');
     const formId = await btn.evaluate((b) => b.getAttribute('form') || 'none');
-    console.log(`[clickNext] candidate: disabled=${disabled} visible=${visible} text="${text}" form="${formId}"`);
+    console.log(
+      `[clickNext] candidate: disabled=${disabled} visible=${visible} text="${text}" form="${formId}"`
+    );
     if (disabled) continue;
     if (!box || box.width === 0 || box.height === 0) continue;
     if (!/Đi tiếp/i.test(text)) continue;
@@ -64,7 +91,9 @@ async function runDevice(browser, device, report) {
   const page = await browser.newPage();
   const isDesktop = device === 'desktop';
   await page.setViewport(
-    isDesktop ? { width: 1440, height: 900 } : { width: 390, height: 844, isMobile: true, hasTouch: true }
+    isDesktop
+      ? { width: 1440, height: 900 }
+      : { width: 390, height: 844, isMobile: true, hasTouch: true }
   );
 
   page.on('console', (msg) => {
@@ -141,42 +170,55 @@ async function runDevice(browser, device, report) {
     ok(report, device, 3, 'Giao diện nhập thông tin hành khách đã tải');
 
     // Giới tính
-    await page.click('#passenger-0-gender-male');
+    await page.evaluate(() => {
+      const radio = document.querySelector('#passenger-0-gender-male');
+      if (radio) {
+        radio.click();
+        radio.dispatchEvent(new Event('change', { bubbles: true }));
+      }
+    });
+    await wait(300);
 
     // Họ / Tên
-    await page.type('#passenger-0-name', PASSENGER_DATA.name, { overwrite: true });
-    await page.type('#passenger-0-firstName', PASSENGER_DATA.firstName, { overwrite: true });
+    await setReactInputValue(page, '#passenger-0-name', PASSENGER_DATA.name);
+    await setReactInputValue(page, '#passenger-0-firstName', PASSENGER_DATA.firstName);
 
     // Ngày sinh (input type="date")
-    await page.type('#passenger-0-dob', PASSENGER_DATA.dob, { overwrite: true });
+    await setReactInputValue(page, '#passenger-0-dob', PASSENGER_DATA.dob);
 
     // Quốc gia (mặc định VN, không cần đổi)
 
     // Số điện thoại
-    await page.type('#passenger-0-phone', PASSENGER_DATA.phone, { overwrite: true });
+    await setReactInputValue(page, '#passenger-0-phone', PASSENGER_DATA.phone);
 
     // Email
-    await page.type('#passenger-0-email', PASSENGER_DATA.email, { overwrite: true });
+    await setReactInputValue(page, '#passenger-0-email', PASSENGER_DATA.email);
 
     // CCCD / Hộ chiếu (bắt buộc cho adult)
-    await page.type('#passenger-0-idNumber', PASSENGER_DATA.idNumber, { overwrite: true });
+    await setReactInputValue(page, '#passenger-0-idNumber', PASSENGER_DATA.idNumber);
 
     // Đồng ý điều khoản (checkbox required)
-    const policyCheckbox = await page.waitForSelector('input[type="checkbox"][required]', {
-      timeout: 10000,
+    await page.evaluate(() => {
+      const cb =
+        document.querySelector('#passenger-policy-consent') ||
+        document.querySelector('input[data-testid="passenger-policy-consent"]') ||
+        document.querySelector('input[type="checkbox"][required]');
+      if (cb && !cb.checked) {
+        cb.click();
+        cb.dispatchEvent(new Event('change', { bubbles: true }));
+      }
     });
-    const isChecked = await (await policyCheckbox.getProperty('checked')).jsonValue();
-    if (!isChecked) {
-      await policyCheckbox.click();
-    }
 
     await wait(1000);
     ok(report, device, 4, 'Đã điền đầy đủ thông tin hành khách (bao gồm CCCD/Hộ chiếu)');
 
     // Submit form hành khách -> chuyển sang bước dịch vụ bổ sung (step 3)
-    const submitBtn = await page.waitForSelector('button[type="submit"][form="passenger-info-form"]', {
-      timeout: 10000,
-    });
+    const submitBtn = await page.waitForSelector(
+      'button[type="submit"][form="passenger-info-form"]',
+      {
+        timeout: 10000,
+      }
+    );
     await submitBtn.click();
     console.log('Submitted passenger form, waiting for ancillary step...');
 
@@ -227,7 +269,9 @@ async function runDevice(browser, device, report) {
           text.includes('thanh toán') ||
           text.includes('VietQR') ||
           text.includes('bookingId') ||
-          document.querySelector('[data-testid*="payment"], [data-testid*="qr"], .payment-method') !== null
+          document.querySelector(
+            '[data-testid*="payment"], [data-testid*="qr"], .payment-method'
+          ) !== null
         );
       });
 
@@ -261,7 +305,12 @@ async function runDevice(browser, device, report) {
         return text.includes('chưa có đơn đặt vé') || text.includes('không tìm thấy đặt vé');
       });
       if (!noBooking) {
-        fail(report, device, 7, 'Truy cập /thanh-toan không bookingId nhưng không thấy thông báo rỗng');
+        fail(
+          report,
+          device,
+          7,
+          'Truy cập /thanh-toan không bookingId nhưng không thấy thông báo rỗng'
+        );
       }
     }
 
@@ -339,7 +388,9 @@ async function runTest() {
   } finally {
     try {
       await browser.close();
-    } catch (_) {}
+    } catch (_e) {
+      // ignore
+    }
   }
 }
 
