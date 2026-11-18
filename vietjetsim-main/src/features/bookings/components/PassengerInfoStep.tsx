@@ -448,12 +448,6 @@ export default function PassengerInfoStep({
                         </UnderlineField>
                       </div>
                     </div>
-                    <div className="mt-1.5 text-xs text-blue-600 flex items-center gap-1 font-koho font-medium">
-                      <span className="font-bold">ℹ</span>
-                      <span>
-                        Vé in tên đầy đủ theo thứ tự: họ, tên đệm, tên — ví dụ “Nguyễn Văn An”.
-                      </span>
-                    </div>
                   </div>
 
                   {/* Ngày sinh & Quốc gia */}

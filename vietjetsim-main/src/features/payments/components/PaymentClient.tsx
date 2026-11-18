@@ -643,10 +643,12 @@ export default function PaymentClient() {
     // SkyPoint balance for the SkyJoy payment tab (fail-soft như ví).
     getMembership()
       .then((data) => {
-        setSkypointInfo({
-          points: data.membership.currentPoints,
-          rate: data.program.pointsPerThousandVnd,
-        });
+        if (data?.membership && data?.program) {
+          setSkypointInfo({
+            points: data.membership.currentPoints ?? 0,
+            rate: data.program.pointsPerThousandVnd ?? 10,
+          });
+        }
       })
       .catch((err) => {
         if (!String(err).includes('Authentication required') && !String(err).includes('401')) {
@@ -1307,27 +1309,8 @@ export default function PaymentClient() {
                     <div className="text-3xl font-black text-primary tracking-widest">
                       {bookingCodeLabel}
                     </div>
-                    <button
-                      onClick={handleCopyBookingCode}
-                      title="Sao chép mã đặt chỗ"
-                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 ${
-                        copied
-                          ? 'bg-[rgb(var(--vj-green-rgb))]/15 text-[var(--vj-green)] border border-[rgb(var(--vj-green-rgb))]/40'
-                          : 'bg-[var(--surface-2)] text-[var(--foreground-muted)] border border-[var(--border)] hover:bg-primary-50 hover:text-primary hover:border-primary'
-                      }`}
-                    >
-                      {copied ? (
-                        <>
-                          <Icon name="CheckIcon" size={13} />
-                          Đã sao chép
-                        </>
-                      ) : (
-                        <>
-                          <Icon name="ClipboardDocumentIcon" size={13} />
-                          Sao chép
-                        </>
-                      )}
-                    </button>
+                    {/* Nút sao chép mã đặt chỗ đã được xóa theo yêu cầu thiết kế */}
+
                   </div>
                 </div>
 
@@ -2033,10 +2016,11 @@ export default function PaymentClient() {
                         type="button"
                         onClick={applyPromo}
                         disabled={isApplyingPromo || !promoCode.trim()}
-                        className="bg-red-600 hover:bg-red-700 disabled:opacity-50 text-white font-bold text-xs px-4 py-2 rounded-lg cursor-pointer transition-colors font-koho"
+                        className="bg-[#FFD600] hover:bg-[#F5C400] disabled:opacity-50 text-black font-black text-xs px-4 py-2 rounded-lg cursor-pointer transition-colors font-koho"
                       >
                         {isApplyingPromo ? 'Đang kiểm tra...' : 'Áp dụng'}
                       </button>
+
                     </div>
                   )}
                   {promoApplied && promoData && (
