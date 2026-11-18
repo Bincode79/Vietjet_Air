@@ -57,7 +57,22 @@ export function setGuestBookingCookie(
   request: NextRequest,
   bookingId: string
 ): void {
-  const existing = getGuestBookingIds(request).filter((id) => id !== bookingId);
+  let currentIds: string[] = [];
+  const existingCookieOnResponse = response.cookies.get(GUEST_BOOKING_COOKIE)?.value;
+  if (existingCookieOnResponse) {
+    try {
+      const parsed = JSON.parse(existingCookieOnResponse);
+      if (Array.isArray(parsed)) {
+        currentIds = parsed.filter((id): id is string => typeof id === 'string');
+      }
+    } catch {
+      currentIds = [];
+    }
+  } else {
+    currentIds = getGuestBookingIds(request);
+  }
+
+  const existing = currentIds.filter((id) => id !== bookingId);
   const next = [...existing, bookingId].slice(-MAX_TRACKED_BOOKINGS);
   response.cookies.set(GUEST_BOOKING_COOKIE, JSON.stringify(next), {
     httpOnly: true,

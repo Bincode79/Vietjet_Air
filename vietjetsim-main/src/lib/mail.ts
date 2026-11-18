@@ -169,7 +169,7 @@ const METHOD_LABELS: Record<string, string> = {
   movi: 'Bay trước trả sau (MOVI)',
 };
 
-const METHOD_LABEL_FALLBACK = 'Thanh toán trực tuyếp';
+const METHOD_LABEL_FALLBACK = 'Thanh toán trực tuyến';
 
 const INK = '#0f1c2e';
 
@@ -180,7 +180,7 @@ function shell(inner: string, preheader: string, eyebrow: string): string {
   const year = new Date().getFullYear();
   // Logo gốc 230x40 — hiển thị đúng kích thước gốc để nét nhất.
   // Muốn to hơn nữa cần file nguồn phân giải cao hơn, không phóng ảnh nhỏ lên.
-  const logo = `<img src="${escapeHtml(mailLogoUrl())}" width="230" height="40" alt="Vietjet Air" style="display:block;border:0;">`;
+  const logo = `<img src="${escapeHtml(mailLogoUrl())}" width="230" height="40" alt="Vietjet Air" style="display:block;border:0;outline:none;text-decoration:none;-ms-interpolation-mode:bicubic;">`;
   return `<!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -190,25 +190,29 @@ function shell(inner: string, preheader: string, eyebrow: string): string {
 <meta name="supported-color-schemes" content="light">
 <title>Vietjet Air</title>
 </head>
-<body style="margin:0;padding:0;background-color:#eef1f5;">
+<body style="margin:0;padding:0;background-color:#f1f4f8;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;">
 <div style="display:none;max-height:0;overflow:hidden;opacity:0;">${escapeHtml(preheader)}</div>
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#eef1f5;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f1f4f8;">
 <tr><td align="center" style="padding:28px 12px;">
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;background-color:#ffffff;border-radius:10px;overflow:hidden;font-family:Arial,Helvetica,sans-serif;">
-<tr><td style="background-color:${BRAND_RED};font-size:8px;line-height:8px;">&nbsp;</td></tr>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;background-color:#ffffff;border-radius:10px;overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;box-shadow:0 4px 12px rgba(0,0,0,0.05);border:1px solid #e2e8f0;">
+<tr><td style="background-color:${BRAND_RED};height:4px;font-size:0;line-height:0;">&nbsp;</td></tr>
 <tr><td style="padding:22px 32px 0;">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
-<td>${logo}</td>
-<td align="right" style="color:#8b95a1;font-size:12px;">${escapeHtml(eyebrow)}</td>
+<td valign="middle">${logo}</td>
+<td align="right" valign="middle" style="color:#64748b;font-size:12px;font-weight:600;letter-spacing:0.5px;text-transform:uppercase;">${escapeHtml(eyebrow)}</td>
 </tr></table>
 </td></tr>
 <tr><td style="padding:14px 32px 0;"><div style="border-top:1px solid #edf0f4;font-size:0;line-height:0;">&nbsp;</div></td></tr>
-<tr><td style="padding:22px 32px 8px;color:#1f2328;font-size:15px;line-height:1.6;">
+<tr><td style="padding:22px 32px 12px;color:#1f2328;font-size:15px;line-height:1.65;">
 ${inner}
 </td></tr>
-<tr><td style="padding:20px 32px 26px;background-color:#f7f9fb;font-size:12px;line-height:1.7;color:#6b7280;">
-Hỗ trợ: <strong style="color:${BRAND_RED};">1900 1886</strong> (8:00&ndash;22:00 hằng ngày) &middot; <a href="${escapeHtml(url)}" style="color:#1f2328;text-decoration:underline;">${escapeHtml(domain)}</a>
-<p style="margin:8px 0 0;">&copy; ${year} Vietjet Air. Email này được gửi tự động, vui lòng không trả lời.</p>
+<tr><td style="padding:22px 32px 28px;background-color:#f8fafc;border-top:1px solid #edf0f4;font-size:12px;line-height:1.7;color:#64748b;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+<tr><td style="font-size:12px;line-height:1.7;color:#64748b;">
+Tổng đài hỗ trợ 24/7: <strong style="color:${BRAND_RED};">1900 1886</strong> &middot; Website: <a href="${escapeHtml(url)}" style="color:#0f172a;font-weight:600;text-decoration:none;">${escapeHtml(domain)}</a>
+<p style="margin:6px 0 0;color:#94a3b8;font-size:11px;">&copy; ${year} Vietjet Air. Email này được gửi tự động, vui lòng không trả lời.</p>
+</td></tr>
+</table>
 </td></tr>
 </table>
 </td></tr>
@@ -217,17 +221,17 @@ Hỗ trợ: <strong style="color:${BRAND_RED};">1900 1886</strong> (8:00&ndash;2
 </html>`;
 }
 
-/** Hộp lưu ý trung tính (hết hạn, bảo mật...) — xám nhạt, không màu mè. */
+/** Hộp lưu ý trung tính (hết hạn, bảo mật...) — xám nhạt, viền đỏ mỏng trang trọng. */
 function noticeBox(innerHtml: string): string {
-  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top:20px;background-color:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;">
-<tr><td style="padding:14px 18px;font-family:Arial,Helvetica,sans-serif;font-size:13px;line-height:1.6;color:#475569;">${innerHtml}</td></tr>
+  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top:20px;background-color:#f8fafc;border:1px solid #e2e8f0;border-left:4px solid ${BRAND_RED};border-radius:6px;">
+<tr><td style="padding:14px 18px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:13px;line-height:1.6;color:#334155;">${innerHtml}</td></tr>
 </table>`;
 }
 
 function actionButton(href: string, label: string): string {
   return `<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:24px 0;">
-<tr><td style="background-color:${BRAND_RED};border-radius:10px;">
-<a href="${escapeHtml(href)}" style="display:inline-block;padding:13px 26px;color:#ffffff;font-size:15px;font-weight:bold;text-decoration:none;">${escapeHtml(label)}</a>
+<tr><td style="background-color:${BRAND_RED};border-radius:8px;">
+<a href="${escapeHtml(href)}" style="display:inline-block;padding:13px 26px;color:#ffffff;font-size:15px;font-weight:bold;text-decoration:none;letter-spacing:0.3px;">${escapeHtml(label)}</a>
 </td></tr></table>`;
 }
 
@@ -962,7 +966,7 @@ export function buildOtpEmailHtml(opts: {
   const inner = `<p style="margin:0 0 16px;">Kính chào Quý khách,</p>
 <p style="margin:0 0 16px;">Mã xác thực (OTP) của Quý khách để ${actionText} là:</p>
 <div style="margin:24px 0;text-align:center;">
-  <span style="display:inline-block;padding:14px 28px;background-color:#fff5f5;border:2px dashed ${BRAND_RED};border-radius:10px;font-family:'Courier New',Courier,monospace;font-size:32px;font-weight:900;letter-spacing:8px;color:${BRAND_RED};">
+  <span style="display:inline-block;padding:14px 28px;background-color:#fff5f5;border:2px solid ${BRAND_RED};border-radius:10px;font-family:'Courier New',Courier,monospace;font-size:32px;font-weight:900;letter-spacing:8px;color:${BRAND_RED};">
     ${escapeHtml(opts.code)}
   </span>
 </div>

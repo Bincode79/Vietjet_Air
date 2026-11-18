@@ -148,13 +148,13 @@ describe('PassengerInfoStep extended contact and consent fields', () => {
     expect(consent).toBeRequired();
   });
 
-  it('không chặn onSubmit khi thiếu idNumber (gap: component để validation cho trình duyệt)', () => {
+  it('chặn onSubmit và hiển thị lỗi validation khi thiếu idNumber của người lớn', () => {
     const onSubmit = vi.fn();
     render(
       <PassengerInfoStep flight={flight} passengerCount={1} onSubmit={onSubmit} onBack={vi.fn()} />
     );
 
-    // Điền đủ các trường BỔ NGỌC trừ idNumber (để trống)
+    // Điền đủ các trường trừ idNumber (để trống)
     fireEvent.change(screen.getByLabelText(/^Họ/), { target: { value: 'NGUYEN' } });
     fireEvent.change(screen.getByLabelText(/Tên đệm & tên/), { target: { value: 'VAN A' } });
     fireEvent.change(screen.getByLabelText(/Ngày sinh/), { target: { value: '1990-01-01' } });
@@ -162,13 +162,15 @@ describe('PassengerInfoStep extended contact and consent fields', () => {
     fireEvent.change(screen.getByLabelText(/Email/), { target: { value: 'nguyen@example.com' } });
     fireEvent.click(screen.getByRole('checkbox', { name: /Tôi đã đọc, hiểu và đồng ý/ }));
 
-    // jsdom không chạy native HTML5 validation; submit form trực tiếp để mô phỏng
-    // hành vi khi trình duyệt cho phép (idNumber rỗng vẫn đi qua)
     fireEvent.submit(document.getElementById('passenger-info-form')!);
 
-    expect(onSubmit).toHaveBeenCalledTimes(1);
-    const [passengers] = onSubmit.mock.calls[0];
-    expect(passengers[0].idNumber).toBe('');
+    // onSubmit KHÔNG được gọi khi thiếu idNumber
+    expect(onSubmit).not.toHaveBeenCalled();
+
+    // Lỗi validation hiển thị rõ ràng trên giao diện
+    expect(screen.getByRole('alert')).toHaveTextContent(
+      'Vui lòng nhập số CCCD / Hộ chiếu cho hành khách 1'
+    );
   });
 
   it('gửi payload có idNumber khi điền đầy đủ', async () => {

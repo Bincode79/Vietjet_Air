@@ -140,7 +140,36 @@ function createResilientSql(rawNeon: RawNeonClient | null, mock: SqlClient): Sql
   resilientFn.transaction = async (queries: unknown) => {
     if (!hasRealDb || !rawNeon) return mock.transaction(queries);
     try {
-      if (rawNeon.transaction) return await rawNeon.transaction(queries);
+      if (typeof queries === 'function') {
+        if (rawNeon.transaction) {
+          return await rawNeon.transaction(queries as (sql: unknown) => unknown);
+        }
+        return await (queries as (sql: unknown) => unknown)(resilientFn);
+      }
+      if (Array.isArray(queries)) {
+        if (rawNeon.transaction) {
+          try {
+            return await rawNeon.transaction(queries);
+          } catch (txErr: unknown) {
+            const msg = txErr instanceof Error ? txErr.message : String(txErr);
+            if (msg.includes('expects an array of queries')) {
+              return await Promise.all(
+                queries.map((q) =>
+                  q && typeof (q as PromiseLike<unknown>).then === 'function'
+                    ? q
+                    : Promise.resolve(q)
+                )
+              );
+            }
+            throw txErr;
+          }
+        }
+        return await Promise.all(
+          queries.map((q) =>
+            q && typeof (q as PromiseLike<unknown>).then === 'function' ? q : Promise.resolve(q)
+          )
+        );
+      }
       return await mock.transaction(queries);
     } catch (err) {
       if (isNetworkOfflineError(err) && process.env.NODE_ENV !== 'production') {
@@ -2286,100 +2315,106 @@ function createMockSql(): SqlClient {
     return null;
   };
 
-  return Object.assign(
-    async <T = SqlRow>(strings: TemplateStringsArray, ...values: unknown[]): Promise<T[]> => {
-      // Mirror the real Neon client, which rejects a non-template invocation:
-      // it requires `Array.isArray(strings) && Array.isArray(strings.raw)`.
-      // Without this guard a call like `sql(dynamicString, ...values)` silently
-      // "worked" in dev/test and then threw a 500 against a real database.
-      if (!(Array.isArray(strings) && Array.isArray((strings as TemplateStringsArray).raw))) {
-        throw new Error(
-          'This function can now be called only as a tagged-template function: ' +
-            'sql`SELECT ${value}`, not sql("SELECT $1", [value], options). ' +
-            'For a conventional function call with value placeholders ' +
-            '($1, $2, etc.), use sql.query("SELECT $1", [value], options).'
-        );
-      }
-
-      const query = strings.join('?');
-      console.info('[MOCK SQL]', query, values);
-
-      const userProfileResult = runUserProfileQuery(query, values);
-      if (userProfileResult) return userProfileResult as T[];
-
-      const chatResult = runChatQuery(query, values);
-      if (chatResult) return chatResult as T[];
-
-      const rolePermissionResult = runRolePermissionQuery(query, values);
-      if (rolePermissionResult) return rolePermissionResult as T[];
-
-      const walletLoyaltyResult = runWalletAndLoyaltyQuery(query, values);
-      if (walletLoyaltyResult) return walletLoyaltyResult as T[];
-
-      const agencyDiscountResult = runAgencyAndDiscountQuery(query, values);
-      if (agencyDiscountResult) return agencyDiscountResult as T[];
-
-      const analyticsResult = runAnalyticsQuery(query, values);
-      if (analyticsResult) return analyticsResult as T[];
-
-      const flightSeatResult = runFlightAndSeatQuery(query, values);
-      if (flightSeatResult) return flightSeatResult as T[];
-
-      const bookingResult = runBookingQuery(query, values);
-      if (bookingResult) return bookingResult as T[];
-
-      // Find matching mock data
-      for (const [key, data] of Object.entries(mockData)) {
-        if (query.toLowerCase().includes(key.toLowerCase().split('?')[0].trim())) {
-          return data as T[];
-        }
-      }
-
-      // Return empty array for unhandled queries
-      return [] as T[];
-    },
-    {
-      // Raw parameterized form (`sql.query(text, values)`), which the chat
-      // helpers use for counter updates and which `getTripById` uses to read
-      // passengers and check-ins. Non-chat statements stay unhandled and
-      // return an empty result set rather than throwing.
-      query: async <T = SqlRow>(text: string, values: unknown[] = []): Promise<T[]> => {
-        console.info('[MOCK SQL:query]', text, values);
-        return (runBookingQuery(text, values) ??
-          runSeatLockQuery(text, values) ??
-          runFlightAndSeatQuery(text, values) ??
-          runChatQuery(text, values) ??
-          runAgencyAndDiscountQuery(text, values) ??
-          runAnalyticsQuery(text, values) ??
-          ([] as MockResult[])) as T[];
-      },
-      transaction: async (queries: unknown) => {
-        if (Array.isArray(queries)) {
-          const results = [];
-          for (const q of queries) {
-            if (typeof q === 'function') {
-              results.push(await q());
-            } else if (q && typeof (q as PromiseLike<unknown>).then === 'function') {
-              // Neon batch API trả về một Promise cho MỖI câu trong
-              // `transaction([...])`. Bản mock trước đây chỉ chạy được
-              // callback và bỏ qua promise — nên `createPaymentAndConfirmBooking`
-              // trong mock mode KHÔNG ghi giao dịch và KHÔNG xác nhận booking:
-              // trang thanh toán báo thành công nhưng dữ liệu không đổi.
-              results.push(await q);
-            } else {
-              results.push([]);
-            }
-          }
-          return results;
-        }
-        return [];
-      },
-      // `unsafe` trong mock không có parser SQL, nên nó chỉ đóng vai trò
-      // "chèn chuỗi thô" — trả về đối tượng đánh dấu để template ghép được.
-      unsafe: (query: string, params?: unknown[]) => ({
-        __unsafeSql: query,
-        __unsafeParams: params ?? [],
-      }),
+  const mockTag: any = async <T = SqlRow>(
+    strings: TemplateStringsArray,
+    ...values: unknown[]
+  ): Promise<T[]> => {
+    // Mirror the real Neon client, which rejects a non-template invocation:
+    // it requires `Array.isArray(strings) && Array.isArray(strings.raw)`.
+    // Without this guard a call like `sql(dynamicString, ...values)` silently
+    // "worked" in dev/test and then threw a 500 against a real database.
+    if (!(Array.isArray(strings) && Array.isArray((strings as TemplateStringsArray).raw))) {
+      throw new Error(
+        'This function can now be called only as a tagged-template function: ' +
+          'sql`SELECT ${value}`, not sql("SELECT $1", [value], options). ' +
+          'For a conventional function call with value placeholders ' +
+          '($1, $2, etc.), use sql.query("SELECT $1", [value], options).'
+      );
     }
-  );
+
+    const query = strings.join('?');
+    console.info('[MOCK SQL]', query, values);
+
+    const userProfileResult = runUserProfileQuery(query, values);
+    if (userProfileResult) return userProfileResult as T[];
+
+    const chatResult = runChatQuery(query, values);
+    if (chatResult) return chatResult as T[];
+
+    const rolePermissionResult = runRolePermissionQuery(query, values);
+    if (rolePermissionResult) return rolePermissionResult as T[];
+
+    const walletLoyaltyResult = runWalletAndLoyaltyQuery(query, values);
+    if (walletLoyaltyResult) return walletLoyaltyResult as T[];
+
+    const agencyDiscountResult = runAgencyAndDiscountQuery(query, values);
+    if (agencyDiscountResult) return agencyDiscountResult as T[];
+
+    const analyticsResult = runAnalyticsQuery(query, values);
+    if (analyticsResult) return analyticsResult as T[];
+
+    const flightSeatResult = runFlightAndSeatQuery(query, values);
+    if (flightSeatResult) return flightSeatResult as T[];
+
+    const bookingResult = runBookingQuery(query, values);
+    if (bookingResult) return bookingResult as T[];
+
+    // Find matching mock data
+    for (const [key, data] of Object.entries(mockData)) {
+      if (query.toLowerCase().includes(key.toLowerCase().split('?')[0].trim())) {
+        return data as T[];
+      }
+    }
+
+    // Return empty array for unhandled queries
+    return [] as T[];
+  };
+
+  return Object.assign(mockTag, {
+    // Raw parameterized form (`sql.query(text, values)`), which the chat
+    // helpers use for counter updates and which `getTripById` uses to read
+    // passengers and check-ins. Non-chat statements stay unhandled and
+    // return an empty result set rather than throwing.
+    query: async <T = SqlRow>(text: string, values: unknown[] = []): Promise<T[]> => {
+      console.info('[MOCK SQL:query]', text, values);
+      return (runBookingQuery(text, values) ??
+        runSeatLockQuery(text, values) ??
+        runFlightAndSeatQuery(text, values) ??
+        runChatQuery(text, values) ??
+        runAgencyAndDiscountQuery(text, values) ??
+        runAnalyticsQuery(text, values) ??
+        ([] as MockResult[])) as T[];
+    },
+    transaction: async (queries: unknown) => {
+      let list = queries;
+      if (typeof queries === 'function') {
+        list = (queries as (tx: unknown) => unknown)(mockTag);
+      }
+      if (Array.isArray(list)) {
+        const results = [];
+        for (const q of list) {
+          if (typeof q === 'function') {
+            results.push(await q());
+          } else if (q && typeof (q as PromiseLike<unknown>).then === 'function') {
+            // Neon batch API trả về một Promise cho MỖI câu trong
+            // `transaction([...])`. Bản mock trước đây chỉ chạy được
+            // callback và bỏ qua promise — nên `createPaymentAndConfirmBooking`
+            // trong mock mode KHÔNG ghi giao dịch và KHÔNG xác nhận booking:
+            // trang thanh toán báo thành công nhưng dữ liệu không đổi.
+            results.push(await q);
+          } else {
+            results.push(q ?? []);
+          }
+        }
+        return results;
+      }
+      return [];
+    },
+    // `unsafe` trong mock không có parser SQL, nên nó chỉ đóng vai trò
+    // "chèn chuỗi thô" — trả về đối tượng đánh dấu để template ghép được.
+    unsafe: (query: string, params?: unknown[]) => ({
+      __unsafeSql: query,
+      __unsafeParams: params ?? [],
+    }),
+  });
 }

@@ -547,4 +547,36 @@ export function adjustAdminFlightPrices(input: BulkPriceAdjustPayload) {
   });
 }
 
+// ─── Báo cáo PDF ───────────────────────────────────────────────────────
+
+export interface RevenueReportQuery {
+  from: string; // 'YYYY-MM-DD'
+  to: string; // 'YYYY-MM-DD'
+}
+
+/**
+ * Tải báo cáo PDF doanh thu trong khoảng thời gian từ API admin.
+ * Trả về `Blob` để component côté client tạo URL download.
+ */
+export async function exportRevenueReportPdf(query: RevenueReportQuery): Promise<Blob> {
+  const params = new URLSearchParams({ from: query.from, to: query.to });
+  const res = await fetch(`${EP.REPORT_REVENUE_PDF}?${params}`, {
+    method: 'GET',
+    credentials: 'include',
+    headers: { Accept: 'application/pdf' },
+  });
+  if (!res.ok) {
+    const text = await res.text().catch(() => '');
+    let message = text;
+    try {
+      const payload = JSON.parse(text) as { message?: string; error?: string };
+      message = payload.message || payload.error || text;
+    } catch {
+      // Body không phải JSON (ví dụ trang HTML lỗi của proxy) — giữ nguyên.
+    }
+    throw new Error(message || `Không tải được báo cáo PDF (${res.status})`);
+  }
+  return res.blob();
+}
+
 export * from './dashboard.service';

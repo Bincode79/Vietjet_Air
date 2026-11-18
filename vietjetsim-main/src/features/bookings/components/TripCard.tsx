@@ -419,10 +419,21 @@ export default function TripCard({ trip }: TripCardProps) {
                     </>
                   ) : null}
                 </div>
-                <p className="text-2xs text-[var(--foreground-muted)]">
-                  Đặt: {new Date(leg.createdAt).toLocaleDateString('vi-VN')} ·{' '}
-                  {leg.totalPrice.toLocaleString('vi-VN')}₫
-                </p>
+                {leg.status === 'pending' ? (
+                  <div className="text-right">
+                    <span className="text-2xs font-semibold text-[var(--foreground-muted)]">
+                      Cần thanh toán:{' '}
+                    </span>
+                    <span className="text-sm font-black text-[var(--vj-red)]">
+                      {leg.totalPrice.toLocaleString('vi-VN')}₫
+                    </span>
+                  </div>
+                ) : (
+                  <p className="text-2xs text-[var(--foreground-muted)]">
+                    Đặt: {new Date(leg.createdAt).toLocaleDateString('vi-VN')} ·{' '}
+                    {leg.totalPrice.toLocaleString('vi-VN')}₫
+                  </p>
+                )}
               </div>
             </div>
           );

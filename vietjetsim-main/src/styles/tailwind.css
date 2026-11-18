@@ -2387,7 +2387,8 @@ h6 {
   padding: 8px 20px;
   border: 0;
   border-radius: var(--vj-skyid-radius-btn);
-  background: var(--vj-skyid-gold);
+  background: #fd0;
+  background-image: var(--vj-skyid-gold);
   font-family: 'JambonoMedium', 'KoHo', ui-sans-serif, system-ui, sans-serif;
   font-size: 16px;
   line-height: 24px;

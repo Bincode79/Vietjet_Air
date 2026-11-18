@@ -51,7 +51,6 @@ export const COUNTRY_DIAL_CODES: readonly CountryDialCode[] = [
   { code: 'NZ', dialCode: '+64', name: 'New Zealand' },
 ];
 
-
 export function getCountryDialCode(code: string | undefined): string {
   const match = COUNTRY_DIAL_CODES.find((c) => c.code === code);
   return match ? match.dialCode : '+84';

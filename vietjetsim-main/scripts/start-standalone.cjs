@@ -59,9 +59,30 @@ const BUILD_DIR = path.join(APP_ROOT, process.env.DIST_DIR || '.next');
 const STANDALONE_DIR = path.join(BUILD_DIR, 'standalone');
 const SERVER_FILE = path.join(STANDALONE_DIR, 'server.js');
 const STATIC_SRC = path.join(BUILD_DIR, 'static');
-const STATIC_DEST = path.join(STANDALONE_DIR, '.next', 'static');
 const PUBLIC_SRC = path.join(APP_ROOT, 'public');
 const PUBLIC_DEST = path.join(STANDALONE_DIR, 'public');
+
+/**
+ * `server.js` chứa `distDir` đã "nướng" vào lúc build (VD `"./.next-build"` khi
+ * build bằng `DIST_DIR=.next-build`). Lúc chạy, Next tính thư mục static là
+ * `path.join(__dirname, config.distDir, 'static')`; nếu ta luôn copy vào
+ * `standalone/.next/static` thì các bản build dùng dist dir khác sẽ 404 toàn bộ
+ * CSS/JS. Vì vậy đọc đúng giá trị đó từ chính `server.js`.
+ */
+function resolveStaticDest() {
+  try {
+    const source = fs.readFileSync(SERVER_FILE, 'utf8');
+    const match = source.match(/"distDir":"((?:[^"\\]|\\.)*)"/);
+    if (match) {
+      return path.resolve(STANDALONE_DIR, JSON.parse(`"${match[1]}"`), 'static');
+    }
+  } catch {
+    // rơi xuống fallback bên dưới
+  }
+  return path.resolve(STANDALONE_DIR, process.env.DIST_DIR || '.next', 'static');
+}
+
+const STATIC_DEST = resolveStaticDest();
 
 /** Thứ tự ưu tiên file env giống hệt `@next/env` ở chế độ production. */
 const ENV_FILES = ['.env.production.local', '.env.local', '.env.production', '.env'];

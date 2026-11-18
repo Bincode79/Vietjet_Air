@@ -1602,12 +1602,12 @@ export async function createPaymentAndConfirmBooking(payment: {
   }
 
   try {
-    await sql.transaction([
-      sql`
+    await sql.transaction((tx: any) => [
+      tx`
       INSERT INTO payments (booking_id, method, status, amount, receipt_image, transfer_note)
       VALUES (${payment.booking_id}, ${payment.method}, ${targetPaymentStatus}, ${payment.amount}, ${payment.receipt_image || null}, ${payment.transfer_note || null})
     `,
-      sql`
+      tx`
       UPDATE bookings
       SET status = ${targetBookingStatus},
           discount_code_id = ${payment.discount_code_id || null},
@@ -1733,20 +1733,20 @@ export async function confirmVietQrPayment(input: {
   const transferNote =
     input.transferNote?.trim() || (booking.booking_code ? `VJ ${booking.booking_code}` : null);
 
-  const batch = (await sql.transaction([
-    sql`
+  const batch = (await sql.transaction((tx: any) => [
+    tx`
       UPDATE bookings
       SET status = 'confirmed', updated_at = NOW()
       WHERE id = ${booking.id} AND status = 'pending'
       RETURNING *
     `,
-    sql`
+    tx`
       UPDATE payments
       SET status = 'completed'
       WHERE booking_id = ${booking.id} AND status = 'pending'
       RETURNING *
     `,
-    sql`
+    tx`
       INSERT INTO payments (booking_id, method, status, amount, transfer_note)
       SELECT ${booking.id}, 'vietqr', 'completed', ${expectedAmount}, ${transferNote}
       WHERE NOT EXISTS (

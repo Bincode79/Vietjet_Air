@@ -361,8 +361,16 @@ export default function TrackBookingPage() {
                       <div className="font-semibold text-stone-800">{result.class}</div>
                     </div>
                     <div>
-                      <div className="text-xs text-stone-400 uppercase">Giá vé</div>
-                      <div className="font-bold text-stone-800">
+                      <div className="text-xs text-stone-400 uppercase">
+                        {result.status === 'pending' ? 'Số tiền cần thanh toán' : 'Giá vé'}
+                      </div>
+                      <div
+                        className={`font-bold ${
+                          result.status === 'pending'
+                            ? 'text-[var(--vj-red)] text-base'
+                            : 'text-stone-800'
+                        }`}
+                      >
                         {result.price.toLocaleString('vi-VN')}₫
                       </div>
                     </div>
@@ -382,19 +390,29 @@ export default function TrackBookingPage() {
 
               {/* Actions */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                {result.status === 'pending' ? (
+                  <Link
+                    href={`/thanh-toan?bookingId=${result.pnr}`}
+                    className="flex items-center justify-center gap-2 py-3 bg-[var(--vj-red)] hover:bg-vj-red-dark text-white font-black rounded-vj text-xs uppercase tracking-wider transition-all shadow-md active:scale-95"
+                  >
+                    <Icon name="CreditCardIcon" size={18} />
+                    Thanh toán ngay
+                  </Link>
+                ) : (
+                  <Link
+                    href={`/lam-thu-tuc?code=${result.pnr}`}
+                    className="flex items-center justify-center gap-2 py-3 bg-white border border-stone-200 rounded-vj font-semibold text-stone-700 hover:border-primary hover:text-primary transition-all text-xs"
+                  >
+                    <Icon name="TicketIcon" size={18} />
+                    Check-in
+                  </Link>
+                )}
                 <Link
                   href={`/dat-ve/${result.pnr}`}
                   className="flex items-center justify-center gap-2 py-3 bg-accent hover:bg-accent-light text-gray-950 font-bold rounded-vj text-xs uppercase tracking-wider transition-all shadow-xs"
                 >
                   <Icon name="DocumentTextIcon" size={18} />
                   Xem hành trình
-                </Link>
-                <Link
-                  href={`/lam-thu-tuc?code=${result.pnr}`}
-                  className="flex items-center justify-center gap-2 py-3 bg-white border border-stone-200 rounded-vj font-semibold text-stone-700 hover:border-primary hover:text-primary transition-all text-xs"
-                >
-                  <Icon name="TicketIcon" size={18} />
-                  Check-in
                 </Link>
                 <Link
                   href="/tim-ve"

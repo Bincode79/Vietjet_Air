@@ -115,6 +115,26 @@ describe('Tra cứu đặt chỗ', () => {
     expect(await screen.findByText('Không tìm thấy đặt chỗ')).toBeInTheDocument();
   });
 
+  it('displays pending payment amount and payment CTA when status is pending', async () => {
+    const pendingBooking = {
+      ...booking,
+      booking_code: 'VJ8899',
+      status: 'pending' as const,
+      total_price: 2_500_000,
+    };
+    apiRequestMock.mockResolvedValue({ bookings: [pendingBooking] });
+    renderPage();
+
+    fireEvent.change(pnrInput(), { target: { value: 'VJ8899' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Tra cứu' }));
+
+    expect(await screen.findByText('Số tiền cần thanh toán')).toBeInTheDocument();
+    expect(screen.getByText('2.500.000₫')).toBeInTheDocument();
+    const payLink = screen.getByRole('link', { name: /thanh toán ngay/i });
+    expect(payLink).toBeInTheDocument();
+    expect(payLink).toHaveAttribute('href', '/thanh-toan?bookingId=VJ8899');
+  });
+
   it('does not crash when the request fails', async () => {
     apiRequestMock.mockRejectedValue(new Error('Mạng lỗi'));
     renderPage();

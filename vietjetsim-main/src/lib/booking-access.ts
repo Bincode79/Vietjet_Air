@@ -28,6 +28,7 @@ export interface BookingAccessTarget {
   id: string;
   user_id?: string | null;
   booking_code?: string | null;
+  return_booking_id?: string | null;
 }
 
 export interface BookingAccessUser {
@@ -46,6 +47,9 @@ export function canAccessBooking(
   lookup: string
 ): boolean {
   if (isGuestBookingOwner(request, booking.id)) return true;
+  if (booking.return_booking_id && isGuestBookingOwner(request, booking.return_booking_id)) {
+    return true;
+  }
 
   const pnrMatches = Boolean(
     booking.booking_code && booking.booking_code.toUpperCase() === lookup.toUpperCase()

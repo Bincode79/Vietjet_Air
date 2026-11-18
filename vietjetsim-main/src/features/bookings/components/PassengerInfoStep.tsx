@@ -162,8 +162,39 @@ export default function PassengerInfoStep({
     }
   };
 
+  const [formError, setFormError] = useState<string | null>(null);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setFormError(null);
+
+    // Validate passengers
+    for (let i = 0; i < passengers.length; i++) {
+      const p = passengers[i];
+      const isAdult = (p.type ?? 'adult') === 'adult';
+      if (!p.name?.trim() || !p.firstName?.trim()) {
+        setFormError(`Vui lòng nhập đầy đủ họ và tên cho hành khách ${i + 1}`);
+        return;
+      }
+      if (!p.dob?.trim()) {
+        setFormError(`Vui lòng chọn ngày sinh cho hành khách ${i + 1}`);
+        return;
+      }
+      if (isAdult && (!p.phone?.trim() || !p.email?.trim())) {
+        setFormError(`Vui lòng nhập số điện thoại và email cho hành khách ${i + 1}`);
+        return;
+      }
+      if (requiresIdNumber(p.type) && !p.idNumber?.trim()) {
+        setFormError(`Vui lòng nhập số CCCD / Hộ chiếu cho hành khách ${i + 1}`);
+        return;
+      }
+    }
+
+    if (!consents.policyAccepted) {
+      setFormError('Vui lòng đồng ý với điều khoản và điều kiện đặt vé');
+      return;
+    }
+
     setIsSubmitting(true);
     try {
       await onSubmit(passengers, consents);
@@ -330,6 +361,16 @@ export default function PassengerInfoStep({
           onSubmit={handleSubmit}
           className="space-y-4"
         >
+          {formError && (
+            <div
+              role="alert"
+              data-testid="passenger-form-error"
+              className="p-3 rounded-vj bg-red-50 border border-red-200 text-xs font-semibold text-red-600 font-koho flex items-center gap-2"
+            >
+              <span aria-hidden="true">⚠️</span>
+              <span>{formError}</span>
+            </div>
+          )}
           {passengers.map((p, i) => {
             const isAdult = (p.type ?? 'adult') === 'adult';
             const pType = p.type ?? 'adult';

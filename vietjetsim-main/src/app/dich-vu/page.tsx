@@ -49,6 +49,16 @@ function renderServiceIcon(id: string, size = 28) {
     case 'voucher':
     case 'evoucher':
       return <EvoucherGiftIcon size={size} />;
+    case 'movi':
+      return (
+        <img
+          src="/images/payments/movi.png"
+          alt="MOVI"
+          width={40}
+          height={20}
+          className="object-contain"
+        />
+      );
     default:
       return <BaggageLuggageIcon size={size} />;
   }
@@ -191,17 +201,34 @@ const SERVICES: ServiceItem[] = [
       'Thanh toán vé và dịch vụ bổ sung dễ dàng',
     ],
   },
+  {
+    id: 'movi',
+    icon: 'CreditCardIcon',
+    title: 'Bay trước – Trả sau MOVI',
+    subtitle: 'Buy Now Pay Later',
+    description:
+      'Hạn mức bay lên đến 10.000.000 đồng cùng MOVI. Duyệt hồ sơ nhanh chóng trong 3 phút, không cần chứng minh thu nhập.',
+    price: '0đ trả trước',
+    priceNote: 'Trả góp linh hoạt đến 6 tháng',
+    features: [
+      'Hạn mức bay lên tới 10.000.000 VNĐ',
+      'Xét duyệt hồ sơ trực tuyến chỉ trong 3 phút',
+      'Kỳ hạn trả góp linh hoạt từ 1 đến 6 tháng',
+      'Không yêu cầu chứng minh thu nhập hay thủ tục phức tạp',
+    ],
+  },
 ];
 
 export default function ServicesPage() {
   const [selectedService, setSelectedService] = useState<string | null>(null);
   const [quantities, setQuantities] = useState<Record<string, number>>({});
 
-  // Deep link support: /dich-vu?service=baggage preselects that service.
+  // Deep link support: /dich-vu?service=baggage hoặc /dich-vu#movi preselects that service.
   // Read from window instead of useSearchParams so the page needs no Suspense
   // boundary during prerendering.
   useEffect(() => {
-    const requested = new URLSearchParams(window.location.search).get('service');
+    const hash = window.location.hash.replace('#', '');
+    const requested = new URLSearchParams(window.location.search).get('service') || hash;
     if (requested && SERVICES.some((s) => s.id === requested)) setSelectedService(requested);
   }, []);
 
@@ -230,6 +257,7 @@ export default function ServicesPage() {
           {SERVICES.map((service) => (
             <button
               key={service.id}
+              id={service.id}
               onClick={() => setSelectedService(service.id)}
               className={`text-left bg-[var(--surface)] rounded-vj border-2 border-[var(--border)] overflow-hidden transition-all hover:shadow-lg hover:-translate-y-1 ${
                 selectedService === service.id

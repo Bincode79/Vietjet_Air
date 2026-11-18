@@ -1,9 +1,12 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import { useToast } from '@/hooks/useToast';
 import { Icon } from '@/shared/components/ui';
+import { ToastContainer } from '@/shared/components/feedback';
 import { AdminTab } from './AdminDashboardClient';
 import { useAdminDashboard } from '../hooks/useAdminDashboard';
+import { exportRevenueReportPdf } from '@/features/admin';
 import { KPIWidget } from './KPIWidget';
 import RevenueChart from './RevenueChart';
 import SeatClassPieChart from './SeatClassPieChart';
@@ -22,13 +25,55 @@ function formatCurrency(val: number): string {
   return `${val.toLocaleString('vi-VN')}₫`;
 }
 
+/** `YYYY-MM-DD` theo múi giờ Việt Nam, khớp tham số API báo cáo. */
+function vnDateString(date: Date): string {
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Asia/Ho_Chi_Minh',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).formatToParts(date);
+  const get = (type: Intl.DateTimeFormatPartTypes) =>
+    parts.find((part) => part.type === type)?.value ?? '';
+  return `${get('year')}-${get('month')}-${get('day')}`;
+}
+
 export default function OverviewTab({ onNavigate }: Props) {
   const { data, loading, error, lastUpdated, refetch } = useAdminDashboard();
   const [mounted, setMounted] = useState(false);
+  const [exporting, setExporting] = useState(false);
+  const toast = useToast();
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  const handleExportReport = async () => {
+    if (exporting) return;
+    setExporting(true);
+    const to = vnDateString(new Date());
+    const from = vnDateString(new Date(Date.now() - 6 * 24 * 60 * 60 * 1000));
+    try {
+      const blob = await exportRevenueReportPdf({ from, to });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `bao-cao-doanh-thu-${from}_${to}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      // Thu hồi sau khi trình duyệt đã bắt đầu tải, tránh huỷ file giữa chừng.
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+      toast.success('Đã xuất báo cáo', `Báo cáo doanh thu ${from} → ${to} đã được tải xuống.`);
+    } catch (err) {
+      toast.error(
+        'Không xuất được báo cáo',
+        err instanceof Error ? err.message : 'Vui lòng thử lại sau.'
+      );
+    } finally {
+      setExporting(false);
+    }
+  };
 
   const formattedLastUpdated =
     mounted && lastUpdated
@@ -60,6 +105,19 @@ export default function OverviewTab({ onNavigate }: Props) {
               <span className="font-mono text-slate-300 font-semibold">{formattedLastUpdated}</span>
             </span>
           )}
+          <button
+            type="button"
+            onClick={handleExportReport}
+            disabled={exporting}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold text-white bg-emerald-500/20 border border-emerald-500/30 hover:bg-emerald-500/30 transition-all active:scale-95 disabled:opacity-50"
+          >
+            <Icon
+              name={exporting ? 'ArrowPathIcon' : 'ArrowDownTrayIcon'}
+              size={14}
+              className={exporting ? 'animate-spin' : ''}
+            />
+            {exporting ? 'Đang xuất…' : 'Xuất báo cáo'}
+          </button>
           <button
             type="button"
             onClick={() => refetch()}
@@ -229,6 +287,11 @@ export default function OverviewTab({ onNavigate }: Props) {
           </div>
         </>
       )}
+
+      {/* `useToast` sở hữu state của chính nó; AdminDashboardClient có một
+          container riêng nên toast của tab này sẽ bị nuốt nếu không render
+          ở đây (nút "Xuất báo cáo" báo thành công/thất bại qua toast). */}
+      <ToastContainer toasts={toast.toasts} onDismiss={toast.dismiss} position="top-right" />
     </div>
   );
 }

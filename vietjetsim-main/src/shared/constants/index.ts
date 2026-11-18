@@ -78,6 +78,7 @@ export const API_ENDPOINTS = {
     AUDIT_LOGS: '/api/quan-tri/nhat-ky-kiem-toan',
     TOOLS: '/api/quan-tri/cong-cu',
     ADJUST_FLIGHT_PRICES: '/api/quan-tri/chuyen-bay/dieu-chinh-gia',
+    REPORT_REVENUE_PDF: '/api/quan-tri/bao-cao/doanh-thu',
   },
 } as const;
 

@@ -346,10 +346,10 @@ export default function VietQrBox({
                   Số tài khoản{' '}
                 </span>
                 <span className="block font-mono font-black tracking-tight text-gray-900 text-base sm:text-lg">
-                  {data?.bank.accountNumber ?? '—'}
+                  {data?.bank?.accountNumber ?? '—'}
                 </span>
                 <span className="block truncate text-3xs font-medium text-gray-500">
-                  {data?.bank.name} • {data?.bank.accountHolder}
+                  {data?.bank?.name ?? '—'} • {data?.bank?.accountHolder ?? '—'}
                 </span>
               </div>
             </div>

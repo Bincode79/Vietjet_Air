@@ -458,7 +458,7 @@ export default function SkyIdAuthFlow({
         ? 'Vui lòng nhập mật khẩu để tiếp tục.'
         : step === 'login-otp'
           ? 'Nhập mã OTP được gửi qua tin nhắn để đăng nhập không cần mật khẩu.'
-          : 'Đăng nhập để quản lý chuyến bay, đặt vé và tích điểm SkyJoy.';
+          : 'Quản lý chuyến bay, đặt vé và tích điểm SkyJoy.';
 
   /** Danh sách mã quốc gia — nằm trong khối cờ của ô nhập số điện thoại. */
   const countryMenu = (

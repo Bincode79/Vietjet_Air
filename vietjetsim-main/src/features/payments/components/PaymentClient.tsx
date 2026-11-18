@@ -369,7 +369,6 @@ export default function PaymentClient() {
   const [isApplyingPromo, setIsApplyingPromo] = useState(false);
   const [loading, setLoading] = useState(false);
   const [confirmed, setConfirmed] = useState(false);
-  const [copied, setCopied] = useState(false);
   // Receipt image upload state for bank transfer & VietQR verification
   const [receiptImage, setReceiptImage] = useState<string | null>(null);
   const [receiptFileName, setReceiptFileName] = useState<string | null>(null);
@@ -940,27 +939,6 @@ export default function PaymentClient() {
       .trim();
   };
 
-  const handleCopyBookingCode = useCallback(async () => {
-    // Nothing to copy until the real PNR arrives; copying "—" would put a
-    // useless string on the clipboard.
-    if (!bookingCode) return;
-    try {
-      await navigator.clipboard.writeText(bookingCode);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch {
-      // Fallback
-      const el = document.createElement('textarea');
-      el.value = bookingCode;
-      document.body.appendChild(el);
-      el.select();
-      document.execCommand('copy');
-      document.body.removeChild(el);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    }
-  }, [bookingCode]);
-
   const shareText = useMemo(() => {
     if (!booking) return 'Tôi vừa đặt vé thành công trên Vietjet Air!';
     return `Tôi vừa đặt vé thành công trên Vietjet Air!\n✈️ ${booking.flightNo}: ${booking.fromCity} → ${booking.toCity}\n📅 ${booking.date} | ${booking.departTime} - ${booking.arriveTime}\n🎫 Mã đặt chỗ: ${bookingCodeLabel}`;
@@ -1310,7 +1288,6 @@ export default function PaymentClient() {
                       {bookingCodeLabel}
                     </div>
                     {/* Nút sao chép mã đặt chỗ đã được xóa theo yêu cầu thiết kế */}
-
                   </div>
                 </div>
 
@@ -2020,7 +1997,6 @@ export default function PaymentClient() {
                       >
                         {isApplyingPromo ? 'Đang kiểm tra...' : 'Áp dụng'}
                       </button>
-
                     </div>
                   )}
                   {promoApplied && promoData && (
@@ -2040,6 +2016,30 @@ export default function PaymentClient() {
                   {/* Card Form */}
                   {paymentMethod === 'card' && (
                     <div className="space-y-4">
+                      {/* Banner Cổng thẻ quốc tế chuyên biệt (Trang sau) */}
+                      <div className="bg-gradient-to-r from-red-50 to-orange-50 border border-red-200/90 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 shadow-2xs">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-xl bg-primary text-white flex items-center justify-center shrink-0 shadow-xs">
+                            <Icon name="CreditCardIcon" size={22} />
+                          </div>
+                          <div>
+                            <div className="text-xs sm:text-sm font-extrabold text-gray-950 font-koho">
+                              Cổng thanh toán Thẻ Quốc Tế • 3D Secure
+                            </div>
+                            <div className="text-3xs sm:text-2xs text-gray-600">
+                              Xác thực OTP bảo mật từ ngân hàng phát hành trên màn hình riêng biệt
+                            </div>
+                          </div>
+                        </div>
+                        <Link
+                          href={`/thanh-toan/gateway/card?bookingId=${encodeURIComponent(booking?.bookingId ?? bookingId ?? '')}`}
+                          className="px-4 py-2 bg-primary hover:bg-primary-dark text-white font-bold text-xs rounded-xl inline-flex items-center justify-center gap-1.5 transition-all shadow-xs shrink-0 font-koho cursor-pointer"
+                        >
+                          <span>Mở cổng thẻ</span>
+                          <span className="text-sm leading-none">→</span>
+                        </Link>
+                      </div>
+
                       {/* Interactive Virtual Credit Card */}
                       <VirtualCreditCard
                         cardNumber={cardNumber}
@@ -2312,6 +2312,33 @@ export default function PaymentClient() {
                             ? 'Quét mã VNPAY-QR'
                             : 'Quét mã trực tiếp'}
                         </span>
+                      </div>
+
+                      {/* Banner Cổng thanh toán VNPAY-QR chuyên biệt (Trang sau) */}
+                      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200/90 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 shadow-2xs">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center shrink-0 shadow-xs">
+                            <Icon name="QrCodeIcon" size={22} />
+                          </div>
+                          <div>
+                            <div className="text-xs sm:text-sm font-extrabold text-blue-950 font-koho">
+                              Cổng thanh toán{' '}
+                              {selectedMethodGroup === 'vnpay_qr' ? 'VNPAY-QR' : 'VietQR'} chuyên
+                              dụng
+                            </div>
+                            <div className="text-3xs sm:text-2xs text-blue-700">
+                              Màn hình quét mã toàn trang, đếm ngược giữ chỗ 15 phút & xác nhận tự
+                              động
+                            </div>
+                          </div>
+                        </div>
+                        <Link
+                          href={`/thanh-toan/gateway/qr?bookingId=${encodeURIComponent(booking?.bookingId ?? bookingId ?? '')}`}
+                          className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl inline-flex items-center justify-center gap-1.5 transition-all shadow-xs shrink-0 font-koho cursor-pointer"
+                        >
+                          <span>Mở trang Cổng QR</span>
+                          <span className="text-sm leading-none">→</span>
+                        </Link>
                       </div>
                       <VietQrBox
                         bookingId={booking?.bookingId ?? bookingId}

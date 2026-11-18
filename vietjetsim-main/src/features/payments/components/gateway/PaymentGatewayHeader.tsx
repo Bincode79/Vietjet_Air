@@ -1,0 +1,91 @@
+'use client';
+import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
+import { Icon } from '@/shared/components/ui';
+
+interface Props {
+  bookingId?: string | null;
+  bookingCode?: string | null;
+  amount?: number;
+  methodTitle: string;
+  initialMinutes?: number;
+}
+
+export default function PaymentGatewayHeader({
+  bookingId,
+  bookingCode,
+  amount,
+  methodTitle,
+  initialMinutes = 15,
+}: Props) {
+  const [secondsLeft, setSecondsLeft] = useState(initialMinutes * 60);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setSecondsLeft((prev) => (prev > 0 ? prev - 1 : 0));
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const minutes = Math.floor(secondsLeft / 60);
+  const seconds = secondsLeft % 60;
+  const timeFormatted = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+
+  const backUrl = bookingId
+    ? `/thanh-toan?bookingId=${encodeURIComponent(bookingId)}`
+    : '/thanh-toan';
+
+  return (
+    <div className="bg-white border-b border-gray-200 sticky top-0 z-30 shadow-xs">
+      <div className="max-w-4xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+        {/* Back Link */}
+        <Link
+          href={backUrl}
+          className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-gray-600 hover:text-primary transition-colors font-koho"
+        >
+          <span className="text-base leading-none">←</span>
+          <span>Đổi phương thức</span>
+        </Link>
+
+        {/* Method & PNR Badge */}
+        <div className="flex items-center gap-2">
+          <span className="text-xs sm:text-sm font-bold text-gray-900 font-koho">
+            {methodTitle}
+          </span>
+          {bookingCode && (
+            <span className="text-2xs sm:text-xs font-black uppercase px-2 py-0.5 rounded bg-red-50 text-primary border border-red-200 tracking-wider">
+              Mã đặt chỗ: {bookingCode}
+            </span>
+          )}
+        </div>
+
+        {/* Amount & Countdown */}
+        <div className="flex items-center gap-3">
+          {amount !== undefined && amount > 0 && (
+            <div className="text-right">
+              <span className="text-3xs text-gray-400 block uppercase font-bold">
+                Cần thanh toán
+              </span>
+              <span className="text-sm sm:text-base font-black text-primary font-koho">
+                {amount.toLocaleString('vi-VN')} VND
+              </span>
+            </div>
+          )}
+
+          {/* Countdown Clock */}
+          <div
+            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg border font-mono text-xs sm:text-sm font-bold ${
+              secondsLeft < 300
+                ? 'bg-red-50 text-red-600 border-red-300 animate-pulse'
+                : 'bg-amber-50 text-amber-800 border-amber-200'
+            }`}
+            title="Thời gian giữ vé"
+          >
+            <Icon name="ClockIcon" size={14} className="shrink-0" />
+            <span>{timeFormatted}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

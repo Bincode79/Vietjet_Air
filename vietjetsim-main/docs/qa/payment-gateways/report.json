@@ -1,0 +1,56 @@
+{
+  "testedAt": "2026-11-18T15:10:38.208Z",
+  "baseUrl": "http://127.0.0.1:4028",
+  "bookingId": "64ZM3R",
+  "steps": [
+    {
+      "step": "1_payment_selection",
+      "bookingId": "64ZM3R",
+      "selectionState": "payment-ui",
+      "status": "OK"
+    },
+    {
+      "step": "2_gateway_qr",
+      "hasCountdown": true,
+      "hasQrContent": true,
+      "status": "OK"
+    },
+    {
+      "step": "3_gateway_card",
+      "cardFormVisible": true,
+      "brandDetection": true,
+      "status": "OK"
+    },
+    {
+      "step": "4_gateway_napas",
+      "hasBankGrid": true,
+      "status": "OK"
+    },
+    {
+      "step": "5_gateway_ewallet",
+      "hasWallets": true,
+      "status": "OK"
+    },
+    {
+      "step": "6_gateway_movi",
+      "hasMoviTenors": true,
+      "status": "OK"
+    },
+    {
+      "step": "7_gateway_wallet",
+      "hasWalletBalance": true,
+      "status": "OK"
+    },
+    {
+      "step": "8_payment_result",
+      "resultState": "pending",
+      "fakePnrGone": true,
+      "showsOpenedPnr": true,
+      "hasSuccessDetails": true,
+      "status": "OK"
+    }
+  ],
+  "overall": {
+    "passed": true
+  }
+}

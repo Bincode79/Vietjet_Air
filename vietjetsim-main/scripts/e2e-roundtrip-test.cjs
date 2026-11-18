@@ -11,16 +11,21 @@ fs.mkdirSync(OUT_DIR, { recursive: true });
 
 const SEARCH_URL = `${BASE_URL}/tim-ve?from=SGN&to=HAN&depart=2026-11-20&return=2026-11-25&pax=1`;
 
-const PASSENGER_DATA = {
-  name: 'NGUYEN',
-  firstName: 'VAN A',
-  dob: '1995-10-20',
-  // Số điện thoại và email duy nhất mỗi lần chạy để tránh trùng UNIQUE
-  // `user_profiles_phone_key` / email khi chạy lại E2E nhiều lần.
-  phone: `09${Math.floor(Date.now() / 1000) % 100000000}`.padStart(10, '0'),
-  email: `nguyen.vana.${Date.now()}@gmail.com`,
-  idNumber: '001234001234',
-};
+function createPassengerData(device) {
+  const ts = Date.now();
+  const rand = Math.floor(Math.random() * 100000);
+  const suffix = device === 'mobile' ? 'B' : 'A';
+  return {
+    name: 'NGUYEN',
+    firstName: `VAN ${suffix}`,
+    dob: '1995-10-20',
+    // Số điện thoại và email duy nhất mỗi lần chạy để tránh trùng UNIQUE
+    // `user_profiles_phone_key` / email khi chạy lại E2E nhiều lần.
+    phone: `09${(ts + rand) % 100000000}`.padStart(10, '0'),
+    email: `nguyen.van${suffix.toLowerCase()}.${ts}@gmail.com`,
+    idNumber: '001234001234',
+  };
+}
 
 function fail(report, device, step, message) {
   const key = device === 'desktop' ? report.desktop : report.mobile;
@@ -169,6 +174,8 @@ async function runDevice(browser, device, report) {
     await page.screenshot({ path: path.join(OUT_DIR, `03-${device}-step2-passengers.png`) });
     ok(report, device, 3, 'Giao diện nhập thông tin hành khách đã tải');
 
+    const passengerData = createPassengerData(device);
+
     // Giới tính
     await page.evaluate(() => {
       const radio = document.querySelector('#passenger-0-gender-male');
@@ -180,22 +187,22 @@ async function runDevice(browser, device, report) {
     await wait(300);
 
     // Họ / Tên
-    await setReactInputValue(page, '#passenger-0-name', PASSENGER_DATA.name);
-    await setReactInputValue(page, '#passenger-0-firstName', PASSENGER_DATA.firstName);
+    await setReactInputValue(page, '#passenger-0-name', passengerData.name);
+    await setReactInputValue(page, '#passenger-0-firstName', passengerData.firstName);
 
     // Ngày sinh (input type="date")
-    await setReactInputValue(page, '#passenger-0-dob', PASSENGER_DATA.dob);
+    await setReactInputValue(page, '#passenger-0-dob', passengerData.dob);
 
     // Quốc gia (mặc định VN, không cần đổi)
 
     // Số điện thoại
-    await setReactInputValue(page, '#passenger-0-phone', PASSENGER_DATA.phone);
+    await setReactInputValue(page, '#passenger-0-phone', passengerData.phone);
 
     // Email
-    await setReactInputValue(page, '#passenger-0-email', PASSENGER_DATA.email);
+    await setReactInputValue(page, '#passenger-0-email', passengerData.email);
 
     // CCCD / Hộ chiếu (bắt buộc cho adult)
-    await setReactInputValue(page, '#passenger-0-idNumber', PASSENGER_DATA.idNumber);
+    await setReactInputValue(page, '#passenger-0-idNumber', passengerData.idNumber);
 
     // Đồng ý điều khoản (checkbox required)
     await page.evaluate(() => {
@@ -209,7 +216,7 @@ async function runDevice(browser, device, report) {
       }
     });
 
-    await wait(1000);
+    await wait(800);
     ok(report, device, 4, 'Đã điền đầy đủ thông tin hành khách (bao gồm CCCD/Hộ chiếu)');
 
     // Ảnh bổ sung: trạng thái đã điền — dùng để soi nhãn nổi, căn hàng giữa các
@@ -232,98 +239,90 @@ async function runDevice(browser, device, report) {
     await submitBtn.click();
     console.log('Submitted passenger form, waiting for ancillary step...');
 
-    // Nếu click nút sr-only không kích hoạt React onSubmit, dùng requestSubmit trực tiếp
-    await page.evaluate(() => {
-      const form = document.getElementById('passenger-info-form');
-      if (form) form.requestSubmit();
+    // Đợi giao diện dịch vụ bổ sung xuất hiện
+    await page.waitForFunction(
+      () => {
+        const text = document.body.innerText;
+        return (
+          text.includes('Dịch vụ bổ sung') ||
+          text.includes('Chọn chỗ ngồi') ||
+          text.includes('Hành lý') ||
+          text.includes('Bảo hiểm')
+        );
+      },
+      { timeout: 15000 }
+    );
+    ok(report, device, 5, 'Đã chuyển sang bước dịch vụ bổ sung (Step 3)');
+    await page.screenshot({
+      path: path.join(OUT_DIR, `04-${device}-step3-ancillary.png`),
     });
-    console.log('Called form.requestSubmit()');
 
     // ═════════════════════════════════════════════════════════════
     // Step 3: Dịch vụ bổ sung -> submit cuối cùng tạo booking
     // ═════════════════════════════════════════════════════════════
-    const clicked2 = await clickNext(page);
-    if (!clicked2) {
-      throw new Error('Không tìm thấy nút "Đi tiếp" ở bước dịch vụ bổ sung');
-    }
+    await wait(1000);
+    const ancillaryBtn = await page.waitForSelector(
+      'button[data-testid="booking-continue-btn"]:not([disabled])',
+      { timeout: 10000 }
+    );
+    await ancillaryBtn.click();
     console.log('Submitted ancillary step, waiting for payment redirect...');
-    await wait(5000);
+
+    // Đợi chuyển hướng sang /thanh-toan?bookingId=...
+    await page.waitForFunction(
+      () => {
+        const url = window.location.href;
+        return url.includes('/thanh-toan') && Boolean(new URL(url).searchParams.get('bookingId'));
+      },
+      { timeout: 25000 }
+    );
 
     const finalUrl = page.url();
     console.log(`URL after final submit: ${finalUrl}`);
     const bookingIdParam = new URL(finalUrl).searchParams.get('bookingId');
-    if (bookingIdParam && finalUrl.includes('/thanh-toan')) {
-      bookingId = bookingIdParam;
-      passed = true;
-      ok(report, device, 6, `Tạo booking thành công: bookingId=${bookingId}`);
-    } else {
-      const msg = `Không tạo được booking — URL vẫn là ${finalUrl} (bookingId=${bookingIdParam ?? 'null'}).`;
-      fail(report, device, 6, msg);
+    if (!bookingIdParam) {
+      throw new Error(`Không tạo được booking — URL vẫn là ${finalUrl} (bookingId=null).`);
     }
+
+    bookingId = bookingIdParam;
+    passed = true;
+    ok(report, device, 6, `Tạo booking thành công: bookingId=${bookingId}`);
 
     // ═════════════════════════════════════════════════════════════
     // Step 4: Trang thanh toán — chỉ chụp khi có bookingId
     // ═════════════════════════════════════════════════════════════
-    const payUrl = bookingId
-      ? `${BASE_URL}/thanh-toan?bookingId=${bookingId}`
-      : `${BASE_URL}/thanh-toan`;
-
-    if (bookingId) {
-      await page.goto(payUrl, { waitUntil: 'domcontentloaded', timeout: 30000 });
-      await wait(3000);
-
-      // Xác nhận trang chứa thông tin thanh toán / phương thức
-      const hasPaymentContent = await page.evaluate(() => {
-        const text = document.body.innerText || '';
+    await page.waitForFunction(
+      () => {
+        const text = document.body.innerText.toLowerCase();
         return (
           text.includes('thanh toán') ||
-          text.includes('VietQR') ||
-          text.includes('bookingId') ||
-          document.querySelector(
-            '[data-testid*="payment"], [data-testid*="qr"], .payment-method'
-          ) !== null
+          text.includes('vietqr') ||
+          text.includes('vnpay') ||
+          text.includes('phương thức')
         );
-      });
+      },
+      { timeout: 15000 }
+    );
 
-      if (!hasPaymentContent) {
-        fail(report, device, 7, `Trang ${payUrl} không có nội dung thanh toán`);
+    ok(report, device, 7, 'Trang thanh toán hiển thị đầy đủ thông tin');
+
+    // Lấy tổng tiền hiển thị (nếu có)
+    const totalText = await page.evaluate(() => {
+      const text = document.body.innerText || '';
+      const m = text.match(/(\d[\d.,]*)\s*VND/);
+      return m ? m[1] : null;
+    });
+    if (totalText) {
+      totalAmount = totalText;
+      const num = Number(totalText.replace(/[.,]/g, ''));
+      if (!Number.isFinite(num) || num <= 0) {
+        fail(report, device, 8, `Tổng tiền không dương: ${totalText}`);
       } else {
-        ok(report, device, 7, 'Trang thanh toán hiển thị đầy đủ thông tin');
-      }
-
-      // Lấy tổng tiền hiển thị (nếu có)
-      const totalText = await page.evaluate(() => {
-        const text = document.body.innerText || '';
-        const m = text.match(/(\d[\d.,]*)\s*VND/);
-        return m ? m[1] : null;
-      });
-      if (totalText) {
-        totalAmount = totalText;
-        const num = Number(totalText.replace(/[.,]/g, ''));
-        if (!Number.isFinite(num) || num <= 0) {
-          fail(report, device, 8, `Tổng tiền không dương: ${totalText}`);
-        } else {
-          ok(report, device, 8, `Tổng tiền dương: ${totalText} VND`);
-        }
-      }
-    } else {
-      // Truy cập trang thanh toán không có bookingId — phải thấy thông báo không có đơn
-      await page.goto(payUrl, { waitUntil: 'domcontentloaded', timeout: 30000 });
-      await wait(3000);
-      const noBooking = await page.evaluate(() => {
-        const text = (document.body.innerText || '').toLowerCase();
-        return text.includes('chưa có đơn đặt vé') || text.includes('không tìm thấy đặt vé');
-      });
-      if (!noBooking) {
-        fail(
-          report,
-          device,
-          7,
-          'Truy cập /thanh-toan không bookingId nhưng không thấy thông báo rỗng'
-        );
+        ok(report, device, 8, `Tổng tiền dương: ${totalText} VND`);
       }
     }
 
+    // Chỉ chụp ảnh 09-...-payment khi đã có bookingId hợp lệ
     await page.screenshot({
       path: path.join(OUT_DIR, `09-${device}-step4-payment.png`),
       fullPage: true,
@@ -344,7 +343,13 @@ async function runTest() {
   const browser = await puppeteer.launch({
     executablePath: CHROME,
     headless: 'new',
-    args: ['--no-sandbox', '--disable-gpu', '--no-proxy-server'],
+    args: [
+      '--no-sandbox',
+      '--disable-setuid-sandbox',
+      '--disable-dev-shm-usage',
+      '--disable-gpu',
+      '--no-proxy-server',
+    ],
   });
 
   const report = {
@@ -358,27 +363,33 @@ async function runTest() {
     const desktopResult = await runDevice(browser, 'desktop', report);
     const mobileResult = await runDevice(browser, 'mobile', report);
 
-    // Mobile dùng cùng bookingId từ desktop (luồng khách vãng lai duy nhất)
     if (!desktopResult.passed) {
       overallPassed = false;
-      console.log('\n✗ DESKTOP FAILED — không tạo được booking, mobile bỏ qua bước tạo đơn.');
+      console.log('\n✗ DESKTOP FAILED — không tạo được booking hoặc lỗi bước.');
     }
     if (!mobileResult.passed) {
       overallPassed = false;
+      console.log('\n✗ MOBILE FAILED — không tạo được booking hoặc lỗi bước.');
+    }
+
+    const bothHaveBookings = Boolean(desktopResult.bookingId && mobileResult.bookingId);
+    if (!bothHaveBookings) {
+      overallPassed = false;
+      console.log('\n✗ THIẾU BOOKING ID: Cả desktop và mobile đều phải tạo booking thành công.');
     }
 
     report.desktop.bookingId = desktopResult.bookingId;
     report.desktop.totalAmount = desktopResult.totalAmount;
     report.desktop.passed = desktopResult.passed;
 
-    report.mobile.bookingId = mobileResult.bookingId || desktopResult.bookingId;
-    report.mobile.totalAmount = mobileResult.totalAmount || desktopResult.totalAmount;
+    report.mobile.bookingId = mobileResult.bookingId;
+    report.mobile.totalAmount = mobileResult.totalAmount;
     report.mobile.passed = mobileResult.passed;
 
     report.overall = {
       passed: overallPassed,
       desktopBookingId: desktopResult.bookingId,
-      mobileBookingId: mobileResult.bookingId || desktopResult.bookingId,
+      mobileBookingId: mobileResult.bookingId,
     };
 
     fs.writeFileSync(path.join(OUT_DIR, 'report.json'), JSON.stringify(report, null, 2));
