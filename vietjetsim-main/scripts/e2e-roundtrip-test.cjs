@@ -16,8 +16,10 @@ const PASSENGER_DATA = {
   name: 'NGUYEN',
   firstName: 'VAN A',
   dob: '1995-10-20',
-  phone: '0912345678',
-  email: 'nguyen.vana@gmail.com',
+  // Số điện thoại và email duy nhất mỗi lần chạy để tránh trùng UNIQUE
+  // `user_profiles_phone_key` / email khi chạy lại E2E nhiều lần.
+  phone: `09${Math.floor(Date.now() / 1000) % 100000000}`.padStart(10, '0'),
+  email: `nguyen.vana.${Date.now()}@gmail.com`,
   idNumber: '001234001234',
 };
 
@@ -38,6 +40,26 @@ async function wait(ms) {
   return new Promise((r) => setTimeout(r, ms));
 }
 
+async function clickNext(page) {
+  const buttons = await page.$$('button.vj-cta');
+  console.log(`[clickNext] found ${buttons.length} button.vj-cta`);
+  for (const btn of buttons) {
+    const disabled = await btn.evaluate((b) => b.disabled === true);
+    const box = await btn.boundingBox();
+    const visible = box ? `(${box.width}x${box.height})` : 'hidden';
+    const text = await btn.evaluate((b) => b.textContent || '');
+    const formId = await btn.evaluate((b) => b.getAttribute('form') || 'none');
+    console.log(`[clickNext] candidate: disabled=${disabled} visible=${visible} text="${text}" form="${formId}"`);
+    if (disabled) continue;
+    if (!box || box.width === 0 || box.height === 0) continue;
+    if (!/Đi tiếp/i.test(text)) continue;
+    await btn.click();
+    console.log(`[clickNext] CLICKED button text="${text}" form="${formId}"`);
+    return true;
+  }
+  return false;
+}
+
 async function runDevice(browser, device, report) {
   const page = await browser.newPage();
   const isDesktop = device === 'desktop';
@@ -55,13 +77,25 @@ async function runDevice(browser, device, report) {
     }
   });
 
+  page.on('response', async (res) => {
+    const url = res.url();
+    if (url.includes('/api/dat-ve') || url.includes('/api/thanh-toan')) {
+      try {
+        const body = await res.json();
+        console.log(`[${device} API] ${res.status} ${url} ->`, JSON.stringify(body).slice(0, 500));
+      } catch (_) {
+        console.log(`[${device} API] ${res.status} ${url} (non-JSON)`);
+      }
+    }
+  });
+
   let bookingId = null;
   let totalAmount = null;
   let passed = false;
 
   try {
     // ═════════════════════════════════════════════════════════════
-    // Step 1: Tìm chuyến bay (khu往復)
+    // Step 1: Tìm chuyến bay (khứ hồi)
     // ═════════════════════════════════════════════════════════════
     console.log(`\n--- ${device.toUpperCase()} ---`);
     console.log('Navigating to:', SEARCH_URL);
@@ -71,7 +105,7 @@ async function runDevice(browser, device, report) {
     await page.screenshot({ path: path.join(OUT_DIR, `01-${device}-step1-search.png`) });
     ok(report, device, 1, 'Trang tìm chuyến bay đã tải');
 
-    // Chọn fare chiều đi (Eco) — button có data-testid ổn định
+    // Chọn fare chiều đi (Eco)
     await page.waitForSelector('button[data-testid="select-fare"]', { timeout: 20000 });
     const outboundFares = await page.$$('button[data-testid="select-fare"]');
     if (outboundFares.length === 0) {
@@ -81,9 +115,7 @@ async function runDevice(browser, device, report) {
     await wait(1500);
 
     // Tự động chuyển chiều về — chờ fare button của chiều về xuất hiện
-    await page.waitForSelector('button[data-testid="select-fare"]', {
-      timeout: 15000,
-    });
+    await page.waitForSelector('button[data-testid="select-fare"]', { timeout: 15000 });
     const returnFares = await page.$$('button[data-testid="select-fare"]');
     if (returnFares.length === 0) {
       throw new Error('Không có nút chọn vé chiều về');
@@ -91,22 +123,12 @@ async function runDevice(browser, device, report) {
     await returnFares[returnFares.length - 1].click();
     await wait(1500);
 
-
     await page.screenshot({ path: path.join(OUT_DIR, `02-${device}-step1-fares-selected.png`) });
     ok(report, device, 2, 'Đã chọn vé chiều đi và chiều về');
 
     // Click nút "Đi tiếp" ở bottom bar để vào PassengerInfoStep
-    const nextButtons = await page.$$('button.vj-cta, button[type="button"]');
-    let clicked = false;
-    for (const btn of nextButtons) {
-      const text = (await btn.evaluate((b) => b.textContent || '')) || '';
-      if (text.includes('Đi tiếp')) {
-        await btn.click();
-        clicked = true;
-        break;
-      }
-    }
-    if (!clicked) {
+    const clicked1 = await clickNext(page);
+    if (!clicked1) {
       throw new Error('Không tìm thấy nút "Đi tiếp" ở bước chọn vé');
     }
     await wait(3000);
@@ -143,40 +165,48 @@ async function runDevice(browser, device, report) {
     const policyCheckbox = await page.waitForSelector('input[type="checkbox"][required]', {
       timeout: 10000,
     });
-    if (!(await policyCheckbox.isChecked())) {
+    const isChecked = await (await policyCheckbox.getProperty('checked')).jsonValue();
+    if (!isChecked) {
       await policyCheckbox.click();
     }
 
     await wait(1000);
     ok(report, device, 4, 'Đã điền đầy đủ thông tin hành khách (bao gồm CCCD/Hộ chiếu)');
 
-    // Submit form hành khách (native constraint validation sẽ chạy)
+    // Submit form hành khách -> chuyển sang bước dịch vụ bổ sung (step 3)
     const submitBtn = await page.waitForSelector('button[type="submit"][form="passenger-info-form"]', {
       timeout: 10000,
     });
     await submitBtn.click();
-    console.log('Submitted passenger form, waiting for navigation...');
+    console.log('Submitted passenger form, waiting for ancillary step...');
 
-    // Chờ navigation đến trang thanh toán HOẶC lỗi validation giữ nguyên trang
-    try {
-      await page.waitForNavigation({ waitUntil: 'networkidle2', timeout: 15000 });
-    } catch (e) {
-      // Navigation không xảy ra — có thể bị chặn bởi validation
+    // Nếu click nút sr-only không kích hoạt React onSubmit, dùng requestSubmit trực tiếp
+    await page.evaluate(() => {
+      const form = document.getElementById('passenger-info-form');
+      if (form) form.requestSubmit();
+    });
+    console.log('Called form.requestSubmit()');
+
+    // ═════════════════════════════════════════════════════════════
+    // Step 3: Dịch vụ bổ sung -> submit cuối cùng tạo booking
+    // ═════════════════════════════════════════════════════════════
+    const clicked2 = await clickNext(page);
+    if (!clicked2) {
+      throw new Error('Không tìm thấy nút "Đi tiếp" ở bước dịch vụ bổ sung');
     }
-
+    console.log('Submitted ancillary step, waiting for payment redirect...');
+    await wait(5000);
 
     const finalUrl = page.url();
-    console.log(`URL after submit: ${finalUrl}`);
-
+    console.log(`URL after final submit: ${finalUrl}`);
     const bookingIdParam = new URL(finalUrl).searchParams.get('bookingId');
     if (bookingIdParam && finalUrl.includes('/thanh-toan')) {
       bookingId = bookingIdParam;
       passed = true;
-      ok(report, device, 5, `Tạo booking thành công: bookingId=${bookingId}`);
+      ok(report, device, 6, `Tạo booking thành công: bookingId=${bookingId}`);
     } else {
-      const msg = `Không tạo được booking — URL vẫn là ${finalUrl} (bookingId=${bookingIdParam ?? 'null'}). Form có thể bị validation chặn.`;
-      fail(report, device, 5, msg);
-      // Không throw ngay; vẫn chụp ảnh để phân biệt rõ
+      const msg = `Không tạo được booking — URL vẫn là ${finalUrl} (bookingId=${bookingIdParam ?? 'null'}).`;
+      fail(report, device, 6, msg);
     }
 
     // ═════════════════════════════════════════════════════════════
@@ -202,9 +232,9 @@ async function runDevice(browser, device, report) {
       });
 
       if (!hasPaymentContent) {
-        fail(report, device, 6, `Trang ${payUrl} không có nội dung thanh toán`);
+        fail(report, device, 7, `Trang ${payUrl} không có nội dung thanh toán`);
       } else {
-        ok(report, device, 6, 'Trang thanh toán hiển thị đầy đủ thông tin');
+        ok(report, device, 7, 'Trang thanh toán hiển thị đầy đủ thông tin');
       }
 
       // Lấy tổng tiền hiển thị (nếu có)
@@ -217,9 +247,9 @@ async function runDevice(browser, device, report) {
         totalAmount = totalText;
         const num = Number(totalText.replace(/[.,]/g, ''));
         if (!Number.isFinite(num) || num <= 0) {
-          fail(report, device, 7, `Tổng tiền không dương: ${totalText}`);
+          fail(report, device, 8, `Tổng tiền không dương: ${totalText}`);
         } else {
-          ok(report, device, 7, `Tổng tiền dương: ${totalText} VND`);
+          ok(report, device, 8, `Tổng tiền dương: ${totalText} VND`);
         }
       }
     } else {
@@ -231,12 +261,12 @@ async function runDevice(browser, device, report) {
         return text.includes('chưa có đơn đặt vé') || text.includes('không tìm thấy đặt vé');
       });
       if (!noBooking) {
-        fail(report, device, 6, 'Truy cập /thanh-toan không bookingId nhưng không thấy thông báo rỗng');
+        fail(report, device, 7, 'Truy cập /thanh-toan không bookingId nhưng không thấy thông báo rỗng');
       }
     }
 
     await page.screenshot({
-      path: path.join(OUT_DIR, `08-${device}-step4-payment.png`),
+      path: path.join(OUT_DIR, `09-${device}-step4-payment.png`),
       fullPage: true,
     });
   } catch (err) {
@@ -307,7 +337,6 @@ async function runTest() {
     await browser.close();
     process.exit(1);
   } finally {
-    // Đảm bảo browser đóng nếu chưa
     try {
       await browser.close();
     } catch (_) {}

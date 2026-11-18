@@ -2345,10 +2345,10 @@ function createMockSql(): SqlClient {
       // return an empty result set rather than throwing.
       query: async <T = SqlRow>(text: string, values: unknown[] = []): Promise<T[]> => {
         console.info('[MOCK SQL:query]', text, values);
-        return (runSeatLockQuery(text, values) ??
+        return (runBookingQuery(text, values) ??
+          runSeatLockQuery(text, values) ??
           runFlightAndSeatQuery(text, values) ??
           runChatQuery(text, values) ??
-          runBookingQuery(text, values) ??
           runAgencyAndDiscountQuery(text, values) ??
           runAnalyticsQuery(text, values) ??
           ([] as MockResult[])) as T[];

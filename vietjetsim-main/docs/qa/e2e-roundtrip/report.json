@@ -3,45 +3,79 @@
     "steps": [
       {
         "step": 1,
-        "name": "Step 1: Chọn chuyến đi",
-        "status": "OK"
-      },
-      {
-        "step": 1,
-        "name": "Step 1: Tự động chuyển Chiều về",
+        "name": 1,
         "status": "OK"
       },
       {
         "step": 2,
-        "name": "Step 2: Nhập thông tin hành khách",
+        "name": 2,
         "status": "OK"
       },
       {
         "step": 3,
-        "name": "Step 3: Dịch vụ bổ sung",
+        "name": 3,
         "status": "OK"
       },
       {
         "step": 4,
-        "name": "Step 4: Hoá đơn thanh toán thống nhất",
+        "name": 4,
+        "status": "OK"
+      },
+      {
+        "step": 6,
+        "name": 6,
+        "status": "OK"
+      },
+      {
+        "step": 7,
+        "name": 7,
+        "status": "OK"
+      },
+      {
+        "step": 8,
+        "name": 8,
         "status": "OK"
       }
     ],
-    "errors": []
+    "errors": [],
+    "bookingId": "9fcb1d91-be44-4d78-a6f7-bd4a2dd84770",
+    "totalAmount": "1.980.000",
+    "passed": true
   },
   "mobile": {
     "steps": [
       {
         "step": 1,
-        "name": "Mobile Step 1: Tìm chuyến bay & Tabs",
+        "name": 1,
         "status": "OK"
       },
       {
-        "step": 4,
-        "name": "Mobile Step 4: Thanh toán & QR",
+        "step": 2,
+        "name": 2,
         "status": "OK"
+      },
+      {
+        "step": 3,
+        "name": 3,
+        "status": "OK"
+      },
+      {
+        "step": 99,
+        "name": 99,
+        "status": "FAILED",
+        "error": "Lỗi điều khiển trình duyệt: No element found for selector: #passenger-0-name"
       }
     ],
-    "errors": []
+    "errors": [
+      "Lỗi điều khiển trình duyệt: No element found for selector: #passenger-0-name"
+    ],
+    "bookingId": "9fcb1d91-be44-4d78-a6f7-bd4a2dd84770",
+    "totalAmount": "1.980.000",
+    "passed": false
+  },
+  "overall": {
+    "passed": false,
+    "desktopBookingId": "9fcb1d91-be44-4d78-a6f7-bd4a2dd84770",
+    "mobileBookingId": "9fcb1d91-be44-4d78-a6f7-bd4a2dd84770"
   }
 }
