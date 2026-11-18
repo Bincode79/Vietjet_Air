@@ -202,11 +202,16 @@ module.exports = {
           // nút hover; Tailwind không tự sinh bậc sáng cho màu tùy chỉnh.
           50: '#FDF0F1',
           100: '#FADADD',
+          200: '#F5C2C7',
         },
         accent: {
           DEFAULT: '#FFDD00',
           dark: '#F9A51A',
           light: '#FBB612',
+          // `bg-accent-50/100/200` dùng cho nền thông báo (toast) theo màu brand vàng.
+          50: '#FFF9D4',
+          100: '#FFF3A6',
+          200: '#FFE873',
         },
         navy: {
           DEFAULT: '#242424',

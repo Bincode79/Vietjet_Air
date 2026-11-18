@@ -40,15 +40,16 @@ const TYPE_CONFIG: Record<
     defaultIcon: React.ReactNode;
   }
 > = {
+  // ── Thành công: nền vàng-brand rất nhạt, viền vàng-brand ──
   success: {
-    bar: 'bg-lime-600',
-    bg: 'bg-lime-200 border-2 border-lime-600 shadow-xl shadow-lime-500/30',
-    iconBg: 'bg-lime-600 shadow-md shadow-lime-800/30',
+    bar: 'bg-accent',
+    bg: 'bg-accent-50 border-2 border-accent shadow-xl shadow-amber-200/30',
+    iconBg: 'bg-accent shadow-md shadow-amber-200/30',
     iconColor: 'text-white',
-    titleColor: 'text-black font-black',
-    messageColor: 'text-black font-semibold',
-    closeBtn: 'text-black/80 hover:text-black hover:bg-lime-400/50',
-    progressColor: 'bg-lime-700',
+    titleColor: 'text-vj-ink font-black',
+    messageColor: 'text-vj-gray font-medium',
+    closeBtn: 'text-vj-gray hover:text-accent-dark hover:bg-accent-100',
+    progressColor: 'bg-accent',
     defaultIcon: (
       <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 text-white">
         <path
@@ -61,12 +62,12 @@ const TYPE_CONFIG: Record<
   },
   error: {
     bar: 'bg-primary',
-    bg: 'bg-white border-2 border-primary shadow-xl shadow-red-600/15',
+    bg: 'bg-primary-50 border-2 border-primary shadow-xl shadow-red-600/15',
     iconBg: 'bg-primary shadow-md shadow-red-700/30',
     iconColor: 'text-white',
     titleColor: 'text-primary font-black',
-    messageColor: 'text-gray-900 font-medium',
-    closeBtn: 'text-gray-500 hover:text-primary hover:bg-red-50',
+    messageColor: 'text-vj-gray font-medium',
+    closeBtn: 'text-vj-gray hover:text-primary hover:bg-primary-100',
     progressColor: 'bg-primary',
     defaultIcon: (
       <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 text-white">
@@ -79,14 +80,14 @@ const TYPE_CONFIG: Record<
     ),
   },
   warning: {
-    bar: 'bg-amber-500',
-    bg: 'bg-amber-50/95 border-2 border-amber-400 shadow-xl shadow-amber-500/20',
-    iconBg: 'bg-vjyellow text-black shadow-md shadow-amber-500/30',
+    bar: 'bg-accent-dark',
+    bg: 'bg-accent-100 border-2 border-accent-dark shadow-xl shadow-amber-300/20',
+    iconBg: 'bg-accent-dark text-black shadow-md shadow-amber-300/30',
     iconColor: 'text-black',
-    titleColor: 'text-amber-950 font-black',
-    messageColor: 'text-gray-900 font-medium',
-    closeBtn: 'text-amber-800 hover:text-amber-950 hover:bg-amber-100',
-    progressColor: 'bg-amber-500',
+    titleColor: 'text-accent-dark font-black',
+    messageColor: 'text-vj-gray font-medium',
+    closeBtn: 'text-vj-gray hover:text-accent-dark hover:bg-accent-200',
+    progressColor: 'bg-accent-dark',
     defaultIcon: (
       <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 text-black font-bold">
         <path
@@ -98,14 +99,14 @@ const TYPE_CONFIG: Record<
     ),
   },
   info: {
-    bar: 'bg-sky-500',
-    bg: 'bg-white border-2 border-sky-400 shadow-xl shadow-sky-500/15',
-    iconBg: 'bg-sky-600 shadow-md shadow-sky-600/30',
+    bar: 'bg-primary-dark',
+    bg: 'bg-primary-100 border-2 border-primary-dark shadow-xl shadow-red-600/15',
+    iconBg: 'bg-primary-dark shadow-md shadow-red-600/30',
     iconColor: 'text-white',
-    titleColor: 'text-sky-950 font-black',
-    messageColor: 'text-gray-900 font-medium',
-    closeBtn: 'text-gray-500 hover:text-sky-950 hover:bg-sky-50',
-    progressColor: 'bg-sky-500',
+    titleColor: 'text-primary-dark font-black',
+    messageColor: 'text-vj-gray font-medium',
+    closeBtn: 'text-vj-gray hover:text-primary-dark hover:bg-primary-200',
+    progressColor: 'bg-primary-dark',
     defaultIcon: (
       <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 text-white">
         <path
@@ -118,12 +119,12 @@ const TYPE_CONFIG: Record<
   },
   promo: {
     bar: 'bg-gradient-to-r from-primary via-red-500 to-vjyellow',
-    bg: 'bg-gradient-to-br from-amber-50/70 via-white to-red-50/70 border-2 border-amber-400 shadow-xl shadow-amber-500/20',
-    iconBg: 'bg-vjyellow text-black shadow-md shadow-amber-400/30',
+    bg: 'bg-gradient-to-br from-accent-50 via-white to-primary-50 border-2 border-accent-dark shadow-xl shadow-amber-200/20',
+    iconBg: 'bg-accent text-black shadow-md shadow-amber-200/30',
     iconColor: 'text-black',
-    titleColor: 'text-gray-950 font-black',
-    messageColor: 'text-gray-800 font-medium',
-    closeBtn: 'text-gray-600 hover:text-gray-950 hover:bg-amber-100',
+    titleColor: 'text-vj-ink font-black',
+    messageColor: 'text-vj-gray font-medium',
+    closeBtn: 'text-vj-gray hover:text-vj-ink hover:bg-accent-100',
     progressColor: 'bg-gradient-to-r from-primary to-vjyellow',
     defaultIcon: (
       <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 text-black">
