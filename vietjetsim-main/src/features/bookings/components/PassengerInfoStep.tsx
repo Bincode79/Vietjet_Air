@@ -324,7 +324,12 @@ export default function PassengerInfoStep({
           </div>
         </div>
 
-        <form id="passenger-info-form" onSubmit={handleSubmit} className="space-y-4">
+        <form
+          id="passenger-info-form"
+          data-testid="passenger-info-form"
+          onSubmit={handleSubmit}
+          className="space-y-4"
+        >
           {passengers.map((p, i) => {
             const isAdult = (p.type ?? 'adult') === 'adult';
             const pType = p.type ?? 'adult';
@@ -465,6 +470,7 @@ export default function PassengerInfoStep({
                           value={p.dob}
                           onChange={(e) => updatePassenger(i, 'dob', e.target.value)}
                           required
+                          className="opacity-70"
                         />
                       </UnderlineField>
                     </div>
@@ -477,13 +483,13 @@ export default function PassengerInfoStep({
                             value={p.countryCode}
                             onChange={(e) => updatePassenger(i, 'countryCode', e.target.value)}
                             required
+                            className="opacity-70"
                           >
                             {COUNTRY_DIAL_CODES.map((country) => (
                               <option key={country.code} value={country.code}>
                                 {country.name}
                               </option>
                             ))}
-
                           </select>
                         </UnderlineField>
                       </div>
@@ -493,7 +499,7 @@ export default function PassengerInfoStep({
                   {/* Số điện thoại & Email */}
                   {isAdult && (
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div>
+                      <div className="opacity-70">
                         <UnderlineField
                           id={`passenger-${i}-phone`}
                           label="Số điện thoại"
@@ -670,7 +676,9 @@ export default function PassengerInfoStep({
                         <input
                           type="checkbox"
                           checked={consents.survey}
-                          onChange={(e) => setConsents((c) => ({ ...c, survey: e.target.checked }))}
+                          onChange={(e) =>
+                            setConsents((c) => ({ ...c, survey: e.target.checked }))
+                          }
                           className={CHECKBOX_CLASS}
                         />
                         <span>Thực hiện khảo sát và chăm sóc khách hàng</span>
@@ -701,6 +709,9 @@ export default function PassengerInfoStep({
           <div className="bg-white rounded-vj border border-gray-200/90 p-3.5 shadow-sm">
             <label className="flex items-start gap-2.5 cursor-pointer text-xs text-gray-800 leading-relaxed select-none">
               <input
+                id="passenger-policy-consent"
+                name="passenger-policy-consent"
+                data-testid="passenger-policy-consent"
                 type="checkbox"
                 checked={consents.policyAccepted}
                 onChange={(e) => setConsents((c) => ({ ...c, policyAccepted: e.target.checked }))}
