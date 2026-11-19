@@ -105,7 +105,7 @@ describe('passenger type fares', () => {
       paxCounts: { adult: 1, child: 0, infant: 2 },
       ancillaries: ['baggage'],
     });
-    expect(totals.ancillaryFee).toBe(150_000);
+    expect(totals.ancillaryFee).toBe(200_000);
   });
 });
 

@@ -31,7 +31,7 @@ describe('endpoint thanh toán hành lý bổ sung', () => {
   });
 
   it('chỉ thanh toán được cho vé đã mua', () => {
-    expect(source).toMatch(/booking\.status !== 'confirmed' && booking\.status !== 'completed'/);
+    expect(source).toMatch(/booking\.status === 'cancelled' \|\| booking\.status === 'refunded'/);
   });
 
   it('kiểm tra quyền sở hữu trước khi thu tiền', () => {

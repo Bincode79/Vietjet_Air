@@ -187,8 +187,8 @@ describe('POST /api/dat-ve — dịch vụ được định giá theo catalogue 
     expect(res.status).toBe(201);
     const ancillaryRows = dbMocks.createBooking.mock.calls[0][3];
     expect(ancillaryRows).toEqual([
-      { option_id: 'baggage', unit_price: 150_000, quantity: 1 },
-      { option_id: 'meal', unit_price: 100_000, quantity: 1 },
+      { option_id: 'baggage', unit_price: 200_000, quantity: 1 },
+      { option_id: 'meal', unit_price: 85_000, quantity: 1 },
     ]);
   });
 

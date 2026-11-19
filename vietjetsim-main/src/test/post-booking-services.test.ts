@@ -153,7 +153,7 @@ describe('Phân hệ Dịch vụ bổ sung sau đặt vé (Ảnh #6)', () => {
   it('có endpoint thanh toán dịch vụ bổ sung tại dich-vu/thanh-toan', () => {
     expect(paymentSource).toMatch(/getPendingBaggageAmount/);
     expect(paymentSource).toMatch(/getPendingAncillaryAmount/);
-    expect(paymentSource).toMatch(/markBaggagePaid/);
+    expect(paymentSource).toMatch(/markBookingBaggagePaid/);
     expect(paymentSource).toMatch(/recalcBookingTotal/);
   });
 });

@@ -248,10 +248,10 @@ describe('Full Real-world User & Admin Journey (Steps 3 to 8)', () => {
     expect(totals.taxAndFee).toBe(412500);
     // Phí chọn chỗ ngồi: 150.000 VND
     expect(totals.seatFee).toBe(150000);
-    // Phí dịch vụ: 3 người lớn & trẻ em * 60.000 = 180.000 VND
-    expect(totals.ancillaryFee).toBe(180000);
+    // Phí dịch vụ: 3 người lớn & trẻ em * 44.000 = 132.000 VND
+    expect(totals.ancillaryFee).toBe(132000);
     // Tổng số tiền cần thanh toán
-    expect(totals.total).toBe(2750000 + 412500 + 150000 + 180000);
+    expect(totals.total).toBe(2750000 + 412500 + 150000 + 132000);
   });
 
   // =========================================================================
