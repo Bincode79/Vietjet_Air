@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import PassengerDetailModal from '@/app/tim-ve/components/PassengerDetailModal';
@@ -7,22 +7,15 @@ import { Icon } from '@/shared/components/ui';
 import { PaymentSkeleton } from '@/shared/components/ui';
 import { useToast } from '@/hooks/useToast';
 import { ToastContainer } from '@/shared/components/feedback';
-import { createPayment, getWalletOverview } from '@/features/payments/services';
-import { getMembership } from '@/features/loyalty/services';
-import { useAuth } from '@/contexts/AuthContext';
 import { getAirportCity } from '@/features/flights';
 import { TAX_AND_FEE_RATE, ANCILLARY_OPTIONS, type AncillaryId } from '@/features/bookings/pricing';
 
 import type { PaymentMethod } from '@/features/payments/types';
 import { apiRequest, ApiRequestError } from '@/shared/services';
-import { renderTransferNote } from '@/lib/transfer-note';
-import { skypointPointsForAmount, skypointValueOfPoints } from '@/lib/skypoint';
-import { MOVI_DEFAULT_TENOR, MOVI_HOLD_MINUTES } from '@/lib/movi';
-import EBoardingPass from './EBoardingPass';
+import { MOVI_HOLD_MINUTES } from '@/lib/movi';
 import PaymentModal from './PaymentModal';
 import ReservationCountdown from './ReservationCountdown';
 import BookingTicketCard from './BookingTicketCard';
-import ItineraryModal from '@/features/bookings/components/ItineraryModal';
 import {
   VisaLogo,
   MastercardLogo,
@@ -40,276 +33,6 @@ import {
   GalaxyPayBadge,
   PaymentSecurityFooter,
 } from './PaymentMethodLogos';
-
-interface BankAccount {
-  id: string;
-  admin_bank_name: string;
-  admin_bank_account_number: string;
-  admin_bank_account_holder: string;
-  bank_bin?: string;
-  branch?: string;
-  logo_url?: string;
-  is_default?: boolean;
-  transfer_note_template?: string;
-}
-
-
-// Confetti particle type
-interface Particle {
-  id: number;
-  x: number;
-  y: number;
-  vx: number;
-  vy: number;
-  color: string;
-  size: number;
-  rotation: number;
-  rotationSpeed: number;
-  shape: 'rect' | 'circle';
-  opacity: number;
-}
-
-const CONFETTI_COLORS = [
-  '#EC2029',
-  '#FFDD00',
-  '#ffffff',
-  '#ff6b6b',
-  '#ffd93d',
-  '#ff8c00',
-  '#6f0000',
-];
-
-function ConfettiCanvas() {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const particlesRef = useRef<Particle[]>([]);
-  const animFrameRef = useRef<number>(0);
-  const startTimeRef = useRef<number>(Date.now());
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-
-    // Spawn particles
-    const particles: Particle[] = [];
-    for (let i = 0; i < 120; i++) {
-      particles.push({
-        id: i,
-        x: Math.random() * canvas.width,
-        y: -20 - Math.random() * 200,
-        vx: (Math.random() - 0.5) * 4,
-        vy: 2 + Math.random() * 4,
-        color: CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)],
-        size: 6 + Math.random() * 8,
-        rotation: Math.random() * 360,
-        rotationSpeed: (Math.random() - 0.5) * 8,
-        shape: Math.random() > 0.4 ? 'rect' : 'circle',
-        opacity: 1,
-      });
-    }
-    particlesRef.current = particles;
-
-    const animate = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      const elapsed = (Date.now() - startTimeRef.current) / 1000;
-
-      particlesRef.current = particlesRef.current
-        .map((p: Particle) => ({
-          ...p,
-          x: p.x + p.vx,
-          y: p.y + p.vy,
-          vy: p.vy + 0.08,
-          rotation: p.rotation + p.rotationSpeed,
-          opacity: elapsed > 2.5 ? Math.max(0, 1 - (elapsed - 2.5) / 1.5) : 1,
-        }))
-        .filter((p: Particle) => p.y < canvas.height + 50);
-
-      particlesRef.current.forEach((p: Particle) => {
-        ctx.save();
-        ctx.globalAlpha = p.opacity;
-        ctx.translate(p.x, p.y);
-        ctx.rotate((p.rotation * Math.PI) / 180);
-        ctx.fillStyle = p.color;
-        if (p.shape === 'rect') {
-          ctx.fillRect(-p.size / 2, -p.size / 4, p.size, p.size / 2);
-        } else {
-          ctx.beginPath();
-          ctx.arc(0, 0, p.size / 2, 0, Math.PI * 2);
-          ctx.fill();
-        }
-        ctx.restore();
-      });
-
-      if (elapsed < 4) {
-        animFrameRef.current = requestAnimationFrame(animate);
-      } else {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-      }
-    };
-
-    animFrameRef.current = requestAnimationFrame(animate);
-    return () => cancelAnimationFrame(animFrameRef.current);
-  }, []);
-
-  return (
-    <canvas
-      ref={canvasRef}
-      className="fixed inset-0 pointer-events-none z-50"
-      style={{ width: '100vw', height: '100vh' }}
-    />
-  );
-}
-
-function AnimatedCheckmark() {
-  const [animate, setAnimate] = useState(false);
-  useEffect(() => {
-    const t = setTimeout(() => setAnimate(true), 100);
-    return () => clearTimeout(t);
-  }, []);
-
-  return (
-    <div
-      className={`w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 transition-all duration-500 ${animate ? 'scale-100 bg-white/20' : 'scale-0 bg-white/0'}`}
-    >
-      <svg
-        viewBox="0 0 52 52"
-        className="w-10 h-10"
-        style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.15))' }}
-      >
-        <circle
-          cx="26"
-          cy="26"
-          r="24"
-          fill="none"
-          stroke="rgba(255,255,255,0.4)"
-          strokeWidth="2"
-          className={`transition-all duration-500 ${animate ? 'opacity-100' : 'opacity-0'}`}
-        />
-        <path
-          fill="none"
-          stroke="white"
-          strokeWidth="3.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          d="M14 27 L22 35 L38 19"
-          style={{
-            strokeDasharray: 30,
-            strokeDashoffset: animate ? 0 : 30,
-            transition: 'stroke-dashoffset 0.5s ease 0.3s',
-          }}
-        />
-      </svg>
-    </div>
-  );
-}
-
-// ─── Payment Processing Overlay ───────────────────────────────────────────────
-function PaymentProcessingOverlay() {
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-      <div
-        className="bg-white rounded-3xl shadow-2xl px-10 py-10 flex flex-col items-center gap-5 max-w-xs w-full mx-4"
-        style={{ boxShadow: '0 32px 72px rgba(0,0,0,0.25)' }}
-      >
-        {/* Animated spinner */}
-        <div className="relative w-20 h-20">
-          <svg className="animate-spin w-20 h-20 text-primary" viewBox="0 0 80 80" fill="none">
-            <circle
-              cx="40"
-              cy="40"
-              r="34"
-              stroke="currentColor"
-              strokeWidth="6"
-              strokeOpacity="0.15"
-            />
-            <path
-              d="M40 6 A34 34 0 0 1 74 40"
-              stroke="currentColor"
-              strokeWidth="6"
-              strokeLinecap="round"
-            />
-          </svg>
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
-              <Icon name="LockClosedIcon" size={20} className="text-primary" />
-            </div>
-          </div>
-        </div>
-        <div className="text-center">
-          <div className="font-black text-[var(--vj-navy)] text-lg mb-1 font-koho">
-            Đang xử lý thanh toán
-          </div>
-          <div className="text-sm text-[var(--foreground-muted)]">
-            Vui lòng không đóng trang này...
-          </div>
-        </div>
-        {/* Progress dots */}
-        <div className="flex items-center gap-2">
-          {[0, 1, 2].map((i) => (
-            <div
-              key={i}
-              className="w-2 h-2 rounded-full bg-primary"
-              style={{ animation: `bounce 1.2s ease-in-out ${i * 0.2}s infinite` }}
-            />
-          ))}
-        </div>
-        <div className="flex items-center gap-2 text-xs text-[var(--vj-green)] bg-[rgb(var(--vj-green-rgb))]/10 border border-[rgb(var(--vj-green-rgb))]/30 rounded-vj px-4 py-2">
-          <Icon name="ShieldCheckIcon" size={14} className="text-[var(--vj-green)] flex-shrink-0" />
-          Kết nối bảo mật SSL 256-bit
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// ─── Error Modal ──────────────────────────────────────────────────────────────
-interface ErrorModalProps {
-  title: string;
-  message: string;
-  onRetry: () => void;
-  onDismiss: () => void;
-}
-
-function ErrorModal({ title, message, onRetry, onDismiss }: ErrorModalProps) {
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm px-4">
-      <div
-        className="bg-white rounded-3xl shadow-2xl max-w-sm w-full overflow-hidden"
-        style={{ boxShadow: '0 32px 72px rgba(0,0,0,0.25)', animation: 'fadeInUp 0.3s ease-out' }}
-      >
-        {/* Red accent top */}
-        <div className="h-1.5 w-full bg-gradient-to-r from-primary/60 via-primary to-primary/60" />
-        <div className="p-8 flex flex-col items-center text-center">
-          {/* Error icon */}
-          <div className="w-16 h-16 bg-[rgb(var(--primary-rgb))]/10 rounded-full flex items-center justify-center mb-5 border-4 border-primary/20">
-            <Icon name="ExclamationTriangleIcon" size={32} className="text-primary" />
-          </div>
-          <h3 className="font-black text-[var(--vj-navy)] text-xl mb-2 font-koho">{title}</h3>
-          <p className="text-sm text-[var(--foreground-muted)] leading-relaxed mb-7">{message}</p>
-          <div className="flex flex-col gap-3 w-full">
-            <button
-              onClick={onRetry}
-              className="w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary-dark text-white font-bold py-3.5 rounded-vj transition-all shadow-vj-btn hover:shadow-vj-btn-hover hover:-translate-y-0.5"
-            >
-              <Icon name="ArrowPathIcon" size={16} />
-              Thử lại
-            </button>
-            <button
-              onClick={onDismiss}
-              className="w-full py-3 rounded-vj border border-[var(--border)] text-[var(--foreground-muted)] font-semibold text-sm hover:bg-[var(--surface)] transition-all"
-            >
-              Đóng
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 /**
  * `YYYY-MM-DD` from the booking, as `d/M/yyyy`.
@@ -339,23 +62,8 @@ function formatHoldExpireDate(iso?: string | null): string {
   }
 }
 
-function formatLocalBookingDateTime(iso?: string | null): string {
-  const d = iso ? new Date(iso) : new Date();
-  try {
-    const day = String(d.getDate()).padStart(2, '0');
-    const month = String(d.getMonth() + 1).padStart(2, '0');
-    const year = d.getFullYear();
-    const hours = String(d.getHours()).padStart(2, '0');
-    const mins = String(d.getMinutes()).padStart(2, '0');
-    return `${hours}:${mins}, ${day}/${month}/${year}`;
-  } catch {
-    return '';
-  }
-}
-
 export default function PaymentClient() {
   const router = useRouter();
-  const { user, loading: authLoading } = useAuth();
   const [showSummaryModal, setShowSummaryModal] = useState(false);
   const [hasPromoChecked, setHasPromoChecked] = useState(false);
   const [selectedMethodGroup, setSelectedMethodGroup] = useState<string>(() => {
@@ -372,10 +80,6 @@ export default function PaymentClient() {
     if (param === 'skypoint') return 'skypoint';
     return 'vietqr';
   });
-  // The bank tab no longer collects the customer's own account — it confirms a
-  // transfer they already made, by re-typing the memo and amount we displayed.
-  const [transferNoteInput, setTransferNoteInput] = useState('');
-  const [transferAmountInput, setTransferAmountInput] = useState('');
   const [promoCode, setPromoCode] = useState('');
   const [promoApplied, setPromoApplied] = useState(false);
   const [promoData, setPromoData] = useState<{
@@ -387,14 +91,6 @@ export default function PaymentClient() {
   } | null>(null);
   const [promoError, setPromoError] = useState('');
   const [isApplyingPromo, setIsApplyingPromo] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [confirmed, setConfirmed] = useState(false);
-  // Receipt image upload state for bank transfer & VietQR verification
-  const [receiptImage, setReceiptImage] = useState<string | null>(null);
-  const [receiptFileName, setReceiptFileName] = useState<string | null>(null);
-  const [receiptFileSize, setReceiptFileSize] = useState<string | null>(null);
-  const [isDraggingReceipt, setIsDraggingReceipt] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const searchParams = useSearchParams();
   const bookingParam =
     searchParams?.get('bookingId') || searchParams?.get('code') || searchParams?.get('id');
@@ -576,134 +272,24 @@ export default function PaymentClient() {
   const discountAmount = promoApplied && promoData ? promoData.discountAmount : 0;
   const total = booking ? booking.total - discountAmount : 0;
   const [pageLoading, setPageLoading] = useState(true);
-  const [paymentError, setPaymentError] = useState<string | null>(null);
-  const [showErrorModal, setShowErrorModal] = useState(false);
   const [showVietQrModal, setShowVietQrModal] = useState(false);
   const toast = useToast();
-  const [adminAccounts, setAdminAccounts] = useState<BankAccount[]>([]);
-  const [selectedAdminAccount, setSelectedAdminAccount] = useState<BankAccount | null>(null);
-  const [walletBalance, setWalletBalance] = useState<number | null>(null);
-  // SkyPoint (SkyJoy): số dư điểm + tỷ lệ quy đổi points/1.000đ của chương
-  // trình loyalty — cả client hiển thị lẫn server trừ điểm dùng chung công
-  // thức trong `@/lib/skypoint` để số hiển thị và số trừ không lệch nhau.
-  const [skypointInfo, setSkypointInfo] = useState<{ points: number; rate: number } | null>(null);
-  const [useCashPlusPoints, setUseCashPlusPoints] = useState(false);
-  const [cashPlusPointsRedeem, setCashPlusPointsRedeem] = useState<number>(0);
 
-  const maxPossiblePointsToRedeem = useMemo(() => {
-    if (!skypointInfo) return 0;
-    const pointsForFullTotal = skypointPointsForAmount(total, skypointInfo.rate);
-    return Math.min(skypointInfo.points, pointsForFullTotal);
-  }, [skypointInfo, total]);
-
-  const cashPlusPointsDiscountVnd = useMemo(() => {
-    if (!useCashPlusPoints || !skypointInfo || cashPlusPointsRedeem <= 0) return 0;
-    return skypointValueOfPoints(cashPlusPointsRedeem, skypointInfo.rate);
-  }, [useCashPlusPoints, skypointInfo, cashPlusPointsRedeem]);
-
-  const payableTotal = useMemo(() => {
-    return Math.max(0, total - cashPlusPointsDiscountVnd);
-  }, [total, cashPlusPointsDiscountVnd]);
-
-  /**
-   * Phí tiện ích của modal VietQR.
-   *
-   * Trước đây modal nhận cứng `convenienceFee={108000}` — một con số không
-   * thuộc về đơn nào. Nếu khách chọn chỗ hoặc mua thêm hành lý, tổng trên
-   * modal không cộng ra được với tổng bên dưới, và con số cứng 108.000 là
-   * phí mà khách không hề đặt ra. Phí thật là phí chọn chỗ cộng dịch vụ bổ
-   * sung; nếu không có thì bằng 0.
-   */
   const vietQrConvenienceFee = useMemo(() => {
     if (!booking) return 0;
     return (booking.seatFee ?? 0) + (booking.ancillaryFee ?? 0);
   }, [booking]);
 
-  /**
-   * Tổng mà modal VietQR in ra — phải bằng đúng tổng của các dòng nó hiện:
-   * tạm tính + phí tiện ích − giảm giá.
-   */
   const vietQrGrandTotal = useMemo(() => {
     const subtotal = booking?.fareSubtotal ?? 0;
     return Math.max(0, subtotal + vietQrConvenienceFee - discountAmount);
   }, [booking, vietQrConvenienceFee, discountAmount]);
-
-  /**
-   * Số tiền mặt khách phải trả — con số mà server sẽ kiểm tra.
-   *
-   * Với phương thức `skypoint` thuần (không bật Cash + Points), toàn bộ giá
-   * vé được trả bằng điểm nên tiền mặt phải trả là 0. Server tính đúng như
-   * vậy, và con số này phải được suy ra theo *cùng công thức* — trừ điểm làm
-   * tròn lên, quy đổi làm tròn xuống — nếu không hai bên lệch nhau và giao
-   * dịch bị từ chối với thông báo "Số tiền phải đúng …".
-   */
-  const cashDue = useMemo(() => {
-    if (paymentMethod !== 'skypoint') return payableTotal;
-    if (useCashPlusPoints && cashPlusPointsRedeem > 0) return payableTotal;
-    if (!skypointInfo) return payableTotal;
-    const pointsForFullTotal = skypointPointsForAmount(total, skypointInfo.rate);
-    const pointsValue = skypointValueOfPoints(pointsForFullTotal, skypointInfo.rate);
-    return Math.max(0, total - pointsValue);
-  }, [paymentMethod, payableTotal, useCashPlusPoints, cashPlusPointsRedeem, skypointInfo, total]);
-
-  // Tải cấu hình ngân hàng công khai (không yêu cầu đăng nhập)
-  useEffect(() => {
-    apiRequest<{
-      accounts?: BankAccount[];
-    }>('/api/cong-khai/cau-hinh-ngan-hang')
-      .then((data) => {
-        if (data.accounts && data.accounts.length > 0) {
-          setAdminAccounts(data.accounts);
-          setSelectedAdminAccount(data.accounts[0]);
-        }
-      })
-      .catch((err) => console.error('Failed to load bank config:', err));
-  }, []);
-
-  // Chỉ tải số dư ví & SkyPoint khi người dùng đã đăng nhập (tránh lỗi 401 console khi là guest)
-  useEffect(() => {
-    if (authLoading || !user) return;
-
-    // Fetch wallet balance (fail-soft: khách chưa đăng nhập thì im lặng, không ghi lỗi console)
-    getWalletOverview()
-      .then((data) => {
-        if (data.wallet) {
-          setWalletBalance(parseFloat(String(data.wallet.balance)));
-        }
-      })
-      .catch((err) => {
-        if (!String(err).includes('Authentication required') && !String(err).includes('401')) {
-          console.error('Failed to load wallet balance:', err);
-        }
-      });
-
-    // SkyPoint balance for the SkyJoy payment tab (fail-soft như ví).
-    getMembership()
-      .then((data) => {
-        if (data?.membership && data?.program) {
-          setSkypointInfo({
-            points: data.membership.currentPoints ?? 0,
-            rate: data.program.pointsPerThousandVnd ?? 10,
-          });
-        }
-      })
-      .catch((err) => {
-        if (!String(err).includes('Authentication required') && !String(err).includes('401')) {
-          console.error('Failed to load SkyPoint balance:', err);
-        }
-      });
-  }, [user, authLoading]);
 
   useEffect(() => {
     const timer = setTimeout(() => setPageLoading(false), 50);
     return () => clearTimeout(timer);
   }, []);
 
-  // Trạng thái Bay trước trả sau Movi
-  const [moviCccd, setMoviCccd] = useState<string>('');
-  const [moviFullName, setMoviFullName] = useState<string>('');
-  const [moviBirthDate, setMoviBirthDate] = useState<string>('');
-  const [moviPhone, setMoviPhone] = useState<string>('');
   /**
    * Mốc hết hạn của lượt giữ chỗ MOVI (30 phút), do SERVER quyết định.
    *
@@ -712,72 +298,9 @@ export default function PaymentClient() {
    * đóng tab là mất trắng, và chỉnh ngày giờ máy là thay đổi luật.
    */
   const [moviHoldExpiresAt, setMoviHoldExpiresAt] = useState<string | null>(null);
-  const [moviHoldExpired, setMoviHoldExpired] = useState<boolean>(false);
-
-  const [showMoviModal, setShowMoviModal] = useState<boolean>(false);
-  const [moviQrDataUrl, setMoviQrDataUrl] = useState<string>('');
   const [showFlightInfoAccordion, setShowFlightInfoAccordion] = useState<boolean>(true);
   const [showPaxInfoAccordion, setShowPaxInfoAccordion] = useState<boolean>(true);
 
-  const [showItineraryModal, setShowItineraryModal] = useState<boolean>(false);
-
-  const itineraryBookingData = useMemo(() => {
-    if (!booking) return null;
-    // The itinerary renders a real ticket, so every identifier it shows has to
-    // come from the booking. `vj-id` and `VJ-PNR` were placeholders that
-    // reached a customer-facing document as if they were a PNR.
-    const contactEmail = booking.contactEmail || '';
-    return {
-      id: bookingId || booking.bookingId || '',
-      booking_code: bookingCodeLabel !== '—' ? bookingCodeLabel : booking.flightNo,
-      status: 'confirmed',
-      created_at: new Date().toISOString(),
-      total_price: total,
-      contact_name: booking.passengers?.[0]?.name,
-      contact_email: contactEmail,
-      flight: {
-        flight_no: booking.flightNo,
-        from_code: booking.from,
-        to_code: booking.to,
-        depart_time: booking.departTime,
-        arrive_time: booking.arriveTime,
-        class: 'Eco',
-      },
-      passengers: booking.passengers?.map((p, idx) => ({
-        id: `p-${idx}`,
-        name: p.name,
-        seat_number: p.seat,
-        email: contactEmail,
-      })),
-      seats: booking.passengers?.map((p) => ({
-        seat_number: p.seat,
-      })),
-      payment: {
-        status: 'completed',
-        method: paymentMethod,
-      },
-    };
-  }, [booking, bookingId, bookingCodeLabel, total, paymentMethod]);
-
-  useEffect(() => {
-    if (booking?.passengers && booking.passengers.length > 0 && !moviFullName) {
-      const first = booking.passengers[0];
-      // Tên hành khách phải là tên thật từ đơn đặt vé. Trước đây điều kiện
-      // loại trừ chuỗi 'HÀNH KHÁCH' — một chuỗi chỉ tồn tại vì chính fallback
-      // tạo ra nó — nên bỏ đi: tên nào cũng lấy, đừng tự bịa ra tiêu chí.
-      if (first.name) {
-        setMoviFullName(first.name);
-      }
-    }
-  }, [booking, moviFullName]);
-
-  // ─── Giữ chỗ MOVI: 30 phút, mốc thời gian do server quyết định ───────────
-  //
-  // Khi khách chọn MOVI, trang đặt lượt giữ chỗ trên server (migration 055)
-  // và nhận về mốc hết hạn. Đồng hồ đếm ngược đọc mốc đó.
-  //
-  // Vì sao phải gọi API thay vì tự đếm 30 phút:
-  //   * mốc thời gian phải là của SERVER — client đóng tab là mất trắng, và
   // Ưu tiên dùng PNR (booking_code) làm lookup target cho cả hold lẫn thanh toán
   // để mọi khách (dù chưa đăng nhập hoặc tra cứu lại vé) đều được cấp quyền qua canAccessBooking
   const effectiveLookupTarget =
@@ -797,32 +320,6 @@ export default function PaymentClient() {
     return false;
   }, [searchParams, booking?.hold_expires_at, booking?.status]);
 
-  useEffect(() => {
-    if (!effectiveLookupTarget) return;
-    let cancelled = false;
-    import('qrcode')
-      .then((QRCodeModule) => {
-        const codeToEncode = bookingCodeLabel !== '—' ? bookingCodeLabel : effectiveLookupTarget;
-        QRCodeModule.toDataURL(
-          `VIETJET:${codeToEncode}`,
-          {
-            margin: 1,
-            width: 140,
-            color: { dark: '#111827', light: '#FFFFFF' },
-          },
-          (err, url) => {
-            if (!cancelled && !err && url) {
-              setMoviQrDataUrl(url);
-            }
-          }
-        );
-      })
-      .catch(() => {});
-    return () => {
-      cancelled = true;
-    };
-  }, [effectiveLookupTarget, bookingCodeLabel]);
-
   const acquireMoviHold = useCallback(async () => {
     if (!effectiveLookupTarget) return;
     try {
@@ -834,7 +331,6 @@ export default function PaymentClient() {
       });
       if (data.hold?.expiresAt) {
         setMoviHoldExpiresAt(data.hold.expiresAt);
-        setMoviHoldExpired(false);
       }
     } catch (err) {
       // Không giữ được chỗ thì vẫn cho khách thanh toán (đây là phương thức
@@ -866,7 +362,6 @@ export default function PaymentClient() {
       { method: 'POST', body: { action: 'expire' } }
     )
       .then((data) => {
-        setMoviHoldExpired(true);
         if (data.expired || data.booking_status === 'cancelled') {
           toast.error(
             'Hết thời gian giữ chỗ',
@@ -929,49 +424,6 @@ export default function PaymentClient() {
     router.push(`/thanh-toan/gateway/${gatewayMethod}${qs ? `?${qs}` : ''}`);
   };
 
-  const transferNote = useMemo(
-    () =>
-      renderTransferNote(selectedAdminAccount?.transfer_note_template, {
-        code:
-          effectiveBookingCode ||
-          (bookingCodeLabel !== '—' ? bookingCodeLabel : booking?.flightNo || 'VJ'),
-        originalAmount: booking?.total ?? 0,
-        discountAmount,
-        amount: total,
-        discountCode: promoData?.code ?? '',
-      }),
-    [
-      selectedAdminAccount?.transfer_note_template,
-      effectiveBookingCode,
-      bookingCodeLabel,
-      booking?.flightNo,
-      booking?.total,
-      discountAmount,
-      total,
-      promoData?.code,
-    ]
-  );
-
-  // Tự động điền nội dung và số tiền chuyển khoản dự kiến nếu khách chưa nhập.
-  //
-  // Hai effect này PHẢI ghi đè giá trị đang có, không chỉ điền khi ô còn
-  // trống. Trước đây điều kiện là `!transferNoteInput` / `!transferAmountInput`,
-  // nên ở lần render đầu tiên `bookingCodeLabel` còn là '—' và `total` bằng 0
-  // ⇒ ô nhận giá trị tạm '—I98O'. Khi PNR và tổng tiền tải về sau, điều kiện
-  // đó không còn đúng nữa ⇒ ô vẫn giữ '—I98O' ⇒ server trả 400
-  // "Transfer details do not match" dù khách đã nhập đúng.
-  useEffect(() => {
-    if (transferNote) {
-      setTransferNoteInput(transferNote);
-    }
-  }, [transferNote]);
-
-  useEffect(() => {
-    if (total > 0) {
-      setTransferAmountInput(String(total));
-    }
-  }, [total]);
-
   const applyPromo = async () => {
     if (!promoCode.trim()) return;
     setPromoError('');
@@ -1010,91 +462,6 @@ export default function PaymentClient() {
     } finally {
       setIsApplyingPromo(false);
     }
-  };
-
-  const executeMoviPayment = async () => {
-    setShowMoviModal(false);
-    setLoading(true);
-    setPaymentError(null);
-    setShowErrorModal(false);
-    try {
-      const targetBookingId = effectiveLookupTarget || booking?.bookingId || bookingId;
-      if (!targetBookingId) {
-        throw new Error('Không tìm thấy thông tin đặt chỗ');
-      }
-
-      await createPayment({
-        booking_id: targetBookingId,
-        return_booking_id: booking?.returnBookingId || undefined,
-        method: 'movi',
-        amount: cashDue,
-        discount_code_id: promoData?.id ?? undefined,
-        discount_amount: discountAmount,
-        discount_code: promoData?.code,
-        bank_account_id: selectedAdminAccount?.id,
-        transfer_note: `MOVI: ${moviFullName.trim()} - CCCD ${moviCccd.trim()} - SĐT ${moviPhone.trim()}`,
-        transfer_amount: transferAmountInput.trim() || String(cashDue),
-        receipt_image: receiptImage || undefined,
-        points_to_redeem:
-          useCashPlusPoints && cashPlusPointsRedeem > 0 ? cashPlusPointsRedeem : undefined,
-        movi: {
-          fullName: moviFullName.trim(),
-          birthDate: moviBirthDate.trim(),
-          nationalId: moviCccd.trim(),
-          phone: moviPhone.trim(),
-          tenor: MOVI_DEFAULT_TENOR,
-        },
-      });
-
-      setLoading(false);
-      setConfirmed(true);
-      toast.success('Thanh toán thành công!', 'Vé điện tử đã được gửi đến email của bạn.', {
-        duration: 6000,
-      });
-    } catch (err) {
-      setLoading(false);
-      const errMsg =
-        (err instanceof Error && err.message) ||
-        'Thanh toán thất bại. Vui lòng kiểm tra thông tin và thử lại.';
-      setPaymentError(errMsg);
-      setShowErrorModal(true);
-    }
-  };
-
-  const handleCloseMoviModal = () => {
-    setShowMoviModal(false);
-    toast.info(
-      `Mã đặt chỗ của bạn: ${bookingCodeLabel}`,
-      'Vé đã được giữ chỗ trong vòng 30 phút. Bạn có thể kiểm tra và thanh toán tại mục Chuyến bay của tôi.'
-    );
-  };
-
-  const shareText = useMemo(() => {
-    if (!booking) return 'Tôi vừa đặt vé thành công trên Vietjet Air!';
-    return `Tôi vừa đặt vé thành công trên Vietjet Air!\n✈️ ${booking.flightNo}: ${booking.fromCity} → ${booking.toCity}\n📅 ${booking.date} | ${booking.departTime} - ${booking.arriveTime}\n🎫 Mã đặt chỗ: ${bookingCodeLabel}`;
-  }, [booking, bookingCodeLabel]);
-
-  const handleShareNative = useCallback(async () => {
-    if (navigator.share) {
-      try {
-        await navigator.share({ title: 'Đặt vé Vietjet Air thành công!', text: shareText });
-      } catch {
-        /* ignore */
-      }
-    }
-  }, [shareText]);
-
-
-  const handleReceiptFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) processReceiptFile(file);
-  };
-
-  const handleReceiptDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDraggingReceipt(false);
-    const file = e.dataTransfer.files?.[0];
-    if (file) processReceiptFile(file);
   };
 
   if (pageLoading || isBookingLoading) {
@@ -1155,558 +522,6 @@ export default function PaymentClient() {
           </div>
         </div>
       </div>
-    );
-  }
-
-  if (confirmed) {
-    return (
-      <>
-        <ConfettiCanvas />
-        <ToastContainer toasts={toast.toasts} onDismiss={toast.dismiss} position="top-right" />
-
-        <div className="pb-12 min-h-screen flex items-center justify-center">
-          <div className="max-w-lg w-full mx-auto px-4">
-            {/* Success state */}
-            <div
-              className="bg-white rounded-3xl border border-[var(--border)] overflow-hidden"
-              style={{
-                boxShadow: '0 32px 72px rgba(0,0,0,0.18), 0 12px 28px rgba(0,0,0,0.10)',
-                animation: 'fadeInUp 0.5s ease-out',
-              }}
-            >
-              {/* Header */}
-              <div className="bg-gradient-red p-8 text-center relative overflow-hidden">
-                <div
-                  className="absolute inset-0 opacity-10"
-                  style={{
-                    backgroundImage:
-                      "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")",
-                  }}
-                />
-                <div className="relative z-10">
-                  <AnimatedCheckmark />
-                  <h2 className="text-2xl font-black font-koho text-white mb-1">
-                    {paymentMethod === 'movi'
-                      ? 'Thanh toán thành công! (Bay trước trả sau MOVI)'
-                      : receiptImage
-                        ? 'Đã ghi nhận thanh toán & ảnh biên lai!'
-                        : 'Đặt vé thành công!'}
-                  </h2>
-                  <p className="text-white/90 text-sm font-medium">
-                    {paymentMethod === 'movi'
-                      ? 'Hồ sơ trả góp đã được ghi nhận. Thông tin chặng bay, vé, khách hàng và mã đặt chỗ được hiển thị bên dưới.'
-                      : receiptImage
-                        ? 'Ảnh biên lai đã được gửi đến Hệ Thống đối chiếu. Vé điện tử sẽ được kích hoạt ngay khi kiểm tra.'
-                        : 'Vé điện tử đã được gửi đến email của bạn'}
-                  </p>
-                </div>
-              </div>
-
-              {/* ─── MOVI: bốn khối thông tin khách phải thấy ───────────────────
-                  Thông tin chặng bay · Thông tin vé · Thông tin khách hàng ·
-                  Mã đặt chỗ. Bốn khối này nằm ngay dưới tiêu đề "thanh toán
-                  thành công" vì đó là câu hỏi đầu tiên của khách sau khi
-                  chọn "mua trước trả sau": vé của tôi đi đâu, ai đi, và mã
-                  đặt chỗ là gì. */}
-              {paymentMethod === 'movi' && booking && (
-                <div className="p-6 space-y-4">
-                  {/* Mã đặt chỗ */}
-                  <section className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4">
-                    <h3 className="text-xs font-bold uppercase tracking-widest text-[var(--foreground-subtle)] mb-2">
-                      Mã đặt chỗ
-                    </h3>
-                    <div className="text-3xl font-black text-primary tracking-widest">
-                      {bookingCodeLabel}
-                    </div>
-                    <p className="text-xs text-[var(--foreground-subtle)] mt-1">
-                      Dùng mã này để tra cứu chuyến bay, làm thủ tục và liên hệ bộ phận hỗ trợ.
-                    </p>
-                  </section>
-
-                  {/* Thông tin chặng bay */}
-                  <section className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4">
-                    <h3 className="text-xs font-bold uppercase tracking-widest text-[var(--foreground-subtle)] mb-3">
-                      Thông tin chặng bay
-                    </h3>
-                    <div className="flex items-center justify-between mb-3">
-                      <span className="text-sm font-bold text-[var(--foreground)]">
-                        {booking.flightNo}
-                      </span>
-                      <span className="text-xs text-[var(--foreground-subtle)]">
-                        {formatBookingDay(booking.date)}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-4">
-                      <div>
-                        <div className="text-2xl font-black text-[var(--foreground)]">
-                          {booking.departTime}
-                        </div>
-                        <div className="text-xs font-semibold text-[var(--foreground-muted)]">
-                          {booking.from}
-                        </div>
-                        <div className="text-xs text-[var(--foreground-subtle)]">
-                          {booking.fromCity}
-                        </div>
-                      </div>
-                      <div className="flex-1 flex flex-col items-center">
-                        <Icon name="PaperAirplaneIcon" size={20} className="text-primary" />
-                        <div className="text-xs text-[var(--foreground-subtle)] mt-1">
-                          Bay thẳng
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <div className="text-2xl font-black text-[var(--foreground)]">
-                          {booking.arriveTime}
-                        </div>
-                        <div className="text-xs font-semibold text-[var(--foreground-muted)]">
-                          {booking.to}
-                        </div>
-                        <div className="text-xs text-[var(--foreground-subtle)]">
-                          {booking.toCity}
-                        </div>
-                      </div>
-                    </div>
-                    {booking.returnFlightNo && (
-                      <div className="mt-4 pt-4 border-t border-[var(--border)]">
-                        <div className="flex items-center justify-between mb-3">
-                          <span className="text-xs font-bold text-[var(--foreground-subtle)]">
-                            {booking.returnFlightNo} (Chiều về)
-                          </span>
-                          <span className="text-xs text-[var(--foreground-subtle)]">
-                            {booking.returnDate ? formatBookingDay(booking.returnDate) : ''}
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-4">
-                          <div>
-                            <div className="text-2xl font-black text-[var(--foreground)]">
-                              {booking.returnDepartTime || '—'}
-                            </div>
-                            <div className="text-xs font-semibold text-[var(--foreground-muted)]">
-                              {booking.to}
-                            </div>
-                          </div>
-                          <div className="flex-1 flex flex-col items-center">
-                            <Icon
-                              name="PaperAirplaneIcon"
-                              size={20}
-                              className="text-primary rotate-180"
-                            />
-                            <div className="text-xs text-[var(--foreground-subtle)] mt-1">
-                              Bay thẳng
-                            </div>
-                          </div>
-                          <div className="text-right">
-                            <div className="text-2xl font-black text-[var(--foreground)]">
-                              {booking.returnArriveTime || '—'}
-                            </div>
-                            <div className="text-xs font-semibold text-[var(--foreground-muted)]">
-                              {booking.from}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                  </section>
-
-                  {/* Thông tin vé */}
-                  <section className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4">
-                    <h3 className="text-xs font-bold uppercase tracking-widest text-[var(--foreground-subtle)] mb-3">
-                      Thông tin vé
-                    </h3>
-                    <div className="space-y-2 text-sm">
-                      <div className="flex justify-between items-center">
-                        <span className="text-[var(--foreground-muted)]">Hạng vé</span>
-                        <span className="font-semibold text-[var(--foreground)]">Phổ thông</span>
-                      </div>
-                      <div className="border-t border-dashed border-[var(--border)]" />
-                      <div className="flex justify-between items-center">
-                        <span className="text-[var(--foreground-muted)]">Số hành khách</span>
-                        <span className="font-semibold text-[var(--foreground)]">
-                          {booking.passengers.length}
-                        </span>
-                      </div>
-                      <div className="border-t border-dashed border-[var(--border)]" />
-                      <div className="flex justify-between items-center">
-                        <span className="text-[var(--foreground-muted)]">Tổng tiền vé</span>
-                        <span className="font-bold text-primary">
-                          {total.toLocaleString('vi-VN')}₫
-                        </span>
-                      </div>
-                      <div className="border-t border-dashed border-[var(--border)]" />
-                      <div className="flex justify-between items-center">
-                        <span className="text-[var(--foreground-muted)]">
-                          Phương thức thanh toán
-                        </span>
-                        <span className="font-semibold text-[var(--foreground)]">
-                          Bay trước trả sau (MOVI)
-                        </span>
-                      </div>
-                    </div>
-                  </section>
-
-                  {/* Thông tin khách hàng */}
-                  <section className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4">
-                    <h3 className="text-xs font-bold uppercase tracking-widest text-[var(--foreground-subtle)] mb-3">
-                      Thông tin khách hàng
-                    </h3>
-                    {booking.passengers.map(
-                      (p: { name: string; seat: string; returnSeat?: string }, i: number) => (
-                        <div
-                          key={i}
-                          className="flex items-center justify-between py-2 border-b border-[var(--border)] last:border-b-0"
-                        >
-                          <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 bg-primary-50 rounded-full flex items-center justify-center">
-                              <Icon name="UserIcon" size={14} className="text-primary" />
-                            </div>
-                            <div>
-                              <div className="font-semibold text-[var(--foreground)] text-sm">
-                                {p.name}
-                              </div>
-                              <div className="text-xs text-[var(--foreground-subtle)]">
-                                Hành khách {i + 1}
-                              </div>
-                            </div>
-                          </div>
-                          <div className="text-right">
-                            <div className="font-bold text-[var(--foreground)]">
-                              {p.returnSeat
-                                ? `Đi: ${p.seat} | Về: ${p.returnSeat}`
-                                : `Ghế ${p.seat}`}
-                            </div>
-                            <div className="text-xs text-[var(--foreground-subtle)]">Phổ thông</div>
-                          </div>
-                        </div>
-                      )
-                    )}
-                    <div className="mt-3 pt-3 border-t border-[var(--border)]">
-                      <div className="text-xs font-bold uppercase tracking-widest text-[var(--foreground-subtle)] mb-2">
-                        Người đăng ký trả góp
-                      </div>
-                      <div className="space-y-1 text-sm">
-                        <div className="flex justify-between items-center">
-                          <span className="text-[var(--foreground-muted)]">Họ và tên</span>
-                          <span className="font-semibold text-[var(--foreground)]">
-                            {moviFullName.trim() || '—'}
-                          </span>
-                        </div>
-                        <div className="flex justify-between items-center">
-                          <span className="text-[var(--foreground-muted)]">Ngày sinh</span>
-                          <span className="font-semibold text-[var(--foreground)]">
-                            {moviBirthDate.trim() || '—'}
-                          </span>
-                        </div>
-                        <div className="flex justify-between items-center">
-                          <span className="text-[var(--foreground-muted)]">Số điện thoại</span>
-                          <span className="font-semibold text-[var(--foreground)]">
-                            {moviPhone.trim() || '—'}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </section>
-                </div>
-              )}
-
-              {/* E-Ticket */}
-              <div className="p-6">
-                {/* Booking code with copy button */}
-                <div className="text-center mb-6">
-                  <div className="text-xs font-bold text-[var(--foreground-subtle)] uppercase tracking-widest mb-2">
-                    Mã đặt chỗ
-                  </div>
-                  <div className="flex items-center justify-center gap-3">
-                    <div className="text-3xl font-black text-primary tracking-widest">
-                      {bookingCodeLabel}
-                    </div>
-                    {/* Nút sao chép mã đặt chỗ đã được xóa theo yêu cầu thiết kế */}
-                  </div>
-                </div>
-
-                {/* Dashed divider */}
-                <div className="relative my-5">
-                  <div className="border-t-2 border-dashed border-[var(--border)] " />
-                  <div className="absolute left-0 top-1/2 -translate-y-1/2 w-4 h-4 bg-[var(--surface)] rounded-full -ml-2 border border-[var(--border)] " />
-                  <div className="absolute right-0 top-1/2 -translate-y-1/2 w-4 h-4 bg-[var(--surface)] rounded-full -mr-2 border border-[var(--border)] " />
-                </div>
-
-                {/* Flight info */}
-                <div className="bg-[var(--surface)] rounded-2xl p-4 mb-4">
-                  {booking && (
-                    <>
-                      <div className="flex items-center justify-between mb-3">
-                        <div className="text-xs font-bold text-[var(--foreground-subtle)]">
-                          {booking.flightNo}
-                        </div>
-                        <div className="text-xs text-[var(--foreground-subtle)]">
-                          {formatBookingDay(booking.date)}
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-4">
-                        <div>
-                          <div className="text-2xl font-black text-[var(--foreground)]">
-                            {booking.departTime}
-                          </div>
-                          <div className="text-xs font-semibold text-[var(--foreground-muted)]">
-                            {booking.from}
-                          </div>
-                          <div className="text-xs text-[var(--foreground-subtle)]">
-                            {booking.fromCity}
-                          </div>
-                        </div>
-                        <div className="flex-1 flex flex-col items-center">
-                          <Icon name="AirplaneIcon" size={20} className="text-primary rotate-90" />
-                          <div className="text-xs text-[var(--foreground-subtle)] mt-1">
-                            Bay thẳng
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <div className="text-2xl font-black text-[var(--foreground)]">
-                            {booking.arriveTime}
-                          </div>
-                          <div className="text-xs font-semibold text-[var(--foreground-muted)]">
-                            {booking.to}
-                          </div>
-                          <div className="text-xs text-[var(--foreground-subtle)]">
-                            {booking.toCity}
-                          </div>
-                        </div>
-                      </div>
-
-                      {booking.returnFlightNo && (
-                        <div className="mt-4 pt-4 border-t border-[var(--border)]">
-                          <div className="flex items-center justify-between mb-3">
-                            <div className="text-xs font-bold text-[var(--foreground-subtle)]">
-                              {booking.returnFlightNo} (Chiều về)
-                            </div>
-                            <div className="text-xs text-[var(--foreground-subtle)]">
-                              {booking.returnDate ? formatBookingDay(booking.returnDate) : ''}
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-4">
-                            <div>
-                              <div className="text-2xl font-black text-[var(--foreground)]">
-                                {booking.returnDepartTime || '—'}
-                              </div>
-                              <div className="text-xs font-semibold text-[var(--foreground-muted)]">
-                                {booking.to}
-                              </div>
-                              <div className="text-xs text-[var(--foreground-subtle)]">
-                                {booking.toCity}
-                              </div>
-                            </div>
-                            <div className="flex-1 flex flex-col items-center">
-                              <Icon
-                                name="AirplaneIcon"
-                                size={20}
-                                className="text-primary -rotate-90"
-                              />
-                              <div className="text-xs text-[var(--foreground-subtle)] mt-1">
-                                Bay thẳng
-                              </div>
-                            </div>
-                            <div className="text-right">
-                              <div className="text-2xl font-black text-[var(--foreground)]">
-                                {booking.returnArriveTime || '—'}
-                              </div>
-                              <div className="text-xs font-semibold text-[var(--foreground-muted)]">
-                                {booking.from}
-                              </div>
-                              <div className="text-xs text-[var(--foreground-subtle)]">
-                                {booking.fromCity}
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-                    </>
-                  )}
-                </div>
-
-                {/* Passenger */}
-                {booking?.passengers.map(
-                  (p: { name: string; seat: string; returnSeat?: string }, i: number) => (
-                    <div
-                      key={i}
-                      className="flex items-center justify-between py-3 border-b border-[var(--border)] "
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 bg-primary-50 rounded-full flex items-center justify-center">
-                          <Icon name="UserIcon" size={14} className="text-primary" />
-                        </div>
-                        <div>
-                          <div className="font-semibold text-[var(--foreground)] text-sm">
-                            {p.name}
-                          </div>
-                          <div className="text-xs text-[var(--foreground-subtle)]">
-                            Hành khách {i + 1}
-                          </div>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <div className="font-bold text-[var(--foreground)]">
-                          {p.returnSeat ? `Đi: ${p.seat} | Về: ${p.returnSeat}` : `Ghế ${p.seat}`}
-                        </div>
-                        <div className="text-xs text-[var(--foreground-subtle)]">Phổ thông</div>
-                      </div>
-                    </div>
-                  )
-                )}
-
-                {/* Bank Payment Info — the receiving account, since the customer
-                    no longer enters an account of their own. */}
-                {paymentMethod === 'bank' && selectedAdminAccount && (
-                  <div className="mt-4 bg-[rgb(var(--blue-rgb))]/10 border border-[rgb(var(--blue-rgb))]/30 rounded-vj p-4">
-                    <div className="flex items-center gap-2 mb-3">
-                      <div className="w-8 h-8 rounded-vj flex items-center justify-center text-white text-xs font-bold flex-shrink-0 bg-primary">
-                        {selectedAdminAccount.admin_bank_name.substring(0, 2)}
-                      </div>
-                      <div>
-                        <span className="text-xs font-bold text-[var(--blue)] uppercase tracking-wider block">
-                          Thanh toán qua ngân hàng
-                        </span>
-                        <span className="text-xs text-[var(--blue)]">
-                          {selectedAdminAccount.admin_bank_name}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="space-y-2 text-sm bg-[var(--background)] rounded-vj p-3 border border-[rgb(var(--blue-rgb))]/20">
-                      <div className="flex justify-between items-center">
-                        <span className="text-[var(--foreground-muted)] text-xs">Số tài khoản</span>
-                        <span className="font-mono font-bold text-[var(--foreground)]">
-                          {selectedAdminAccount.admin_bank_account_number}
-                        </span>
-                      </div>
-                      <div className="border-t border-dashed border-[var(--border)] " />
-                      <div className="flex justify-between items-center">
-                        <span className="text-[var(--foreground-muted)] text-xs">
-                          Chủ tài khoản
-                        </span>
-                        <span className="font-semibold text-[var(--foreground)]">
-                          {selectedAdminAccount.admin_bank_account_holder}
-                        </span>
-                      </div>
-                      <div className="border-t border-dashed border-[var(--border)] " />
-                      <div className="flex justify-between items-center">
-                        <span className="text-[var(--foreground-muted)] text-xs">
-                          Nội dung chuyển khoản
-                        </span>
-                        <span className="font-mono font-bold text-primary">{transferNote}</span>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* Total */}
-                <div className="flex justify-between items-center mt-4 pt-4 border-t border-[var(--border)] ">
-                  <span className="font-bold text-[var(--foreground-muted)]">Tổng thanh toán</span>
-                  <span className="text-xl font-black text-primary">
-                    {total.toLocaleString('vi-VN')}₫
-                  </span>
-                </div>
-
-                {/* E-boarding passes — mỗi hành khách một thẻ, QR + mã vạch thật. */}
-                <div className="mt-5 space-y-4">
-                  <div className="text-xs font-bold text-[var(--foreground-subtle)] uppercase tracking-widest text-center">
-                    Thẻ lên máy bay điện tử
-                  </div>
-                  {ticketData?.passengers.map((p, i) => (
-                    <EBoardingPass key={i} data={ticketData} passenger={p} />
-                  ))}
-                </div>
-
-                {/* Share section */}
-                <div className="mt-5 pt-4 border-t border-[var(--border)] ">
-                  <div className="text-xs font-bold text-[var(--foreground-subtle)] uppercase tracking-widest mb-3 text-center">
-                    Chia sẻ chuyến bay
-                  </div>
-                  <div className="flex items-center justify-center gap-2">
-                    {/* Facebook */}
-                    <button
-                      onClick={handleShareFacebook}
-                      title="Chia sẻ lên Facebook"
-                      className="flex items-center gap-2 px-4 py-2 rounded-vj bg-social-facebook text-white text-xs font-semibold hover:bg-social-facebook-hover transition-all hover:-translate-y-0.5 hover:shadow-vj-md"
-                    >
-                      <svg viewBox="0 0 24 24" className="w-4 h-4 fill-current">
-                        <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
-                      </svg>
-                      Facebook
-                    </button>
-                    {/* Twitter/X */}
-                    <button
-                      onClick={handleShareTwitter}
-                      title="Chia sẻ lên X (Twitter)"
-                      className="flex items-center gap-2 px-4 py-2 rounded-vj bg-[var(--foreground)] text-white text-xs font-semibold hover:bg-[var(--foreground-muted)] transition-all hover:-translate-y-0.5 hover:shadow-vj-md"
-                    >
-                      <svg viewBox="0 0 24 24" className="w-4 h-4 fill-current">
-                        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-                      </svg>
-                      X
-                    </button>
-                    {/* Native share (mobile) */}
-                    {typeof navigator !== 'undefined' && 'share' in navigator && (
-                      <button
-                        onClick={handleShareNative}
-                        title="Chia sẻ"
-                        className="flex items-center gap-2 px-4 py-2 rounded-vj bg-[var(--surface-2)] text-[var(--foreground-muted)] text-xs font-semibold hover:bg-[var(--surface-3)] transition-all hover:-translate-y-0.5 hover:shadow-vj-md border border-[var(--border)] "
-                      >
-                        <Icon name="ShareIcon" size={14} />
-                        Chia sẻ
-                      </button>
-                    )}
-                  </div>
-                </div>
-
-                {/* Actions */}
-                <div className="mt-6 flex flex-col gap-3">
-                  <button
-                    type="button"
-                    onClick={handleDownloadETicket}
-                    className="w-full flex items-center justify-center gap-2 bg-vjyellow hover:bg-accent-dark text-[var(--foreground)] font-black py-3.5 rounded-vj transition-all shadow-vj-btn hover:shadow-vj-btn-hover hover:-translate-y-0.5 text-sm"
-                  >
-                    <Icon name="ArrowDownTrayIcon" size={16} />
-                    Tải vé điện tử (PDF)
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setShowItineraryModal(true)}
-                    className="w-full flex items-center justify-center gap-2 bg-vj-booking-red hover:bg-vj-booking-red-hover text-white font-bold py-3.5 rounded-vj transition-all shadow-vj-sm text-sm cursor-pointer"
-                  >
-                    <Icon name="TicketIcon" size={16} />
-                    Xem Hành trình & Vé điện tử (Vietjet Itinerary)
-                  </button>
-                  <Link
-                    href={`/dat-ve/${bookingCode || bookingId || booking?.bookingId || ''}`}
-                    className="w-full flex items-center justify-center gap-2 bg-vj-pill hover:bg-vj-surface-3 text-vj-text-strong font-bold py-3 rounded-vj transition-all text-sm"
-                  >
-                    <Icon name="DocumentTextIcon" size={16} />
-                    Trang chi tiết vé #{bookingCodeLabel}
-                  </Link>
-                  <Link
-                    href="/chuyen-bay-cua-toi"
-                    className="vj-btn vj-btn-primary w-full py-3 rounded-vj text-sm"
-                  >
-                    <Icon name="HomeIcon" size={16} />
-                    Chuyến bay của tôi
-                  </Link>
-                  <Link
-                    href="/trang-chu"
-                    className="w-full border border-[var(--border)] text-[var(--foreground-muted)] hover:bg-[var(--surface)] font-semibold py-2.5 rounded-vj transition-all text-sm text-center"
-                  >
-                    Về trang chủ
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <ItineraryModal
-          isOpen={showItineraryModal}
-          onClose={() => setShowItineraryModal(false)}
-          booking={itineraryBookingData}
-        />
-      </>
     );
   }
 
@@ -2517,47 +1332,6 @@ export default function PaymentClient() {
         </div>
       </div>
       <ToastContainer toasts={toast.toasts} onDismiss={toast.dismiss} position="top-right" />
-      {/* Payment processing overlay */}
-      {loading && <PaymentProcessingOverlay />}
-
-      {/* Error modal */}
-      {showErrorModal && paymentError && (
-        <ErrorModal
-          title="Thanh toán thất bại"
-          message={paymentError}
-          onRetry={() => {
-            setShowErrorModal(false);
-            setPaymentError(null);
-          }}
-          onDismiss={() => {
-            setShowErrorModal(false);
-            setPaymentError(null);
-          }}
-        />
-      )}
-
-      {/* VietQR Payment Modal matching Screenshot 2 & Screenshot 1 */}
-      <PaymentModal
-        isOpen={showVietQrModal}
-        onClose={() => setShowVietQrModal(false)}
-        methodLabel="VietQR"
-        subtotal={booking.fareSubtotal}
-        discount={discountAmount}
-        convenienceFee={vietQrConvenienceFee}
-        /* The modal shows subtotal + convenienceFee - discount, so the total it
-           prints has to be that same sum. It used to be `booking.total -
-           discount`, which already includes the fee — so the breakdown did not
-           add up to the number under it, and the customer could not tell which
-           figure was the one they would be charged. */
-        grandTotal={vietQrGrandTotal}
-        onProceed={() => {
-          setShowVietQrModal(false);
-          toast.success(
-            'Chuyển sang trang mã QR VietQR',
-            'Vui lòng quét mã QR để hoàn tất thanh toán.'
-          );
-        }}
-      />
 
       {/* Mobile Sticky Bottom Bar matching Screenshots 3 & 4 */}
       <div className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-vj-border-light px-4 py-3 shadow-vj-up-md flex items-center gap-3 sm:hidden">
@@ -2577,128 +1351,23 @@ export default function PaymentClient() {
         </button>
       </div>
 
-      {/* Modal Popup Xác nhận khoản vay Bay trước - Trả sau MOVI chuẩn Image #2 */}
-      {showMoviModal && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-fadeIn"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="movi-modal-title"
-        >
-          <div className="relative w-full max-w-md bg-white rounded-2xl p-6 sm:p-7 shadow-2xl border border-gray-100 text-center animate-scaleUp">
-            {/* Nút đóng modal */}
-            <button
-              type="button"
-              onClick={handleCloseMoviModal}
-              className="absolute top-3.5 right-3.5 text-gray-400 hover:text-gray-600 p-1 rounded-full text-base leading-none cursor-pointer"
-              aria-label="Đóng"
-            >
-              ✕
-            </button>
-
-            {/* Mascot Amy trong khung tròn với vòng lá và sao vàng chuẩn Image #2 */}
-            <div className="flex justify-center mb-1">
-              <div className="relative w-20 h-20 flex items-center justify-center">
-                <div className="absolute inset-0 rounded-full border-2 border-yellow-300 bg-amber-50/50 flex items-center justify-center shadow-xs">
-                  <span className="absolute -top-1 left-2 text-xs text-amber-400">✨</span>
-                  <span className="absolute -top-1 right-2 text-xs text-amber-400">✨</span>
-                  <span className="absolute bottom-0 left-1 text-xs text-green-500">🌿</span>
-                  <span className="absolute bottom-0 right-1 text-xs text-green-500">🌿</span>
-                </div>
-                <img
-                  src="/images/hero/amy-mascot.png"
-                  alt="Vietjet Mascot"
-                  className="w-14 h-14 object-contain relative z-10 drop-shadow"
-                />
-              </div>
-            </div>
-
-            {/* Tiêu đề & thông điệp */}
-            <h3
-              id="movi-modal-title"
-              className="text-base sm:text-lg font-bold text-gray-900 mt-2 font-koho"
-            >
-              Vé của bạn được hỗ trợ thanh toán trong vòng 30 phút
-            </h3>
-            <p className="text-xs text-gray-600 mt-1 font-koho">
-              Vui lòng thực hiện xác nhận khoản vay và tiếp tục hoàn tất thủ tục với Bay trước - Trả
-              sau!
-            </p>
-
-            {/* Khung Thông tin đặt chỗ */}
-            <div className="mt-4 border border-gray-200 rounded-xl p-3.5 sm:p-4 bg-white text-left font-koho">
-              <div className="text-2xs font-bold text-gray-700 uppercase tracking-wider mb-2.5">
-                Thông tin đặt chỗ
-              </div>
-              <div className="grid grid-cols-[96px_1fr] gap-3 items-center">
-                {/* Cột trái: QR Code */}
-                <div className="flex flex-col items-center justify-center p-1 border border-gray-200 rounded-md bg-white">
-                  {moviQrDataUrl ? (
-                    <img
-                      src={moviQrDataUrl}
-                      alt={`QR Code ${bookingCodeLabel}`}
-                      className="w-20 h-20 object-contain"
-                    />
-                  ) : (
-                    <div className="w-20 h-20 bg-gray-100 animate-pulse rounded" />
-                  )}
-                </div>
-
-                {/* Cột phải: Bảng thông tin */}
-                <div className="space-y-1 text-2xs sm:text-xs">
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-gray-500 font-medium">Mã đặt chỗ</span>
-                    <span className="font-extrabold text-red-600 text-sm">{bookingCodeLabel}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-500 font-medium">Họ tên</span>
-                    <span className="font-semibold text-gray-800 uppercase">
-                      {moviFullName.trim() || booking?.passengers?.[0]?.name || '—'}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-500 font-medium">Số điện thoại</span>
-                    <span className="font-semibold text-gray-800">
-                      {moviPhone.trim() || booking?.contactPhone || '—'}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-500 font-medium">Ngày đặt</span>
-                    <span className="text-gray-700">
-                      {formatLocalBookingDateTime(booking?.date || new Date().toISOString())}(giờ
-                      địa phương)
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-500 font-medium">Địa chỉ email</span>
-                    <span className="text-gray-700 truncate max-w-[130px]">
-                      {booking?.contactEmail || 'customer@vietjetsim.vn'}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between pt-1 border-t border-gray-100">
-                    <span className="text-gray-500 font-medium">Tổng tiền</span>
-                    <span className="font-extrabold text-red-600 text-xs sm:text-sm">
-                      {total.toLocaleString('vi-VN')} VND
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Nút Thanh toán màu vàng chuẩn Image #2 */}
-            <div className="mt-5 flex justify-center">
-              <button
-                type="button"
-                onClick={executeMoviPayment}
-                disabled={loading}
-                className="px-8 py-2 bg-vjyellow hover:bg-vjamber text-black font-bold text-xs sm:text-sm rounded-md shadow-xs active:scale-98 transition-all cursor-pointer disabled:opacity-50"
-              >
-                {loading ? 'Đang xử lý...' : 'Thanh toán'}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* VietQR Payment Modal */}
+      <PaymentModal
+        isOpen={showVietQrModal}
+        onClose={() => setShowVietQrModal(false)}
+        methodLabel="VietQR"
+        subtotal={booking?.fareSubtotal}
+        discount={discountAmount}
+        convenienceFee={vietQrConvenienceFee}
+        grandTotal={vietQrGrandTotal}
+        onProceed={() => {
+          setShowVietQrModal(false);
+          toast.success(
+            'Chuyển sang trang mã QR VietQR',
+            'Vui lòng quét mã QR để hoàn tất thanh toán.'
+          );
+        }}
+      />
 
       {/* Modal Thông tin đặt chỗ (Screenshot 7) */}
       <PassengerDetailModal
