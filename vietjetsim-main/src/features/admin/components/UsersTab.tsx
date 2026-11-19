@@ -406,12 +406,12 @@ export default function UsersTab({ onToast }: { onToast?: ToastAPI }) {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
         <div>
           <h2 className="text-2xl font-black text-white tracking-tight flex items-center gap-3">
-            <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 flex items-center justify-center text-indigo-400 border border-indigo-500/20 shadow-lg shadow-indigo-500/5">
+            <div className="w-12 h-12 rounded-2xl bg-vj-blue flex items-center justify-center text-vj-blue border border-vj-blue shadow-vj-lg shadow-vj-sm">
               <Icon name="UsersIcon" size={24} />
             </div>
             <div>
               Quản lý người dùng
-              <p className="text-2xs font-black text-slate-500 uppercase tracking-[0.2em] mt-1 opacity-70">
+              <p className="text-2xs font-black text-vj-text-muted uppercase tracking-[0.2em] mt-1 opacity-70">
                 Tổng số {users.length} tài khoản trong hệ thống
               </p>
             </div>
@@ -430,7 +430,7 @@ export default function UsersTab({ onToast }: { onToast?: ToastAPI }) {
             });
             setShowCreateForm(true);
           }}
-          className="flex items-center justify-center gap-2 px-8 py-4 bg-primary hover:bg-primary-dark text-white rounded-2xl text-xs2 font-black uppercase tracking-[0.2em] shadow-xl shadow-primary/20 transition-all active:scale-95 group cursor-pointer"
+          className="flex items-center justify-center gap-2 px-8 py-4 bg-primary hover:bg-primary-dark text-white rounded-2xl text-xs2 font-black uppercase tracking-[0.2em] shadow-xl shadow-primary/20 transition-all active:scale-98 group cursor-pointer"
         >
           <Icon
             name="PlusCircleIcon"
@@ -447,7 +447,7 @@ export default function UsersTab({ onToast }: { onToast?: ToastAPI }) {
           <Icon
             name="MagnifyingGlassIcon"
             size={20}
-            className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-indigo-400 transition-colors"
+            className="absolute left-5 top-1/2 -translate-y-1/2 text-vj-text-muted group-focus-within:text-vj-blue transition-colors"
           />
           <input
             type="text"
@@ -457,36 +457,36 @@ export default function UsersTab({ onToast }: { onToast?: ToastAPI }) {
               setCurrentPage(1);
             }}
             placeholder="Tìm theo tên, email hoặc số điện thoại..."
-            className="w-full pl-14 pr-6 py-4 bg-slate-800/40 border border-white/5 rounded-vj-pill text-sm font-semibold text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500/50 transition-all focus:bg-slate-800/60"
+            className="w-full pl-14 pr-6 py-4 bg-slate-800 border border-white/5 rounded-vj-pill text-sm font-semibold text-white placeholder-slate-600 focus:outline-none focus:border-vj-blue transition-all focus:bg-slate-800"
           />
         </div>
 
-        <div className="xl:col-span-4 flex items-center bg-slate-800/20 border border-white/5 rounded-vj-pill p-1.5 gap-1">
+        <div className="xl:col-span-4 flex items-center bg-slate-800 border border-white/5 rounded-vj-pill p-1.5 gap-1">
           <div className="relative flex-1">
             <input
               type="date"
               value={joinDateFrom}
               onChange={(e) => setJoinDateFrom(e.target.value)}
-              className="w-full pl-10 pr-3 py-2.5 bg-transparent border-none rounded-xl text-xs2 font-black text-slate-300 focus:ring-0 uppercase tracking-wider"
+              className="w-full pl-10 pr-3 py-2.5 bg-transparent border-none rounded-vj text-xs2 font-black text-vj-text-muted focus:ring-0 uppercase tracking-wider"
             />
             <Icon
               name="CalendarDaysIcon"
               size={16}
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-600"
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-vj-text-muted"
             />
           </div>
-          <Icon name="ArrowRightIcon" size={12} className="text-slate-700" />
+          <Icon name="ArrowRightIcon" size={12} className="text-vj-text-muted" />
           <div className="relative flex-1">
             <input
               type="date"
               value={joinDateTo}
               onChange={(e) => setJoinDateTo(e.target.value)}
-              className="w-full pl-10 pr-3 py-2.5 bg-transparent border-none rounded-xl text-xs2 font-black text-slate-300 focus:ring-0 uppercase tracking-wider"
+              className="w-full pl-10 pr-3 py-2.5 bg-transparent border-none rounded-vj text-xs2 font-black text-vj-text-muted focus:ring-0 uppercase tracking-wider"
             />
             <Icon
               name="CalendarDaysIcon"
               size={16}
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-600"
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-vj-text-muted"
             />
           </div>
         </div>
@@ -495,7 +495,7 @@ export default function UsersTab({ onToast }: { onToast?: ToastAPI }) {
           {(activeFilterCount > 0 || searchQuery) && (
             <button
               onClick={clearAllFilters}
-              className="flex items-center gap-2 px-6 py-3 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 text-2xs font-black uppercase tracking-widest rounded-2xl border border-rose-500/20 transition-all group"
+              className="flex items-center gap-2 px-6 py-3 bg-vj-red-dark hover:bg-vj-red-dark text-vj-red-dark text-2xs font-black uppercase tracking-widest rounded-2xl border border-vj-red-dark transition-all group"
             >
               <Icon
                 name="XMarkIcon"
@@ -509,23 +509,23 @@ export default function UsersTab({ onToast }: { onToast?: ToastAPI }) {
       </div>
 
       <div className="flex flex-wrap items-center gap-4">
-        <div className="flex bg-slate-800/40 rounded-2xl p-1.5 border border-white/5 shadow-inner">
+        <div className="flex bg-slate-800 rounded-2xl p-1.5 border border-white/5 shadow-inner">
           {ROLE_TABS.map((tab) => (
             <button
               key={tab.value}
               onClick={() => setFilterRole(tab.value)}
-              className={`px-5 py-2.5 rounded-xl text-2xs font-black uppercase tracking-widest transition-all ${filterRole === tab.value ? 'bg-indigo-600 text-white shadow-lg' : 'text-slate-500 hover:text-slate-300'}`}
+              className={`px-5 py-2.5 rounded-vj text-2xs font-black uppercase tracking-widest transition-all ${filterRole === tab.value ? 'bg-vj-blue text-white shadow-vj-lg' : 'text-vj-text-muted hover:text-vj-text-muted'}`}
             >
               {tab.label}
             </button>
           ))}
         </div>
-        <div className="flex bg-slate-800/40 rounded-2xl p-1.5 border border-white/5 shadow-inner">
+        <div className="flex bg-slate-800 rounded-2xl p-1.5 border border-white/5 shadow-inner">
           {STATUS_TABS.map((tab) => (
             <button
               key={tab.value}
               onClick={() => setFilterStatus(tab.value)}
-              className={`px-5 py-2.5 rounded-xl text-2xs font-black uppercase tracking-widest transition-all ${filterStatus === tab.value ? 'bg-white text-slate-900 shadow-lg' : 'text-slate-500 hover:text-slate-300'}`}
+              className={`px-5 py-2.5 rounded-vj text-2xs font-black uppercase tracking-widest transition-all ${filterStatus === tab.value ? 'bg-white text-vj-text-muted shadow-vj-lg' : 'text-vj-text-muted hover:text-vj-text-muted'}`}
             >
               {tab.label}
             </button>
@@ -548,40 +548,40 @@ export default function UsersTab({ onToast }: { onToast?: ToastAPI }) {
             <thead>
               <tr className="bg-white/5 border-b border-white/5">
                 <th
-                  className="text-left text-2xs font-black text-slate-500 uppercase tracking-widest px-6 py-5 cursor-pointer hover:text-white transition-colors select-none whitespace-nowrap"
+                  className="text-left text-2xs font-black text-vj-text-muted uppercase tracking-widest px-6 py-5 cursor-pointer hover:text-white transition-colors select-none whitespace-nowrap"
                   onClick={() => handleSort('name')}
                 >
                   Người dùng
                   <SortIcon col="name" />
                 </th>
-                <th className="text-left text-2xs font-black text-slate-500 uppercase tracking-widest px-6 py-5 hidden sm:table-cell">
+                <th className="text-left text-2xs font-black text-vj-text-muted uppercase tracking-widest px-6 py-5 hidden sm:table-cell">
                   Liên hệ
                 </th>
-                <th className="text-center text-2xs font-black text-slate-500 uppercase tracking-widest px-6 py-5">
+                <th className="text-center text-2xs font-black text-vj-text-muted uppercase tracking-widest px-6 py-5">
                   Vai trò
                 </th>
                 <th
-                  className="text-right text-2xs font-black text-slate-500 uppercase tracking-widest px-6 py-5 hidden md:table-cell cursor-pointer hover:text-white transition-colors select-none whitespace-nowrap"
+                  className="text-right text-2xs font-black text-vj-text-muted uppercase tracking-widest px-6 py-5 hidden md:table-cell cursor-pointer hover:text-white transition-colors select-none whitespace-nowrap"
                   onClick={() => handleSort('bookings')}
                 >
                   Đặt vé
                   <SortIcon col="bookings" />
                 </th>
                 <th
-                  className="text-right text-2xs font-black text-slate-500 uppercase tracking-widest px-6 py-5 hidden lg:table-cell cursor-pointer hover:text-white transition-colors select-none whitespace-nowrap"
+                  className="text-right text-2xs font-black text-vj-text-muted uppercase tracking-widest px-6 py-5 hidden lg:table-cell cursor-pointer hover:text-white transition-colors select-none whitespace-nowrap"
                   onClick={() => handleSort('spent')}
                 >
                   Chi tiêu
                   <SortIcon col="spent" />
                 </th>
                 <th
-                  className="text-center text-2xs font-black text-slate-500 uppercase tracking-widest px-6 py-5 cursor-pointer hover:text-white transition-colors select-none whitespace-nowrap"
+                  className="text-center text-2xs font-black text-vj-text-muted uppercase tracking-widest px-6 py-5 cursor-pointer hover:text-white transition-colors select-none whitespace-nowrap"
                   onClick={() => handleSort('status')}
                 >
                   Trạng thái
                   <SortIcon col="status" />
                 </th>
-                <th className="text-center text-2xs font-black text-slate-500 uppercase tracking-widest px-6 py-5">
+                <th className="text-center text-2xs font-black text-vj-text-muted uppercase tracking-widest px-6 py-5">
                   Thao tác
                 </th>
               </tr>
@@ -593,33 +593,33 @@ export default function UsersTab({ onToast }: { onToast?: ToastAPI }) {
                     <tr key={i} className="border-b border-white/5 animate-pulse">
                       <td className="px-6 py-5">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 bg-slate-700/50 rounded-xl" />
+                          <div className="w-10 h-10 bg-slate-700 rounded-vj" />
                           <div>
-                            <div className="h-4 w-28 bg-slate-700/50 rounded-full mb-2" />
-                            <div className="h-3 w-20 bg-slate-800/50 rounded-full" />
+                            <div className="h-4 w-28 bg-slate-700 rounded-full mb-2" />
+                            <div className="h-3 w-20 bg-slate-800 rounded-full" />
                           </div>
                         </div>
                       </td>
                       <td className="px-6 py-5 hidden sm:table-cell">
-                        <div className="h-3 w-32 bg-slate-700/50 rounded-full mb-2" />
-                        <div className="h-3 w-24 bg-slate-800/50 rounded-full" />
+                        <div className="h-3 w-32 bg-slate-700 rounded-full mb-2" />
+                        <div className="h-3 w-24 bg-slate-800 rounded-full" />
                       </td>
                       <td className="px-6 py-5 text-center">
-                        <div className="h-5 w-14 bg-slate-700/50 rounded-full mx-auto" />
+                        <div className="h-5 w-14 bg-slate-700 rounded-full mx-auto" />
                       </td>
                       <td className="px-6 py-5 text-right hidden md:table-cell">
-                        <div className="h-4 w-8 bg-slate-700/50 rounded-full ml-auto" />
+                        <div className="h-4 w-8 bg-slate-700 rounded-full ml-auto" />
                       </td>
                       <td className="px-6 py-5 text-right hidden lg:table-cell">
-                        <div className="h-4 w-20 bg-slate-700/50 rounded-full ml-auto" />
+                        <div className="h-4 w-20 bg-slate-700 rounded-full ml-auto" />
                       </td>
                       <td className="px-6 py-5 text-center">
-                        <div className="h-7 w-24 bg-slate-700/50 rounded-lg mx-auto" />
+                        <div className="h-7 w-24 bg-slate-700 rounded-vj mx-auto" />
                       </td>
                       <td className="px-6 py-5 text-center">
                         <div className="flex items-center justify-center gap-2">
-                          <div className="h-8 w-8 bg-slate-700/50 rounded-xl" />
-                          <div className="h-8 w-8 bg-slate-700/50 rounded-xl" />
+                          <div className="h-8 w-8 bg-slate-700 rounded-vj" />
+                          <div className="h-8 w-8 bg-slate-700 rounded-vj" />
                         </div>
                       </td>
                     </tr>
@@ -640,7 +640,7 @@ export default function UsersTab({ onToast }: { onToast?: ToastAPI }) {
                       </div>
                       <button
                         onClick={retryLoad}
-                        className="flex items-center gap-1.5 text-xs font-semibold text-white bg-primary hover:bg-primary-dark px-4 py-2 rounded-xl transition-all shadow-glow-red hover:shadow-none mt-1"
+                        className="flex items-center gap-1.5 text-xs font-semibold text-white bg-primary hover:bg-primary-dark px-4 py-2 rounded-vj transition-all shadow-glow-red hover:shadow-none mt-1"
                       >
                         <Icon name="ArrowPathIcon" size={13} />
                         Thử lại
@@ -677,7 +677,7 @@ export default function UsersTab({ onToast }: { onToast?: ToastAPI }) {
                           joinDateTo) && (
                           <button
                             onClick={clearAllFilters}
-                            className="flex items-center gap-1.5 text-xs font-semibold text-white bg-primary hover:bg-primary-dark px-4 py-2 rounded-xl transition-all shadow-glow-red hover:shadow-none"
+                            className="flex items-center gap-1.5 text-xs font-semibold text-white bg-primary hover:bg-primary-dark px-4 py-2 rounded-vj transition-all shadow-glow-red hover:shadow-none"
                           >
                             <Icon name="ArrowPathIcon" size={13} />
                             Đặt lại bộ lọc
@@ -685,7 +685,7 @@ export default function UsersTab({ onToast }: { onToast?: ToastAPI }) {
                         )}
                         <button
                           onClick={retryLoad}
-                          className="flex items-center gap-1.5 text-xs font-semibold text-stone-600 border border-stone-200 hover:border-stone-300 hover:bg-stone-50 px-4 py-2 rounded-xl transition-all"
+                          className="flex items-center gap-1.5 text-xs font-semibold text-stone-600 border border-stone-200 hover:border-stone-300 hover:bg-stone-50 px-4 py-2 rounded-vj transition-all"
                         >
                           <Icon name="ArrowPathIcon" size={13} />
                           Tải lại
@@ -717,32 +717,34 @@ export default function UsersTab({ onToast }: { onToast?: ToastAPI }) {
                     <td className="px-6 py-5">
                       <div className="flex items-center gap-3">
                         <div
-                          className={`w-10 h-10 rounded-xl flex items-center justify-center text-white text-sm font-black shadow-lg ${user.role === 'admin' ? 'bg-gradient-to-br from-indigo-500 to-violet-600 shadow-indigo-500/20' : 'bg-slate-700 shadow-black/20'}`}
+                          className={`w-10 h-10 rounded-vj flex items-center justify-center text-white text-sm font-black shadow-vj-lg ${user.role === 'admin' ? 'bg-gradient-to-br from-indigo-500 to-violet-600 shadow-vj-sm' : 'bg-slate-700 shadow-black/20'}`}
                         >
                           {user.name.charAt(0)}
                         </div>
                         <div>
-                          <div className="font-bold text-slate-200 text-sm group-hover:text-white transition-colors">
+                          <div className="font-bold text-vj-text-muted text-sm group-hover:text-white transition-colors">
                             {user.name}
                           </div>
-                          <div className="text-2xs font-black text-slate-500 uppercase tracking-widest mt-0.5">
+                          <div className="text-2xs font-black text-vj-text-muted uppercase tracking-widest mt-0.5">
                             {user.joinDate}
                           </div>
                         </div>
                       </div>
                     </td>
                     <td className="px-6 py-5 hidden sm:table-cell">
-                      <div className="text-sm font-semibold text-slate-400 group-hover:text-slate-300 transition-colors">
+                      <div className="text-sm font-semibold text-vj-text-muted group-hover:text-vj-text-muted transition-colors">
                         {user.email}
                       </div>
-                      <div className="text-2xs font-bold text-slate-500 mt-0.5">{user.phone}</div>
+                      <div className="text-2xs font-bold text-vj-text-muted mt-0.5">
+                        {user.phone}
+                      </div>
                     </td>
                     <td className="px-6 py-5 text-center">
                       <span
-                        className={`text-2xs font-black px-2.5 py-1 rounded-lg uppercase tracking-wider ${
+                        className={`text-2xs font-black px-2.5 py-1 rounded-vj uppercase tracking-wider ${
                           user.role === 'admin'
-                            ? 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20'
-                            : 'bg-slate-500/10 text-slate-400 border border-slate-500/20'
+                            ? 'bg-vj-blue text-vj-blue border border-vj-blue'
+                            : 'bg-slate-500 text-vj-text-muted border border-vj-border-light'
                         }`}
                       >
                         {user.role === 'admin' ? 'Hệ Thống' : 'User'}
@@ -762,10 +764,10 @@ export default function UsersTab({ onToast }: { onToast?: ToastAPI }) {
                       <button
                         onClick={(e) => toggleStatus(e, user.id)}
                         disabled={user.role === 'admin' || togglingId === user.id}
-                        className={`text-2xs font-black px-3 py-1 rounded-lg transition-all disabled:opacity-30 disabled:cursor-not-allowed uppercase tracking-wider ${
+                        className={`text-2xs font-black px-3 py-1 rounded-vj transition-all disabled:opacity-30 disabled:cursor-not-allowed uppercase tracking-wider ${
                           user.status === 'active'
-                            ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20'
-                            : 'bg-rose-500/10 text-rose-400 border border-rose-500/20 hover:bg-rose-500/20'
+                            ? 'bg-vj-pay-green text-vj-pay-green border border-vj-pay-green hover:bg-vj-pay-green'
+                            : 'bg-vj-red-dark text-vj-red-dark border border-vj-red-dark hover:bg-vj-red-dark'
                         }`}
                       >
                         {togglingId === user.id ? (
@@ -786,7 +788,7 @@ export default function UsersTab({ onToast }: { onToast?: ToastAPI }) {
                             togglingId === user.id ||
                             switchingRoleId === user.id
                           }
-                          className="w-9 h-9 bg-slate-800 hover:bg-indigo-500/20 text-slate-400 hover:text-indigo-400 border border-white/5 rounded-xl flex items-center justify-center transition-all disabled:opacity-20 active:scale-90"
+                          className="w-9 h-9 bg-slate-800 hover:bg-vj-blue text-vj-text-muted hover:text-vj-blue border border-white/5 rounded-vj flex items-center justify-center transition-all disabled:opacity-20 active:scale-90"
                           title="Chỉnh sửa"
                         >
                           <Icon name="PencilIcon" size={14} />
@@ -798,10 +800,10 @@ export default function UsersTab({ onToast }: { onToast?: ToastAPI }) {
                             togglingId === user.id ||
                             switchingRoleId === user.id
                           }
-                          className={`w-9 h-9 border border-white/5 rounded-xl flex items-center justify-center transition-all disabled:opacity-20 active:scale-90 ${
+                          className={`w-9 h-9 border border-white/5 rounded-vj flex items-center justify-center transition-all disabled:opacity-20 active:scale-90 ${
                             user.role === 'admin'
-                              ? 'bg-slate-800 hover:bg-amber-500/20 text-slate-400 hover:text-amber-400'
-                              : 'bg-slate-800 hover:bg-indigo-500/20 text-slate-400 hover:text-indigo-400'
+                              ? 'bg-slate-800 hover:bg-amber-500/20 text-vj-text-muted hover:text-amber-400'
+                              : 'bg-slate-800 hover:bg-vj-blue text-vj-text-muted hover:text-vj-blue'
                           }`}
                           title={user.role === 'admin' ? 'Hạ cấp về User' : 'Nâng cấp lên Hệ Thống'}
                         >
@@ -822,7 +824,7 @@ export default function UsersTab({ onToast }: { onToast?: ToastAPI }) {
                             togglingId === user.id ||
                             switchingRoleId === user.id
                           }
-                          className="w-9 h-9 bg-slate-800 hover:bg-rose-500/20 text-slate-400 hover:text-rose-400 border border-white/5 rounded-xl flex items-center justify-center transition-all disabled:opacity-10 active:scale-90"
+                          className="w-9 h-9 bg-slate-800 hover:bg-vj-red-dark text-vj-text-muted hover:text-vj-red-dark border border-white/5 rounded-vj flex items-center justify-center transition-all disabled:opacity-10 active:scale-90"
                           title="Xoá"
                         >
                           {deletingId === user.id ? (
@@ -842,13 +844,13 @@ export default function UsersTab({ onToast }: { onToast?: ToastAPI }) {
         {sorted.length > 0 && (
           <div className="px-6 py-5 border-t border-white/5 bg-white/5 flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-4">
-              <span className="text-2xs font-black text-slate-500 uppercase tracking-widest">
+              <span className="text-2xs font-black text-vj-text-muted uppercase tracking-widest">
                 {sorted.length > pageSize
                   ? `Hiển thị ${(safePage - 1) * pageSize + 1}–${Math.min(safePage * pageSize, sorted.length)} / ${sorted.length} người dùng`
                   : `${sorted.length} / ${users.length} người dùng`}
               </span>
               <div className="flex items-center gap-2">
-                <span className="text-2xs font-black text-slate-600 uppercase tracking-widest">
+                <span className="text-2xs font-black text-vj-text-muted uppercase tracking-widest">
                   Hiển thị:
                 </span>
                 <select
@@ -857,7 +859,7 @@ export default function UsersTab({ onToast }: { onToast?: ToastAPI }) {
                     setPageSize(Number(e.target.value));
                     setCurrentPage(1);
                   }}
-                  className="text-2xs font-black border border-white/10 rounded-lg px-2 py-1 bg-slate-800 text-slate-300 focus:outline-none focus:border-indigo-500 cursor-pointer uppercase tracking-wider transition-all"
+                  className="text-2xs font-black border border-white/10 rounded-vj px-2 py-1 bg-slate-800 text-vj-text-muted focus:outline-none focus:border-vj-blue cursor-pointer uppercase tracking-wider transition-all"
                 >
                   <option value={10}>10</option>
                   <option value={25}>25</option>
@@ -879,7 +881,7 @@ export default function UsersTab({ onToast }: { onToast?: ToastAPI }) {
 
       {/* User Detail Modal */}
       {selectedUser && (
-        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[100] flex items-center justify-center p-4 animate-in fade-in duration-300">
+        <div className="fixed inset-0 bg-slate-950 backdrop-blur-md z-[100] flex items-center justify-center p-4 animate-in fade-in duration-300">
           <div
             className="w-full max-w-2xl bg-slate-900 border border-white/10 rounded-vj-oval overflow-hidden shadow-2xl relative animate-in zoom-in-95 duration-300"
             style={{
@@ -892,14 +894,14 @@ export default function UsersTab({ onToast }: { onToast?: ToastAPI }) {
             <div className="h-32 bg-gradient-to-r from-indigo-600/30 to-violet-600/30 relative">
               <div className="absolute -bottom-12 left-8">
                 <div
-                  className={`w-24 h-24 rounded-3xl flex items-center justify-center text-3xl font-black text-white shadow-2xl border-4 border-slate-900 ${selectedUser.role === 'admin' ? 'bg-gradient-to-br from-indigo-500 to-violet-600' : 'bg-slate-700'}`}
+                  className={`w-24 h-24 rounded-3xl flex items-center justify-center text-3xl font-black text-white shadow-2xl border-4 border-vj-border-light ${selectedUser.role === 'admin' ? 'bg-gradient-to-br from-indigo-500 to-violet-600' : 'bg-slate-700'}`}
                 >
                   {selectedUser.name.charAt(0)}
                 </div>
               </div>
               <button
                 onClick={() => setSelectedUser(null)}
-                className="absolute top-6 right-6 w-10 h-10 bg-slate-900/50 hover:bg-slate-900 text-slate-400 hover:text-white rounded-2xl flex items-center justify-center transition-all backdrop-blur-md border border-white/5"
+                className="absolute top-6 right-6 w-10 h-10 bg-slate-900 hover:bg-slate-900 text-vj-text-muted hover:text-white rounded-2xl flex items-center justify-center transition-all backdrop-blur-md border border-white/5"
               >
                 <Icon name="XMarkIcon" size={20} />
               </button>
@@ -913,15 +915,15 @@ export default function UsersTab({ onToast }: { onToast?: ToastAPI }) {
                       {selectedUser.name}
                     </h3>
                     <span
-                      className={`text-2xs font-black px-2.5 py-1 rounded-lg uppercase tracking-wider ${selectedUser.role === 'admin' ? 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20' : 'bg-slate-500/10 text-slate-400 border border-slate-500/20'}`}
+                      className={`text-2xs font-black px-2.5 py-1 rounded-vj uppercase tracking-wider ${selectedUser.role === 'admin' ? 'bg-vj-blue text-vj-blue border border-vj-blue' : 'bg-slate-500 text-vj-text-muted border border-vj-border-light'}`}
                     >
                       {selectedUser.role}
                     </span>
                   </div>
-                  <p className="text-sm font-bold text-slate-400">{selectedUser.email}</p>
-                  <p className="text-xs text-slate-500 font-medium">
+                  <p className="text-sm font-bold text-vj-text-muted">{selectedUser.email}</p>
+                  <p className="text-xs text-vj-text-muted font-medium">
                     Thành viên từ:{' '}
-                    <span className="text-slate-300 font-bold">{selectedUser.joinDate}</span>
+                    <span className="text-vj-text-muted font-bold">{selectedUser.joinDate}</span>
                   </p>
                 </div>
 
@@ -931,7 +933,7 @@ export default function UsersTab({ onToast }: { onToast?: ToastAPI }) {
                       e.stopPropagation();
                       toggleStatus(e, selectedUser.id);
                     }}
-                    className={`px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${selectedUser.status === 'active' ? 'bg-rose-500/10 text-rose-400 border border-rose-500/20 hover:bg-rose-500/20' : 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20'}`}
+                    className={`px-4 py-2 rounded-vj text-xs font-black uppercase tracking-widest transition-all ${selectedUser.status === 'active' ? 'bg-vj-red-dark text-vj-red-dark border border-vj-red-dark hover:bg-vj-red-dark' : 'bg-vj-pay-green text-vj-pay-green border border-vj-pay-green hover:bg-vj-pay-green'}`}
                   >
                     {selectedUser.status === 'active' ? 'Khoá tài khoản' : 'Mở khoá'}
                   </button>
@@ -940,7 +942,7 @@ export default function UsersTab({ onToast }: { onToast?: ToastAPI }) {
                       setShowResetPw((v) => !v);
                       setNewPassword('');
                     }}
-                    className="px-4 py-2 bg-amber-500/10 text-amber-300 border border-amber-500/20 hover:bg-amber-500/20 rounded-xl text-xs font-black uppercase tracking-widest transition-all"
+                    className="px-4 py-2 bg-amber-500/10 text-amber-300 border border-amber-500/20 hover:bg-amber-500/20 rounded-vj text-xs font-black uppercase tracking-widest transition-all"
                   >
                     Đặt lại mật khẩu
                   </button>
@@ -949,7 +951,7 @@ export default function UsersTab({ onToast }: { onToast?: ToastAPI }) {
                       e.stopPropagation();
                       setEditingUser(selectedUser);
                     }}
-                    className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-black uppercase tracking-widest transition-all shadow-lg shadow-indigo-500/20"
+                    className="px-4 py-2 bg-vj-blue hover:bg-vj-blue text-white rounded-vj text-xs font-black uppercase tracking-widest transition-all shadow-vj-lg shadow-vj-sm"
                   >
                     Sửa thông tin
                   </button>
@@ -968,7 +970,7 @@ export default function UsersTab({ onToast }: { onToast?: ToastAPI }) {
                       value={newPassword}
                       onChange={(e) => setNewPassword(e.target.value)}
                       placeholder="Tối thiểu 8 ký tự: hoa + thường + số + ký tự đặc biệt"
-                      className="flex-1 bg-slate-950/60 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-amber-500/40"
+                      className="flex-1 bg-slate-950 border border-white/10 rounded-vj px-4 py-2.5 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-amber-500/40"
                     />
                     <button
                       type="button"
@@ -993,7 +995,7 @@ export default function UsersTab({ onToast }: { onToast?: ToastAPI }) {
                           setIsResettingPw(false);
                         }
                       }}
-                      className="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 rounded-xl text-xs font-black uppercase tracking-widest transition-all disabled:opacity-40"
+                      className="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-vj-text-muted rounded-vj text-xs font-black uppercase tracking-widest transition-all disabled:opacity-40"
                     >
                       {isResettingPw ? 'Đang lưu...' : 'Xác nhận'}
                     </button>
@@ -1003,13 +1005,13 @@ export default function UsersTab({ onToast }: { onToast?: ToastAPI }) {
 
               {/* Lịch sử đặt vé */}
               <div className="mt-8">
-                <label className="text-2xs font-black text-slate-500 uppercase tracking-[0.2em] mb-4 block">
+                <label className="text-2xs font-black text-vj-text-muted uppercase tracking-[0.2em] mb-4 block">
                   Lịch sử đặt vé ({userBookings.length})
                 </label>
                 {isLoadingUserBookings ? (
-                  <p className="text-xs text-slate-500 font-medium">Đang tải lịch sử...</p>
+                  <p className="text-xs text-vj-text-muted font-medium">Đang tải lịch sử...</p>
                 ) : userBookings.length === 0 ? (
-                  <p className="text-xs text-slate-500 font-medium">
+                  <p className="text-xs text-vj-text-muted font-medium">
                     Người dùng chưa có đặt vé nào.
                   </p>
                 ) : (
@@ -1017,22 +1019,24 @@ export default function UsersTab({ onToast }: { onToast?: ToastAPI }) {
                     {userBookings.map((b) => (
                       <div
                         key={b.id}
-                        className="flex items-center justify-between gap-3 bg-white/[0.03] border border-white/5 rounded-xl px-4 py-2.5"
+                        className="flex items-center justify-between gap-3 bg-white/[0.03] border border-white/5 rounded-vj px-4 py-2.5"
                       >
                         <div className="min-w-0">
                           <p className="text-xs font-black text-white font-mono truncate">
                             {b.booking_code || b.id}
                           </p>
-                          <p className="text-2xs text-slate-400 font-bold truncate">
+                          <p className="text-2xs text-vj-text-muted font-bold truncate">
                             {b.flight_no} · {b.from_code}→{b.to_code} ·{' '}
                             {b.depart_time ? new Date(b.depart_time).toLocaleString('vi-VN') : '—'}
                           </p>
                         </div>
                         <div className="text-right shrink-0">
-                          <p className="text-xs font-black text-emerald-300">
+                          <p className="text-xs font-black text-vj-pay-green">
                             {Number(b.total_price || 0).toLocaleString('vi-VN')}₫
                           </p>
-                          <p className="text-2xs text-slate-500 font-bold uppercase">{b.status}</p>
+                          <p className="text-2xs text-vj-text-muted font-bold uppercase">
+                            {b.status}
+                          </p>
                         </div>
                       </div>
                     ))}
@@ -1063,7 +1067,7 @@ export default function UsersTab({ onToast }: { onToast?: ToastAPI }) {
                     <div className="text-lg font-black text-white tracking-tighter">
                       {stat.value}
                     </div>
-                    <div className="text-2xs font-bold text-slate-500 uppercase tracking-wider">
+                    <div className="text-2xs font-bold text-vj-text-muted uppercase tracking-wider">
                       {stat.label}
                     </div>
                   </div>
@@ -1073,48 +1077,48 @@ export default function UsersTab({ onToast }: { onToast?: ToastAPI }) {
               {/* Advanced info */}
               <div className="mt-10 grid grid-cols-1 md:grid-cols-2 gap-8">
                 <section>
-                  <label className="text-2xs font-black text-slate-500 uppercase tracking-[0.2em] mb-4 block">
+                  <label className="text-2xs font-black text-vj-text-muted uppercase tracking-[0.2em] mb-4 block">
                     Liên hệ chi tiết
                   </label>
                   <div className="space-y-4">
                     <div className="flex items-center gap-4 bg-white/5 border border-white/5 p-3 rounded-2xl">
-                      <div className="w-10 h-10 bg-slate-800 rounded-xl flex items-center justify-center text-slate-400">
+                      <div className="w-10 h-10 bg-slate-800 rounded-vj flex items-center justify-center text-vj-text-muted">
                         <Icon name="PhoneIcon" size={18} />
                       </div>
                       <div>
-                        <p className="text-2xs font-black text-slate-500 uppercase tracking-widest">
+                        <p className="text-2xs font-black text-vj-text-muted uppercase tracking-widest">
                           Số điện thoại
                         </p>
-                        <p className="text-sm font-bold text-slate-200">{selectedUser.phone}</p>
+                        <p className="text-sm font-bold text-vj-text-muted">{selectedUser.phone}</p>
                       </div>
                     </div>
                     <div className="flex items-center gap-4 bg-white/5 border border-white/5 p-3 rounded-2xl">
-                      <div className="w-10 h-10 bg-slate-800 rounded-xl flex items-center justify-center text-slate-400">
+                      <div className="w-10 h-10 bg-slate-800 rounded-vj flex items-center justify-center text-vj-text-muted">
                         <Icon name="GlobeAltIcon" size={18} />
                       </div>
                       <div>
-                        <p className="text-2xs font-black text-slate-500 uppercase tracking-widest">
+                        <p className="text-2xs font-black text-vj-text-muted uppercase tracking-widest">
                           Quốc tịch
                         </p>
-                        <p className="text-sm font-bold text-slate-200">Việt Nam</p>
+                        <p className="text-sm font-bold text-vj-text-muted">Việt Nam</p>
                       </div>
                     </div>
                   </div>
                 </section>
 
                 <section>
-                  <label className="text-2xs font-black text-slate-500 uppercase tracking-[0.2em] mb-4 block">
+                  <label className="text-2xs font-black text-vj-text-muted uppercase tracking-[0.2em] mb-4 block">
                     Ghi chú vận hành
                   </label>
                   <textarea
-                    className="w-full bg-white/5 border border-white/5 rounded-2xl p-4 text-xs text-slate-300 placeholder-slate-600 focus:outline-none focus:border-indigo-500/30 min-h-[110px] resize-none"
+                    className="w-full bg-white/5 border border-white/5 rounded-2xl p-4 text-xs text-vj-text-muted placeholder-slate-600 focus:outline-none focus:border-vj-blue min-h-[110px] resize-none"
                     placeholder="Nhập ghi chú cho người dùng này (chỉ hệ thống thấy)..."
                     value={notesDraft}
                     onChange={(e) => setNotesDraft(e.target.value)}
                     maxLength={2000}
                   />
                   <div className="flex items-center justify-between mt-3">
-                    <p className="text-2xs text-slate-500">
+                    <p className="text-2xs text-vj-text-muted">
                       {notesDraft.trim() === (selectedUser.operatorNotes ?? '')
                         ? 'Chưa có thay đổi.'
                         : 'Chưa lưu — bấm "Lưu ghi chú".'}
@@ -1125,7 +1129,7 @@ export default function UsersTab({ onToast }: { onToast?: ToastAPI }) {
                       disabled={
                         isSavingNotes || notesDraft.trim() === (selectedUser.operatorNotes ?? '')
                       }
-                      className="text-2xs font-black uppercase tracking-widest px-4 py-2 rounded-xl bg-indigo-500/20 text-indigo-200 border border-indigo-500/30 hover:bg-indigo-500/30 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                      className="text-2xs font-black uppercase tracking-widest px-4 py-2 rounded-vj bg-vj-blue text-vj-blue border border-vj-blue hover:bg-vj-blue disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                     >
                       {isSavingNotes ? 'Đang lưu...' : 'Lưu ghi chú'}
                     </button>
@@ -1150,7 +1154,7 @@ export default function UsersTab({ onToast }: { onToast?: ToastAPI }) {
               </div>
               <button
                 onClick={() => setShowCreateForm(false)}
-                className="w-8 h-8 bg-stone-100 hover:bg-stone-200 rounded-lg flex items-center justify-center cursor-pointer transition-colors"
+                className="w-8 h-8 bg-stone-100 hover:bg-stone-200 rounded-vj flex items-center justify-center cursor-pointer transition-colors"
               >
                 <Icon name="XMarkIcon" size={16} />
               </button>
@@ -1216,7 +1220,7 @@ export default function UsersTab({ onToast }: { onToast?: ToastAPI }) {
                   value={createDraft.full_name}
                   onChange={(e) => setCreateDraft((p) => ({ ...p, full_name: e.target.value }))}
                   placeholder="NGUYEN VAN A"
-                  className="w-full px-3 py-2 bg-stone-50 border border-stone-200 rounded-lg text-sm form-input"
+                  className="w-full px-3 py-2 bg-stone-50 border border-stone-200 rounded-vj text-sm form-input"
                   required
                 />
               </div>
@@ -1229,7 +1233,7 @@ export default function UsersTab({ onToast }: { onToast?: ToastAPI }) {
                   value={createDraft.email}
                   onChange={(e) => setCreateDraft((p) => ({ ...p, email: e.target.value }))}
                   placeholder="hoivien@vietjetair.com"
-                  className="w-full px-3 py-2 bg-stone-50 border border-stone-200 rounded-lg text-sm form-input"
+                  className="w-full px-3 py-2 bg-stone-50 border border-stone-200 rounded-vj text-sm form-input"
                   required
                 />
               </div>
@@ -1252,7 +1256,7 @@ export default function UsersTab({ onToast }: { onToast?: ToastAPI }) {
                     value={createDraft.password}
                     onChange={(e) => setCreateDraft((p) => ({ ...p, password: e.target.value }))}
                     placeholder="Tối thiểu 8 ký tự (hoa, thường, số, ký tự đặc biệt)"
-                    className="w-full px-3 py-2 pr-14 bg-stone-50 border border-stone-200 rounded-lg text-sm form-input"
+                    className="w-full px-3 py-2 pr-14 bg-stone-50 border border-stone-200 rounded-vj text-sm form-input"
                     required
                   />
                   <button
@@ -1276,7 +1280,7 @@ export default function UsersTab({ onToast }: { onToast?: ToastAPI }) {
                   value={createDraft.phone}
                   onChange={(e) => setCreateDraft((p) => ({ ...p, phone: e.target.value }))}
                   placeholder="0901 234 567"
-                  className="w-full px-3 py-2 bg-stone-50 border border-stone-200 rounded-lg text-sm form-input"
+                  className="w-full px-3 py-2 bg-stone-50 border border-stone-200 rounded-vj text-sm form-input"
                 />
               </div>
               <div>
@@ -1293,7 +1297,7 @@ export default function UsersTab({ onToast }: { onToast?: ToastAPI }) {
                     }))
                   }
                   placeholder="Tự động cấp (SJ...) hoặc nhập mã"
-                  className="w-full px-3 py-2 bg-stone-50 border border-stone-200 rounded-lg text-sm form-input"
+                  className="w-full px-3 py-2 bg-stone-50 border border-stone-200 rounded-vj text-sm form-input"
                 />
                 <p className="text-2xs text-stone-400 mt-1">
                   Để trống để hệ thống tự động cấp mã SkyJoy hội viên mới (SJ + 8 chữ số).
@@ -1311,7 +1315,7 @@ export default function UsersTab({ onToast }: { onToast?: ToastAPI }) {
                       role: e.target.value as 'user' | 'admin',
                     }))
                   }
-                  className="w-full px-3 py-2 bg-stone-50 border border-stone-200 rounded-lg text-sm form-input"
+                  className="w-full px-3 py-2 bg-stone-50 border border-stone-200 rounded-vj text-sm form-input"
                 >
                   <option value="user">Hội viên SkyJoy (User)</option>
                   <option value="admin">Quản trị viên (Hệ Thống)</option>
@@ -1322,14 +1326,14 @@ export default function UsersTab({ onToast }: { onToast?: ToastAPI }) {
                   type="button"
                   onClick={() => setShowCreateForm(false)}
                   disabled={isCreating}
-                  className="flex-1 border border-stone-300 text-stone-600 font-semibold py-2.5 rounded-xl text-sm hover:bg-stone-50 transition-all disabled:opacity-50 cursor-pointer"
+                  className="flex-1 border border-stone-300 text-stone-600 font-semibold py-2.5 rounded-vj text-sm hover:bg-stone-50 transition-all disabled:opacity-50 cursor-pointer"
                 >
                   Huỷ
                 </button>
                 <button
                   type="submit"
                   disabled={isCreating}
-                  className="flex-1 bg-primary hover:bg-primary-dark text-white font-bold py-2.5 rounded-xl text-sm transition-all disabled:opacity-60 cursor-pointer flex items-center justify-center gap-2"
+                  className="flex-1 bg-primary hover:bg-primary-dark text-white font-bold py-2.5 rounded-vj text-sm transition-all disabled:opacity-60 cursor-pointer flex items-center justify-center gap-2"
                 >
                   {isCreating ? (
                     <>
@@ -1368,7 +1372,7 @@ export default function UsersTab({ onToast }: { onToast?: ToastAPI }) {
               <h3 className="font-bold text-stone-900">Chỉnh sửa người dùng</h3>
               <button
                 onClick={() => setEditingUser(null)}
-                className="w-8 h-8 bg-stone-100 hover:bg-stone-200 rounded-lg flex items-center justify-center"
+                className="w-8 h-8 bg-stone-100 hover:bg-stone-200 rounded-vj flex items-center justify-center"
               >
                 <Icon name="XMarkIcon" size={16} />
               </button>
@@ -1386,7 +1390,7 @@ export default function UsersTab({ onToast }: { onToast?: ToastAPI }) {
                       setEditingUser((p) => (p ? { ...p, name: e.target.value } : p))
                     }
                     placeholder=" "
-                    className={`w-full px-3 py-2 bg-stone-50 border border-stone-200 rounded-lg text-sm form-input ${editingUser.name.trim().length >= 2 ? 'form-input-valid' : ''}`}
+                    className={`w-full px-3 py-2 bg-stone-50 border border-stone-200 rounded-vj text-sm form-input ${editingUser.name.trim().length >= 2 ? 'form-input-valid' : ''}`}
                   />
                   <label className="form-label-float">Nguyễn Văn A</label>
                 </div>
@@ -1403,7 +1407,7 @@ export default function UsersTab({ onToast }: { onToast?: ToastAPI }) {
                       setEditingUser((p) => (p ? { ...p, email: e.target.value } : p))
                     }
                     placeholder=" "
-                    className={`w-full px-3 py-2 bg-stone-50 border border-stone-200 rounded-lg text-sm form-input ${/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(editingUser.email) ? 'form-input-valid' : ''}`}
+                    className={`w-full px-3 py-2 bg-stone-50 border border-stone-200 rounded-vj text-sm form-input ${/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(editingUser.email) ? 'form-input-valid' : ''}`}
                   />
                   <label className="form-label-float">email@example.com</label>
                 </div>
@@ -1420,7 +1424,7 @@ export default function UsersTab({ onToast }: { onToast?: ToastAPI }) {
                       setEditingUser((p) => (p ? { ...p, phone: e.target.value } : p))
                     }
                     placeholder=" "
-                    className={`w-full px-3 py-2 bg-stone-50 border border-stone-200 rounded-lg text-sm form-input ${editingUser.phone.replace(/\D/g, '').length >= 9 ? 'form-input-valid' : ''}`}
+                    className={`w-full px-3 py-2 bg-stone-50 border border-stone-200 rounded-vj text-sm form-input ${editingUser.phone.replace(/\D/g, '').length >= 9 ? 'form-input-valid' : ''}`}
                   />
                   <label className="form-label-float">0901 234 567</label>
                 </div>
@@ -1434,7 +1438,7 @@ export default function UsersTab({ onToast }: { onToast?: ToastAPI }) {
                   onChange={(e) =>
                     setEditingUser((p) => (p ? { ...p, role: e.target.value as UserRole } : p))
                   }
-                  className="w-full px-3 py-2 bg-stone-50 border border-stone-200 rounded-lg text-sm form-input"
+                  className="w-full px-3 py-2 bg-stone-50 border border-stone-200 rounded-vj text-sm form-input"
                 >
                   <option value="user">Người dùng</option>
                   <option value="admin">Hệ Thống</option>
@@ -1445,14 +1449,14 @@ export default function UsersTab({ onToast }: { onToast?: ToastAPI }) {
                   type="button"
                   onClick={() => setEditingUser(null)}
                   disabled={isSavingEdit}
-                  className="flex-1 border border-stone-300 text-stone-600 font-semibold py-2.5 rounded-xl text-sm hover:bg-stone-50 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex-1 border border-stone-300 text-stone-600 font-semibold py-2.5 rounded-vj text-sm hover:bg-stone-50 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Huỷ
                 </button>
                 <button
                   type="submit"
                   disabled={isSavingEdit}
-                  className="flex-1 bg-primary hover:bg-primary-dark text-white font-bold py-2.5 rounded-xl text-sm transition-all disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  className="flex-1 bg-primary hover:bg-primary-dark text-white font-bold py-2.5 rounded-vj text-sm transition-all disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
                   {isSavingEdit ? (
                     <>

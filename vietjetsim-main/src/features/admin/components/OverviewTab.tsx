@@ -84,6 +84,31 @@ export default function OverviewTab({ onNavigate }: Props) {
         })
       : null;
 
+  const handleExportPdf = async () => {
+    const to = new Date();
+    to.setHours(23, 59, 59, 999);
+    const from = new Date();
+    from.setDate(from.getDate() - 6);
+    from.setHours(0, 0, 0, 0);
+    const fmt = (d: Date) => d.toISOString().slice(0, 10);
+    setExporting(true);
+    try {
+      const blob = await exportRevenueReportPdf({ from: fmt(from), to: fmt(to) });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `bao-cao-doanh-thu-${fmt(from)}_${fmt(to)}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      toast.error('Xuất báo cáo', err instanceof Error ? err.message : 'Lỗi không xác định');
+    } finally {
+      setExporting(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -93,23 +118,25 @@ export default function OverviewTab({ onNavigate }: Props) {
             <span className="w-3 h-3 rounded-full bg-primary animate-pulse" />
             Bảng điều khiển tổng quan
           </h2>
-          <p className="text-xs text-slate-400 mt-1">
+          <p className="text-xs text-vj-text-muted mt-1">
             Theo dõi thời gian thực các chỉ số kinh doanh, chuyến bay và đặt chỗ Vietjet
           </p>
         </div>
 
         <div className="flex items-center gap-3">
           {formattedLastUpdated && (
-            <span className="text-xs text-slate-400 hidden sm:inline-block">
+            <span className="text-xs text-vj-text-muted hidden sm:inline-block">
               Cập nhật lúc:{' '}
-              <span className="font-mono text-slate-300 font-semibold">{formattedLastUpdated}</span>
+              <span className="font-mono text-vj-text-muted font-semibold">
+                {formattedLastUpdated}
+              </span>
             </span>
           )}
           <button
             type="button"
             onClick={handleExportReport}
             disabled={exporting}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold text-white bg-emerald-500/20 border border-emerald-500/30 hover:bg-emerald-500/30 transition-all active:scale-95 disabled:opacity-50"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-vj text-xs font-bold text-white bg-vj-pay-green border border-vj-pay-green hover:bg-vj-pay-green transition-all active:scale-98 disabled:opacity-50"
           >
             <Icon
               name={exporting ? 'ArrowPathIcon' : 'ArrowDownTrayIcon'}
@@ -122,7 +149,7 @@ export default function OverviewTab({ onNavigate }: Props) {
             type="button"
             onClick={() => refetch()}
             disabled={loading}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold text-white bg-indigo-500/20 border border-indigo-500/30 hover:bg-indigo-500/30 transition-all active:scale-95 disabled:opacity-50"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-vj text-xs font-bold text-white bg-vj-blue border border-vj-blue hover:bg-vj-blue transition-all active:scale-98 disabled:opacity-50"
           >
             <Icon name="ArrowPathIcon" size={14} className={loading ? 'animate-spin' : ''} />
             Làm mới
@@ -140,18 +167,18 @@ export default function OverviewTab({ onNavigate }: Props) {
           }}
         >
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-xl bg-rose-500/20 text-rose-400">
+            <div className="p-2 rounded-vj bg-vj-red-dark text-vj-red-dark">
               <Icon name="ExclamationTriangleIcon" size={24} />
             </div>
             <div>
-              <h4 className="text-sm font-bold text-rose-200">Không thể tải dữ liệu mới nhất</h4>
-              <p className="text-xs text-rose-300/80 mt-0.5">{error}</p>
+              <h4 className="text-sm font-bold text-vj-red-dark">Không thể tải dữ liệu mới nhất</h4>
+              <p className="text-xs text-vj-red-dark mt-0.5">{error}</p>
             </div>
           </div>
           <button
             type="button"
             onClick={() => refetch()}
-            className="px-4 py-2 rounded-xl text-xs font-bold text-white bg-rose-600 hover:bg-rose-500 transition-colors"
+            className="px-4 py-2 rounded-vj text-xs font-bold text-white bg-vj-red-dark hover:bg-vj-red-dark transition-colors"
           >
             Thử lại
           </button>
@@ -242,8 +269,8 @@ export default function OverviewTab({ onNavigate }: Props) {
               title="Doanh thu hôm nay"
               value={formatCurrency(data?.kpi?.revenueToday ?? 0)}
               change={data?.kpi?.revenueTodayChange}
-              icon={<Icon name="CurrencyDollarIcon" size={24} className="text-emerald-400" />}
-              colorClass="text-emerald-400"
+              icon={<Icon name="CurrencyDollarIcon" size={24} className="text-vj-pay-green" />}
+              colorClass="text-vj-pay-green"
             />
             <KPIWidget
               title="Người dùng hoạt động"

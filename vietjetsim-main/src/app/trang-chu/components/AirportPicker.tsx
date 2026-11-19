@@ -404,7 +404,7 @@ export default function AirportPicker({
             aria-label={ariaLabel ?? label}
             // `z-50` clears the sticky header (z-40); a fixed panel portalled to
             // the body is a sibling of the whole page, not of the hero.
-            className="fixed z-50 overflow-hidden rounded-vj border border-vj-border bg-white shadow-lg"
+            className="fixed z-50 overflow-hidden rounded-vj border border-vj-border bg-white shadow-vj-lg"
             style={{
               left: anchor?.left ?? 0,
               top: anchor?.top ?? 0,
@@ -451,7 +451,7 @@ export default function AirportPicker({
                     <span className="flex items-center gap-1.5 font-bold text-black">
                       <span aria-hidden="true">🇻🇳</span> Chặng bay nội địa
                     </span>
-                    <span className="text-xs2 font-semibold text-red-600 bg-white/90 px-2 py-0.5 rounded-full border border-red-100">
+                    <span className="text-xs2 font-semibold text-vj-red-dark bg-white/90 px-2 py-0.5 rounded-full border border-red-100">
                       {domesticResults.length}
                     </span>
                   </li>

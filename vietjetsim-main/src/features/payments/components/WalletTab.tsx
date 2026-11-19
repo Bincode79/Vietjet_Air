@@ -182,7 +182,7 @@ function AddPaymentMethodModal({
   };
 
   const inputClass =
-    'w-full px-4 py-3 bg-[var(--surface-2)] border border-[var(--border)] rounded-xl text-sm transition-all focus:outline-none focus:ring-2 focus:ring-[rgb(var(--primary-rgb))]/20 focus:border-[var(--primary)]';
+    'w-full px-4 py-3 bg-[var(--surface-2)] border border-[var(--border)] rounded-vj text-sm transition-all focus:outline-none focus:ring-2 focus:ring-[rgb(var(--primary-rgb))]/20 focus:border-[var(--primary)]';
   const labelClass =
     'block text-sm font-semibold mb-1.5 text-[var(--foreground)] font-[KoHo,sans-serif]';
 
@@ -207,13 +207,13 @@ function AddPaymentMethodModal({
 
         <form onSubmit={handleSubmit} className="p-6 space-y-5">
           {/* Type Tabs */}
-          <div className="flex gap-2 p-1 bg-[var(--surface-2)] rounded-xl">
+          <div className="flex gap-2 p-1 bg-[var(--surface-2)] rounded-vj">
             <button
               type="button"
               onClick={() => setMethodType('card')}
-              className={`flex-1 py-2.5 rounded-lg text-sm font-semibold font-[KoHo,sans-serif] transition-all ${
+              className={`flex-1 py-2.5 rounded-vj text-sm font-semibold font-[KoHo,sans-serif] transition-all ${
                 methodType === 'card'
-                  ? 'bg-white text-[var(--primary)] shadow-sm'
+                  ? 'bg-white text-[var(--primary)] shadow-vj-sm'
                   : 'text-[var(--foreground-muted)] hover:text-[var(--foreground)]'
               }`}
             >
@@ -223,9 +223,9 @@ function AddPaymentMethodModal({
             <button
               type="button"
               onClick={() => setMethodType('bank')}
-              className={`flex-1 py-2.5 rounded-lg text-sm font-semibold font-[KoHo,sans-serif] transition-all ${
+              className={`flex-1 py-2.5 rounded-vj text-sm font-semibold font-[KoHo,sans-serif] transition-all ${
                 methodType === 'bank'
-                  ? 'bg-white text-[var(--primary)] shadow-sm'
+                  ? 'bg-white text-[var(--primary)] shadow-vj-sm'
                   : 'text-[var(--foreground-muted)] hover:text-[var(--foreground)]'
               }`}
             >
@@ -356,7 +356,7 @@ function AddPaymentMethodModal({
             <button
               type="submit"
               disabled={loading}
-              className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-[var(--primary)] text-white rounded-xl font-semibold font-[KoHo,sans-serif] hover:bg-[var(--primary-dark)] transition-all shadow-md hover:shadow-lg active:scale-95 disabled:opacity-50"
+              className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-[var(--primary)] text-white rounded-vj font-semibold font-[KoHo,sans-serif] hover:bg-[var(--primary-dark)] transition-all shadow-vj-md hover:shadow-vj-lg active:scale-98 disabled:opacity-50"
             >
               {loading ? (
                 <>
@@ -374,7 +374,7 @@ function AddPaymentMethodModal({
               aria-label="Đóng"
               type="button"
               onClick={onClose}
-              className="px-6 py-3 bg-[var(--surface-2)] text-[var(--foreground-muted)] rounded-xl font-semibold font-[KoHo,sans-serif] hover:bg-[var(--surface-3)] transition-all"
+              className="px-6 py-3 bg-[var(--surface-2)] text-[var(--foreground-muted)] rounded-vj font-semibold font-[KoHo,sans-serif] hover:bg-[var(--surface-3)] transition-all"
             >
               Hủy
             </button>
@@ -640,7 +640,7 @@ export default function WalletTab({ user: _user }: WalletTabProps) {
             {/* Account Number Display */}
             {wallet?.account_number && (
               <div
-                className="flex items-center gap-2 bg-black/20 rounded-lg px-3 py-1.5 backdrop-blur-sm group hover:bg-black/30 transition-colors cursor-pointer"
+                className="flex items-center gap-2 bg-black/20 rounded-vj px-3 py-1.5 backdrop-blur-sm group hover:bg-black/30 transition-colors cursor-pointer"
                 onClick={() => {
                   navigator.clipboard.writeText(wallet.account_number);
                   toast.success('Đã sao chép', 'Số tài khoản đã được copy vào khay nhớ tạm.');
@@ -667,13 +667,13 @@ export default function WalletTab({ user: _user }: WalletTabProps) {
           </div>
 
           {/* Topup Form */}
-          <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4">
+          <div className="bg-white/10 backdrop-blur-sm rounded-vj p-4">
             <div className="mb-3">
               <label className="block text-xs text-white/70 mb-1">Nguồn nạp tiền</label>
               <select
                 value={selectedTopupMethod?.id || ''}
                 onChange={(e) => setTopupMethodId(e.target.value)}
-                className="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-xl text-sm text-white"
+                className="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-vj text-sm text-white"
               >
                 {activeTopupMethods.map((method) => (
                   <option key={method.id} value={method.id} className="text-[var(--foreground)]">
@@ -694,7 +694,7 @@ export default function WalletTab({ user: _user }: WalletTabProps) {
                     setTopupAmount(val ? parseInt(val, 10).toLocaleString('vi-VN') : '');
                   }}
                   placeholder="Nhập số tiền nạp"
-                  className="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-xl text-white placeholder-white/50 text-sm focus:outline-none focus:ring-2 focus:ring-white/40"
+                  className="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-vj text-white placeholder-white/50 text-sm focus:outline-none focus:ring-2 focus:ring-white/40"
                 />
                 <span className="absolute right-4 top-1/2 -translate-y-1/2 text-white/60 text-sm">
                   VND
@@ -703,7 +703,7 @@ export default function WalletTab({ user: _user }: WalletTabProps) {
               <button
                 onClick={handleTopup}
                 disabled={topupLoading || !topupAmount || !selectedTopupMethod}
-                className="px-6 py-3 bg-white text-[var(--primary)] rounded-xl font-bold text-sm font-[KoHo,sans-serif] hover:bg-white/90 transition-all shadow-md active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+                className="px-6 py-3 bg-white text-[var(--primary)] rounded-vj font-bold text-sm font-[KoHo,sans-serif] hover:bg-white/90 transition-all shadow-vj-md active:scale-98 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
               >
                 {topupLoading ? (
                   <Icon name="ArrowPathIcon" size={18} className="animate-spin" />
@@ -722,7 +722,7 @@ export default function WalletTab({ user: _user }: WalletTabProps) {
                 <button
                   key={amt}
                   onClick={() => setTopupAmount(amt.toLocaleString('vi-VN'))}
-                  className="flex-1 py-1.5 bg-white/15 hover:bg-white/25 rounded-lg text-xs font-semibold text-white transition-colors"
+                  className="flex-1 py-1.5 bg-white/15 hover:bg-white/25 rounded-vj text-xs font-semibold text-white transition-colors"
                 >
                   {amt >= 1000000
                     ? `${(amt / 1000000).toFixed(0)}M`
@@ -745,7 +745,7 @@ export default function WalletTab({ user: _user }: WalletTabProps) {
           </div>
           <button
             onClick={() => setShowAddModal(true)}
-            className="flex items-center gap-1.5 px-4 py-2 bg-[var(--primary)] text-white rounded-lg text-sm font-semibold font-[KoHo,sans-serif] hover:bg-[var(--primary-dark)] transition-all active:scale-95 shadow-sm"
+            className="flex items-center gap-1.5 px-4 py-2 bg-[var(--primary)] text-white rounded-vj text-sm font-semibold font-[KoHo,sans-serif] hover:bg-[var(--primary-dark)] transition-all active:scale-98 shadow-vj-sm"
           >
             <Icon name="PlusIcon" size={16} />
             Thêm mới
@@ -770,7 +770,7 @@ export default function WalletTab({ user: _user }: WalletTabProps) {
               <div key={method.id} className="p-4 flex items-center gap-4">
                 {/* Icon */}
                 <div
-                  className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
+                  className="w-12 h-12 rounded-vj flex items-center justify-center flex-shrink-0"
                   style={{ background: `${getCardBrandColor(method.cardBrand)}15` }}
                 >
                   {method.type === 'card' ? (
@@ -816,7 +816,7 @@ export default function WalletTab({ user: _user }: WalletTabProps) {
                   {!method.isDefault && (
                     <button
                       onClick={() => handleSetDefault(method.id)}
-                      className="px-3 py-1.5 text-xs text-[var(--foreground-muted)] hover:text-[var(--primary)] hover:bg-[var(--surface-2)] rounded-lg transition-colors font-semibold"
+                      className="px-3 py-1.5 text-xs text-[var(--foreground-muted)] hover:text-[var(--primary)] hover:bg-[var(--surface-2)] rounded-vj transition-colors font-semibold"
                     >
                       Đặt mặc định
                     </button>
@@ -824,7 +824,7 @@ export default function WalletTab({ user: _user }: WalletTabProps) {
                   <button
                     onClick={() => handleDelete(method.id)}
                     disabled={deletingId === method.id}
-                    className="w-8 h-8 flex items-center justify-center rounded-lg text-[var(--foreground-subtle)] hover:text-red-500 hover:bg-red-50 transition-colors disabled:opacity-50"
+                    className="w-8 h-8 flex items-center justify-center rounded-vj text-[var(--foreground-subtle)] hover:text-vj-red hover:bg-vj-surface-rose transition-colors disabled:opacity-50"
                   >
                     <Icon
                       name="TrashIcon"
@@ -852,7 +852,7 @@ export default function WalletTab({ user: _user }: WalletTabProps) {
               <select
                 value={selectedWithdrawBank?.id || ''}
                 onChange={(e) => setWithdrawMethodId(e.target.value)}
-                className="w-full px-3 py-2 bg-[var(--surface-2)] border border-[var(--border)] rounded-xl text-sm mb-2"
+                className="w-full px-3 py-2 bg-[var(--surface-2)] border border-[var(--border)] rounded-vj text-sm mb-2"
               >
                 {linkedBanks.map((bankMethod) => (
                   <option key={bankMethod.id} value={bankMethod.id}>
@@ -873,12 +873,12 @@ export default function WalletTab({ user: _user }: WalletTabProps) {
                     setWithdrawAmount(val ? parseInt(val, 10).toLocaleString('vi-VN') : '');
                   }}
                   placeholder="Nhập số tiền rút"
-                  className="flex-1 px-4 py-3 bg-[var(--surface-2)] border border-[var(--border)] rounded-xl text-sm"
+                  className="flex-1 px-4 py-3 bg-[var(--surface-2)] border border-[var(--border)] rounded-vj text-sm"
                 />
                 <button
                   onClick={handleWithdraw}
                   disabled={withdrawLoading || !withdrawAmount}
-                  className="px-4 py-3 bg-[var(--vj-navy)] text-white rounded-xl text-sm font-semibold hover:bg-[var(--vj-navy-2)] disabled:opacity-50"
+                  className="px-4 py-3 bg-[var(--vj-navy)] text-white rounded-vj text-sm font-semibold hover:bg-[var(--vj-navy-2)] disabled:opacity-50"
                 >
                   {withdrawLoading ? 'Đang rút...' : 'Rút tiền'}
                 </button>
@@ -907,7 +907,7 @@ export default function WalletTab({ user: _user }: WalletTabProps) {
                 return (
                   <div
                     key={tx.id}
-                    className="flex items-center justify-between bg-[var(--surface-2)] rounded-xl p-3"
+                    className="flex items-center justify-between bg-[var(--surface-2)] rounded-vj p-3"
                   >
                     <div>
                       <p className="text-sm font-semibold text-[var(--foreground)]">
@@ -918,7 +918,7 @@ export default function WalletTab({ user: _user }: WalletTabProps) {
                       </p>
                     </div>
                     <span
-                      className={`text-sm font-bold ${isCredit ? 'text-emerald-600' : 'text-red-500'}`}
+                      className={`text-sm font-bold ${isCredit ? 'text-vj-pay-green' : 'text-vj-red'}`}
                     >
                       {isCredit ? '+' : '-'}
                       {Math.abs(tx.amount).toLocaleString('vi-VN')}đ

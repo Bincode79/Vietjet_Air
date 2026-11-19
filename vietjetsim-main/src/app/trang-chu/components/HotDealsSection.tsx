@@ -111,7 +111,7 @@ export default function HotDealsSection() {
           {HOT_DEALS.map((deal, i) => (
             <div
               key={i}
-              className="group flex items-center gap-4 bg-white rounded-vj p-4 border border-gray-100 shadow-sm hover:-translate-y-1 hover:shadow-vj-elev-lg transition-all duration-250"
+              className="group flex items-center gap-4 bg-white rounded-vj p-4 border border-vj-border-light shadow-vj-sm hover:-translate-y-1 hover:shadow-vj-elev-lg transition-all duration-250"
             >
               <div className="relative w-20 h-20 sm:w-24 sm:h-24 flex-shrink-0 rounded-vj overflow-hidden">
                 <img
@@ -141,7 +141,7 @@ export default function HotDealsSection() {
                   </div>
                   <Link
                     href="/tim-ve"
-                    className="flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-primary hover:bg-primary-dark text-white transition-all shadow-md hover:shadow-lg hover:scale-110"
+                    className="flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-primary hover:bg-primary-dark text-white transition-all shadow-vj-md hover:shadow-vj-lg hover:scale-110"
                   >
                     <FaArrowRight size={12} />
                   </Link>

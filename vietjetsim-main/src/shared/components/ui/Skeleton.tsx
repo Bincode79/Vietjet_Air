@@ -34,9 +34,9 @@ export interface SkeletonProps extends React.HTMLAttributes<HTMLDivElement> {
 
 const ROUNDED_CLASSES: Record<SkeletonRounded, string> = {
   sm: 'rounded-sm',
-  md: 'rounded-md',
-  lg: 'rounded-lg',
-  xl: 'rounded-xl',
+  md: 'rounded-vj',
+  lg: 'rounded-vj',
+  xl: 'rounded-vj',
   '2xl': 'rounded-2xl',
   full: 'rounded-full',
 };

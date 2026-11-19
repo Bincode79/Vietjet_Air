@@ -61,7 +61,7 @@ describe('FlightDatePickerPopover Component', () => {
     // Weekdays
     const sundayHeaders = screen.getAllByText('CN');
     expect(sundayHeaders.length).toBeGreaterThanOrEqual(2);
-    expect(sundayHeaders[0]).toHaveClass('text-red-500');
+    expect(sundayHeaders[0]).toHaveClass('text-vj-red');
 
     // Selected date 19 in first month has red border styling
     const day19Buttons = screen.getAllByRole('button', { name: '19' });

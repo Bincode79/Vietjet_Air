@@ -38,12 +38,12 @@ export default function AboutPage() {
             <div className="bg-gradient-to-br from-red-50 to-yellow-50 rounded-vj p-6 border border-red-100">
               <div className="grid grid-cols-2 gap-4">
                 {[
-                  { label: 'Chuyến bay', value: '150+', icon: 'PaperAirplaneIcon' },
+                  { label: 'Chuyến bay', value: '150+', icon: 'AirplaneIcon' },
                   { label: 'Điểm đến', value: '50+', icon: 'MapPinIcon' },
                   { label: 'Người dùng', value: '10K+', icon: 'UsersIcon' },
                   { label: 'Hài lòng', value: '99%', icon: 'StarIcon' },
                 ].map((stat, i) => (
-                  <div key={i} className="bg-white rounded-vj p-4 text-center shadow-sm">
+                  <div key={i} className="bg-white rounded-vj p-4 text-center shadow-vj-sm">
                     <div className="text-[var(--primary)] mb-2 flex justify-center">
                       <Icon name={stat.icon} size={24} />
                     </div>
@@ -73,7 +73,7 @@ export default function AboutPage() {
             ].map((tech, i) => (
               <div
                 key={i}
-                className="bg-white rounded-vj p-5 shadow-vj-sm hover:shadow-vj-md transition-all duration-300 border border-gray-100 group"
+                className="bg-white rounded-vj p-5 shadow-vj-sm hover:shadow-vj-md transition-all duration-300 border border-vj-border-light group"
               >
                 <div
                   className="w-12 h-12 rounded-vj flex items-center justify-center mb-3 mx-auto group-hover:scale-110 transition-transform"

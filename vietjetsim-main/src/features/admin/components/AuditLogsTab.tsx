@@ -24,12 +24,12 @@ interface ToastAPI {
 const PAGE_SIZE = 20;
 
 const ACTION_COLORS: Record<string, { label: string; cls: string }> = {
-  create: { label: 'Tạo mới', cls: 'bg-emerald-500/15 text-emerald-400' },
+  create: { label: 'Tạo mới', cls: 'bg-vj-pay-green text-vj-pay-green' },
   update: { label: 'Cập nhật', cls: 'bg-blue-500/15 text-blue-400' },
   delete: { label: 'Xoá', cls: 'bg-red-500/15 text-red-400' },
   login: { label: 'Đăng nhập', cls: 'bg-blue-500/15 text-blue-400' },
-  logout: { label: 'Đăng xuất', cls: 'bg-slate-500/15 text-slate-300' },
-  approve: { label: 'Duyệt', cls: 'bg-emerald-500/15 text-emerald-400' },
+  logout: { label: 'Đăng xuất', cls: 'bg-slate-500 text-vj-text-muted' },
+  approve: { label: 'Duyệt', cls: 'bg-vj-pay-green text-vj-pay-green' },
   reject: { label: 'Từ chối', cls: 'bg-amber-500/15 text-amber-400' },
 };
 
@@ -138,7 +138,7 @@ export default function AuditLogsTab({ onToast }: { onToast?: ToastAPI }) {
           <button
             onClick={handleExportCSV}
             disabled={logs.length === 0}
-            className={`${ADMIN_ACTION_BTN} text-white bg-emerald-500/20 border border-emerald-500/30 hover:bg-emerald-500/30 disabled:opacity-50 disabled:cursor-not-allowed`}
+            className={`${ADMIN_ACTION_BTN} text-white bg-vj-pay-green border border-vj-pay-green hover:bg-vj-pay-green disabled:opacity-50 disabled:cursor-not-allowed`}
           >
             <Icon name="ArrowDownTrayIcon" size={14} />
             Xuất CSV
@@ -148,28 +148,28 @@ export default function AuditLogsTab({ onToast }: { onToast?: ToastAPI }) {
 
       {/* Security & Threat Telemetry Monitor */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-        <div className="bg-slate-900/60 border border-white/10 rounded-2xl p-4 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-emerald-500/15 text-emerald-400 flex items-center justify-center shrink-0">
+        <div className="bg-slate-900 border border-white/10 rounded-2xl p-4 flex items-center gap-3">
+          <div className="w-10 h-10 rounded-vj bg-vj-pay-green text-vj-pay-green flex items-center justify-center shrink-0">
             <Icon name="ShieldCheckIcon" size={22} />
           </div>
           <div>
-            <div className="text-2xs text-slate-400 font-bold uppercase tracking-wider">
+            <div className="text-2xs text-vj-text-muted font-bold uppercase tracking-wider">
               Webhook VietQR
             </div>
             <div className="text-sm font-black text-white flex items-center gap-1.5 mt-0.5">
               <span>Bảo vệ Anti-Replay</span>
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              <span className="w-2 h-2 rounded-full bg-vj-pay-green animate-pulse" />
             </div>
-            <div className="text-3xs text-emerald-400 font-medium">HMAC-SHA256 • TTL 24h</div>
+            <div className="text-3xs text-vj-pay-green font-medium">HMAC-SHA256 • TTL 24h</div>
           </div>
         </div>
 
-        <div className="bg-slate-900/60 border border-white/10 rounded-2xl p-4 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-blue-500/15 text-blue-400 flex items-center justify-center shrink-0">
+        <div className="bg-slate-900 border border-white/10 rounded-2xl p-4 flex items-center gap-3">
+          <div className="w-10 h-10 rounded-vj bg-blue-500/15 text-blue-400 flex items-center justify-center shrink-0">
             <Icon name="ServerIcon" size={22} />
           </div>
           <div>
-            <div className="text-2xs text-slate-400 font-bold uppercase tracking-wider">
+            <div className="text-2xs text-vj-text-muted font-bold uppercase tracking-wider">
               Cơ sở dữ liệu Neon
             </div>
             <div className="text-sm font-black text-white flex items-center gap-1.5 mt-0.5">
@@ -180,12 +180,12 @@ export default function AuditLogsTab({ onToast }: { onToast?: ToastAPI }) {
           </div>
         </div>
 
-        <div className="bg-slate-900/60 border border-white/10 rounded-2xl p-4 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-amber-500/15 text-amber-400 flex items-center justify-center shrink-0">
+        <div className="bg-slate-900 border border-white/10 rounded-2xl p-4 flex items-center gap-3">
+          <div className="w-10 h-10 rounded-vj bg-amber-500/15 text-amber-400 flex items-center justify-center shrink-0">
             <Icon name="BoltIcon" size={22} />
           </div>
           <div>
-            <div className="text-2xs text-slate-400 font-bold uppercase tracking-wider">
+            <div className="text-2xs text-vj-text-muted font-bold uppercase tracking-wider">
               Kiểm soát lưu lượng
             </div>
             <div className="text-sm font-black text-white flex items-center gap-1.5 mt-0.5">
@@ -196,12 +196,12 @@ export default function AuditLogsTab({ onToast }: { onToast?: ToastAPI }) {
           </div>
         </div>
 
-        <div className="bg-slate-900/60 border border-white/10 rounded-2xl p-4 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-purple-500/15 text-purple-400 flex items-center justify-center shrink-0">
+        <div className="bg-slate-900 border border-white/10 rounded-2xl p-4 flex items-center gap-3">
+          <div className="w-10 h-10 rounded-vj bg-purple-500/15 text-purple-400 flex items-center justify-center shrink-0">
             <Icon name="RadioIcon" size={22} />
           </div>
           <div>
-            <div className="text-2xs text-slate-400 font-bold uppercase tracking-wider">
+            <div className="text-2xs text-vj-text-muted font-bold uppercase tracking-wider">
               Realtime SSE Hub
             </div>
             <div className="text-sm font-black text-white flex items-center gap-1.5 mt-0.5">
@@ -219,7 +219,7 @@ export default function AuditLogsTab({ onToast }: { onToast?: ToastAPI }) {
           <Icon
             name="MagnifyingGlassIcon"
             size={18}
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500"
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-vj-text-muted"
           />
           <input
             type="text"
@@ -229,7 +229,7 @@ export default function AuditLogsTab({ onToast }: { onToast?: ToastAPI }) {
               setCurrentPage(1);
             }}
             placeholder="Tìm kiếm hành động, tài nguyên..."
-            className="w-full pl-10 pr-4 py-2.5 bg-slate-900/60 border border-white/10 rounded-xl text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-indigo-500/50"
+            className="w-full pl-10 pr-4 py-2.5 bg-slate-900 border border-white/10 rounded-vj text-sm text-white placeholder:text-vj-text-muted focus:outline-none focus:border-vj-blue"
           />
         </div>
 
@@ -239,7 +239,7 @@ export default function AuditLogsTab({ onToast }: { onToast?: ToastAPI }) {
             setActionFilter(e.target.value);
             setCurrentPage(1);
           }}
-          className="px-3 py-2.5 bg-slate-900/60 border border-white/10 rounded-xl text-sm text-white focus:outline-none focus:border-indigo-500/50 min-w-[150px]"
+          className="px-3 py-2.5 bg-slate-900 border border-white/10 rounded-vj text-sm text-white focus:outline-none focus:border-vj-blue min-w-[150px]"
         >
           <option value="">Tất cả hành động</option>
           {availableActions.map((action) => (
@@ -254,7 +254,7 @@ export default function AuditLogsTab({ onToast }: { onToast?: ToastAPI }) {
             <Icon
               name="CalendarDaysIcon"
               size={15}
-              className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none"
+              className="absolute left-2.5 top-1/2 -translate-y-1/2 text-vj-text-muted pointer-events-none"
             />
             <input
               type="date"
@@ -263,16 +263,16 @@ export default function AuditLogsTab({ onToast }: { onToast?: ToastAPI }) {
                 setDateFrom(e.target.value);
                 setCurrentPage(1);
               }}
-              className="pl-8 pr-3 py-2.5 bg-slate-900/60 border border-white/10 rounded-xl text-sm text-white [color-scheme:dark] focus:outline-none focus:border-indigo-500/50 w-36"
+              className="pl-8 pr-3 py-2.5 bg-slate-900 border border-white/10 rounded-vj text-sm text-white [color-scheme:dark] focus:outline-none focus:border-vj-blue w-36"
               title="Từ ngày"
             />
           </div>
-          <span className="text-slate-500 text-sm">–</span>
+          <span className="text-vj-text-muted text-sm">–</span>
           <div className="relative">
             <Icon
               name="CalendarDaysIcon"
               size={15}
-              className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none"
+              className="absolute left-2.5 top-1/2 -translate-y-1/2 text-vj-text-muted pointer-events-none"
             />
             <input
               type="date"
@@ -281,7 +281,7 @@ export default function AuditLogsTab({ onToast }: { onToast?: ToastAPI }) {
                 setDateTo(e.target.value);
                 setCurrentPage(1);
               }}
-              className="pl-8 pr-3 py-2.5 bg-slate-900/60 border border-white/10 rounded-xl text-sm text-white [color-scheme:dark] focus:outline-none focus:border-indigo-500/50 w-36"
+              className="pl-8 pr-3 py-2.5 bg-slate-900 border border-white/10 rounded-vj text-sm text-white [color-scheme:dark] focus:outline-none focus:border-vj-blue w-36"
               title="Đến ngày"
             />
           </div>
@@ -296,7 +296,7 @@ export default function AuditLogsTab({ onToast }: { onToast?: ToastAPI }) {
               setDateTo('');
               setCurrentPage(1);
             }}
-            className="flex items-center gap-1.5 text-xs font-semibold text-slate-400 hover:text-red-400 transition-colors px-3 py-2.5 rounded-xl border border-white/10 hover:border-red-500/30 hover:bg-red-500/10"
+            className="flex items-center gap-1.5 text-xs font-semibold text-vj-text-muted hover:text-red-400 transition-colors px-3 py-2.5 rounded-vj border border-white/10 hover:border-red-500/30 hover:bg-vj-surface-rose"
           >
             <Icon name="XMarkIcon" size={13} />
             Xoá bộ lọc
@@ -313,19 +313,19 @@ export default function AuditLogsTab({ onToast }: { onToast?: ToastAPI }) {
           <table className="w-full">
             <thead>
               <tr className="border-b border-white/5">
-                <th className="text-left text-2xs font-black text-slate-500 uppercase tracking-widest px-5 py-4">
+                <th className="text-left text-2xs font-black text-vj-text-muted uppercase tracking-widest px-5 py-4">
                   Thời gian
                 </th>
-                <th className="text-left text-2xs font-black text-slate-500 uppercase tracking-widest px-5 py-4">
+                <th className="text-left text-2xs font-black text-vj-text-muted uppercase tracking-widest px-5 py-4">
                   Hành động
                 </th>
-                <th className="text-left text-2xs font-black text-slate-500 uppercase tracking-widest px-5 py-4 hidden sm:table-cell">
+                <th className="text-left text-2xs font-black text-vj-text-muted uppercase tracking-widest px-5 py-4 hidden sm:table-cell">
                   Tài nguyên
                 </th>
-                <th className="text-left text-2xs font-black text-slate-500 uppercase tracking-widest px-5 py-4 hidden md:table-cell">
+                <th className="text-left text-2xs font-black text-vj-text-muted uppercase tracking-widest px-5 py-4 hidden md:table-cell">
                   Người dùng
                 </th>
-                <th className="text-center text-2xs font-black text-slate-500 uppercase tracking-widest px-5 py-4">
+                <th className="text-center text-2xs font-black text-vj-text-muted uppercase tracking-widest px-5 py-4">
                   Chi tiết
                 </th>
               </tr>
@@ -336,19 +336,19 @@ export default function AuditLogsTab({ onToast }: { onToast?: ToastAPI }) {
                   {[1, 2, 3, 4, 5].map((i) => (
                     <tr key={i} className="border-b border-white/5 animate-pulse">
                       <td className="px-5 py-4">
-                        <div className="h-4 w-32 bg-slate-500/10 rounded-full" />
+                        <div className="h-4 w-32 bg-slate-500 rounded-full" />
                       </td>
                       <td className="px-5 py-4">
-                        <div className="h-6 w-20 bg-slate-500/10 rounded-full" />
+                        <div className="h-6 w-20 bg-slate-500 rounded-full" />
                       </td>
                       <td className="px-5 py-4 hidden sm:table-cell">
-                        <div className="h-4 w-24 bg-slate-500/10 rounded-full" />
+                        <div className="h-4 w-24 bg-slate-500 rounded-full" />
                       </td>
                       <td className="px-5 py-4 hidden md:table-cell">
-                        <div className="h-4 w-28 bg-slate-500/10 rounded-full" />
+                        <div className="h-4 w-28 bg-slate-500 rounded-full" />
                       </td>
                       <td className="px-5 py-4">
-                        <div className="h-6 w-8 bg-slate-500/10 rounded mx-auto" />
+                        <div className="h-6 w-8 bg-slate-500 rounded mx-auto" />
                       </td>
                     </tr>
                   ))}
@@ -372,9 +372,13 @@ export default function AuditLogsTab({ onToast }: { onToast?: ToastAPI }) {
                 <tr>
                   <td colSpan={5} className="px-5 py-12 text-center">
                     <div className="flex flex-col items-center gap-3">
-                      <Icon name="ClipboardDocumentListIcon" size={32} className="text-slate-600" />
+                      <Icon
+                        name="ClipboardDocumentListIcon"
+                        size={32}
+                        className="text-vj-text-muted"
+                      />
                       <p className="font-bold text-white">Không có nhật ký nào</p>
-                      <p className="text-xs text-slate-500">
+                      <p className="text-xs text-vj-text-muted">
                         Các hoạt động sẽ được ghi lại tại đây
                       </p>
                     </div>
@@ -389,7 +393,7 @@ export default function AuditLogsTab({ onToast }: { onToast?: ToastAPI }) {
                     <React.Fragment key={log.id}>
                       <tr className="border-b border-white/5 hover:bg-white/5 transition-colors">
                         <td className="px-5 py-3.5">
-                          <span className="text-xs text-slate-400 font-medium">
+                          <span className="text-xs text-vj-text-muted font-medium">
                             {formatDate(log.created_at)}
                           </span>
                         </td>
@@ -397,10 +401,10 @@ export default function AuditLogsTab({ onToast }: { onToast?: ToastAPI }) {
                           <span className={actionConfig.cls}>{log.action}</span>
                         </td>
                         <td className="px-5 py-3.5 hidden sm:table-cell">
-                          <span className="text-xs text-slate-400">
+                          <span className="text-xs text-vj-text-muted">
                             {log.resource}
                             {log.resource_id && (
-                              <span className="text-slate-500 ml-1">
+                              <span className="text-vj-text-muted ml-1">
                                 #{log.resource_id.slice(0, 8)}
                               </span>
                             )}
@@ -412,14 +416,14 @@ export default function AuditLogsTab({ onToast }: { onToast?: ToastAPI }) {
                               {log.user_name || 'Hệ thống'}
                             </p>
                             {log.user_email && (
-                              <p className="text-xs2 text-slate-500">{log.user_email}</p>
+                              <p className="text-xs2 text-vj-text-muted">{log.user_email}</p>
                             )}
                           </div>
                         </td>
                         <td className="px-5 py-3.5 text-center">
                           <button
                             onClick={() => setExpandedLog(isExpanded ? null : log.id)}
-                            className="w-7 h-7 bg-white/5 hover:bg-white/10 text-slate-400 rounded-lg flex items-center justify-center transition-colors"
+                            className="w-7 h-7 bg-white/5 hover:bg-white/10 text-vj-text-muted rounded-vj flex items-center justify-center transition-colors"
                             title={isExpanded ? 'Ẩn chi tiết' : 'Xem chi tiết'}
                           >
                             <Icon
@@ -432,35 +436,41 @@ export default function AuditLogsTab({ onToast }: { onToast?: ToastAPI }) {
                       {isExpanded && (
                         <tr className="bg-white/[0.03]">
                           <td colSpan={5} className="px-5 py-3">
-                            <div className="rounded-lg p-4 border border-white/10 bg-slate-900/40">
+                            <div className="rounded-vj p-4 border border-white/10 bg-slate-900">
                               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-xs">
                                 <div>
-                                  <p className="text-slate-500 font-medium mb-1">ID bản ghi</p>
-                                  <p className="font-mono text-slate-300">{log.id}</p>
+                                  <p className="text-vj-text-muted font-medium mb-1">ID bản ghi</p>
+                                  <p className="font-mono text-vj-text-muted">{log.id}</p>
                                 </div>
                                 {log.resource_id && (
                                   <div>
-                                    <p className="text-slate-500 font-medium mb-1">ID tài nguyên</p>
-                                    <p className="font-mono text-slate-300">{log.resource_id}</p>
+                                    <p className="text-vj-text-muted font-medium mb-1">
+                                      ID tài nguyên
+                                    </p>
+                                    <p className="font-mono text-vj-text-muted">
+                                      {log.resource_id}
+                                    </p>
                                   </div>
                                 )}
                                 {log.ip_address && (
                                   <div>
-                                    <p className="text-slate-500 font-medium mb-1">Địa chỉ IP</p>
-                                    <p className="font-mono text-slate-300">{log.ip_address}</p>
+                                    <p className="text-vj-text-muted font-medium mb-1">
+                                      Địa chỉ IP
+                                    </p>
+                                    <p className="font-mono text-vj-text-muted">{log.ip_address}</p>
                                   </div>
                                 )}
                                 {log.user_role && (
                                   <div>
-                                    <p className="text-slate-500 font-medium mb-1">Vai trò</p>
-                                    <p className="text-slate-300">{log.user_role}</p>
+                                    <p className="text-vj-text-muted font-medium mb-1">Vai trò</p>
+                                    <p className="text-vj-text-muted">{log.user_role}</p>
                                   </div>
                                 )}
                               </div>
                               {log.details != null && (
                                 <div className="mt-3 pt-3 border-t border-white/10">
-                                  <p className="text-slate-500 font-medium mb-1">Chi tiết</p>
-                                  <pre className="text-xs text-slate-300 bg-slate-900/60 rounded p-2 overflow-x-auto">
+                                  <p className="text-vj-text-muted font-medium mb-1">Chi tiết</p>
+                                  <pre className="text-xs text-vj-text-muted bg-slate-900 rounded p-2 overflow-x-auto">
                                     {typeof log.details === 'string'
                                       ? log.details
                                       : (JSON.stringify(log.details, null, 2) ?? '')}
@@ -469,8 +479,8 @@ export default function AuditLogsTab({ onToast }: { onToast?: ToastAPI }) {
                               )}
                               {log.user_agent && (
                                 <div className="mt-3 pt-3 border-t border-white/10">
-                                  <p className="text-slate-500 font-medium mb-1">Trình duyệt</p>
-                                  <p className="text-xs text-slate-400 truncate">
+                                  <p className="text-vj-text-muted font-medium mb-1">Trình duyệt</p>
+                                  <p className="text-xs text-vj-text-muted truncate">
                                     {log.user_agent}
                                   </p>
                                 </div>

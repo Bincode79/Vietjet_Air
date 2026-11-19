@@ -140,7 +140,7 @@ export default function ConfirmationModal({
           {/* Close X */}
           <button
             onClick={handleClose}
-            className="ml-auto text-white/70 hover:text-white transition-colors p-1 rounded-lg hover:bg-white/10"
+            className="ml-auto text-white/70 hover:text-white transition-colors p-1 rounded-vj hover:bg-white/10"
             aria-label="Đóng"
           >
             <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
@@ -161,7 +161,7 @@ export default function ConfirmationModal({
           </p>
 
           {/* Divider */}
-          <div className="mt-6 h-px bg-gray-100" />
+          <div className="mt-6 h-px bg-vj-pill" />
 
           {/* Actions */}
           <div className="mt-5 flex flex-col-reverse sm:flex-row gap-3 justify-end">
@@ -169,7 +169,7 @@ export default function ConfirmationModal({
             <button
               onClick={handleClose}
               disabled={isLoading}
-              className="px-5 py-2.5 rounded-xl border-2 font-semibold text-sm transition-all duration-200 hover:bg-gray-50 active:scale-95 disabled:opacity-50"
+              className="px-5 py-2.5 rounded-vj border-2 font-semibold text-sm transition-all duration-200 hover:bg-vj-surface-2 active:scale-98 disabled:opacity-50"
               style={{
                 borderColor: '#1A2948',
                 color: '#1A2948',
@@ -183,7 +183,7 @@ export default function ConfirmationModal({
               ref={confirmBtnRef}
               onClick={onConfirm}
               disabled={isLoading}
-              className="px-6 py-2.5 rounded-xl font-bold text-sm transition-all duration-200 active:scale-95 disabled:opacity-60 flex items-center justify-center gap-2 shadow-md hover:shadow-lg"
+              className="px-6 py-2.5 rounded-vj font-bold text-sm transition-all duration-200 active:scale-98 disabled:opacity-60 flex items-center justify-center gap-2 shadow-vj-md hover:shadow-vj-lg"
               style={{
                 background: isLoading
                   ? '#E6BF00'

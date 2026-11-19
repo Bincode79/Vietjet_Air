@@ -36,16 +36,16 @@ export default function EWalletGatewayContent({
 
   return (
     <div className="max-w-xl mx-auto py-6 px-4">
-      <div className="bg-white rounded-3xl border border-gray-200/90 p-5 sm:p-8 shadow-sm space-y-6">
+      <div className="bg-white rounded-3xl border border-vj-border-light/90 p-5 sm:p-8 shadow-vj-sm space-y-6">
         <div className="text-center space-y-1">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-pink-50 border border-pink-200 text-pink-700 text-xs font-bold font-koho uppercase tracking-wider">
             <Icon name="DevicePhoneMobileIcon" size={16} />
             CỔNG THANH TOÁN VÍ ĐIỆN TỬ
           </div>
-          <h2 className="text-xl sm:text-2xl font-black text-gray-900 font-koho">
+          <h2 className="text-xl sm:text-2xl font-black text-vj-text font-koho">
             Thanh toán qua Ví điện tử
           </h2>
-          <p className="text-xs sm:text-sm text-gray-500">
+          <p className="text-xs sm:text-sm text-vj-gray">
             Quét mã QR hoặc mở trực tiếp trên App điện thoại
           </p>
         </div>
@@ -62,7 +62,7 @@ export default function EWalletGatewayContent({
                 className={`p-3.5 rounded-2xl border text-center transition-all cursor-pointer font-koho relative ${
                   isSelected
                     ? 'border-primary bg-red-50 text-primary shadow-xs ring-1 ring-primary'
-                    : 'border-gray-200 hover:border-gray-300 bg-white text-gray-800'
+                    : 'border-vj-border-light hover:border-vj-line bg-white text-vj-text-strong'
                 }`}
               >
                 <div
@@ -82,16 +82,16 @@ export default function EWalletGatewayContent({
         </div>
 
         {/* Simulation Scan Box */}
-        <div className="bg-gray-50 border border-gray-200 rounded-2xl p-6 text-center space-y-4">
-          <div className="w-48 h-48 bg-white border border-gray-300 rounded-xl p-3 mx-auto shadow-sm flex flex-col items-center justify-center">
-            <div className="w-full h-full border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center text-gray-400">
-              <Icon name="QrCodeIcon" size={80} className="text-gray-700" />
-              <span className="text-3xs font-bold mt-2 uppercase text-gray-600 font-koho">
+        <div className="bg-vj-surface-2 border border-vj-border-light rounded-2xl p-6 text-center space-y-4">
+          <div className="w-48 h-48 bg-white border border-vj-line rounded-vj p-3 mx-auto shadow-vj-sm flex flex-col items-center justify-center">
+            <div className="w-full h-full border-2 border-dashed border-vj-line rounded-vj flex flex-col items-center justify-center text-vj-muted">
+              <Icon name="QrCodeIcon" size={80} className="text-vj-text-dim" />
+              <span className="text-3xs font-bold mt-2 uppercase text-vj-text-strong font-koho">
                 QR {wallet.name}
               </span>
             </div>
           </div>
-          <div className="text-xs font-bold text-gray-700 font-koho">
+          <div className="text-xs font-bold text-vj-text-dim font-koho">
             Số tiền:{' '}
             <span className="text-primary font-black text-sm">
               {amount.toLocaleString('vi-VN')} VND
@@ -102,7 +102,7 @@ export default function EWalletGatewayContent({
             type="button"
             onClick={handleSimulateAppPay}
             disabled={isProcessing}
-            className="w-full py-3 bg-gradient-to-r from-red-600 to-primary hover:from-red-700 hover:to-primary-dark text-white rounded-xl font-bold text-sm cursor-pointer shadow-md"
+            className="w-full py-3 bg-gradient-to-r from-red-600 to-primary hover:from-red-700 hover:to-primary-dark text-white rounded-vj font-bold text-sm cursor-pointer shadow-vj-md"
           >
             {isProcessing ? 'Đang xác thực ví...' : `Mở ứng dụng ${wallet.name} để thanh toán`}
           </button>

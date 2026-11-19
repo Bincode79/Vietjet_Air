@@ -309,16 +309,8 @@ export default function MyFlightsPage() {
 
       if (foundBooking) {
         const code = foundBooking.booking_code || cleanCode;
-        if (foundBooking.status === 'pending') {
-          toast.success(
-            'Tìm thấy đặt chỗ!',
-            `Mã: ${code} (Chưa thanh toán). Chuyển đến trang thanh toán...`
-          );
-          router.push(`/thanh-toan?bookingId=${code}`);
-        } else {
-          toast.success('Đặt chỗ tìm thấy!', `Mã: ${code}`);
-          router.push(`/dat-ve/${code}`);
-        }
+        toast.success('Tìm thấy đặt chỗ!', `Mã: ${code}`);
+        router.push(`/dat-ve/${code}`);
       } else {
         toast.show({
           title: 'Không tìm thấy đặt chỗ',
@@ -339,7 +331,7 @@ export default function MyFlightsPage() {
     <div className="flex flex-col bg-[var(--background)]">
       {/* Nền mây phủ trọn vùng header + nội dung chính và chiếm đúng một
           viewport (`min-h-screen`), khớp ảnh chụp màn hình thực tế. */}
-      <div className="relative flex min-h-screen flex-col overflow-hidden bg-rose-50 bg-[url('/images/hero/hero-window-clouds.jpg')] bg-cover bg-center bg-no-repeat">
+      <div className="relative flex min-h-screen flex-col overflow-hidden bg-vj-red-dark bg-[url('/images/hero/hero-window-clouds.jpg')] bg-cover bg-center bg-no-repeat">
         {/* Dải ruy-băng xanh/vàng/đỏ ở góc dưới phải, nằm sau thẻ tra cứu. */}
         <img
           src="/images/hero/chuyen-bay-ribbon.svg"
@@ -495,7 +487,7 @@ export default function MyFlightsPage() {
                       </form>
 
                       {/* Banner ngang Ngoại tệ sẵn sàng - Hành trình an tâm */}
-                      <div className="w-full overflow-hidden rounded-xl shadow-md border border-white/60 mb-6">
+                      <div className="w-full overflow-hidden rounded-vj shadow-vj-md border border-white/60 mb-6">
                         <img
                           src="/images/hero/banner-chuyenbay-mobile.png"
                           alt="Mua ngoại tệ dễ dàng khi đặt vé"
@@ -522,10 +514,10 @@ export default function MyFlightsPage() {
                           Cột bắt đầu tại `x=120`; H2 lệch `+105px`, khối ô nhập
                           lệch thêm `+15px` (site thật `x=240`). */}
                       <div className="flex flex-col pt-10.5 xl:pl-26.25">
-                        <h2 className="text-xl sm:text-2xl font-bold uppercase tracking-tight text-gray-950">
+                        <h2 className="text-xl sm:text-2xl font-bold uppercase tracking-tight text-vj-dark">
                           CHUYẾN BAY CỦA TÔI
                         </h2>
-                        <p className="mt-3 font-koho text-base font-semibold leading-[24px] text-gray-800">
+                        <p className="mt-3 font-koho text-base font-semibold leading-[24px] text-vj-text-strong">
                           Bạn muốn xem chuyến bay đã đặt, đổi lịch trình bay hay mua thêm dịch vụ
                           hành lý, chỗ ngồi, suất ăn..., vui lòng điền thông tin bên dưới:
                         </p>
@@ -614,7 +606,7 @@ export default function MyFlightsPage() {
 
                       {/* Cột phải: banner ngoại tệ hiển thị theo đúng tỷ lệ ảnh 480:648 */}
                       <div className="flex items-center justify-center pt-6 xl:pt-10.5 xl:pl-6">
-                        <div className="relative aspect-[480/648] w-full max-w-[420px] xl:max-w-[460px] overflow-hidden rounded-xl shadow-vj-blue-lg">
+                        <div className="relative aspect-[480/648] w-full max-w-[420px] xl:max-w-[460px] overflow-hidden rounded-vj shadow-vj-blue-lg">
                           <AppImage
                             src="/images/hero/banner-chuyenbay-ngoai-te.jpg"
                             alt="Mua ngoại tệ dễ dàng khi đặt vé"
@@ -632,47 +624,47 @@ export default function MyFlightsPage() {
 
                 {/* Tab 2: Chuyến bay sắp tới (khi khách chưa đăng nhập -> hiển thị form đăng nhập theo Ảnh 2 & 4) */}
                 {view === 'list' && !authUser && (
-                  <div className="rounded-xl bg-[rgba(248,251,255,0.95)] px-4 pb-8 pt-6 shadow-vj-blue-xl ring-1 ring-white/70 backdrop-blur-[2px] sm:px-6 xl:rounded-l-xl xl:pb-9.75 xl:pl-11.5 xl:pr-0.75 xl:pt-8.5 animate-fadeIn">
+                  <div className="rounded-vj bg-[rgba(248,251,255,0.95)] px-4 pb-8 pt-6 shadow-vj-blue-xl ring-1 ring-white/70 backdrop-blur-[2px] sm:px-6 xl:rounded-l-xl xl:pb-9.75 xl:pl-11.5 xl:pr-0.75 xl:pt-8.5 animate-fadeIn">
                     <div className="grid grid-cols-1 gap-8 xl:grid-cols-[458px_minmax(0,1fr)] xl:gap-15">
                       {/* Cột trái: Đăng nhập bằng số điện thoại / SkyJoy ID */}
                       <div className="flex flex-col justify-center py-6">
-                        <h2 className="text-center text-base sm:text-lg font-black uppercase tracking-wide text-gray-900">
+                        <h2 className="text-center text-base sm:text-lg font-black uppercase tracking-wide text-vj-text">
                           Đăng nhập
                         </h2>
 
                         <div className="mt-6 mx-auto w-full max-w-[340px] space-y-4">
-                          <div className="flex rounded-md border border-gray-300 bg-white overflow-hidden focus-within:border-primary">
-                            <span className="inline-flex items-center px-3 py-2 bg-gray-50 border-r border-gray-200 text-xs font-bold text-gray-700 select-none">
-                              (+84) <span className="text-3xs text-gray-400 ml-1">▼</span>
+                          <div className="flex rounded-vj border border-vj-line bg-white overflow-hidden focus-within:border-primary">
+                            <span className="inline-flex items-center px-3 py-2 bg-vj-surface-2 border-r border-vj-border-light text-xs font-bold text-vj-text-dim select-none">
+                              (+84) <span className="text-3xs text-vj-muted ml-1">▼</span>
                             </span>
                             <input
                               type="tel"
                               placeholder="Số điện thoại"
-                              className="flex-1 px-3 py-2 text-xs font-bold outline-none text-gray-900 bg-transparent"
+                              className="flex-1 px-3 py-2 text-xs font-bold outline-none text-vj-text bg-transparent"
                             />
                           </div>
 
                           <div className="flex justify-center">
                             <Link
                               href="/dang-nhap?redirect=/chuyen-bay-cua-toi"
-                              className="w-full py-2.5 rounded-xl bg-vjyellow hover:brightness-105 active:scale-[0.99] text-gray-950 text-center font-black text-xs sm:text-sm border border-amber-300 transition-all shadow-sm"
+                              className="w-full py-2.5 rounded-vj bg-vjyellow hover:brightness-105 active:scale-[0.99] text-vj-dark text-center font-black text-xs sm:text-sm border border-amber-300 transition-all shadow-vj-sm"
                             >
                               Đăng nhập
                             </Link>
                           </div>
 
-                          <p className="text-center text-xs text-gray-600">
+                          <p className="text-center text-xs text-vj-text-strong">
                             Bạn chưa có tài khoản?{' '}
                             <Link
                               href="/dang-ky?redirect=/chuyen-bay-cua-toi"
-                              className="font-bold text-blue-600 underline hover:text-blue-700"
+                              className="font-bold text-vj-blue underline hover:text-blue-700"
                             >
                               Đăng ký ngay
                             </Link>
                           </p>
 
-                          <div className="pt-6 border-t border-gray-100 text-center space-y-2">
-                            <p className="text-xs2 text-gray-500">
+                          <div className="pt-6 border-t border-vj-border-light text-center space-y-2">
+                            <p className="text-xs2 text-vj-gray">
                               Được cung cấp và xác thực bởi SkyJoy ID
                             </p>
                             <div className="flex items-center justify-center gap-4 text-xs font-black select-none">
@@ -689,7 +681,7 @@ export default function MyFlightsPage() {
                             <div>
                               <Link
                                 href="/gioi-thieu"
-                                className="inline-flex items-center gap-1 text-xs2 font-bold text-blue-600 hover:underline"
+                                className="inline-flex items-center gap-1 text-xs2 font-bold text-vj-blue hover:underline"
                               >
                                 <span className="text-xs">ℹ</span>
                                 <span>Bạn đã biết về Vietjet SkyJoy?</span>
@@ -701,7 +693,7 @@ export default function MyFlightsPage() {
 
                       {/* Cột phải: cùng banner quảng cáo ngoại tệ như Ảnh 2 & Ảnh 4 */}
                       <div className="flex items-center justify-center">
-                        <div className="relative aspect-[480/648] w-full max-w-[420px] overflow-hidden rounded-md shadow-vj-blue-lg sm:max-w-[460px] xl:max-w-[505px]">
+                        <div className="relative aspect-[480/648] w-full max-w-[420px] overflow-hidden rounded-vj shadow-vj-blue-lg sm:max-w-[460px] xl:max-w-[505px]">
                           <AppImage
                             src="/images/hero/banner-chuyenbay-ngoai-te.jpg"
                             alt="Mua ngoại tệ dễ dàng khi đặt vé"
@@ -766,7 +758,7 @@ export default function MyFlightsPage() {
                 {bookingsLoading ? (
                   <div className="space-y-4">
                     {[1, 2, 3].map((i) => (
-                      <div key={i} className="h-24 rounded-xl bg-[var(--surface)] animate-pulse" />
+                      <div key={i} className="h-24 rounded-vj bg-[var(--surface)] animate-pulse" />
                     ))}
                   </div>
                 ) : bookings.length === 0 ? (
@@ -866,20 +858,20 @@ export default function MyFlightsPage() {
                             {b.status === 'pending' && (
                               <Link
                                 href={`/thanh-toan?bookingId=${b.booking_code || b.id}`}
-                                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-xl bg-[var(--vj-red)] text-white font-black hover:bg-vj-red-dark shadow-xs transition-colors"
+                                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-vj bg-[var(--vj-red)] text-white font-black hover:bg-vj-red-dark shadow-xs transition-colors"
                               >
                                 <MdPayment className="h-3.5 w-3.5" /> Thanh toán ngay
                               </Link>
                             )}
                             <button
                               onClick={() => window.print()}
-                              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-xl bg-[var(--vj-yellow)] text-[var(--vj-red)] font-black hover:bg-[var(--vj-yellow-2)] transition-colors"
+                              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-vj bg-[var(--vj-yellow)] text-[var(--vj-red)] font-black hover:bg-[var(--vj-yellow-2)] transition-colors"
                             >
                               <MdPrint className="h-3.5 w-3.5" /> In vé
                             </button>
                             <Link
                               href={`/dat-ve/${b.booking_code || b.id}`}
-                              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-lg border border-[var(--border)] font-semibold hover:bg-[rgb(var(--vj-yellow-rgb))]/10 transition-colors"
+                              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-vj border border-[var(--border)] font-semibold hover:bg-[rgb(var(--vj-yellow-rgb))]/10 transition-colors"
                             >
                               <MdQrCodeScanner className="h-3.5 w-3.5" /> Xem chi tiết
                             </Link>
@@ -908,10 +900,10 @@ export default function MyFlightsPage() {
           {/* Amy Mascot với tooltip "Xin chào!" khớp 100% Ảnh tham chiếu */}
           <div className="absolute right-3 bottom-2 z-40 flex items-end pointer-events-none select-none">
             <div className="relative mb-14 -mr-1">
-              <div className="bg-white text-gray-800 text-sm font-bold px-3 py-1.5 rounded-xl shadow-lg border border-gray-200">
+              <div className="bg-white text-vj-text-strong text-sm font-bold px-3 py-1.5 rounded-vj shadow-vj-lg border border-vj-border-light">
                 Xin chào!
               </div>
-              <div className="w-3 h-3 bg-white border-r border-b border-gray-200 rotate-45 ml-auto mr-4 -mt-1.5 shadow-xs" />
+              <div className="w-3 h-3 bg-white border-r border-b border-vj-border-light rotate-45 ml-auto mr-4 -mt-1.5 shadow-xs" />
             </div>
             <img
               src="/images/hero/amy-mascot.png"

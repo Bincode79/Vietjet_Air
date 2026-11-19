@@ -45,7 +45,7 @@ export default function LargePromoBanners() {
             <Link
               key={banner.title}
               href={banner.href}
-              className="group relative rounded-vj-hero overflow-hidden border border-[var(--border)] bg-white shadow-sm aspect-[16/9] transition-transform hover:-translate-y-1 hover:shadow-vj-elev-2xl"
+              className="group relative rounded-vj-hero overflow-hidden border border-[var(--border)] bg-white shadow-vj-sm aspect-[16/9] transition-transform hover:-translate-y-1 hover:shadow-vj-elev-2xl"
             >
               <AppImage
                 src={banner.image}
@@ -60,7 +60,7 @@ export default function LargePromoBanners() {
                 <h3 className="text-xl sm:text-2xl font-black italic leading-tight mb-3">
                   {banner.description}
                 </h3>
-                <span className="inline-flex items-center justify-center rounded-md border-2 border-[var(--accent)] bg-[var(--accent)] px-3.5 py-1.5 text-xs2 sm:text-sm font-black text-[var(--foreground)] transition-colors group-hover:border-white group-hover:bg-white">
+                <span className="inline-flex items-center justify-center rounded-vj border-2 border-[var(--accent)] bg-[var(--accent)] px-3.5 py-1.5 text-xs2 sm:text-sm font-black text-[var(--foreground)] transition-colors group-hover:border-white group-hover:bg-white">
                   {banner.action}
                 </span>
               </div>
@@ -69,7 +69,7 @@ export default function LargePromoBanners() {
         </div>
 
         {/* Banner Vikki Digital Bank / Mua ngoại tệ toàn chiều rộng */}
-        <div className="mt-8 sm:mt-10 lg:mt-12 relative rounded-vj-modal overflow-hidden border border-[var(--border)] bg-white shadow-lg aspect-[16/6] sm:aspect-[16/5] lg:aspect-[5/2]">
+        <div className="mt-8 sm:mt-10 lg:mt-12 relative rounded-vj-modal overflow-hidden border border-[var(--border)] bg-white shadow-vj-lg aspect-[16/6] sm:aspect-[16/5] lg:aspect-[5/2]">
           <AppImage
             src={VIKKI_BANNER.image}
             alt={VIKKI_BANNER.title}
@@ -85,7 +85,7 @@ export default function LargePromoBanners() {
             </h2>
             <Link
               href={VIKKI_BANNER.href}
-              className="inline-flex items-center justify-center rounded-vj border-2 border-[var(--accent)] bg-[var(--accent)] px-5 py-2.5 text-sm font-black text-[var(--foreground)] transition-colors hover:bg-white hover:text-[var(--vj-wine)] active:scale-95"
+              className="inline-flex items-center justify-center rounded-vj border-2 border-[var(--accent)] bg-[var(--accent)] px-5 py-2.5 text-sm font-black text-[var(--foreground)] transition-colors hover:bg-white hover:text-[var(--vj-wine)] active:scale-98"
             >
               {VIKKI_BANNER.action}
             </Link>

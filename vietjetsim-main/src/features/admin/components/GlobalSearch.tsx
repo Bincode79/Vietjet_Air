@@ -173,7 +173,7 @@ export default function GlobalSearch({ isOpen, onClose, onSelectResult }: Global
   const getTypeIcon = (type: SearchResult['type']) => {
     switch (type) {
       case 'flight':
-        return 'PaperAirplaneIcon';
+        return 'AirplaneIcon';
       case 'user':
         return 'UsersIcon';
       case 'booking':
@@ -186,13 +186,13 @@ export default function GlobalSearch({ isOpen, onClose, onSelectResult }: Global
   const getTypeColor = (type: SearchResult['type']) => {
     switch (type) {
       case 'flight':
-        return { bg: 'bg-red-100', text: 'text-red-600', label: 'Chuyến bay' };
+        return { bg: 'bg-red-100', text: 'text-vj-red-dark', label: 'Chuyến bay' };
       case 'user':
-        return { bg: 'bg-blue-100', text: 'text-blue-600', label: 'Người dùng' };
+        return { bg: 'bg-blue-100', text: 'text-vj-blue', label: 'Người dùng' };
       case 'booking':
         return { bg: 'bg-amber-100', text: 'text-amber-600', label: 'Đặt vé' };
       case 'checkin':
-        return { bg: 'bg-emerald-100', text: 'text-emerald-600', label: 'Check-in' };
+        return { bg: 'bg-vj-pay-green', text: 'text-vj-pay-green', label: 'Check-in' };
     }
   };
 
@@ -208,10 +208,10 @@ export default function GlobalSearch({ isOpen, onClose, onSelectResult }: Global
       delayed: { label: 'Trễ giờ', color: 'bg-orange-100 text-orange-700' },
       locked: { label: 'Khoá', color: 'bg-red-100 text-red-700' },
       admin: { label: 'Hệ Thống', color: 'bg-purple-100 text-purple-700' },
-      super_admin: { label: 'Hệ Thống Cấp Cao', color: 'bg-indigo-100 text-indigo-700' },
+      super_admin: { label: 'Hệ Thống Cấp Cao', color: 'bg-vj-blue text-vj-blue' },
     };
 
-    const config = statusMap[status] || { label: status, color: 'bg-gray-100 text-gray-700' };
+    const config = statusMap[status] || { label: status, color: 'bg-vj-pill text-vj-text-dim' };
     return (
       <span className={`text-2xs font-semibold px-1.5 py-0.5 rounded-full ${config.color}`}>
         {config.label}
@@ -262,7 +262,7 @@ export default function GlobalSearch({ isOpen, onClose, onSelectResult }: Global
           className="flex items-center gap-3 px-4 py-4 border-b"
           style={{ borderColor: 'rgba(148, 163, 184, 0.1)' }}
         >
-          <Icon name="MagnifyingGlassIcon" size={20} className="text-slate-400" />
+          <Icon name="MagnifyingGlassIcon" size={20} className="text-vj-text-muted" />
           <input
             ref={inputRef}
             type="text"
@@ -272,12 +272,12 @@ export default function GlobalSearch({ isOpen, onClose, onSelectResult }: Global
             className="flex-1 bg-transparent text-white placeholder-slate-500 outline-none text-base"
           />
           {isLoading && (
-            <div className="w-5 h-5 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
+            <div className="w-5 h-5 border-2 border-vj-blue border-t-transparent rounded-full animate-spin" />
           )}
           <button
             aria-label="Đóng"
             onClick={onClose}
-            className="px-2 py-1 text-xs font-medium text-slate-400 bg-slate-800 rounded-lg hover:bg-slate-700 transition-colors"
+            className="px-2 py-1 text-xs font-medium text-vj-text-muted bg-slate-800 rounded-vj hover:bg-slate-700 transition-colors"
           >
             ESC
           </button>
@@ -303,8 +303,8 @@ export default function GlobalSearch({ isOpen, onClose, onSelectResult }: Global
               }}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
                 activeCategory === cat.id
-                  ? 'bg-indigo-500 text-white'
-                  : 'bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700'
+                  ? 'bg-vj-blue text-white'
+                  : 'bg-slate-800 text-vj-text-muted hover:text-white hover:bg-slate-700'
               }`}
             >
               {cat.label}
@@ -329,11 +329,11 @@ export default function GlobalSearch({ isOpen, onClose, onSelectResult }: Global
                 className="w-16 h-16 rounded-full flex items-center justify-center"
                 style={{ background: 'rgba(148, 163, 184, 0.1)' }}
               >
-                <Icon name="MagnifyingGlassIcon" size={28} className="text-slate-500" />
+                <Icon name="MagnifyingGlassIcon" size={28} className="text-vj-text-muted" />
               </div>
               <div className="text-center">
-                <p className="text-slate-300 text-sm font-medium">Không tìm thấy kết quả</p>
-                <p className="text-slate-500 text-xs mt-1">Thử tìm kiếm với từ khoá khác</p>
+                <p className="text-vj-text-muted text-sm font-medium">Không tìm thấy kết quả</p>
+                <p className="text-vj-text-muted text-xs mt-1">Thử tìm kiếm với từ khoá khác</p>
               </div>
             </div>
           ) : !query ? (
@@ -342,14 +342,14 @@ export default function GlobalSearch({ isOpen, onClose, onSelectResult }: Global
                 className="w-16 h-16 rounded-full flex items-center justify-center"
                 style={{ background: 'rgba(148, 163, 184, 0.1)' }}
               >
-                <Icon name="MagnifyingGlassIcon" size={28} className="text-slate-500" />
+                <Icon name="MagnifyingGlassIcon" size={28} className="text-vj-text-muted" />
               </div>
               <div className="text-center">
-                <p className="text-slate-300 text-sm font-medium">Tìm kiếm toàn hệ thống</p>
-                <p className="text-slate-500 text-xs mt-1">Nhập từ khoá để tìm kiếm</p>
+                <p className="text-vj-text-muted text-sm font-medium">Tìm kiếm toàn hệ thống</p>
+                <p className="text-vj-text-muted text-xs mt-1">Nhập từ khoá để tìm kiếm</p>
               </div>
               <div className="flex flex-wrap justify-center gap-2 mt-4 px-4">
-                <span className="text-xs2 text-slate-500 px-2 py-1 bg-slate-800 rounded-lg">
+                <span className="text-xs2 text-vj-text-muted px-2 py-1 bg-slate-800 rounded-vj">
                   Ví dụ: VJ 101, Nguyễn Văn An, VJ2B4K9
                 </span>
               </div>
@@ -366,11 +366,11 @@ export default function GlobalSearch({ isOpen, onClose, onSelectResult }: Global
                     onClick={() => handleSelectResult(result)}
                     onMouseEnter={() => setSelectedIndex(index)}
                     className={`w-full flex items-center gap-3 px-4 py-3 transition-colors ${
-                      isSelected ? 'bg-slate-800/70' : 'hover:bg-slate-800/30'
+                      isSelected ? 'bg-slate-800' : 'hover:bg-slate-800'
                     }`}
                   >
                     <div
-                      className={`w-9 h-9 rounded-lg flex items-center justify-center ${typeConfig.bg}`}
+                      className={`w-9 h-9 rounded-vj flex items-center justify-center ${typeConfig.bg}`}
                     >
                       <Icon name={getTypeIcon(result.type)} size={16} className={typeConfig.text} />
                     </div>
@@ -384,12 +384,14 @@ export default function GlobalSearch({ isOpen, onClose, onSelectResult }: Global
                         </span>
                         {getStatusBadge(result.status)}
                       </div>
-                      <p className="text-xs text-slate-400 truncate mt-0.5">{result.subtitle}</p>
+                      <p className="text-xs text-vj-text-muted truncate mt-0.5">
+                        {result.subtitle}
+                      </p>
                     </div>
                     <Icon
                       name="ArrowRightIcon"
                       size={14}
-                      className="text-slate-600 flex-shrink-0"
+                      className="text-vj-text-muted flex-shrink-0"
                     />
                   </button>
                 );
@@ -400,7 +402,7 @@ export default function GlobalSearch({ isOpen, onClose, onSelectResult }: Global
 
         {/* Footer */}
         <div
-          className="flex items-center justify-between px-4 py-3 border-t text-xs text-slate-500"
+          className="flex items-center justify-between px-4 py-3 border-t text-xs text-vj-text-muted"
           style={{ borderColor: 'rgba(148, 163, 184, 0.1)' }}
         >
           <div className="flex items-center gap-4">

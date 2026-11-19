@@ -49,13 +49,13 @@ export default function EBoardingPass({ data, passenger }: EBoardingPassProps) {
   return (
     <div
       data-testid="eboarding-pass"
-      className="bg-white rounded-2xl border border-[var(--border)] overflow-hidden shadow-md"
+      className="bg-white rounded-2xl border border-[var(--border)] overflow-hidden shadow-vj-md"
     >
       {/* Header đỏ — thương hiệu + PNR. */}
       <div className="bg-primary px-4 py-3 flex items-center gap-3">
         <div className="h-6 px-1.5 bg-white/15 rounded flex items-center shrink-0">
           <img
-            src="/logo-internal.svg"
+            src="/images/vj-logo.svg"
             alt="Vietjet Air"
             className="h-3.5 w-auto brightness-0 invert"
           />

@@ -127,7 +127,7 @@ export default function SeatChangeModal({ leg, onClose, onChanged }: SeatChangeM
         </div>
 
         <div className="flex-1 overflow-y-auto bg-slate-50 p-4 sm:p-6">
-          <p className="mb-4 text-center text-xs text-gray-600">
+          <p className="mb-4 text-center text-xs text-vj-text-strong">
             Nhấp vào ghế còn trống để chọn vị trí ngồi mới.
           </p>
           <SeatMap
@@ -138,7 +138,7 @@ export default function SeatChangeModal({ leg, onClose, onChanged }: SeatChangeM
               setSelectedSeat(seatId);
             }}
             aircraftType="A321"
-            className="rounded-vj border border-gray-200 shadow-xs"
+            className="rounded-vj border border-vj-border-light shadow-xs"
           />
         </div>
 
@@ -148,14 +148,14 @@ export default function SeatChangeModal({ leg, onClose, onChanged }: SeatChangeM
           </p>
         )}
 
-        <div className="flex items-center justify-between gap-3 border-t border-gray-200 bg-white px-5 py-4">
+        <div className="flex items-center justify-between gap-3 border-t border-vj-border-light bg-white px-5 py-4">
           <div className="text-xs">
-            <span className="text-gray-500">Ghế mới: </span>
+            <span className="text-vj-gray">Ghế mới: </span>
             <strong className="text-sm font-black text-primary">
               {selectedSeat || 'Chưa chọn'}
             </strong>
             {priceDelta !== 0 && (
-              <p className="mt-0.5 text-2xs font-bold text-gray-600">
+              <p className="mt-0.5 text-2xs font-bold text-vj-text-strong">
                 {priceDelta > 0 ? 'Phí chênh lệch: +' : 'Hoàn: '}
                 {Math.abs(priceDelta).toLocaleString('vi-VN')}₫
               </p>
@@ -165,7 +165,7 @@ export default function SeatChangeModal({ leg, onClose, onChanged }: SeatChangeM
             <button
               type="button"
               onClick={onClose}
-              className="rounded-vj bg-gray-100 px-4 py-2 text-xs font-bold text-gray-700 transition-all hover:bg-gray-200"
+              className="rounded-vj bg-vj-pill px-4 py-2 text-xs font-bold text-vj-text-dim transition-all hover:bg-vj-surface-3"
             >
               Hủy
             </button>
@@ -173,7 +173,7 @@ export default function SeatChangeModal({ leg, onClose, onChanged }: SeatChangeM
               type="button"
               disabled={!selectedSeat || saving}
               onClick={() => void handleConfirm()}
-              className="inline-flex items-center gap-1.5 rounded-vj bg-primary px-5 py-2 text-xs font-black text-white shadow-md transition-all hover:bg-primary-dark disabled:opacity-50"
+              className="inline-flex items-center gap-1.5 rounded-vj bg-primary px-5 py-2 text-xs font-black text-white shadow-vj-md transition-all hover:bg-primary-dark disabled:opacity-50"
             >
               <MdSwapHoriz className="h-4 w-4" />
               {saving ? 'Đang đổi...' : 'Xác nhận đổi ghế'}

@@ -211,7 +211,7 @@ export function FlightDatePickerPopover({
             <button
               type="button"
               onClick={prevMonth}
-              className="p-1 rounded text-gray-700 hover:text-black hover:bg-gray-100 transition-colors cursor-pointer"
+              className="p-1 rounded text-vj-text-dim hover:text-black hover:bg-vj-pill transition-colors cursor-pointer"
               aria-label="Tháng trước"
             >
               <ChevronLeft className="text-xl" />
@@ -220,7 +220,7 @@ export function FlightDatePickerPopover({
             <div className="w-6" />
           )}
 
-          <div className="text-center font-bold text-sm text-gray-800">
+          <div className="text-center font-bold text-sm text-vj-text-strong">
             Tháng {m + 1} {y}
           </div>
 
@@ -228,7 +228,7 @@ export function FlightDatePickerPopover({
             <button
               type="button"
               onClick={nextMonth}
-              className="p-1 rounded text-gray-700 hover:text-black hover:bg-gray-100 transition-colors cursor-pointer"
+              className="p-1 rounded text-vj-text-dim hover:text-black hover:bg-vj-pill transition-colors cursor-pointer"
               aria-label="Tháng sau"
             >
               <ChevronRight className="text-xl" />
@@ -238,7 +238,7 @@ export function FlightDatePickerPopover({
               <button
                 type="button"
                 onClick={nextMonth}
-                className="p-1 rounded text-gray-700 hover:text-black hover:bg-gray-100 transition-colors cursor-pointer md:hidden"
+                className="p-1 rounded text-vj-text-dim hover:text-black hover:bg-vj-pill transition-colors cursor-pointer md:hidden"
                 aria-label="Tháng sau (mobile)"
               >
                 <ChevronRight className="text-xl" />
@@ -251,7 +251,7 @@ export function FlightDatePickerPopover({
         {/* Weekday headers: Thứ 2 .. Thứ 7, CN (red) */}
         <div className="grid grid-cols-7 text-xs font-semibold text-center mb-2.5">
           {DAYS.map((d, idx) => (
-            <div key={d} className={idx === 6 ? 'text-red-500 font-bold' : 'text-gray-500'}>
+            <div key={d} className={idx === 6 ? 'text-vj-red font-bold' : 'text-vj-gray'}>
               {d}
             </div>
           ))}
@@ -271,7 +271,7 @@ export function FlightDatePickerPopover({
                   key={`${cell.year}-${cell.month}-${cell.day}-${idx}`}
                   className="h-8 flex items-center justify-center"
                 >
-                  <span className="w-8 h-8 flex items-center justify-center text-xs text-gray-300 font-normal">
+                  <span className="w-8 h-8 flex items-center justify-center text-xs text-vj-muted font-normal">
                     {cell.day}
                   </span>
                 </div>
@@ -308,12 +308,12 @@ export function FlightDatePickerPopover({
                   onMouseLeave={() => setHoverDate(null)}
                   className={`w-8 h-8 rounded-full text-xs flex items-center justify-center relative z-10 transition-all ${
                     isDepart || isReturn
-                      ? 'border border-red-500 text-gray-900 font-bold bg-white shadow-xs'
+                      ? 'border border-red-500 text-vj-text font-bold bg-white shadow-xs'
                       : isPast
-                        ? 'text-gray-300 cursor-not-allowed'
+                        ? 'text-vj-muted cursor-not-allowed'
                         : isSunday
-                          ? 'text-red-500 font-semibold hover:border hover:border-red-400 hover:bg-red-50 cursor-pointer'
-                          : 'text-gray-800 font-medium hover:border hover:border-gray-300 hover:bg-gray-100 cursor-pointer'
+                          ? 'text-vj-red font-semibold hover:border hover:border-red-400 hover:bg-vj-surface-rose cursor-pointer'
+                          : 'text-vj-text-strong font-medium hover:border hover:border-vj-line hover:bg-vj-pill cursor-pointer'
                   }`}
                 >
                   {cell.day}
@@ -329,7 +329,7 @@ export function FlightDatePickerPopover({
   return (
     <div
       ref={popoverRef}
-      className={`absolute right-0 top-[112px] z-50 w-[630px] max-w-[calc(100vw-28px)] bg-white rounded-vj shadow-vj-popover border border-gray-100 p-3 sm:p-5 select-none text-gray-800 animate-fadeIn ${className}`}
+      className={`absolute right-0 top-[112px] z-50 w-[630px] max-w-[calc(100vw-28px)] bg-white rounded-vj shadow-vj-popover border border-vj-border-light p-3 sm:p-5 select-none text-vj-text-strong animate-fadeIn ${className}`}
     >
       {/* Loại hành trình — dải pill bo tròn 999px, đúng site thật:
           track nền #F3F1F1 padding 3px, item active nền trắng + bóng nhẹ,
@@ -422,7 +422,7 @@ export default function DatePicker({
           type="button"
           onClick={() => setOpen((prev) => !prev)}
           aria-label={label}
-          className="w-full flex items-center gap-2.5 bg-white px-3.5 py-2.5 sm:py-2 rounded-vj border border-[var(--border)] shadow-sm hover:border-[var(--accent)] focus:border-[var(--accent)] text-left transition-colors"
+          className="w-full flex items-center gap-2.5 bg-white px-3.5 py-2.5 sm:py-2 rounded-vj border border-[var(--border)] shadow-vj-sm hover:border-[var(--accent)] focus:border-[var(--accent)] text-left transition-colors"
         >
           <Calendar className="shrink-0 text-lg text-[var(--foreground-muted)]" />
           <span className="min-w-0 flex-1">

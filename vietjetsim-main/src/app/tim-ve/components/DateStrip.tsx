@@ -49,10 +49,10 @@ export default function DateStrip({ items, selectedValue, onSelect }: DateStripP
               <button
                 key={item.value}
                 onClick={() => onSelect(item.value)}
-                className={`relative flex h-[95px] w-[156px] shrink-0 flex-col items-center justify-center rounded-vj transition-all shadow-sm ${
+                className={`relative flex h-[95px] w-[156px] shrink-0 flex-col items-center justify-center rounded-vj transition-all shadow-vj-sm ${
                   active
                     ? 'bg-[var(--vj-yellow-tab)] text-[var(--vj-tab-ink)] font-bold border border-transparent'
-                    : 'border border-gray-200/90 bg-white text-gray-700 font-medium hover:border-amber-300 hover:bg-amber-50/30'
+                    : 'border border-vj-border-light/90 bg-white text-vj-text-dim font-medium hover:border-amber-300 hover:bg-amber-50/30'
                 }`}
               >
                 {/* Số đo site thật 14/11/2026: weekday `13px/500`, ngày
@@ -62,7 +62,7 @@ export default function DateStrip({ items, selectedValue, onSelect }: DateStripP
                 {item.price && (
                   <span
                     className={`mt-0.5 text-sm2 font-bold ${
-                      active ? 'text-[var(--vj-tab-ink)]' : 'text-gray-500'
+                      active ? 'text-[var(--vj-tab-ink)]' : 'text-vj-gray'
                     }`}
                   >
                     {active ? 'Từ ' : ''}

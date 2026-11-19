@@ -163,13 +163,13 @@ export default function BankAccountsTab({ onToast }: { onToast?: ToastAPI }) {
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-xl font-bold text-white">Quản lý Tài khoản Ngân hàng</h2>
-          <p className="text-sm text-slate-400">
+          <p className="text-sm text-vj-text-muted">
             Thiết lập các tài khoản nhận thanh toán từ khách hàng
           </p>
         </div>
         <button
           onClick={() => handleOpenModal()}
-          className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl font-bold transition-all shadow-lg shadow-indigo-500/20 active:scale-95"
+          className="flex items-center gap-2 bg-vj-blue hover:bg-vj-blue text-white px-5 py-2.5 rounded-vj font-bold transition-all shadow-vj-lg shadow-vj-sm active:scale-98"
         >
           <Icon name="PlusIcon" size={18} />
           Thêm tài khoản mới
@@ -182,17 +182,17 @@ export default function BankAccountsTab({ onToast }: { onToast?: ToastAPI }) {
           {[1, 2, 3].map((i) => (
             <div
               key={i}
-              className="bg-slate-800/50 border border-slate-700 rounded-2xl p-6 h-48 animate-pulse"
+              className="bg-slate-800 border border-vj-border-light rounded-2xl p-6 h-48 animate-pulse"
             />
           ))}
         </div>
       ) : accounts.length === 0 ? (
-        <div className="bg-slate-800/30 border border-slate-700 border-dashed rounded-3xl p-12 text-center">
-          <div className="w-16 h-16 bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-4 border border-slate-700">
-            <Icon name="BanknotesIcon" size={32} className="text-slate-500" />
+        <div className="bg-slate-800 border border-vj-border-light border-dashed rounded-3xl p-12 text-center">
+          <div className="w-16 h-16 bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-4 border border-vj-border-light">
+            <Icon name="BanknotesIcon" size={32} className="text-vj-text-muted" />
           </div>
           <h3 className="text-white font-bold text-lg">Chưa có tài khoản nào</h3>
-          <p className="text-slate-400 mt-2">
+          <p className="text-vj-text-muted mt-2">
             Hãy thêm tài khoản ngân hàng đầu tiên để nhận tiền từ khách.
           </p>
         </div>
@@ -201,35 +201,35 @@ export default function BankAccountsTab({ onToast }: { onToast?: ToastAPI }) {
           {accounts.map((account) => (
             <div
               key={account.id}
-              className={`group relative bg-slate-800 border transition-all duration-300 rounded-3xl p-6 hover:shadow-2xl hover:shadow-indigo-500/10 ${account.is_default ? 'border-indigo-500/50 bg-indigo-900/10' : 'border-slate-700'}`}
+              className={`group relative bg-slate-800 border transition-all duration-300 rounded-3xl p-6 hover:shadow-2xl hover:shadow-vj-sm ${account.is_default ? 'border-vj-blue bg-vj-blue' : 'border-vj-border-light'}`}
             >
               {account.is_default && (
-                <div className="absolute -top-3 left-6 px-3 py-1 bg-indigo-600 text-white text-2xs font-black uppercase tracking-widest rounded-full shadow-lg">
+                <div className="absolute -top-3 left-6 px-3 py-1 bg-vj-blue text-white text-2xs font-black uppercase tracking-widest rounded-full shadow-vj-lg">
                   Mặc định
                 </div>
               )}
 
               <div className="flex justify-between items-start mb-6">
                 <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-slate-700 rounded-2xl flex items-center justify-center text-white font-black text-lg group-hover:bg-indigo-600 transition-colors">
+                  <div className="w-12 h-12 bg-slate-700 rounded-2xl flex items-center justify-center text-white font-black text-lg group-hover:bg-vj-blue transition-colors">
                     {account.bank_name.charAt(0)}
                   </div>
                   <div>
                     <h4 className="text-white font-bold">{account.bank_name}</h4>
-                    <p className="text-xs text-slate-500">{account.branch || 'Toàn quốc'}</p>
+                    <p className="text-xs text-vj-text-muted">{account.branch || 'Toàn quốc'}</p>
                   </div>
                 </div>
                 <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                   <button
                     onClick={() => handleOpenModal(account)}
-                    className="p-2 text-slate-400 hover:text-white hover:bg-slate-700 rounded-lg"
+                    className="p-2 text-vj-text-muted hover:text-white hover:bg-slate-700 rounded-vj"
                     title="Chỉnh sửa"
                   >
                     <Icon name="PencilSquareIcon" size={16} />
                   </button>
                   <button
                     onClick={() => handleDelete(account.id)}
-                    className="p-2 text-slate-400 hover:text-red-400 hover:bg-red-900/20 rounded-lg"
+                    className="p-2 text-vj-text-muted hover:text-red-400 hover:bg-red-900/20 rounded-vj"
                     title="Xóa"
                   >
                     <Icon name="TrashIcon" size={16} />
@@ -239,7 +239,7 @@ export default function BankAccountsTab({ onToast }: { onToast?: ToastAPI }) {
 
               <div className="space-y-4">
                 <div>
-                  <label className="text-2xs font-bold text-slate-500 uppercase tracking-widest block mb-1">
+                  <label className="text-2xs font-bold text-vj-text-muted uppercase tracking-widest block mb-1">
                     Số tài khoản
                   </label>
                   <p className="text-xl font-mono font-bold text-white tracking-wider">
@@ -247,30 +247,30 @@ export default function BankAccountsTab({ onToast }: { onToast?: ToastAPI }) {
                   </p>
                 </div>
                 <div>
-                  <label className="text-2xs font-bold text-slate-500 uppercase tracking-widest block mb-1">
+                  <label className="text-2xs font-bold text-vj-text-muted uppercase tracking-widest block mb-1">
                     Chủ tài khoản
                   </label>
-                  <p className="text-sm font-semibold text-slate-200">
+                  <p className="text-sm font-semibold text-vj-text-muted">
                     {account.account_holder.toUpperCase()}
                   </p>
                 </div>
-                <div className="bg-slate-900/50 rounded-xl p-3 border border-slate-700/50">
-                  <label className="text-2xs font-bold text-indigo-400 uppercase tracking-widest block mb-1">
+                <div className="bg-slate-900 rounded-vj p-3 border border-vj-border-light">
+                  <label className="text-2xs font-bold text-vj-blue uppercase tracking-widest block mb-1">
                     Nội dung chuyển khoản mẫu
                   </label>
-                  <p className="text-xs2 font-mono text-indigo-200/70">
+                  <p className="text-xs2 font-mono text-vj-blue">
                     {account.transfer_note_template || '{code}I98O'}
                   </p>
                 </div>
               </div>
 
-              <div className="mt-6 pt-4 border-t border-slate-700 flex items-center justify-between">
+              <div className="mt-6 pt-4 border-t border-vj-border-light flex items-center justify-between">
                 <button
                   onClick={() => toggleStatus(account, 'is_active')}
                   className={`text-xs2 font-bold px-3 py-1 rounded-full transition-all ${
                     account.is_active
-                      ? 'bg-emerald-500/10 text-emerald-400'
-                      : 'bg-slate-700 text-slate-500'
+                      ? 'bg-vj-pay-green text-vj-pay-green'
+                      : 'bg-slate-700 text-vj-text-muted'
                   }`}
                 >
                   {account.is_active ? 'Đang hoạt động' : 'Tạm ẩn'}
@@ -278,7 +278,7 @@ export default function BankAccountsTab({ onToast }: { onToast?: ToastAPI }) {
                 {!account.is_default && (
                   <button
                     onClick={() => toggleStatus(account, 'is_default')}
-                    className="text-xs2 font-bold text-indigo-400 hover:text-indigo-300"
+                    className="text-xs2 font-bold text-vj-blue hover:text-vj-blue"
                   >
                     Đặt mặc định
                   </button>
@@ -293,17 +293,17 @@ export default function BankAccountsTab({ onToast }: { onToast?: ToastAPI }) {
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div
-            className="absolute inset-0 bg-slate-950/80 backdrop-blur-sm"
+            className="absolute inset-0 bg-slate-950 backdrop-blur-sm"
             onClick={() => setIsModalOpen(false)}
           />
-          <div className="relative bg-slate-900 border border-slate-700 rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
-            <div className="p-6 border-b border-slate-800 bg-slate-800/50 flex items-center justify-between">
+          <div className="relative bg-slate-900 border border-vj-border-light rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
+            <div className="p-6 border-b border-vj-border-light bg-slate-800 flex items-center justify-between">
               <h3 className="text-lg font-bold text-white">
                 {editingAccount ? 'Chỉnh sửa tài khoản' : 'Thêm tài khoản mới'}
               </h3>
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="text-slate-400 hover:text-white"
+                className="text-vj-text-muted hover:text-white"
               >
                 <Icon name="XMarkIcon" size={24} />
               </button>
@@ -312,7 +312,7 @@ export default function BankAccountsTab({ onToast }: { onToast?: ToastAPI }) {
             <form onSubmit={handleSave} className="p-6 space-y-5">
               <div className="grid grid-cols-2 gap-4">
                 <div className="col-span-2 sm:col-span-1">
-                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">
+                  <label className="block text-xs font-bold text-vj-text-muted uppercase tracking-widest mb-2">
                     Tên ngân hàng
                   </label>
                   <input
@@ -321,11 +321,11 @@ export default function BankAccountsTab({ onToast }: { onToast?: ToastAPI }) {
                     value={formData.bank_name}
                     onChange={(e) => setFormData({ ...formData, bank_name: e.target.value })}
                     placeholder="VD: Vietcombank"
-                    className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500 transition-all"
+                    className="w-full bg-slate-800 border border-vj-border-light rounded-vj px-4 py-3 text-white focus:outline-none focus:border-vj-blue transition-all"
                   />
                 </div>
                 <div className="col-span-2 sm:col-span-1">
-                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">
+                  <label className="block text-xs font-bold text-vj-text-muted uppercase tracking-widest mb-2">
                     Mã BIN (Tùy chọn)
                   </label>
                   <input
@@ -333,14 +333,14 @@ export default function BankAccountsTab({ onToast }: { onToast?: ToastAPI }) {
                     value={formData.bank_bin}
                     onChange={(e) => setFormData({ ...formData, bank_bin: e.target.value })}
                     placeholder="VD: 970436"
-                    className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500 transition-all font-mono"
+                    className="w-full bg-slate-800 border border-vj-border-light rounded-vj px-4 py-3 text-white focus:outline-none focus:border-vj-blue transition-all font-mono"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 gap-4">
                 <div>
-                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">
+                  <label className="block text-xs font-bold text-vj-text-muted uppercase tracking-widest mb-2">
                     Số tài khoản
                   </label>
                   <input
@@ -349,11 +349,11 @@ export default function BankAccountsTab({ onToast }: { onToast?: ToastAPI }) {
                     value={formData.account_number}
                     onChange={(e) => setFormData({ ...formData, account_number: e.target.value })}
                     placeholder="Số tài khoản ngân hàng"
-                    className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500 transition-all font-mono"
+                    className="w-full bg-slate-800 border border-vj-border-light rounded-vj px-4 py-3 text-white focus:outline-none focus:border-vj-blue transition-all font-mono"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">
+                  <label className="block text-xs font-bold text-vj-text-muted uppercase tracking-widest mb-2">
                     Chủ tài khoản
                   </label>
                   <input
@@ -364,11 +364,11 @@ export default function BankAccountsTab({ onToast }: { onToast?: ToastAPI }) {
                       setFormData({ ...formData, account_holder: e.target.value.toUpperCase() })
                     }
                     placeholder="VD: NGUYEN VAN A"
-                    className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500 transition-all uppercase font-semibold"
+                    className="w-full bg-slate-800 border border-vj-border-light rounded-vj px-4 py-3 text-white focus:outline-none focus:border-vj-blue transition-all uppercase font-semibold"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">
+                  <label className="block text-xs font-bold text-vj-text-muted uppercase tracking-widest mb-2">
                     Chi nhánh (Tùy chọn)
                   </label>
                   <input
@@ -376,11 +376,11 @@ export default function BankAccountsTab({ onToast }: { onToast?: ToastAPI }) {
                     value={formData.branch}
                     onChange={(e) => setFormData({ ...formData, branch: e.target.value })}
                     placeholder="VD: Chi nhánh Hà Nội"
-                    className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500 transition-all"
+                    className="w-full bg-slate-800 border border-vj-border-light rounded-vj px-4 py-3 text-white focus:outline-none focus:border-vj-blue transition-all"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">
+                  <label className="block text-xs font-bold text-vj-text-muted uppercase tracking-widest mb-2">
                     Nội dung Chuyển khoản mẫu
                   </label>
                   <input
@@ -391,10 +391,10 @@ export default function BankAccountsTab({ onToast }: { onToast?: ToastAPI }) {
                       setFormData({ ...formData, transfer_note_template: e.target.value })
                     }
                     placeholder="VD: {code}I98O"
-                    className={`w-full bg-slate-800 border rounded-xl px-4 py-3 text-white focus:outline-none transition-all font-mono ${
+                    className={`w-full bg-slate-800 border rounded-vj px-4 py-3 text-white focus:outline-none transition-all font-mono ${
                       unknownTokens.length > 0
                         ? 'border-red-500/60 focus:border-red-500'
-                        : 'border-slate-700 focus:border-indigo-500'
+                        : 'border-vj-border-light focus:border-vj-blue'
                     }`}
                   />
                   <div className="flex flex-wrap gap-2 mt-2">
@@ -404,7 +404,7 @@ export default function BankAccountsTab({ onToast }: { onToast?: ToastAPI }) {
                         type="button"
                         title={`${t.description} — VD: ${t.example}. Bấm để chèn tại vị trí con trỏ.`}
                         onClick={() => insertToken(t.token)}
-                        className="px-2.5 py-1 rounded-lg bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-300 border border-indigo-500/20 text-2xs font-mono font-bold transition-all active:scale-95"
+                        className="px-2.5 py-1 rounded-vj bg-vj-blue hover:bg-vj-blue text-vj-blue border border-vj-blue text-2xs font-mono font-bold transition-all active:scale-98"
                       >
                         {t.token}
                       </button>
@@ -415,12 +415,12 @@ export default function BankAccountsTab({ onToast }: { onToast?: ToastAPI }) {
                       Biến không hợp lệ: {unknownTokens.join(', ')} — sẽ không được thay thế.
                     </p>
                   ) : (
-                    <p className="text-2xs text-slate-500 mt-2">
+                    <p className="text-2xs text-vj-text-muted mt-2">
                       Bấm vào biến để chèn. Số tiền được ghi dạng số liền, không dấu phân cách.
                     </p>
                   )}
                   {formData.transfer_note_template.trim() && unknownTokens.length === 0 && (
-                    <p className="text-2xs text-emerald-400/80 mt-1 font-mono">
+                    <p className="text-2xs text-vj-pay-green mt-1 font-mono">
                       Xem trước: {previewNote}
                     </p>
                   )}
@@ -433,9 +433,9 @@ export default function BankAccountsTab({ onToast }: { onToast?: ToastAPI }) {
                     type="checkbox"
                     checked={formData.is_default}
                     onChange={(e) => setFormData({ ...formData, is_default: e.target.checked })}
-                    className="w-4 h-4 rounded border-slate-700 bg-slate-800 text-indigo-600 focus:ring-indigo-500"
+                    className="w-4 h-4 rounded border-vj-border-light bg-slate-800 text-vj-blue focus:ring-indigo-500"
                   />
-                  <span className="text-sm text-slate-300 group-hover:text-white transition-colors">
+                  <span className="text-sm text-vj-text-muted group-hover:text-white transition-colors">
                     Đặt làm tài khoản mặc định
                   </span>
                 </label>
@@ -444,25 +444,25 @@ export default function BankAccountsTab({ onToast }: { onToast?: ToastAPI }) {
                     type="checkbox"
                     checked={formData.is_active}
                     onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
-                    className="w-4 h-4 rounded border-slate-700 bg-slate-800 text-indigo-600 focus:ring-indigo-500"
+                    className="w-4 h-4 rounded border-vj-border-light bg-slate-800 text-vj-blue focus:ring-indigo-500"
                   />
-                  <span className="text-sm text-slate-300 group-hover:text-white transition-colors">
+                  <span className="text-sm text-vj-text-muted group-hover:text-white transition-colors">
                     Kích hoạt tài khoản
                   </span>
                 </label>
               </div>
 
-              <div className="pt-6 border-t border-slate-800 flex gap-3">
+              <div className="pt-6 border-t border-vj-border-light flex gap-3">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-3 rounded-xl transition-all"
+                  className="flex-1 bg-slate-800 hover:bg-slate-700 text-vj-text-muted font-bold py-3 rounded-vj transition-all"
                 >
                   Hủy bỏ
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl transition-all shadow-lg shadow-indigo-500/20"
+                  className="flex-1 bg-vj-blue hover:bg-vj-blue text-white font-bold py-3 rounded-vj transition-all shadow-vj-lg shadow-vj-sm"
                 >
                   {editingAccount ? 'Lưu thay đổi' : 'Xác nhận thêm'}
                 </button>

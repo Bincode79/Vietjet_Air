@@ -76,8 +76,8 @@ export default function Pagination({
             transition-all duration-200
             ${
               !canPrev
-                ? 'text-gray-300 cursor-not-allowed'
-                : 'text-navy hover:bg-primary/10 hover:text-primary active:scale-95'
+                ? 'text-vj-muted cursor-not-allowed'
+                : 'text-navy hover:bg-primary/10 hover:text-primary active:scale-98'
             }
           `}
         >
@@ -104,8 +104,8 @@ export default function Pagination({
           transition-all duration-200
           ${
             !canPrev
-              ? 'text-gray-300 cursor-not-allowed'
-              : 'text-navy hover:bg-primary/10 hover:text-primary active:scale-95'
+              ? 'text-vj-muted cursor-not-allowed'
+              : 'text-navy hover:bg-primary/10 hover:text-primary active:scale-98'
           }
         `}
       >
@@ -125,7 +125,7 @@ export default function Pagination({
         page === '...' ? (
           <span
             key={`ellipsis-${idx}`}
-            className="w-9 h-9 flex items-center justify-center text-sm text-gray-400 font-medium"
+            className="w-9 h-9 flex items-center justify-center text-sm text-vj-muted font-medium"
           >
             ···
           </span>
@@ -141,7 +141,7 @@ export default function Pagination({
               ${
                 currentPage === page
                   ? 'bg-gradient-to-br from-primary to-primary-dark text-white shadow-vj-btn scale-105 ring-2 ring-primary/30'
-                  : 'text-navy hover:bg-primary/10 hover:text-primary active:scale-95'
+                  : 'text-navy hover:bg-primary/10 hover:text-primary active:scale-98'
               }
             `}
           >
@@ -160,8 +160,8 @@ export default function Pagination({
           transition-all duration-200
           ${
             !canNext
-              ? 'text-gray-300 cursor-not-allowed'
-              : 'text-navy hover:bg-primary/10 hover:text-primary active:scale-95'
+              ? 'text-vj-muted cursor-not-allowed'
+              : 'text-navy hover:bg-primary/10 hover:text-primary active:scale-98'
           }
         `}
       >
@@ -187,8 +187,8 @@ export default function Pagination({
             transition-all duration-200
             ${
               !canNext
-                ? 'text-gray-300 cursor-not-allowed'
-                : 'text-navy hover:bg-primary/10 hover:text-primary active:scale-95'
+                ? 'text-vj-muted cursor-not-allowed'
+                : 'text-navy hover:bg-primary/10 hover:text-primary active:scale-98'
             }
           `}
         >

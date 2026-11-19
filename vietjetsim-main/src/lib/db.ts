@@ -74,6 +74,27 @@ function totalOf(result: unknown): number {
   return parseInt(String(asFirstRow<{ total?: string | number }>(result)?.total ?? 0), 10);
 }
 
+/**
+ * Chuẩn hoá một mốc thời gian từ Postgres về ISO-8601.
+ *
+ * Driver có thể trả về `Date`, chuỗi `2026-10-07 10:00:00+00` hoặc chuỗi
+ * ISO — và client đếm ngược bằng `Date.parse`, nên mốc thời gian phải luôn
+ * ở một định dạng mà `Date.parse` hiểu được. `Date` không parse được thì
+ * hàm trả `null` thay vì một chuỗi "Invalid Date" lan ra tới UI.
+ */
+function toIsoTimestamp(value: unknown): string | null {
+  if (value instanceof Date) {
+    return Number.isNaN(value.getTime()) ? null : value.toISOString();
+  }
+  if (typeof value === 'number') {
+    const fromNumber = new Date(value);
+    return Number.isNaN(fromNumber.getTime()) ? null : fromNumber.toISOString();
+  }
+  if (typeof value !== 'string' || !value.trim()) return null;
+  const parsed = new Date(value);
+  return Number.isNaN(parsed.getTime()) ? null : parsed.toISOString();
+}
+
 // ─── Types ──────────────────────────────────────────────────────────────────
 
 export interface UserRecord {
@@ -164,6 +185,13 @@ export interface BookingRecord {
   discount_amount?: number;
   receipt_image?: string | null;
   transfer_note?: string | null;
+  /**
+   * Mốc hết hạn của lượt giữ chỗ (migration 055). Chỉ có giá trị khi khách
+   * chọn phương thức giữ chỗ rồi trả sau — MOVI giữ 30 phút.
+   */
+  hold_expires_at?: string | null;
+  /** Phương thức đang giữ chỗ ('movi'), hoặc NULL khi không giữ chỗ. */
+  hold_method?: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -219,6 +247,10 @@ export interface BookingDetail {
   discount_amount?: number;
   receipt_image?: string | null;
   transfer_note?: string | null;
+  /** Mốc hết hạn của lượt giữ chỗ (migration 055) — xem `BookingRecord`. */
+  hold_expires_at?: string | null;
+  /** Phương thức đang giữ chỗ ('movi') — xem `BookingRecord`. */
+  hold_method?: string | null;
   created_at: string;
   updated_at: string;
   flight: Pick<
@@ -1027,6 +1059,17 @@ export async function getBookingByCodeOrId(codeOrId: string): Promise<BookingDet
 }
 
 export async function getBookingById(bookingId: string): Promise<BookingDetail | null> {
+  // Quét các lượt giữ chỗ đã hết hạn TRƯỚC khi đọc dòng booking.
+  //
+  // Không có cron/scheduler trong repo này, nên "tự hủy sau 30 phút" chỉ có
+  // thể là một lazy sweep: mỗi lần ai đó chạm vào một booking thì những
+  // lượt giữ chỗ đã quá hạn được hủy luôn. Đặt sweep ở đây — điểm duy nhất
+  // mọi route đọc một booking đều đi qua — nghĩa là không có đường nào đọc
+  // ra một booking "đang giữ chỗ" khi lượt giữ chỗ đã chết.
+  await expireStaleBookingHolds().catch((err) => {
+    console.error('[MOVI][HOLD] Sweep failed:', err);
+  });
+
   const results = await sql`
     SELECT b.*,
            f.flight_no, f.from_code, f.to_code, f.depart_time, f.arrive_time, f.price, f.class,
@@ -1056,6 +1099,10 @@ export async function getBookingById(bookingId: string): Promise<BookingDetail |
     leg_role: (b.leg_role as BookingDetail['leg_role']) ?? 'outbound',
     status: b.status as BookingDetail['status'],
     total_price: parseFloat(String(b.total_price)),
+    receipt_image: b.receipt_image ? String(b.receipt_image) : null,
+    transfer_note: b.transfer_note ? String(b.transfer_note) : null,
+    hold_expires_at: b.hold_expires_at ? toIsoTimestamp(b.hold_expires_at) : null,
+    hold_method: b.hold_method ? String(b.hold_method) : null,
     created_at: String(b.created_at),
     updated_at: String(b.updated_at),
     flight: {
@@ -1385,7 +1432,10 @@ export async function updateBookingStatus(
   const results = releasesSeats
     ? await sql`
         UPDATE bookings
-        SET status = ${status}, updated_at = NOW()
+        SET status = ${status},
+            hold_expires_at = NULL,
+            hold_method = NULL,
+            updated_at = NOW()
         WHERE id = ${bookingId} AND status NOT IN ('cancelled', 'refunded')
         RETURNING *
       `
@@ -1423,6 +1473,259 @@ export async function updateBookingStatus(
   }
 
   return booking;
+}
+
+// ─── MOVI: giữ chỗ 30 phút & hồ sơ tín dụng ────────────────────────────────
+//
+// "Bay trước trả sau" giữ mã đặt chỗ trong 30 phút. Ba mảnh ghép:
+//
+//   1. `setBookingHold` — đặt (hoặc gia hạn) mốc hết hạn trên booking.
+//   2. `expireStaleBookingHolds` — quét và HỦY mọi lượt giữ chỗ đã quá hạn,
+//      trả ghế về kho. Không có cron trong repo này, nên đây là lazy sweep:
+//      nó chạy mỗi khi ai đó đọc một booking, và client cũng gọi endpoint
+//      `giu-cho` khi đồng hồ đếm về 0.
+//   3. `createMoviCreditApplication` — lưu hồ sơ tín dụng có cấu trúc,
+//      thay vì nhét vào `payments.transfer_note` (một chuỗi tự do).
+
+/** Lượt giữ chỗ đang có hiệu lực trên một booking. */
+export interface BookingHold {
+  bookingId: string;
+  /** Phương thức đang giữ chỗ ('movi'), hoặc NULL. */
+  method: string | null;
+  /** Mốc hết hạn ISO-8601, hoặc NULL khi booking không giữ chỗ. */
+  expiresAt: string | null;
+}
+
+/** Hồ sơ tín dụng MOVI đã lưu. */
+export interface MoviCreditApplication {
+  id: string;
+  booking_id: string;
+  user_id: string | null;
+  full_name: string;
+  birth_date: string | null;
+  national_id: string;
+  phone: string;
+  tenor_months: number;
+  amount: number;
+  status: 'submitted' | 'approved' | 'rejected';
+  created_at: string;
+  updated_at: string;
+}
+
+export async function getBookingHold(bookingId: string): Promise<BookingHold | null> {
+  const row = asFirstRow<{
+    id: string;
+    hold_expires_at: unknown;
+    hold_method: string | null;
+  }>(
+    await sql`
+      SELECT id, hold_expires_at, hold_method
+      FROM bookings
+      WHERE id = ${bookingId}
+      LIMIT 1
+    `
+  );
+
+  if (!row) return null;
+
+  return {
+    bookingId: String(row.id),
+    method: row.hold_method ?? null,
+    expiresAt: toIsoTimestamp(row.hold_expires_at),
+  };
+}
+
+/**
+ * Đặt (hoặc gia hạn) lượt giữ chỗ.
+ *
+ * Chỉ một booking `pending` mới giữ chỗ được — một booking đã xác nhận thì
+ * vé đã bán, giữ chỗ là vô nghĩa, và một booking đã hủy thì không được
+ * "hồi sinh". Vì vậy `WHERE ... AND status = 'pending'`: một lần gia hạn trên
+ * một booking đã hủy trả về không dòng nào, và caller phải coi như thất bại.
+ */
+export async function setBookingHold(
+  bookingId: string,
+  method: string,
+  expiresAt: Date
+): Promise<BookingHold | null> {
+  const row = asFirstRow<{
+    id: string;
+    hold_expires_at: unknown;
+    hold_method: string | null;
+  }>(
+    await sql`
+      UPDATE bookings
+      SET hold_expires_at = ${expiresAt.toISOString()}::timestamptz,
+          hold_method = ${method},
+          updated_at = NOW()
+      WHERE id = ${bookingId} AND status = 'pending'
+      RETURNING id, hold_expires_at, hold_method
+    `
+  );
+
+  if (!row) return null;
+
+  return {
+    bookingId: String(row.id),
+    method: row.hold_method ?? method,
+    expiresAt: toIsoTimestamp(row.hold_expires_at) ?? expiresAt.toISOString(),
+  };
+}
+
+/** Xoá lượt giữ chỗ (sau khi thanh toán, hoặc khi khách đổi phương thức). */
+export async function clearBookingHold(bookingId: string): Promise<void> {
+  await sql`
+    UPDATE bookings
+    SET hold_expires_at = NULL,
+        hold_method = NULL,
+        updated_at = NOW()
+    WHERE id = ${bookingId}
+  `;
+}
+
+/**
+ * Hủy mọi lượt giữ chỗ đã quá hạn và trả ghế về kho.
+ *
+ * Trả về danh sách id của các booking vừa bị hủy, để caller (route, test)
+ * biết chính xác cái gì vừa thay đổi.
+ *
+ * Chặng về của cùng một trip (migration 045) bị hủy theo: khách mua khứ
+ * hồi, giữ chỗ hết hạn ở chặng đi ⇒ cả chặng về phải hủy, nếu không thì chặng
+ * về vẫn `pending` và giữ ghế mà không ai có thể thanh toán.
+ */
+export async function expireStaleBookingHolds(): Promise<string[]> {
+  const rows = asRows<{
+    id: string;
+    trip_id: string | null;
+    return_booking_id: string | null;
+  }>(
+    await sql`
+      SELECT b.id,
+             b.trip_id,
+             r.id AS return_booking_id
+      FROM bookings b
+      LEFT JOIN bookings r
+        ON r.trip_id = b.trip_id
+       AND r.leg_role = 'inbound'
+       AND r.id <> b.id
+      WHERE b.status = 'pending'
+        AND b.hold_expires_at IS NOT NULL
+        AND b.hold_expires_at <= NOW()
+    `
+  );
+
+  const expired: string[] = [];
+
+  for (const row of rows) {
+    const bookingId = String(row.id);
+    try {
+      const cancelled = await updateBookingStatus(bookingId, 'cancelled');
+      if (!cancelled || cancelled.status !== 'cancelled') continue;
+      expired.push(bookingId);
+
+      const returnBookingId = row.return_booking_id ? String(row.return_booking_id) : null;
+      if (returnBookingId) {
+        await updateBookingStatus(returnBookingId, 'cancelled').catch((err) => {
+          console.error('[MOVI][HOLD] Failed to cancel the return leg:', err);
+        });
+      }
+    } catch (err) {
+      // Một booking hỏng không được chặn các booking còn lại.
+      console.error('[MOVI][HOLD] Failed to expire booking hold:', { bookingId, err });
+    }
+  }
+
+  return expired;
+}
+
+/**
+ * Lưu hồ sơ tín dụng MOVI.
+ *
+ * Một đặt chỗ chỉ có một hồ sơ: khách thử lại sau một lần giao dịch hỏng sẽ
+ * UPDATE hồ sơ cũ chứ không tạo hồ sơ thứ hai (`ON CONFLICT (booking_id)`).
+ */
+export async function createMoviCreditApplication(input: {
+  booking_id: string;
+  user_id?: string | null;
+  full_name: string;
+  birth_date?: string | null;
+  national_id: string;
+  phone: string;
+  tenor_months: number;
+  amount: number;
+}): Promise<MoviCreditApplication | null> {
+  const row = asFirstRow<MoviCreditApplication>(
+    await sql`
+      INSERT INTO movi_credit_applications
+        (booking_id, user_id, full_name, birth_date, national_id, phone, tenor_months, amount, status)
+      VALUES (
+        ${input.booking_id},
+        ${input.user_id ?? null},
+        ${input.full_name},
+        ${input.birth_date || null}::date,
+        ${input.national_id},
+        ${input.phone},
+        ${input.tenor_months}::int,
+        ${input.amount},
+        'submitted'
+      )
+      ON CONFLICT (booking_id) DO UPDATE SET
+        user_id = EXCLUDED.user_id,
+        full_name = EXCLUDED.full_name,
+        birth_date = EXCLUDED.birth_date,
+        national_id = EXCLUDED.national_id,
+        phone = EXCLUDED.phone,
+        tenor_months = EXCLUDED.tenor_months,
+        amount = EXCLUDED.amount,
+        updated_at = NOW()
+      RETURNING *
+    `
+  );
+
+  return row ?? null;
+}
+
+/** Hồ sơ tín dụng MOVI của một đặt chỗ (nếu có). */
+export async function getMoviCreditApplication(
+  bookingId: string
+): Promise<MoviCreditApplication | null> {
+  const row = asFirstRow<MoviCreditApplication>(
+    await sql`
+      SELECT *
+      FROM movi_credit_applications
+      WHERE booking_id = ${bookingId}
+      LIMIT 1
+    `
+  );
+  return row ?? null;
+}
+
+/**
+ * Đóng hồ sơ tín dụng MOVI khi đơn bị hoàn tiền.
+ *
+ * Vì sao cần:
+ *
+ *   - Hồ sơ tín dụng có trạng thái `submitted` nghĩa là "chờ bên tín dụng duyệt".
+ *     Một đơn đã bị hoàn tiền thì KHÔNG còn được duyệt trả góp — nếu không,
+ *     bên tín dụng có thể duyệt hồ sơ của một vé đã hủy và thu tiền trả góp
+ *     cho một chuyến không tồn tại.
+ *   - `status` của hồ sơ là `submitted | approved | rejected`. Đơn đã hoàn
+ *     tiền là một trạng thái không còn giá trị, nên nó về mặt ngữ nghĩa gần
+ *     với "bị từ chối" nhất — `rejected` là trạng thái CUỐI và mọi báo cáo
+ *     tín dụng đều hiểu nó là "không được duyệt".
+ *
+ * Chỉ hồ sơ còn ở `submitted` mới bị đóng: một hồ sơ đã `approved` rồi bị
+ * hoàn tiền là một việc khác (tiền trả góp đã thu rồi phải thu hồi riêng),
+ * và ghi đè `approved` bằng `rejected` sẽ giấu mất dấu vết đó.
+ */
+export async function rejectMoviCreditApplication(bookingId: string): Promise<void> {
+  await sql`
+    UPDATE movi_credit_applications
+    SET status = 'rejected',
+        updated_at = NOW()
+    WHERE booking_id = ${bookingId}
+      AND status = 'submitted'
+  `;
 }
 
 /**
@@ -1570,6 +1873,20 @@ export async function createPaymentAndConfirmBooking(payment: {
   discount_amount?: number;
   receipt_image?: string;
   transfer_note?: string;
+  /**
+   * Hồ sơ tín dụng MOVI (migration 055).
+   *
+   * Được ghi trong CÙNG transaction với giao dịch: một hồ sơ mà không có
+   * giao dịch (hoặc ngược lại) là dữ liệu nửa vời, và bảng giao dịch admin
+   * đọc `payments.transfer_note` nên hồ sơ cũng phải nằm cạnh nó.
+   */
+  movi?: {
+    full_name: string;
+    birth_date?: string | null;
+    national_id: string;
+    phone: string;
+    tenor_months: number;
+  } | null;
 }): Promise<{ payment: PaymentRecord; booking: BookingRecord }> {
   const targetPaymentStatus = payment.status || 'completed';
   const targetBookingStatus = targetPaymentStatus === 'completed' ? 'confirmed' : 'pending';
@@ -1602,22 +1919,71 @@ export async function createPaymentAndConfirmBooking(payment: {
   }
 
   try {
-    await sql.transaction((tx: any) => [
-      tx`
-      INSERT INTO payments (booking_id, method, status, amount, receipt_image, transfer_note)
-      VALUES (${payment.booking_id}, ${payment.method}, ${targetPaymentStatus}, ${payment.amount}, ${payment.receipt_image || null}, ${payment.transfer_note || null})
-    `,
-      tx`
-      UPDATE bookings
-      SET status = ${targetBookingStatus},
-          discount_code_id = ${payment.discount_code_id || null},
-          discount_amount = ${payment.discount_amount || 0},
-          receipt_image = ${payment.receipt_image || null},
-          transfer_note = ${payment.transfer_note || null},
-          updated_at = NOW()
-      WHERE id = ${payment.booking_id}
-    `,
-    ]);
+    await sql.transaction((tx: any) => {
+      // Vé đã bán thì không còn giữ chỗ nữa — lượt giữ chỗ của MOVI chỉ có
+      // nghĩa khi booking vẫn `pending`. Một giao dịch `pending` (khách gửi
+      // biên lai để đối soát) thì VẪN giữ chỗ, vì booking còn `pending`.
+      const bookingUpdate =
+        targetPaymentStatus === 'completed'
+          ? tx`
+              UPDATE bookings
+              SET status = ${targetBookingStatus},
+                  discount_code_id = ${payment.discount_code_id || null},
+                  discount_amount = ${payment.discount_amount || 0},
+                  receipt_image = ${payment.receipt_image || null},
+                  transfer_note = ${payment.transfer_note || null},
+                  hold_expires_at = NULL,
+                  hold_method = NULL,
+                  updated_at = NOW()
+              WHERE id = ${payment.booking_id}
+            `
+          : tx`
+              UPDATE bookings
+              SET status = ${targetBookingStatus},
+                  discount_code_id = ${payment.discount_code_id || null},
+                  discount_amount = ${payment.discount_amount || 0},
+                  receipt_image = ${payment.receipt_image || null},
+                  transfer_note = ${payment.transfer_note || null},
+                  updated_at = NOW()
+              WHERE id = ${payment.booking_id}
+            `;
+
+      const moviInsert = payment.movi
+        ? tx`
+            INSERT INTO movi_credit_applications
+              (booking_id, user_id, full_name, birth_date, national_id, phone, tenor_months, amount, status)
+            VALUES (
+              ${payment.booking_id},
+              ${payment.user_id || null},
+              ${payment.movi.full_name},
+              ${payment.movi.birth_date || null}::date,
+              ${payment.movi.national_id},
+              ${payment.movi.phone},
+              ${payment.movi.tenor_months}::int,
+              ${payment.amount},
+              'submitted'
+            )
+            ON CONFLICT (booking_id) DO UPDATE SET
+              user_id = EXCLUDED.user_id,
+              full_name = EXCLUDED.full_name,
+              birth_date = EXCLUDED.birth_date,
+              national_id = EXCLUDED.national_id,
+              phone = EXCLUDED.phone,
+              tenor_months = EXCLUDED.tenor_months,
+              amount = EXCLUDED.amount,
+              updated_at = NOW()
+          `
+        : null;
+
+      return [
+        tx`
+        INSERT INTO payments (booking_id, method, status, amount, receipt_image, transfer_note)
+        VALUES (${payment.booking_id}, ${payment.method}, ${targetPaymentStatus}, ${payment.amount}, ${payment.receipt_image || null}, ${payment.transfer_note || null})
+      `,
+        bookingUpdate,
+        ...(moviInsert ? [moviInsert] : []),
+      ];
+    });
   } catch (txErr) {
     // Compensating transaction: if the payment/booking transaction fails AFTER the
     // wallet has been debited, credit the money back so the user is never charged

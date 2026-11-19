@@ -184,7 +184,7 @@ export default function SystemSettingsTab({ onToast }: { onToast?: ToastAPI }) {
         <div className="rounded-2xl border p-6" style={ADMIN_CARD_STYLE}>
           <div className="animate-pulse space-y-4">
             {[1, 2, 3, 4, 5].map((i) => (
-              <div key={i} className="h-16 bg-slate-500/10 rounded-lg" />
+              <div key={i} className="h-16 bg-slate-500 rounded-vj" />
             ))}
           </div>
         </div>
@@ -202,7 +202,7 @@ export default function SystemSettingsTab({ onToast }: { onToast?: ToastAPI }) {
           actions={
             <button
               onClick={fetchSettings}
-              className={`${ADMIN_ACTION_BTN} text-white bg-indigo-500/20 border border-indigo-500/30 hover:bg-indigo-500/30`}
+              className={`${ADMIN_ACTION_BTN} text-white bg-vj-blue border border-vj-blue hover:bg-vj-blue`}
             >
               <Icon name="ArrowPathIcon" size={14} />
               Thử lại
@@ -212,7 +212,7 @@ export default function SystemSettingsTab({ onToast }: { onToast?: ToastAPI }) {
         <div className="rounded-2xl border p-12 text-center" style={ADMIN_CARD_STYLE}>
           <Icon name="ExclamationTriangleIcon" size={48} className="text-red-400 mx-auto mb-4" />
           <p className="font-bold text-white">Không thể tải cài đặt</p>
-          <p className="text-sm text-slate-400 mt-2">Vui lòng thử lại sau</p>
+          <p className="text-sm text-vj-text-muted mt-2">Vui lòng thử lại sau</p>
         </div>
       </div>
     );
@@ -231,7 +231,7 @@ export default function SystemSettingsTab({ onToast }: { onToast?: ToastAPI }) {
               <button
                 onClick={handleReset}
                 disabled={isSaving}
-                className={`${ADMIN_ACTION_BTN} text-slate-300 border border-white/10 bg-white/5 hover:bg-white/10 disabled:opacity-50`}
+                className={`${ADMIN_ACTION_BTN} text-vj-text-muted border border-white/10 bg-white/5 hover:bg-white/10 disabled:opacity-50`}
               >
                 <Icon name="ArrowPathIcon" size={14} />
                 Đặt lại
@@ -258,15 +258,15 @@ export default function SystemSettingsTab({ onToast }: { onToast?: ToastAPI }) {
         }
       />
       {/* Categories Tabs */}
-      <div className="flex rounded-xl border border-white/10 bg-slate-900/60 p-1.5 gap-1 overflow-x-auto">
+      <div className="flex rounded-vj border border-white/10 bg-slate-900 p-1.5 gap-1 overflow-x-auto">
         {SETTING_CATEGORIES.map((cat) => (
           <button
             key={cat.id}
             onClick={() => setActiveCategory(cat.id)}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all whitespace-nowrap ${
+            className={`flex items-center gap-2 px-4 py-2 rounded-vj text-sm font-semibold transition-all whitespace-nowrap ${
               activeCategory === cat.id
                 ? 'bg-primary/15 text-primary'
-                : 'text-slate-400 hover:bg-white/5 hover:text-white'
+                : 'text-vj-text-muted hover:bg-white/5 hover:text-white'
             }`}
           >
             <Icon name={cat.icon} size={18} />
@@ -286,7 +286,7 @@ export default function SystemSettingsTab({ onToast }: { onToast?: ToastAPI }) {
         >
           <div className="flex items-center gap-3">
             <div
-              className="w-10 h-10 rounded-xl flex items-center justify-center"
+              className="w-10 h-10 rounded-vj flex items-center justify-center"
               style={{ background: 'rgba(255,255,255,0.1)' }}
             >
               <Icon
@@ -324,7 +324,9 @@ export default function SystemSettingsTab({ onToast }: { onToast?: ToastAPI }) {
                           </span>
                         )}
                     </div>
-                    <p className="text-xs text-slate-400 mt-1 max-w-xl">{setting.description}</p>
+                    <p className="text-xs text-vj-text-muted mt-1 max-w-xl">
+                      {setting.description}
+                    </p>
                   </div>
                   <div className="w-full sm:w-64 flex-shrink-0">
                     {setting.type === 'boolean' ? (
@@ -337,16 +339,16 @@ export default function SystemSettingsTab({ onToast }: { onToast?: ToastAPI }) {
                             handleSettingChange(setting.key, value === true ? 'false' : 'true')
                           }
                           className={`relative w-12 h-6 rounded-full transition-all duration-300 ${
-                            value === true ? 'bg-emerald-500' : 'bg-slate-600'
+                            value === true ? 'bg-vj-pay-green' : 'bg-slate-600'
                           }`}
                         >
                           <span
-                            className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow-md transition-transform duration-300 ${
+                            className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow-vj-md transition-transform duration-300 ${
                               value === true ? 'translate-x-6' : 'translate-x-0.5'
                             }`}
                           />
                         </button>
-                        <span className="ml-3 text-xs font-semibold text-slate-400">
+                        <span className="ml-3 text-xs font-semibold text-vj-text-muted">
                           {value === true ? 'Đang bật' : 'Đang tắt'}
                         </span>
                       </div>
@@ -354,7 +356,7 @@ export default function SystemSettingsTab({ onToast }: { onToast?: ToastAPI }) {
                       <select
                         value={String(value)}
                         onChange={(e) => handleSettingChange(setting.key, e.target.value)}
-                        className="w-full px-4 py-2.5 bg-slate-900/60 border border-white/10 rounded-xl text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                        className="w-full px-4 py-2.5 bg-slate-900 border border-white/10 rounded-vj text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
                       >
                         {setting.options?.map((opt) => (
                           <option key={opt.value} value={opt.value}>
@@ -367,7 +369,7 @@ export default function SystemSettingsTab({ onToast }: { onToast?: ToastAPI }) {
                         type={setting.type === 'number' ? 'number' : 'text'}
                         value={String(value)}
                         onChange={(e) => handleSettingChange(setting.key, e.target.value)}
-                        className="w-full px-4 py-2.5 bg-slate-900/60 border border-white/10 rounded-xl text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all placeholder:text-slate-500"
+                        className="w-full px-4 py-2.5 bg-slate-900 border border-white/10 rounded-vj text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all placeholder:text-vj-text-muted"
                         min={getSystemConfigBounds(setting.key as SystemConfigKey).min ?? 0}
                         max={getSystemConfigBounds(setting.key as SystemConfigKey).max}
                         placeholder={setting.label}
@@ -383,7 +385,7 @@ export default function SystemSettingsTab({ onToast }: { onToast?: ToastAPI }) {
 
       {/* Info Box */}
       <div
-        className="rounded-xl border p-4 flex items-start gap-3"
+        className="rounded-vj border p-4 flex items-start gap-3"
         style={{ background: 'rgba(59,130,246,0.08)', borderColor: 'rgba(59,130,246,0.2)' }}
       >
         <Icon
@@ -393,7 +395,7 @@ export default function SystemSettingsTab({ onToast }: { onToast?: ToastAPI }) {
         />
         <div>
           <p className="text-sm font-semibold text-white">Lưu ý khi thay đổi cài đặt</p>
-          <ul className="text-xs text-slate-400 mt-1 space-y-1">
+          <ul className="text-xs text-vj-text-muted mt-1 space-y-1">
             <li>- Cài đặt có hiệu lực ngay với các request tiếp theo</li>
             <li>- Các thay đổi sẽ được ghi lại trong nhật ký hệ thống</li>
           </ul>

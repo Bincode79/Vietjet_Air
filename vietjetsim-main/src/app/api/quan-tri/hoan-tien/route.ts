@@ -12,6 +12,7 @@ import {
   updateRefundDetails,
   isRefundFeatureEnabled,
   setRefundFeatureEnabled,
+  rejectMoviCreditApplication,
 } from '@/lib/db';
 import type { OperatorRefundStatus } from '@/lib/db';
 import { parsePaginationParams, getPaginationMeta } from '@/lib/pagination';
@@ -266,10 +267,37 @@ export async function PATCH(request: NextRequest) {
             `;
             for (const leg of legRows) {
               await updateBookingStatus(String(leg.id), 'refunded');
+              // 3b. Hồ sơ tín dụng MOVI của chặng đó phải đóng lại. Một hồ sơ
+              //     còn `submitted` nghĩa là "chờ duyệt trả góp" — bên tín
+              //     dụng có thể duyệt nó và thu tiền cho một vé đã hoàn.
+              await rejectMoviCreditApplication(String(leg.id)).catch((err) => {
+                console.error('[REFUND] Failed to close the MOVI credit application:', err);
+              });
             }
           } else {
             await updateBookingStatus(refundRecord.booking_id, 'refunded');
+            await rejectMoviCreditApplication(refundRecord.booking_id).catch((err) => {
+              console.error('[REFUND] Failed to close the MOVI credit application:', err);
+            });
           }
+
+          // 3c. Dòng giao dịch phải theo kịp đơn: `payments.status` vẫn là
+          //     `completed` sau khi đơn đã hoàn, nên bảng giao dịch của admin
+          //     và lịch sử thanh toán của khách vẫn hiện "đã thanh toán" cho
+          //     một đơn đã được hoàn tiền — và bộ lọc `status = 'completed'`
+          //     ở đây vẫn tìm thấy nó khi duyệt lại (một lượt duyệt lần hai
+          //     không được phép trả ví hai lần).
+          await sql`
+            UPDATE payments
+            SET status = 'refunded'
+            WHERE booking_id IN (
+              SELECT id FROM bookings
+              WHERE id = ${refundRecord.booking_id}
+                 OR trip_id = ${refundRecord.trip_id ?? null}::uuid
+            )
+            AND status = 'completed'
+          `;
+
           const pointSummary =
             pointsRefunded > 0
               ? `, ${pointsRefunded.toLocaleString('vi-VN')} SkyPoint đã được hoàn lại`

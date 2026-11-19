@@ -529,7 +529,7 @@ export function FlightSearchFormSkeleton() {
                 <Skeleton className="h-3.5 w-10 ml-auto" rounded="md" />
               </div>
             </div>
-            <div className="border-t border-gray-200" />
+            <div className="border-t border-vj-border-light" />
             <div className="flex items-center gap-3 px-3 py-3">
               <Skeleton className="w-5 h-5 flex-shrink-0" rounded="full" />
               <div className="flex-1 space-y-1.5">
@@ -570,7 +570,7 @@ export function PopularRoutesSkeleton() {
   return (
     <section className="bg-white">
       {/* Service icons grid skeleton */}
-      <div className="py-6 border-b border-gray-100">
+      <div className="py-6 border-b border-vj-border-light">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 sm:gap-3">
             {Array.from({ length: 6 }).map((_, i) => (

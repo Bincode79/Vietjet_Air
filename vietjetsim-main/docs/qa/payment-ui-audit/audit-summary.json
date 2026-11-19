@@ -1,0 +1,101 @@
+{
+  "timestamp": "2026-11-18T22:50:38.354Z",
+  "booking": {
+    "id": "eae6666f-3a22-43ee-ba86-1cc798a7cc86",
+    "code": "N2S82H",
+    "total": "1483500.00"
+  },
+  "desktopOverflow": {
+    "bodyScrollWidth": 1280,
+    "windowWidth": 1280,
+    "hasOverflow": false
+  },
+  "mobileOverflow": {
+    "bodyScrollWidth": 390,
+    "windowWidth": 390,
+    "hasOverflow": false,
+    "overflowDelta": 0
+  },
+  "results": [
+    {
+      "step": "Desktop Default VNPAY-QR",
+      "status": "OK",
+      "screenshot": "01-desktop-default-vnpay-qr.png"
+    },
+    {
+      "step": "Desktop VietQR",
+      "status": "OK",
+      "screenshot": "02-desktop-vietqr.png"
+    },
+    {
+      "step": "Desktop Napas ATM",
+      "status": "OK",
+      "screenshot": "03-desktop-napas.png"
+    },
+    {
+      "step": "Desktop Credit Card (Interactive)",
+      "status": "OK",
+      "screenshot": "04-desktop-credit-card.png"
+    },
+    {
+      "step": "Desktop SkyJoy",
+      "status": "OK",
+      "screenshot": "05-desktop-skyjoy.png"
+    },
+    {
+      "step": "Desktop MoMo",
+      "status": "OK",
+      "screenshot": "06-desktop-momo.png"
+    },
+    {
+      "step": "Desktop ZaloPay",
+      "status": "OK",
+      "screenshot": "07-desktop-zalopay.png"
+    },
+    {
+      "step": "Desktop MOVI BNPL",
+      "status": "OK",
+      "screenshot": "08-desktop-movi.png"
+    },
+    {
+      "step": "Mobile Default VNPAY-QR",
+      "status": "OK",
+      "screenshot": "09-mobile-vnpay-qr.png"
+    },
+    {
+      "step": "Mobile Credit Card",
+      "status": "OK",
+      "screenshot": "10-mobile-credit-card.png"
+    },
+    {
+      "step": "Mobile MOVI",
+      "status": "OK",
+      "screenshot": "11-mobile-movi.png"
+    },
+    {
+      "step": "Gateway: Cổng Quét mã QR",
+      "status": "OK",
+      "screenshot": "12-gateway-qr.png"
+    },
+    {
+      "step": "Gateway: Cổng Thẻ Quốc Tế",
+      "status": "OK",
+      "screenshot": "13-gateway-card.png"
+    },
+    {
+      "step": "Gateway: Cổng Napas ATM",
+      "status": "OK",
+      "screenshot": "14-gateway-napas.png"
+    },
+    {
+      "step": "Gateway: Cổng Ví điện tử",
+      "status": "OK",
+      "screenshot": "15-gateway-ewallet.png"
+    },
+    {
+      "step": "Gateway: Cổng Movi BNPL",
+      "status": "OK",
+      "screenshot": "16-gateway-movi.png"
+    }
+  ]
+}

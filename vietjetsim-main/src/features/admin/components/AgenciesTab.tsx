@@ -107,13 +107,13 @@ export default function AgenciesTab({ onToast }: { onToast?: ToastAPI }) {
             <Icon name="BuildingOfficeIcon" size={24} className="text-primary" />
             Quản lý đại lý
           </h2>
-          <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mt-1 opacity-70">
+          <p className="text-xs font-bold text-vj-text-muted uppercase tracking-widest mt-1 opacity-70">
             {total} đại lý trong hệ thống
           </p>
         </div>
         <button
           onClick={() => setShowAddModal(true)}
-          className="flex items-center gap-2 bg-primary hover:bg-primary-dark text-white text-xs2 font-black uppercase tracking-[0.2em] px-6 py-3.5 rounded-2xl transition-all shadow-lg active:scale-95"
+          className="flex items-center gap-2 bg-primary hover:bg-primary-dark text-white text-xs2 font-black uppercase tracking-[0.2em] px-6 py-3.5 rounded-2xl transition-all shadow-vj-lg active:scale-98"
         >
           <Icon name="PlusIcon" size={16} />
           Thêm đại lý
@@ -124,7 +124,7 @@ export default function AgenciesTab({ onToast }: { onToast?: ToastAPI }) {
         <Icon
           name="MagnifyingGlassIcon"
           size={18}
-          className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-primary transition-colors"
+          className="absolute left-4 top-1/2 -translate-y-1/2 text-vj-text-muted group-focus-within:text-primary transition-colors"
         />
         <input
           type="text"
@@ -134,7 +134,7 @@ export default function AgenciesTab({ onToast }: { onToast?: ToastAPI }) {
             setCurrentPage(1);
           }}
           placeholder="Tìm theo mã, tên hoặc email đại lý..."
-          className="w-full pl-12 pr-4 py-3.5 bg-slate-800/40 border border-white/5 rounded-2xl text-sm font-semibold text-white placeholder-slate-600 focus:outline-none focus:border-primary/50 transition-all focus:bg-slate-800/60"
+          className="w-full pl-12 pr-4 py-3.5 bg-slate-800 border border-white/5 rounded-2xl text-sm font-semibold text-white placeholder-slate-600 focus:outline-none focus:border-primary/50 transition-all focus:bg-slate-800"
         />
       </div>
 
@@ -151,22 +151,22 @@ export default function AgenciesTab({ onToast }: { onToast?: ToastAPI }) {
           <table className="w-full text-left">
             <thead>
               <tr className="bg-white/5 border-b border-white/5">
-                <th className="px-6 py-5 text-2xs font-black text-slate-500 uppercase tracking-widest">
+                <th className="px-6 py-5 text-2xs font-black text-vj-text-muted uppercase tracking-widest">
                   Đại lý
                 </th>
-                <th className="px-6 py-5 text-2xs font-black text-slate-500 uppercase tracking-widest">
+                <th className="px-6 py-5 text-2xs font-black text-vj-text-muted uppercase tracking-widest">
                   Liên hệ
                 </th>
-                <th className="px-6 py-5 text-2xs font-black text-slate-500 uppercase tracking-widest text-center">
+                <th className="px-6 py-5 text-2xs font-black text-vj-text-muted uppercase tracking-widest text-center">
                   Hoa hồng
                 </th>
-                <th className="px-6 py-5 text-2xs font-black text-slate-500 uppercase tracking-widest text-center">
+                <th className="px-6 py-5 text-2xs font-black text-vj-text-muted uppercase tracking-widest text-center">
                   Mã đã phát hành
                 </th>
-                <th className="px-6 py-5 text-2xs font-black text-slate-500 uppercase tracking-widest text-center">
+                <th className="px-6 py-5 text-2xs font-black text-vj-text-muted uppercase tracking-widest text-center">
                   Trạng thái
                 </th>
-                <th className="px-6 py-5 text-2xs font-black text-slate-500 uppercase tracking-widest text-center">
+                <th className="px-6 py-5 text-2xs font-black text-vj-text-muted uppercase tracking-widest text-center">
                   Thao tác
                 </th>
               </tr>
@@ -176,7 +176,7 @@ export default function AgenciesTab({ onToast }: { onToast?: ToastAPI }) {
                 Array.from({ length: 5 }).map((_, i) => (
                   <tr key={i} className="animate-pulse">
                     <td colSpan={6} className="px-6 py-6">
-                      <div className="h-6 bg-slate-800/50 rounded-xl w-full"></div>
+                      <div className="h-6 bg-slate-800 rounded-vj w-full"></div>
                     </td>
                   </tr>
                 ))
@@ -184,8 +184,8 @@ export default function AgenciesTab({ onToast }: { onToast?: ToastAPI }) {
                 <tr>
                   <td colSpan={6} className="px-6 py-24 text-center">
                     <div className="flex flex-col items-center gap-4">
-                      <Icon name="InboxIcon" size={32} className="text-slate-600" />
-                      <p className="font-black text-slate-400 uppercase text-2xs tracking-widest">
+                      <Icon name="InboxIcon" size={32} className="text-vj-text-muted" />
+                      <p className="font-black text-vj-text-muted uppercase text-2xs tracking-widest">
                         Chưa có đại lý
                       </p>
                     </div>
@@ -195,7 +195,7 @@ export default function AgenciesTab({ onToast }: { onToast?: ToastAPI }) {
                 agencies.map((agency) => (
                   <tr key={agency.id} className="hover:bg-white/[0.04] transition-all group">
                     <td className="px-6 py-5">
-                      <div className="font-black text-slate-200 group-hover:text-primary transition-colors tracking-tight">
+                      <div className="font-black text-vj-text-muted group-hover:text-primary transition-colors tracking-tight">
                         {agency.name}
                       </div>
                       <div className="text-2xs text-primary/70 uppercase font-black tracking-[0.2em] mt-1">
@@ -203,34 +203,34 @@ export default function AgenciesTab({ onToast }: { onToast?: ToastAPI }) {
                       </div>
                     </td>
                     <td className="px-6 py-5">
-                      <div className="text-xs2 font-bold text-slate-300">
+                      <div className="text-xs2 font-bold text-vj-text-muted">
                         {agency.contact_name || '—'}
                       </div>
-                      <div className="text-2xs text-slate-500 font-bold mt-0.5">
+                      <div className="text-2xs text-vj-text-muted font-bold mt-0.5">
                         {agency.contact_email || agency.contact_phone || '—'}
                       </div>
                     </td>
                     <td className="px-6 py-5 text-center">
-                      <span className="text-sm font-black text-slate-200 tabular-nums">
+                      <span className="text-sm font-black text-vj-text-muted tabular-nums">
                         {Number(agency.commission_rate)}%
                       </span>
                     </td>
                     <td className="px-6 py-5 text-center">
-                      <span className="text-sm font-black text-slate-200 tabular-nums">
+                      <span className="text-sm font-black text-vj-text-muted tabular-nums">
                         {agency.discount_count ?? 0}
                       </span>
                     </td>
                     <td className="px-6 py-5 text-center">
                       <button
                         onClick={() => handleToggleStatus(agency)}
-                        className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-3xs font-black uppercase tracking-widest border transition-all ${
+                        className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-vj text-3xs font-black uppercase tracking-widest border transition-all ${
                           agency.is_active
-                            ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20 hover:bg-emerald-500/20'
+                            ? 'bg-vj-pay-green text-vj-pay-green border-vj-pay-green hover:bg-vj-pay-green'
                             : 'bg-amber-500/10 text-amber-400 border-amber-500/20 hover:bg-amber-500/20'
                         }`}
                       >
                         <div
-                          className={`w-1.5 h-1.5 rounded-full ${agency.is_active ? 'bg-emerald-400 shadow-glow-emerald-400' : 'bg-amber-400'}`}
+                          className={`w-1.5 h-1.5 rounded-full ${agency.is_active ? 'bg-vj-pay-green shadow-glow-emerald-400' : 'bg-amber-400'}`}
                         />
                         {agency.is_active ? 'Active' : 'Paused'}
                       </button>
@@ -239,14 +239,14 @@ export default function AgenciesTab({ onToast }: { onToast?: ToastAPI }) {
                       <div className="flex items-center justify-center gap-2">
                         <button
                           onClick={() => setEditingAgency(agency)}
-                          className="w-8 h-8 rounded-xl bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 border border-blue-500/20 flex items-center justify-center transition-all active:scale-95"
+                          className="w-8 h-8 rounded-vj bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 border border-blue-500/20 flex items-center justify-center transition-all active:scale-98"
                           title="Sửa"
                         >
                           <Icon name="PencilSquareIcon" size={16} />
                         </button>
                         <button
                           onClick={() => handleDelete(agency.id, agency.name)}
-                          className="w-8 h-8 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 flex items-center justify-center transition-all active:scale-95 disabled:opacity-50"
+                          className="w-8 h-8 rounded-vj bg-vj-red-dark hover:bg-vj-red-dark text-vj-red-dark border border-vj-red-dark flex items-center justify-center transition-all active:scale-98 disabled:opacity-50"
                           disabled={deletingId === agency.id}
                           title="Xóa"
                         >
@@ -333,10 +333,11 @@ function AgencyModal({
 
   const fieldClass =
     'w-full px-5 py-4 bg-white/5 border border-white/10 rounded-2xl text-sm font-bold text-white placeholder-slate-700 focus:outline-none focus:border-primary/50 focus:bg-white/10';
-  const labelClass = 'block text-2xs font-black text-slate-500 uppercase tracking-widest mb-2 ml-1';
+  const labelClass =
+    'block text-2xs font-black text-vj-text-muted uppercase tracking-widest mb-2 ml-1';
 
   return (
-    <div className="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-[110] flex items-center justify-center p-4 animate-in fade-in duration-300">
+    <div className="fixed inset-0 bg-slate-950 backdrop-blur-md z-[110] flex items-center justify-center p-4 animate-in fade-in duration-300">
       <div className="w-full max-w-xl max-h-[90vh] overflow-y-auto bg-slate-900 border border-white/10 rounded-vj-oval shadow-2xl relative animate-in zoom-in-95 duration-300">
         <div className="px-8 py-8 border-b border-white/5 bg-white/[0.02] flex items-center justify-between sticky top-0">
           <h3 className="text-lg font-black text-white uppercase tracking-tight">
@@ -345,7 +346,7 @@ function AgencyModal({
           <button
             aria-label="Đóng"
             onClick={onClose}
-            className="w-10 h-10 bg-white/5 hover:bg-white/10 text-slate-400 rounded-2xl flex items-center justify-center transition-all border border-white/5"
+            className="w-10 h-10 bg-white/5 hover:bg-white/10 text-vj-text-muted rounded-2xl flex items-center justify-center transition-all border border-white/5"
           >
             <Icon name="XMarkIcon" size={20} />
           </button>
@@ -442,7 +443,7 @@ function AgencyModal({
             />
             <label
               htmlFor="agency_is_active"
-              className="text-xs font-black text-slate-400 uppercase tracking-widest cursor-pointer"
+              className="text-xs font-black text-vj-text-muted uppercase tracking-widest cursor-pointer"
             >
               Đại lý đang hoạt động
             </label>
@@ -460,7 +461,7 @@ function AgencyModal({
             <button
               disabled={isSaving}
               type="submit"
-              className="flex-[2] bg-primary hover:bg-primary-dark text-white font-black text-2xs uppercase tracking-widest py-5 rounded-2xl transition-all shadow-lg active:scale-95 shadow-primary/20 disabled:opacity-50"
+              className="flex-[2] bg-primary hover:bg-primary-dark text-white font-black text-2xs uppercase tracking-widest py-5 rounded-2xl transition-all shadow-vj-lg active:scale-98 shadow-primary/20 disabled:opacity-50"
             >
               {isSaving ? 'Đang lưu...' : agency ? 'Lưu thay đổi' : 'Tạo đại lý'}
             </button>

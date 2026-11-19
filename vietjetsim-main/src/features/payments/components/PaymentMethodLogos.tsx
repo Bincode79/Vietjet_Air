@@ -185,7 +185,7 @@ export function VietjetAirCircleLogo({ className = 'h-6 w-auto' }: { className?:
 export function GalaxyPayBadge({ className = 'h-5 w-auto' }: { className?: string }) {
   return (
     <div
-      className={`inline-flex items-center gap-2 px-2.5 py-1 rounded-lg bg-white border border-gray-200 shadow-2xs ${className}`}
+      className={`inline-flex items-center gap-2 px-2.5 py-1 rounded-vj bg-white border border-vj-border-light shadow-2xs ${className}`}
     >
       <img
         src="/images/payments/galaxy-pay.png"
@@ -194,7 +194,7 @@ export function GalaxyPayBadge({ className = 'h-5 w-auto' }: { className?: strin
         height={20}
         className="h-3.5 w-auto object-contain"
       />
-      <span className="text-3xs text-emerald-700 font-bold uppercase tracking-wider pl-1.5 border-l border-gray-200">
+      <span className="text-3xs text-vj-pay-green font-bold uppercase tracking-wider pl-1.5 border-l border-vj-border-light">
         SECURE
       </span>
     </div>
@@ -204,9 +204,9 @@ export function GalaxyPayBadge({ className = 'h-5 w-auto' }: { className?: strin
 // ─── 18. Trust & Security Badges Bar ───────────────────────────────────────
 export function PaymentSecurityFooter() {
   return (
-    <div className="mt-6 pt-5 border-t border-gray-100 flex flex-wrap items-center justify-between gap-4 text-xs text-gray-500">
+    <div className="mt-6 pt-5 border-t border-vj-border-light flex flex-wrap items-center justify-between gap-4 text-xs text-vj-gray">
       <div className="flex items-center gap-2">
-        <div className="w-6 h-6 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center border border-emerald-200">
+        <div className="w-6 h-6 rounded-full bg-vj-pay-green text-vj-pay-green flex items-center justify-center border border-vj-pay-green">
           <svg className="w-3.5 h-3.5" viewBox="0 0 20 20" fill="currentColor">
             <path
               fillRule="evenodd"
@@ -216,10 +216,10 @@ export function PaymentSecurityFooter() {
           </svg>
         </div>
         <div>
-          <span className="font-extrabold text-gray-800 block text-2xs uppercase tracking-wider">
+          <span className="font-extrabold text-vj-text-strong block text-2xs uppercase tracking-wider">
             Bảo mật thanh toán 256-bit SSL
           </span>
-          <span className="text-3xs text-gray-400">
+          <span className="text-3xs text-vj-muted">
             Chứng nhận chuẩn bảo mật quốc tế PCI-DSS Level 1
           </span>
         </div>

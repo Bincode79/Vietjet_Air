@@ -89,7 +89,7 @@ export function SkyIdErrorNote({ message }: { message: string }) {
 export function SkyIdDevHint({ hint }: { hint: string }) {
   if (!hint) return null;
   return (
-    <p className="mt-2 rounded-md border border-[var(--vj-skyid-border)] bg-[var(--surface-2)] px-3 py-2 text-xs font-semibold text-[var(--vj-skyid-ink)]">
+    <p className="mt-2 rounded-vj border border-[var(--vj-skyid-border)] bg-[var(--surface-2)] px-3 py-2 text-xs font-semibold text-[var(--vj-skyid-ink)]">
       {hint}
     </p>
   );

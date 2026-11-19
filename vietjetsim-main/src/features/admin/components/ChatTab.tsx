@@ -490,7 +490,7 @@ export default function ChatTab() {
 
   return (
     <div
-      className="flex h-full bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm relative"
+      className="flex h-full bg-white rounded-2xl border border-vj-border-light overflow-hidden shadow-vj-sm relative"
       style={{ minHeight: '600px' }}
     >
       {/* Mobile overlay when sidebar is open */}
@@ -504,7 +504,7 @@ export default function ChatTab() {
       {/* Conversation List Sidebar */}
       <div
         className={`
-          flex-shrink-0 border-r border-gray-100 flex flex-col bg-white
+          flex-shrink-0 border-r border-vj-border-light flex flex-col bg-white
           transition-all duration-300 ease-in-out
           md:w-72 md:relative md:translate-x-0 md:z-auto
           ${
@@ -516,7 +516,7 @@ export default function ChatTab() {
       >
         <div className="w-72 flex flex-col h-full overflow-hidden">
           {/* Header */}
-          <div className="px-4 py-4 border-b border-gray-100">
+          <div className="px-4 py-4 border-b border-vj-border-light">
             <div className="flex items-center justify-between">
               <h2 className="font-black text-navy text-base">Hộp thư chat</h2>
               <div className="flex items-center gap-2">
@@ -527,21 +527,21 @@ export default function ChatTab() {
                 )}
                 {/* Close sidebar button on mobile */}
                 <button
-                  className="md:hidden w-7 h-7 flex items-center justify-center rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors"
+                  className="md:hidden w-7 h-7 flex items-center justify-center rounded-vj bg-vj-pill hover:bg-vj-surface-3 transition-colors"
                   onClick={() => setSidebarOpen(false)}
                   aria-label="Đóng danh sách"
                 >
-                  <Icon name="XMarkIcon" size={14} className="text-gray-600" />
+                  <Icon name="XMarkIcon" size={14} className="text-vj-text-strong" />
                 </button>
               </div>
             </div>
-            <p className="text-xs text-gray-400 mt-0.5">
+            <p className="text-xs text-vj-muted mt-0.5">
               {filteredConversations.length} cuộc hội thoại
             </p>
 
             {/* Search bar */}
-            <div className="mt-3 flex items-center gap-2 bg-gray-50 rounded-lg px-2.5 py-1.5 border border-gray-200 focus-within:border-primary transition-colors">
-              <Icon name="MagnifyingGlassIcon" size={14} className="text-gray-400 flex-shrink-0" />
+            <div className="mt-3 flex items-center gap-2 bg-vj-surface-2 rounded-vj px-2.5 py-1.5 border border-vj-border-light focus-within:border-primary transition-colors">
+              <Icon name="MagnifyingGlassIcon" size={14} className="text-vj-muted flex-shrink-0" />
               <input
                 type="text"
                 value={searchQuery}
@@ -552,7 +552,7 @@ export default function ChatTab() {
               {searchQuery && (
                 <button
                   onClick={() => setSearchQuery('')}
-                  className="text-gray-400 hover:text-gray-600"
+                  className="text-vj-muted hover:text-vj-text-strong"
                 >
                   <Icon name="XMarkIcon" size={12} />
                 </button>
@@ -565,10 +565,10 @@ export default function ChatTab() {
                 <button
                   key={s}
                   onClick={() => setStatusFilter(s)}
-                  className={`flex-1 text-xs py-1.5 rounded-md font-medium transition-colors ${
+                  className={`flex-1 text-xs py-1.5 rounded-vj font-medium transition-colors ${
                     statusFilter === s
                       ? 'bg-primary text-white'
-                      : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
+                      : 'bg-vj-pill text-vj-gray hover:bg-vj-surface-3'
                   }`}
                 >
                   {s === 'all' ? 'Tất cả' : s === 'unread' ? 'Chưa đọc' : 'Lưu trữ'}
@@ -578,11 +578,11 @@ export default function ChatTab() {
 
             {/* Sort order */}
             <div className="mt-2 flex items-center gap-1.5">
-              <Icon name="ArrowsUpDownIcon" size={12} className="text-gray-400" />
+              <Icon name="ArrowsUpDownIcon" size={12} className="text-vj-muted" />
               <select
                 value={sortOrder}
                 onChange={(e) => setSortOrder(e.target.value as 'latest' | 'oldest')}
-                className="flex-1 text-xs text-gray-600 bg-gray-50 border border-gray-200 rounded-md px-2 py-1 outline-none focus:border-primary transition-colors"
+                className="flex-1 text-xs text-vj-text-strong bg-vj-surface-2 border border-vj-border-light rounded-vj px-2 py-1 outline-none focus:border-primary transition-colors"
               >
                 <option value="latest">Mới nhất trước</option>
                 <option value="oldest">Cũ nhất trước</option>
@@ -598,8 +598,8 @@ export default function ChatTab() {
               </div>
             ) : filteredConversations.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
-                <Icon name="ChatBubbleLeftRightIcon" size={32} className="text-gray-300 mb-2" />
-                <p className="text-gray-400 text-sm">
+                <Icon name="ChatBubbleLeftRightIcon" size={32} className="text-vj-muted mb-2" />
+                <p className="text-vj-muted text-sm">
                   {searchQuery || statusFilter !== 'all'
                     ? 'Không tìm thấy kết quả'
                     : 'Chưa có cuộc hội thoại nào'}
@@ -614,7 +614,7 @@ export default function ChatTab() {
                       setSelectedConv(conv);
                       setSidebarOpen(false);
                     }}
-                    className={`w-full px-4 py-3.5 flex items-start gap-3 hover:bg-gray-50 active:bg-gray-100 transition-colors border-b border-gray-50 text-left touch-manipulation ${
+                    className={`w-full px-4 py-3.5 flex items-start gap-3 hover:bg-vj-surface-2 active:bg-vj-pill transition-colors border-b border-gray-50 text-left touch-manipulation ${
                       selectedConv?.id === conv.id ? 'bg-red-50 border-l-2 border-l-primary' : ''
                     }`}
                   >
@@ -622,22 +622,22 @@ export default function ChatTab() {
                       <span className="text-primary font-bold text-sm">
                         {(conv.user_name || conv.user_email || 'K').charAt(0).toUpperCase()}
                       </span>
-                      <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-white bg-gray-300" />
+                      <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-white bg-vj-surface-3" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between gap-1">
                         <span
-                          className={`text-sm truncate ${conv.unread_by_admin > 0 ? 'font-bold text-navy' : 'font-medium text-gray-700'}`}
+                          className={`text-sm truncate ${conv.unread_by_admin > 0 ? 'font-bold text-navy' : 'font-medium text-vj-text-dim'}`}
                         >
                           {conv.user_name || conv.user_email?.split('@')[0] || 'Khách hàng'}
                         </span>
-                        <span className="text-xs text-gray-400 flex-shrink-0">
+                        <span className="text-xs text-vj-muted flex-shrink-0">
                           {formatTime(conversationDate(conv)?.toISOString() ?? null)}
                         </span>
                       </div>
                       <div className="flex items-center justify-between gap-1 mt-0.5">
                         <p
-                          className={`text-xs truncate ${conv.unread_by_admin > 0 ? 'text-navy font-medium' : 'text-gray-400'}`}
+                          className={`text-xs truncate ${conv.unread_by_admin > 0 ? 'text-navy font-medium' : 'text-vj-muted'}`}
                         >
                           {conv.last_message || 'Bắt đầu cuộc trò chuyện'}
                         </p>
@@ -656,11 +656,11 @@ export default function ChatTab() {
 
           {/* Pagination */}
           {totalPages > 1 && (
-            <div className="flex-shrink-0 border-t border-gray-100 px-3 py-2 flex items-center justify-between gap-1 bg-white">
+            <div className="flex-shrink-0 border-t border-vj-border-light px-3 py-2 flex items-center justify-between gap-1 bg-white">
               <button
                 onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                 disabled={currentPage === 1}
-                className="w-8 h-8 flex items-center justify-center rounded-md border border-gray-200 text-gray-500 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors touch-manipulation"
+                className="w-8 h-8 flex items-center justify-center rounded-vj border border-vj-border-light text-vj-gray hover:bg-vj-surface-2 disabled:opacity-40 disabled:cursor-not-allowed transition-colors touch-manipulation"
               >
                 <Icon name="ChevronLeftIcon" size={12} />
               </button>
@@ -674,17 +674,17 @@ export default function ChatTab() {
                   }, [])
                   .map((p, idx) =>
                     p === '…' ? (
-                      <span key={`ellipsis-${idx}`} className="text-xs text-gray-400 px-0.5">
+                      <span key={`ellipsis-${idx}`} className="text-xs text-vj-muted px-0.5">
                         …
                       </span>
                     ) : (
                       <button
                         key={p}
                         onClick={() => setCurrentPage(p as number)}
-                        className={`w-8 h-8 flex items-center justify-center rounded-md text-xs font-medium transition-colors touch-manipulation ${
+                        className={`w-8 h-8 flex items-center justify-center rounded-vj text-xs font-medium transition-colors touch-manipulation ${
                           currentPage === p
                             ? 'bg-primary text-white'
-                            : 'border border-gray-200 text-gray-600 hover:bg-gray-50'
+                            : 'border border-vj-border-light text-vj-text-strong hover:bg-vj-surface-2'
                         }`}
                       >
                         {p}
@@ -695,7 +695,7 @@ export default function ChatTab() {
               <button
                 onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
                 disabled={currentPage === totalPages}
-                className="w-8 h-8 flex items-center justify-center rounded-md border border-gray-200 text-gray-500 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors touch-manipulation"
+                className="w-8 h-8 flex items-center justify-center rounded-vj border border-vj-border-light text-vj-gray hover:bg-vj-surface-2 disabled:opacity-40 disabled:cursor-not-allowed transition-colors touch-manipulation"
               >
                 <Icon name="ChevronRightIcon" size={12} />
               </button>
@@ -710,7 +710,7 @@ export default function ChatTab() {
           <div className="flex-1 flex flex-col items-center justify-center text-center gap-4 px-4">
             {/* Mobile: show open sidebar button */}
             <button
-              className="md:hidden mb-2 flex items-center gap-2 px-4 py-2.5 bg-primary/10 hover:bg-primary/20 rounded-xl transition-colors touch-manipulation"
+              className="md:hidden mb-2 flex items-center gap-2 px-4 py-2.5 bg-primary/10 hover:bg-primary/20 rounded-vj transition-colors touch-manipulation"
               onClick={() => setSidebarOpen(true)}
             >
               <Icon name="ChatBubbleLeftRightIcon" size={18} className="text-primary" />
@@ -721,7 +721,7 @@ export default function ChatTab() {
             </div>
             <div>
               <p className="text-navy font-bold">Chọn cuộc hội thoại</p>
-              <p className="text-gray-400 text-sm mt-1">
+              <p className="text-vj-muted text-sm mt-1">
                 Chọn một cuộc hội thoại từ danh sách bên trái
               </p>
             </div>
@@ -729,14 +729,14 @@ export default function ChatTab() {
         ) : (
           <>
             {/* Chat Header */}
-            <div className="px-4 py-3.5 border-b border-gray-100 flex items-center gap-3 bg-white flex-shrink-0">
+            <div className="px-4 py-3.5 border-b border-vj-border-light flex items-center gap-3 bg-white flex-shrink-0">
               {/* Mobile: back/menu button */}
               <button
-                className="md:hidden w-9 h-9 flex items-center justify-center rounded-lg bg-gray-100 hover:bg-gray-200 active:bg-gray-300 transition-colors flex-shrink-0 touch-manipulation"
+                className="md:hidden w-9 h-9 flex items-center justify-center rounded-vj bg-vj-pill hover:bg-vj-surface-3 active:bg-vj-surface-3 transition-colors flex-shrink-0 touch-manipulation"
                 onClick={() => setSidebarOpen(true)}
                 aria-label="Danh sách hội thoại"
               >
-                <Icon name="Bars3Icon" size={18} className="text-gray-600" />
+                <Icon name="Bars3Icon" size={18} className="text-vj-text-strong" />
               </button>
 
               <div className="relative w-9 h-9 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
@@ -745,21 +745,21 @@ export default function ChatTab() {
                     .charAt(0)
                     .toUpperCase()}
                 </span>
-                <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-white bg-gray-300" />
+                <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-white bg-vj-surface-3" />
               </div>
               <div className="min-w-0 flex-1">
                 <p className="font-bold text-navy text-sm truncate">
                   {selectedConv.user_name || selectedConv.user_email?.split('@')[0] || 'Khách hàng'}
                 </p>
                 <div className="flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full flex-shrink-0 bg-gray-300" />
-                  <span className="text-xs text-gray-400">Ngoại tuyến</span>
+                  <span className="w-2 h-2 rounded-full flex-shrink-0 bg-vj-surface-3" />
+                  <span className="text-xs text-vj-muted">Ngoại tuyến</span>
                 </div>
               </div>
 
               {/* Right side: email + export button */}
               <div className="ml-auto flex items-center gap-2 flex-shrink-0">
-                <span className="text-xs text-gray-400 hidden lg:block">
+                <span className="text-xs text-vj-muted hidden lg:block">
                   {selectedConv.user_email}
                 </span>
 
@@ -769,7 +769,7 @@ export default function ChatTab() {
                   onClick={handleStartCall}
                   disabled={isCalling}
                   title="Thực hiện cuộc gọi đàm thoại trực tiếp tới hành khách"
-                  className="flex items-center gap-1.5 px-3 py-2 bg-green-50 hover:bg-green-100 active:bg-green-200 border border-green-200 rounded-lg text-xs font-bold text-green-700 transition-colors touch-manipulation"
+                  className="flex items-center gap-1.5 px-3 py-2 bg-green-50 hover:bg-green-100 active:bg-green-200 border border-green-200 rounded-vj text-xs font-bold text-green-700 transition-colors touch-manipulation"
                 >
                   <Icon name="PhoneIcon" size={14} className="text-green-600" />
                   <span className="hidden sm:inline">Gọi cho khách</span>
@@ -781,14 +781,14 @@ export default function ChatTab() {
                   title={
                     selectedConv.status === 'closed' ? 'Mở lại hội thoại' : 'Lưu trữ hội thoại'
                   }
-                  className="flex items-center gap-1.5 px-3 py-2 bg-gray-50 hover:bg-gray-100 active:bg-gray-200 border border-gray-200 rounded-lg text-xs font-medium text-gray-600 transition-colors touch-manipulation"
+                  className="flex items-center gap-1.5 px-3 py-2 bg-vj-surface-2 hover:bg-vj-pill active:bg-vj-surface-3 border border-vj-border-light rounded-vj text-xs font-medium text-vj-text-strong transition-colors touch-manipulation"
                 >
                   <Icon
                     name={
                       selectedConv.status === 'closed' ? 'InboxArrowDownIcon' : 'ArchiveBoxIcon'
                     }
                     size={14}
-                    className="text-gray-500"
+                    className="text-vj-gray"
                   />
                   <span className="hidden sm:inline">
                     {selectedConv.status === 'closed' ? 'Mở lại' : 'Lưu trữ'}
@@ -803,46 +803,46 @@ export default function ChatTab() {
                     title={
                       messages.length === 0 ? 'Không có tin nhắn để xuất' : 'Xuất lịch sử chat'
                     }
-                    className="flex items-center gap-1.5 px-3 py-2 bg-gray-50 hover:bg-gray-100 active:bg-gray-200 border border-gray-200 rounded-lg text-xs font-medium text-gray-600 transition-colors disabled:opacity-40 disabled:cursor-not-allowed touch-manipulation"
+                    className="flex items-center gap-1.5 px-3 py-2 bg-vj-surface-2 hover:bg-vj-pill active:bg-vj-surface-3 border border-vj-border-light rounded-vj text-xs font-medium text-vj-text-strong transition-colors disabled:opacity-40 disabled:cursor-not-allowed touch-manipulation"
                   >
                     {exporting ? (
                       <div className="w-3.5 h-3.5 border-2 border-gray-400 border-t-transparent rounded-full animate-spin" />
                     ) : (
-                      <Icon name="ArrowDownTrayIcon" size={14} className="text-gray-500" />
+                      <Icon name="ArrowDownTrayIcon" size={14} className="text-vj-gray" />
                     )}
                     <span className="hidden sm:inline">Xuất</span>
-                    <Icon name="ChevronDownIcon" size={10} className="text-gray-400" />
+                    <Icon name="ChevronDownIcon" size={10} className="text-vj-muted" />
                   </button>
 
                   {exportMenuOpen && (
-                    <div className="absolute right-0 top-full mt-1 w-44 bg-white border border-gray-200 rounded-xl shadow-lg z-20 overflow-hidden">
-                      <div className="px-3 py-2 border-b border-gray-100">
-                        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                    <div className="absolute right-0 top-full mt-1 w-44 bg-white border border-vj-border-light rounded-vj shadow-vj-lg z-20 overflow-hidden">
+                      <div className="px-3 py-2 border-b border-vj-border-light">
+                        <p className="text-xs font-semibold text-vj-gray uppercase tracking-wide">
                           Định dạng xuất
                         </p>
                       </div>
                       <button
                         onClick={exportCSV}
-                        className="w-full flex items-center gap-2.5 px-3 py-3 hover:bg-gray-50 active:bg-gray-100 transition-colors text-left touch-manipulation"
+                        className="w-full flex items-center gap-2.5 px-3 py-3 hover:bg-vj-surface-2 active:bg-vj-pill transition-colors text-left touch-manipulation"
                       >
-                        <div className="w-7 h-7 bg-green-50 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <div className="w-7 h-7 bg-green-50 rounded-vj flex items-center justify-center flex-shrink-0">
                           <Icon name="TableCellsIcon" size={14} className="text-green-600" />
                         </div>
                         <div>
                           <p className="text-sm font-medium text-navy">CSV</p>
-                          <p className="text-xs text-gray-400">Bảng tính Excel</p>
+                          <p className="text-xs text-vj-muted">Bảng tính Excel</p>
                         </div>
                       </button>
                       <button
                         onClick={exportPDF}
-                        className="w-full flex items-center gap-2.5 px-3 py-3 hover:bg-gray-50 active:bg-gray-100 transition-colors text-left touch-manipulation"
+                        className="w-full flex items-center gap-2.5 px-3 py-3 hover:bg-vj-surface-2 active:bg-vj-pill transition-colors text-left touch-manipulation"
                       >
-                        <div className="w-7 h-7 bg-red-50 rounded-lg flex items-center justify-center flex-shrink-0">
-                          <Icon name="DocumentTextIcon" size={14} className="text-red-500" />
+                        <div className="w-7 h-7 bg-red-50 rounded-vj flex items-center justify-center flex-shrink-0">
+                          <Icon name="DocumentTextIcon" size={14} className="text-vj-red" />
                         </div>
                         <div>
                           <p className="text-sm font-medium text-navy">PDF</p>
-                          <p className="text-xs text-gray-400">In / lưu PDF</p>
+                          <p className="text-xs text-vj-muted">In / lưu PDF</p>
                         </div>
                       </button>
                     </div>
@@ -852,15 +852,15 @@ export default function ChatTab() {
             </div>
 
             {/* Messages */}
-            <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3 bg-gray-50">
+            <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3 bg-vj-surface-2">
               {loadingMsgs ? (
                 <div className="flex items-center justify-center h-full">
                   <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
                 </div>
               ) : messages.length === 0 ? (
                 <div className="flex flex-col items-center justify-center h-full text-center gap-2">
-                  <Icon name="ChatBubbleLeftRightIcon" size={28} className="text-gray-300" />
-                  <p className="text-gray-400 text-sm">Chưa có tin nhắn nào</p>
+                  <Icon name="ChatBubbleLeftRightIcon" size={28} className="text-vj-muted" />
+                  <p className="text-vj-muted text-sm">Chưa có tin nhắn nào</p>
                 </div>
               ) : (
                 messages.map((msg) => {
@@ -881,7 +881,7 @@ export default function ChatTab() {
                           <Icon
                             name={isMissed ? 'PhoneXMarkIcon' : 'PhoneIcon'}
                             size={14}
-                            className={isMissed ? 'text-red-500' : 'text-green-600'}
+                            className={isMissed ? 'text-vj-red' : 'text-green-600'}
                           />
                           <span>{msg.content}</span>
                         </div>
@@ -908,7 +908,7 @@ export default function ChatTab() {
                           className={`px-4 py-2.5 rounded-2xl text-sm leading-relaxed select-text ${
                             isAdmin
                               ? 'bg-primary text-white rounded-br-sm'
-                              : 'bg-white text-navy border border-gray-100 rounded-bl-sm shadow-sm'
+                              : 'bg-white text-navy border border-vj-border-light rounded-bl-sm shadow-vj-sm'
                           }`}
                         >
                           {msg.content}
@@ -916,7 +916,7 @@ export default function ChatTab() {
                         <div
                           className={`flex items-center gap-1 px-1 ${isAdmin ? 'flex-row-reverse' : 'flex-row'}`}
                         >
-                          <span className="text-xs text-gray-400">
+                          <span className="text-xs text-vj-muted">
                             {formatMsgTime(msg.created_at)}
                           </span>
                           {isAdmin && (
@@ -924,7 +924,7 @@ export default function ChatTab() {
                               {msg.read_at ? (
                                 <Icon name="CheckCircleIcon" size={12} className="text-blue-400" />
                               ) : (
-                                <Icon name="CheckIcon" size={12} className="text-gray-400" />
+                                <Icon name="CheckIcon" size={12} className="text-vj-muted" />
                               )}
                             </span>
                           )}
@@ -946,10 +946,10 @@ export default function ChatTab() {
             </div>
 
             {/* Input */}
-            <div className="px-4 py-3 bg-white border-t border-gray-100 flex-shrink-0 space-y-2">
+            <div className="px-4 py-3 bg-white border-t border-vj-border-light flex-shrink-0 space-y-2">
               {/* Quick reply templates */}
               <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar text-2xs">
-                <span className="text-gray-400 font-bold whitespace-nowrap uppercase tracking-wider text-3xs">
+                <span className="text-vj-muted font-bold whitespace-nowrap uppercase tracking-wider text-3xs">
                   Trả lời nhanh:
                 </span>
                 {QUICK_ADMIN_RESPONSES.map((tmpl, idx) => (
@@ -960,7 +960,7 @@ export default function ChatTab() {
                       setInputText(tmpl);
                       setTimeout(() => inputRef.current?.focus(), 50);
                     }}
-                    className="whitespace-nowrap px-2.5 py-1 rounded-lg bg-gray-100 hover:bg-red-50 hover:text-primary text-gray-700 border border-gray-200 transition-colors"
+                    className="whitespace-nowrap px-2.5 py-1 rounded-vj bg-vj-pill hover:bg-vj-surface-rose hover:text-primary text-vj-text-dim border border-vj-border-light transition-colors"
                     title={tmpl}
                   >
                     {tmpl.length > 28 ? tmpl.slice(0, 28) + '...' : tmpl}
@@ -968,7 +968,7 @@ export default function ChatTab() {
                 ))}
               </div>
 
-              <div className="flex items-center gap-2 bg-gray-50 rounded-xl px-3 py-2.5 border border-gray-200 focus-within:border-primary transition-colors">
+              <div className="flex items-center gap-2 bg-vj-surface-2 rounded-vj px-3 py-2.5 border border-vj-border-light focus-within:border-primary transition-colors">
                 <input
                   ref={inputRef}
                   type="text"
@@ -982,7 +982,7 @@ export default function ChatTab() {
                 <button
                   onClick={handleSend}
                   disabled={!inputText.trim() || sending}
-                  className="w-10 h-10 bg-primary disabled:bg-gray-200 rounded-xl flex items-center justify-center transition-colors hover:bg-red-700 active:bg-red-800 disabled:cursor-not-allowed flex-shrink-0 touch-manipulation"
+                  className="w-10 h-10 bg-primary disabled:bg-vj-surface-3 rounded-vj flex items-center justify-center transition-colors hover:bg-red-700 active:bg-red-800 disabled:cursor-not-allowed flex-shrink-0 touch-manipulation"
                 >
                   {sending ? (
                     <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />

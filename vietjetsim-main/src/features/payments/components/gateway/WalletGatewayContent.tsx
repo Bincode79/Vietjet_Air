@@ -67,21 +67,21 @@ export default function WalletGatewayContent({
 
   return (
     <div className="max-w-xl mx-auto py-6 px-4">
-      <div className="bg-white rounded-3xl border border-gray-200/90 p-5 sm:p-8 shadow-sm space-y-6">
+      <div className="bg-white rounded-3xl border border-vj-border-light/90 p-5 sm:p-8 shadow-vj-sm space-y-6">
         <div className="text-center space-y-1">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold font-koho uppercase tracking-wider">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-vj-pay-green border border-vj-pay-green text-vj-pay-green text-xs font-bold font-koho uppercase tracking-wider">
             <Icon name="WalletIcon" size={16} />
             VÍ TÀI KHOẢN • SKYJOY
           </div>
-          <h2 className="text-xl sm:text-2xl font-black text-gray-900 font-koho">
+          <h2 className="text-xl sm:text-2xl font-black text-vj-text font-koho">
             Thanh toán bằng số dư Ví Vietjet
           </h2>
-          <p className="text-xs sm:text-sm text-gray-500">
+          <p className="text-xs sm:text-sm text-vj-gray">
             Thanh toán tức thì không phí giao dịch, bảo mật bằng mã PIN
           </p>
         </div>
 
-        <div className="bg-gradient-to-br from-emerald-600 to-teal-700 rounded-2xl p-5 text-white shadow-md space-y-3 font-koho">
+        <div className="bg-gradient-to-br from-emerald-600 to-teal-700 rounded-2xl p-5 text-white shadow-vj-md space-y-3 font-koho">
           <div className="flex justify-between items-center text-xs opacity-80 uppercase tracking-wider">
             <span>Số dư ví khả dụng</span>
             <span>Vietjet Pay</span>
@@ -99,7 +99,7 @@ export default function WalletGatewayContent({
         {walletState === 'error' && (
           <div
             role="alert"
-            className="rounded-xl border border-amber-200 bg-amber-50 p-3.5 text-xs text-amber-900 space-y-1"
+            className="rounded-vj border border-amber-200 bg-amber-50 p-3.5 text-xs text-amber-900 space-y-1"
           >
             <div className="font-bold">Chưa dùng được ví</div>
             <div>{walletError}</div>
@@ -110,16 +110,16 @@ export default function WalletGatewayContent({
         )}
 
         <form onSubmit={handlePay} className="space-y-4 font-koho">
-          <div className="bg-gray-50 rounded-xl p-3.5 border border-gray-200 text-xs space-y-1">
+          <div className="bg-vj-surface-2 rounded-vj p-3.5 border border-vj-border-light text-xs space-y-1">
             <div className="flex justify-between">
-              <span className="text-gray-600">Số tiền thanh toán:</span>
+              <span className="text-vj-text-strong">Số tiền thanh toán:</span>
               <span className="font-bold text-primary text-sm">
                 {amount.toLocaleString('vi-VN')} VND
               </span>
             </div>
             <div className="flex justify-between">
-              <span className="text-gray-600">Số dư còn lại sau thanh toán:</span>
-              <span className="font-bold text-gray-800">
+              <span className="text-vj-text-strong">Số dư còn lại sau thanh toán:</span>
+              <span className="font-bold text-vj-text-strong">
                 {balance === null
                   ? '—'
                   : `${Math.max(0, balance - amount).toLocaleString('vi-VN')} VND`}
@@ -128,8 +128,8 @@ export default function WalletGatewayContent({
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-gray-700 uppercase mb-1">
-              Nhập mã PIN ví tài khoản (hoặc 123456) <span className="text-red-500">*</span>
+            <label className="block text-xs font-bold text-vj-text-dim uppercase mb-1">
+              Nhập mã PIN ví tài khoản (hoặc 123456) <span className="text-vj-red">*</span>
             </label>
             <input
               type="password"
@@ -138,14 +138,14 @@ export default function WalletGatewayContent({
               placeholder="••••••"
               value={usePin}
               onChange={(e) => setUsePin(e.target.value)}
-              className="w-full text-center text-xl font-mono tracking-widest px-3.5 py-2.5 rounded-xl border border-gray-300 focus:border-primary outline-hidden"
+              className="w-full text-center text-xl font-mono tracking-widest px-3.5 py-2.5 rounded-vj border border-vj-line focus:border-primary outline-hidden"
             />
           </div>
 
           <button
             type="submit"
             disabled={isProcessing || !isEnough || usePin.length < 4}
-            className="w-full py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-sm uppercase tracking-wide transition-all shadow-md disabled:opacity-50 cursor-pointer"
+            className="w-full py-3.5 rounded-vj bg-vj-pay-green hover:bg-vj-pay-green text-white font-black text-sm uppercase tracking-wide transition-all shadow-vj-md disabled:opacity-50 cursor-pointer"
           >
             {isProcessing
               ? 'Đang trừ tiền ví...'

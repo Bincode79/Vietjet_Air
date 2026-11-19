@@ -61,18 +61,18 @@ export default function AnalyticsTab() {
       <div className="space-y-5">
         <div className="flex items-center justify-between">
           <div>
-            <div className="h-8 w-64 bg-slate-500/10 rounded animate-pulse mb-2" />
-            <div className="h-4 w-96 bg-slate-500/10 rounded animate-pulse" />
+            <div className="h-8 w-64 bg-slate-500 rounded animate-pulse mb-2" />
+            <div className="h-4 w-96 bg-slate-500 rounded animate-pulse" />
           </div>
-          <div className="h-10 w-32 bg-slate-500/10 rounded-xl animate-pulse" />
+          <div className="h-10 w-32 bg-slate-500 rounded-vj animate-pulse" />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {[1, 2, 3, 4].map((i) => (
             <div key={i} className={ADMIN_CARD_CLASS} style={ADMIN_CARD_STYLE}>
-              <div className="h-4 w-24 bg-slate-500/10 rounded mb-3 animate-pulse" />
-              <div className="h-8 w-32 bg-slate-500/10 rounded mb-2 animate-pulse" />
-              <div className="h-3 w-full bg-slate-500/10 rounded animate-pulse" />
+              <div className="h-4 w-24 bg-slate-500 rounded mb-3 animate-pulse" />
+              <div className="h-8 w-32 bg-slate-500 rounded mb-2 animate-pulse" />
+              <div className="h-3 w-full bg-slate-500 rounded animate-pulse" />
             </div>
           ))}
         </div>
@@ -94,10 +94,10 @@ export default function AnalyticsTab() {
         >
           <Icon name="ExclamationTriangleIcon" size={32} className="text-primary mx-auto mb-3" />
           <h3 className="font-bold text-white mb-1">Không thể tải dữ liệu thống kê</h3>
-          <p className="text-sm text-slate-400 mb-5">{error}</p>
+          <p className="text-sm text-vj-text-muted mb-5">{error}</p>
           <button
             onClick={fetchStats}
-            className={`${ADMIN_ACTION_BTN} text-sm font-semibold text-white bg-indigo-500/20 border border-indigo-500/30 hover:bg-indigo-500/30 mx-auto`}
+            className={`${ADMIN_ACTION_BTN} text-sm font-semibold text-white bg-vj-blue border border-vj-blue hover:bg-vj-blue mx-auto`}
           >
             <Icon name="ArrowPathIcon" size={16} />
             Thử lại
@@ -118,7 +118,7 @@ export default function AnalyticsTab() {
         actions={
           <button
             onClick={fetchStats}
-            className={`${ADMIN_ACTION_BTN} text-white bg-indigo-500/20 border border-indigo-500/30 hover:bg-indigo-500/30`}
+            className={`${ADMIN_ACTION_BTN} text-white bg-vj-blue border border-vj-blue hover:bg-vj-blue`}
           >
             <Icon name="ArrowPathIcon" size={14} />
             Làm mới
@@ -129,13 +129,13 @@ export default function AnalyticsTab() {
       {/* KPI Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <AdminStatCard
-          icon="PaperAirplaneIcon"
+          icon="AirplaneIcon"
           value={stats.totalFlights.toLocaleString('vi-VN')}
           label="Tổng chuyến bay"
         />
         <AdminStatCard
           icon="TicketIcon"
-          iconClassName="text-rose-400"
+          iconClassName="text-vj-red-dark"
           value={stats.totalBookings.toLocaleString('vi-VN')}
           label="Tổng đặt vé"
         />
@@ -147,7 +147,7 @@ export default function AnalyticsTab() {
         />
         <AdminStatCard
           icon="BanknotesIcon"
-          iconClassName="text-emerald-400"
+          iconClassName="text-vj-pay-green"
           value={formatCurrency(stats.totalRevenue)}
           label="Tổng doanh thu"
         />
@@ -159,12 +159,12 @@ export default function AnalyticsTab() {
         style={{ background: 'rgba(59, 130, 246, 0.08)', borderColor: 'rgba(59, 130, 246, 0.2)' }}
       >
         <div className="flex items-start gap-4">
-          <div className="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center shrink-0">
+          <div className="w-10 h-10 rounded-vj bg-blue-500/10 border border-blue-500/20 flex items-center justify-center shrink-0">
             <Icon name="InformationCircleIcon" size={20} className="text-blue-400" />
           </div>
           <div>
             <h3 className="font-bold text-white mb-1">Thông tin</h3>
-            <p className="text-sm text-slate-400">
+            <p className="text-sm text-vj-text-muted">
               Tính năng phân tích Neo4j Graph và đề xuất thông minh đang được phát triển. Hiện tại
               chỉ hiển thị thống kê cơ bản từ hệ thống.
             </p>

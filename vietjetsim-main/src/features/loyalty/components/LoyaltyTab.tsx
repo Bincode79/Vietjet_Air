@@ -112,7 +112,7 @@ function RedeemModal({
   };
 
   const inputClass =
-    'w-full px-4 py-3 bg-[var(--surface-2)] border border-[var(--border)] rounded-xl text-sm transition-all focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary font-[Be_Vietnam_Pro,sans-serif]';
+    'w-full px-4 py-3 bg-[var(--surface-2)] border border-[var(--border)] rounded-vj text-sm transition-all focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary font-[Be_Vietnam_Pro,sans-serif]';
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
@@ -131,7 +131,7 @@ function RedeemModal({
         </div>
 
         <form onSubmit={handleRedeem} className="p-6 space-y-5">
-          <div className="bg-[rgb(var(--accent-rgb))]/10 rounded-xl p-4 text-center">
+          <div className="bg-[rgb(var(--accent-rgb))]/10 rounded-vj p-4 text-center">
             <div className="text-sm text-[var(--foreground-muted)] font-[Be_Vietnam_Pro,sans-serif]">
               Điểm khả dụng
             </div>
@@ -160,7 +160,7 @@ function RedeemModal({
                   type="button"
                   onClick={() => setPoints(p.toString())}
                   disabled={p > availablePoints}
-                  className="flex-1 py-1.5 bg-[var(--surface-2)] hover:bg-[var(--surface)] rounded-lg text-xs font-semibold text-[var(--foreground)] transition-colors disabled:opacity-40 font-[Be_Vietnam_Pro,sans-serif]"
+                  className="flex-1 py-1.5 bg-[var(--surface-2)] hover:bg-[var(--surface)] rounded-vj text-xs font-semibold text-[var(--foreground)] transition-colors disabled:opacity-40 font-[Be_Vietnam_Pro,sans-serif]"
                 >
                   {formatPoints(p)}
                 </button>
@@ -176,7 +176,7 @@ function RedeemModal({
             <button
               type="submit"
               disabled={loading}
-              className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-accent text-vj-navy rounded-xl font-bold text-sm font-[KoHo,sans-serif] hover:bg-accent-dark transition-all shadow-md active:scale-95 disabled:opacity-50"
+              className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-accent text-vj-navy rounded-vj font-bold text-sm font-[KoHo,sans-serif] hover:bg-accent-dark transition-all shadow-vj-md active:scale-98 disabled:opacity-50"
             >
               {loading ? (
                 <Icon name="ArrowPathIcon" size={18} className="animate-spin" />
@@ -189,7 +189,7 @@ function RedeemModal({
               aria-label="Đóng"
               type="button"
               onClick={onClose}
-              className="px-6 py-3 bg-[var(--surface-2)] text-[var(--foreground-muted)] rounded-xl font-semibold font-[KoHo,sans-serif] hover:bg-[var(--surface)] transition-all"
+              className="px-6 py-3 bg-[var(--surface-2)] text-[var(--foreground-muted)] rounded-vj font-semibold font-[KoHo,sans-serif] hover:bg-[var(--surface)] transition-all"
             >
               Hủy
             </button>
@@ -276,7 +276,7 @@ export default function LoyaltyTab() {
         <button
           onClick={() => setShowRedeem(true)}
           disabled={!loyalty || loyalty.availablePoints < MIN_POINTS_TO_REDEEM}
-          className="flex items-center gap-2 px-4 py-2 bg-[var(--accent)] text-[var(--vj-navy)] rounded-lg text-sm font-bold font-[KoHo,sans-serif] hover:bg-[var(--accent-dark)] transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
+          className="flex items-center gap-2 px-4 py-2 bg-[var(--accent)] text-[var(--vj-navy)] rounded-vj text-sm font-bold font-[KoHo,sans-serif] hover:bg-[var(--accent-dark)] transition-all active:scale-98 disabled:opacity-50 disabled:cursor-not-allowed shadow-vj-sm"
         >
           <Icon name="GiftIcon" size={16} />
           Đổi điểm
@@ -319,7 +319,7 @@ export default function LoyaltyTab() {
 
           {/* Stats Row */}
           <div className="grid grid-cols-2 gap-4">
-            <div className="bg-white/10 rounded-xl p-3">
+            <div className="bg-white/10 rounded-vj p-3">
               <div className="text-xs text-white/60 font-[Be_Vietnam_Pro,sans-serif]">
                 Tổng điểm
               </div>
@@ -327,7 +327,7 @@ export default function LoyaltyTab() {
                 {formatPoints(loyalty?.totalPoints || 0)}
               </div>
             </div>
-            <div className="bg-white/10 rounded-xl p-3">
+            <div className="bg-white/10 rounded-vj p-3">
               <div className="text-xs text-white/60 font-[Be_Vietnam_Pro,sans-serif]">
                 Điểm tích lũy trọn đời
               </div>
@@ -339,7 +339,7 @@ export default function LoyaltyTab() {
 
           {/* Progress to Next Tier */}
           {nextTier && (
-            <div className="mt-4 bg-white/10 rounded-xl p-4">
+            <div className="mt-4 bg-white/10 rounded-vj p-4">
               <div className="flex justify-between items-center mb-2">
                 <span className="text-sm text-white/80 font-[Be_Vietnam_Pro,sans-serif]">
                   {nextTier.name}
@@ -436,7 +436,7 @@ export default function LoyaltyTab() {
               return (
                 <div key={tx.id} className="p-4 flex items-center gap-4">
                   <div
-                    className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+                    className="w-10 h-10 rounded-vj flex items-center justify-center flex-shrink-0"
                     style={{ background: config.bg }}
                   >
                     <Icon name={config.icon} size={18} style={{ color: config.color }} />
@@ -451,7 +451,7 @@ export default function LoyaltyTab() {
                   </div>
                   <div
                     className={`font-bold text-sm font-[KoHo,sans-serif] ${
-                      isPositive ? 'text-emerald-500' : 'text-red-500'
+                      isPositive ? 'text-vj-pay-green' : 'text-vj-red'
                     }`}
                   >
                     {isPositive ? '+' : '-'}

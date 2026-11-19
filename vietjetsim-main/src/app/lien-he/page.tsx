@@ -65,7 +65,7 @@ export default function ContactPage() {
                       value={formData.name}
                       onChange={handleChange}
                       required
-                      className="w-full px-4 py-3 rounded-vj border border-gray-300 focus:border-[var(--primary)] focus:ring-2 focus:ring-[rgb(var(--primary-rgb))]/20 outline-none transition-all"
+                      className="w-full px-4 py-3 rounded-vj border border-vj-line focus:border-[var(--primary)] focus:ring-2 focus:ring-[rgb(var(--primary-rgb))]/20 outline-none transition-all"
                       placeholder="Nhập họ và tên"
                     />
                   </div>
@@ -79,7 +79,7 @@ export default function ContactPage() {
                       value={formData.email}
                       onChange={handleChange}
                       required
-                      className="w-full px-4 py-3 rounded-vj border border-gray-300 focus:border-[var(--primary)] focus:ring-2 focus:ring-[rgb(var(--primary-rgb))]/20 outline-none transition-all"
+                      className="w-full px-4 py-3 rounded-vj border border-vj-line focus:border-[var(--primary)] focus:ring-2 focus:ring-[rgb(var(--primary-rgb))]/20 outline-none transition-all"
                       placeholder="example@email.com"
                     />
                   </div>
@@ -94,7 +94,7 @@ export default function ContactPage() {
                     value={formData.subject}
                     onChange={handleChange}
                     required
-                    className="w-full px-4 py-3 rounded-vj border border-gray-300 focus:border-[var(--primary)] focus:ring-2 focus:ring-[rgb(var(--primary-rgb))]/20 outline-none transition-all"
+                    className="w-full px-4 py-3 rounded-vj border border-vj-line focus:border-[var(--primary)] focus:ring-2 focus:ring-[rgb(var(--primary-rgb))]/20 outline-none transition-all"
                     placeholder="Vấn đề bạn cần hỗ trợ"
                   />
                 </div>
@@ -108,7 +108,7 @@ export default function ContactPage() {
                     onChange={handleChange}
                     required
                     rows={5}
-                    className="w-full px-4 py-3 rounded-vj border border-gray-300 focus:border-[var(--primary)] focus:ring-2 focus:ring-[rgb(var(--primary-rgb))]/20 outline-none transition-all resize-none"
+                    className="w-full px-4 py-3 rounded-vj border border-vj-line focus:border-[var(--primary)] focus:ring-2 focus:ring-[rgb(var(--primary-rgb))]/20 outline-none transition-all resize-none"
                     placeholder="Mô tả chi tiết yêu cầu của bạn..."
                   />
                 </div>
@@ -195,7 +195,7 @@ export default function ContactPage() {
                 ].map((item, i) => (
                   <div
                     key={i}
-                    className="flex justify-between items-center py-2 border-b border-gray-100 last:border-0"
+                    className="flex justify-between items-center py-2 border-b border-vj-border-light last:border-0"
                   >
                     <span className="text-sm text-[var(--foreground)] font-medium">{item.day}</span>
                     <span className="text-sm font-bold text-[var(--primary)]">{item.hours}</span>

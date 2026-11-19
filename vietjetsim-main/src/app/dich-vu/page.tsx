@@ -209,11 +209,11 @@ const SERVICES: ServiceItem[] = [
     description:
       'Hạn mức bay lên đến 10.000.000 đồng cùng MOVI. Duyệt hồ sơ nhanh chóng trong 3 phút, không cần chứng minh thu nhập.',
     price: '0đ trả trước',
-    priceNote: 'Trả góp linh hoạt đến 6 tháng',
+    priceNote: 'Trả góp linh hoạt đến 3 tháng',
     features: [
       'Hạn mức bay lên tới 10.000.000 VNĐ',
       'Xét duyệt hồ sơ trực tuyến chỉ trong 3 phút',
-      'Kỳ hạn trả góp linh hoạt từ 1 đến 6 tháng',
+      'Kỳ hạn trả góp linh hoạt từ 1 đến 3 tháng',
       'Không yêu cầu chứng minh thu nhập hay thủ tục phức tạp',
     ],
   },
@@ -259,7 +259,7 @@ export default function ServicesPage() {
               key={service.id}
               id={service.id}
               onClick={() => setSelectedService(service.id)}
-              className={`text-left bg-[var(--surface)] rounded-vj border-2 border-[var(--border)] overflow-hidden transition-all hover:shadow-lg hover:-translate-y-1 ${
+              className={`text-left bg-[var(--surface)] rounded-vj border-2 border-[var(--border)] overflow-hidden transition-all hover:shadow-vj-lg hover:-translate-y-1 ${
                 selectedService === service.id
                   ? 'ring-2 ring-[var(--vj-yellow)] border-[var(--vj-yellow)]'
                   : ''
@@ -267,7 +267,7 @@ export default function ServicesPage() {
             >
               <div className="p-5">
                 <div className="flex items-start justify-between mb-3">
-                  <div className="w-12 h-12 rounded-vj flex items-center justify-center bg-white border border-gray-100 shadow-2xs p-1.5 shrink-0">
+                  <div className="w-12 h-12 rounded-vj flex items-center justify-center bg-white border border-vj-border-light shadow-2xs p-1.5 shrink-0">
                     {renderServiceIcon(service.id, 28)}
                   </div>
                   <span className="text-xs font-black px-2.5 py-1 rounded-full bg-[rgb(var(--vj-yellow-rgb))]/25 text-[var(--vj-red)]">
@@ -288,11 +288,11 @@ export default function ServicesPage() {
 
         {/* Selected Service Detail */}
         {selected && (
-          <div className="bg-[var(--surface)] rounded-vj border-2 border-[rgb(var(--vj-yellow-rgb))]/40 overflow-hidden shadow-sm mb-10">
+          <div className="bg-[var(--surface)] rounded-vj border-2 border-[rgb(var(--vj-yellow-rgb))]/40 overflow-hidden shadow-vj-sm mb-10">
             {/* Detail Header */}
             <div className="p-6 sm:p-8 bg-[rgb(var(--vj-red-rgb))]/5">
               <div className="flex items-start gap-4">
-                <div className="w-14 h-14 rounded-vj flex items-center justify-center flex-shrink-0 bg-white border border-gray-100 shadow-sm p-2">
+                <div className="w-14 h-14 rounded-vj flex items-center justify-center flex-shrink-0 bg-white border border-vj-border-light shadow-vj-sm p-2">
                   {renderServiceIcon(selected.id, 36)}
                 </div>
                 <div className="flex-1">

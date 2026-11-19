@@ -60,23 +60,23 @@ export default function NapasGatewayContent({
 
   return (
     <div className="max-w-xl mx-auto py-6 px-4">
-      <div className="bg-white rounded-3xl border border-gray-200/90 p-5 sm:p-8 shadow-sm space-y-6">
+      <div className="bg-white rounded-3xl border border-vj-border-light/90 p-5 sm:p-8 shadow-vj-sm space-y-6">
         <div className="text-center space-y-1">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-xs font-bold font-koho uppercase tracking-wider">
             <Icon name="BuildingLibraryIcon" size={16} />
             CỔNG THANH TOÁN THẺ NỘI ĐỊA • NAPAS
           </div>
-          <h2 className="text-xl sm:text-2xl font-black text-gray-900 font-koho">
+          <h2 className="text-xl sm:text-2xl font-black text-vj-text font-koho">
             Thẻ ATM / Internet Banking nội địa
           </h2>
-          <p className="text-xs sm:text-sm text-gray-500">
+          <p className="text-xs sm:text-sm text-vj-gray">
             Hỗ trợ 40+ ngân hàng Việt Nam qua liên minh thanh toán Napas
           </p>
         </div>
 
         {step === 'bank' && (
           <div className="space-y-4">
-            <label className="block text-xs font-bold text-gray-700 uppercase font-koho">
+            <label className="block text-xs font-bold text-vj-text-dim uppercase font-koho">
               1. Chọn ngân hàng phát hành thẻ:
             </label>
             <div className="grid grid-cols-3 sm:grid-cols-4 gap-2.5">
@@ -87,14 +87,14 @@ export default function NapasGatewayContent({
                     key={b.id}
                     type="button"
                     onClick={() => setSelectedBank(b.id)}
-                    className={`p-3 rounded-xl border text-center transition-all cursor-pointer font-bold text-xs font-koho ${
+                    className={`p-3 rounded-vj border text-center transition-all cursor-pointer font-bold text-xs font-koho ${
                       isSelected
                         ? 'border-primary bg-red-50 text-primary shadow-xs'
-                        : 'border-gray-200 hover:border-gray-300 bg-white text-gray-800'
+                        : 'border-vj-border-light hover:border-vj-line bg-white text-vj-text-strong'
                     }`}
                   >
                     <div className="text-sm font-black">{b.id}</div>
-                    <div className="text-3xs text-gray-500 truncate mt-0.5">{b.name}</div>
+                    <div className="text-3xs text-vj-gray truncate mt-0.5">{b.name}</div>
                   </button>
                 );
               })}
@@ -103,7 +103,7 @@ export default function NapasGatewayContent({
             <button
               type="button"
               onClick={() => setStep('card')}
-              className="w-full mt-4 py-3.5 rounded-xl bg-primary hover:bg-primary-dark text-white font-black text-sm uppercase tracking-wide transition-all shadow-md cursor-pointer"
+              className="w-full mt-4 py-3.5 rounded-vj bg-primary hover:bg-primary-dark text-white font-black text-sm uppercase tracking-wide transition-all shadow-vj-md cursor-pointer"
             >
               Tiếp tục với {bankInfo.name}
             </button>
@@ -113,7 +113,7 @@ export default function NapasGatewayContent({
         {step === 'card' && (
           <form onSubmit={handleCardSubmit} className="space-y-4 font-koho">
             <div className="flex items-center justify-between pb-2 border-b">
-              <span className="text-xs font-bold text-gray-700">Ngân hàng đã chọn:</span>
+              <span className="text-xs font-bold text-vj-text-dim">Ngân hàng đã chọn:</span>
               <button
                 type="button"
                 onClick={() => setStep('bank')}
@@ -124,8 +124,8 @@ export default function NapasGatewayContent({
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-gray-700 uppercase mb-1">
-                Số thẻ ATM (in trên mặt trước thẻ) <span className="text-red-500">*</span>
+              <label className="block text-xs font-bold text-vj-text-dim uppercase mb-1">
+                Số thẻ ATM (in trên mặt trước thẻ) <span className="text-vj-red">*</span>
               </label>
               <input
                 type="text"
@@ -133,13 +133,13 @@ export default function NapasGatewayContent({
                 placeholder="9704 ...."
                 value={cardNumber}
                 onChange={(e) => setCardNumber(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-xl border border-gray-300 font-mono text-sm focus:border-primary outline-hidden"
+                className="w-full px-3.5 py-2.5 rounded-vj border border-vj-line font-mono text-sm focus:border-primary outline-hidden"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-gray-700 uppercase mb-1">
-                Tên chủ thẻ (không dấu) <span className="text-red-500">*</span>
+              <label className="block text-xs font-bold text-vj-text-dim uppercase mb-1">
+                Tên chủ thẻ (không dấu) <span className="text-vj-red">*</span>
               </label>
               <input
                 type="text"
@@ -147,13 +147,13 @@ export default function NapasGatewayContent({
                 placeholder="NGUYEN VAN A"
                 value={cardHolder}
                 onChange={(e) => setCardHolder(e.target.value.toUpperCase())}
-                className="w-full px-3.5 py-2.5 rounded-xl border border-gray-300 uppercase text-sm focus:border-primary outline-hidden"
+                className="w-full px-3.5 py-2.5 rounded-vj border border-vj-line uppercase text-sm focus:border-primary outline-hidden"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-gray-700 uppercase mb-1">
-                Ngày phát hành / Ngày hết hạn (MM/YY) <span className="text-red-500">*</span>
+              <label className="block text-xs font-bold text-vj-text-dim uppercase mb-1">
+                Ngày phát hành / Ngày hết hạn (MM/YY) <span className="text-vj-red">*</span>
               </label>
               <input
                 type="text"
@@ -161,14 +161,14 @@ export default function NapasGatewayContent({
                 placeholder="MM/YY"
                 value={issueDate}
                 onChange={(e) => setIssueDate(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-xl border border-gray-300 font-mono text-sm focus:border-primary outline-hidden"
+                className="w-full px-3.5 py-2.5 rounded-vj border border-vj-line font-mono text-sm focus:border-primary outline-hidden"
               />
             </div>
 
             <button
               type="submit"
               disabled={isProcessing || !cardNumber || !cardHolder}
-              className="w-full mt-4 py-3.5 rounded-xl bg-primary hover:bg-primary-dark text-white font-black text-sm uppercase tracking-wide transition-all shadow-md disabled:opacity-50 cursor-pointer"
+              className="w-full mt-4 py-3.5 rounded-vj bg-primary hover:bg-primary-dark text-white font-black text-sm uppercase tracking-wide transition-all shadow-vj-md disabled:opacity-50 cursor-pointer"
             >
               {isProcessing
                 ? 'Đang xác thực thông tin...'
@@ -179,11 +179,11 @@ export default function NapasGatewayContent({
 
         {step === 'otp' && (
           <form onSubmit={handleOtpSubmit} className="space-y-4 text-center font-koho">
-            <div className="w-12 h-12 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center mx-auto">
+            <div className="w-12 h-12 rounded-full bg-blue-50 text-vj-blue flex items-center justify-center mx-auto">
               <Icon name="DevicePhoneMobileIcon" size={28} />
             </div>
-            <h3 className="font-bold text-gray-900 text-base">Xác nhận mã OTP từ {bankInfo.id}</h3>
-            <p className="text-xs text-gray-500">
+            <h3 className="font-bold text-vj-text text-base">Xác nhận mã OTP từ {bankInfo.id}</h3>
+            <p className="text-xs text-vj-gray">
               Nhập mã OTP đã được gửi về số điện thoại đăng ký Smart OTP / SMS OTP của bạn.
             </p>
             <input
@@ -193,12 +193,12 @@ export default function NapasGatewayContent({
               placeholder="123456"
               value={otp}
               onChange={(e) => setOtp(e.target.value)}
-              className="w-full text-center text-xl font-mono font-black tracking-widest px-3 py-2 border rounded-xl"
+              className="w-full text-center text-xl font-mono font-black tracking-widest px-3 py-2 border rounded-vj"
             />
             <button
               type="submit"
               disabled={isProcessing}
-              className="w-full py-3 bg-primary hover:bg-primary-dark text-white rounded-xl font-bold text-sm cursor-pointer"
+              className="w-full py-3 bg-primary hover:bg-primary-dark text-white rounded-vj font-bold text-sm cursor-pointer"
             >
               {isProcessing ? 'Đang quyết toán...' : 'Xác thực & Hoàn tất'}
             </button>

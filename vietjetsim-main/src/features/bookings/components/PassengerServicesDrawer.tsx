@@ -38,7 +38,7 @@ export default function PassengerServicesDrawer({
       {/* Drawer content */}
       <div className="relative w-full max-w-lg bg-white h-full shadow-2xl flex flex-col z-10 animate-slideInRight">
         {/* Header - Red bar with Vietjet curve top-right (Screenshot 1) */}
-        <div className="relative bg-primary-dark text-white px-4 py-3 flex items-center justify-between shadow-md overflow-hidden">
+        <div className="relative bg-primary-dark text-white px-4 py-3 flex items-center justify-between shadow-vj-md overflow-hidden">
           <div className="w-8 shrink-0" />
           <h2 className="font-koho font-bold tracking-wide text-base sm:text-lg uppercase text-white text-center">
             DỊCH VỤ THEO HÀNH KHÁCH
@@ -46,7 +46,7 @@ export default function PassengerServicesDrawer({
           <div className="relative z-10">
             <button
               onClick={onClose}
-              className="text-gray-900 bg-white/90 hover:bg-white p-1 rounded-full transition-colors flex items-center justify-center h-7 w-7 cursor-pointer"
+              className="text-vj-text bg-white/90 hover:bg-white p-1 rounded-full transition-colors flex items-center justify-center h-7 w-7 cursor-pointer"
               aria-label="Đóng"
             >
               <RiCloseLine size={20} />
@@ -66,14 +66,14 @@ export default function PassengerServicesDrawer({
         </div>
 
         {/* Legs tabs */}
-        <div className="flex border-b border-gray-200 bg-white">
+        <div className="flex border-b border-vj-border-light bg-white">
           <button
             type="button"
             onClick={() => setActiveLeg('outbound')}
             className={`flex-1 py-2.5 text-center text-xs font-bold transition-all border-b-2 ${
               activeLeg === 'outbound'
                 ? 'border-primary-dark text-primary-dark'
-                : 'border-transparent text-gray-500 hover:text-gray-800'
+                : 'border-transparent text-vj-gray hover:text-vj-text-strong'
             }`}
           >
             Chuyến đi
@@ -85,7 +85,7 @@ export default function PassengerServicesDrawer({
               className={`flex-1 py-2.5 text-center text-xs font-bold transition-all border-b-2 ${
                 activeLeg === 'inbound'
                   ? 'border-primary-dark text-primary-dark'
-                  : 'border-transparent text-gray-500 hover:text-gray-800'
+                  : 'border-transparent text-vj-gray hover:text-vj-text-strong'
               }`}
             >
               Chuyến về
@@ -94,13 +94,13 @@ export default function PassengerServicesDrawer({
         </div>
 
         {/* Passenger Card matching Screenshot 1 */}
-        <div className="p-4 bg-gray-50 border-b border-gray-200">
-          <div className="max-w-xs mx-auto overflow-hidden rounded-vj border border-red-200 shadow-sm bg-white text-center">
+        <div className="p-4 bg-vj-surface-2 border-b border-vj-border-light">
+          <div className="max-w-xs mx-auto overflow-hidden rounded-vj border border-red-200 shadow-vj-sm bg-white text-center">
             <div className="bg-primary-dark py-2 px-4 text-white">
               <div className="text-3xs uppercase tracking-wider text-white/80">Người lớn</div>
               <div className="text-sm font-black uppercase tracking-tight">{passengerName}</div>
             </div>
-            <div className="py-2.5 px-4 text-sm font-bold text-gray-900 font-koho">
+            <div className="py-2.5 px-4 text-sm font-bold text-vj-text font-koho">
               {activeLeg === 'outbound'
                 ? `${flight.from} - ${flight.to}`
                 : `${flight.to} - ${flight.from}`}
@@ -111,15 +111,15 @@ export default function PassengerServicesDrawer({
         {/* Scrollable body */}
         <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50">
           {/* Banner SkyKIDS matching Screenshot 1 */}
-          <div className="rounded-vj overflow-hidden bg-gradient-to-r from-red-100 via-pink-50 to-amber-100 border border-red-200 p-4 shadow-sm relative min-h-[110px] flex items-center">
+          <div className="rounded-vj overflow-hidden bg-gradient-to-r from-red-100 via-pink-50 to-amber-100 border border-red-200 p-4 shadow-vj-sm relative min-h-[110px] flex items-center">
             <div className="relative z-10 max-w-[70%]">
-              <span className="text-3xs uppercase font-black px-1.5 py-0.5 rounded bg-red-600 text-white tracking-wider">
+              <span className="text-3xs uppercase font-black px-1.5 py-0.5 rounded bg-vj-red-dark text-white tracking-wider">
                 SkyKIDS
               </span>
               <h3 className="text-sm sm:text-base font-black italic text-red-700 leading-tight mt-1.5">
                 CON TỰ TIN BAY MỘT MÌNH
               </h3>
-              <p className="text-3xs text-gray-600 mt-1">
+              <p className="text-3xs text-vj-text-strong mt-1">
                 Dịch vụ chăm sóc & đồng hành cùng trẻ em chu đáo
               </p>
             </div>
@@ -130,9 +130,9 @@ export default function PassengerServicesDrawer({
 
           {/* Section: Chi tiết dịch vụ */}
           <div>
-            <div className="flex items-center justify-between pb-2 mb-2 border-b border-gray-200">
-              <h4 className="text-xs sm:text-sm font-bold text-gray-900">Chi tiết dịch vụ</h4>
-              <RiArrowDownSLine size={18} className="text-gray-500" />
+            <div className="flex items-center justify-between pb-2 mb-2 border-b border-vj-border-light">
+              <h4 className="text-xs sm:text-sm font-bold text-vj-text">Chi tiết dịch vụ</h4>
+              <RiArrowDownSLine size={18} className="text-vj-gray" />
             </div>
 
             {/* Service Item Card */}
@@ -141,7 +141,7 @@ export default function PassengerServicesDrawer({
               className={`p-3.5 rounded-vj border bg-white shadow-2xs flex items-center justify-between cursor-pointer transition-all ${
                 isSelected
                   ? 'border-green-600 ring-1 ring-green-600'
-                  : 'border-gray-200 hover:border-red-300'
+                  : 'border-vj-border-light hover:border-red-300'
               }`}
             >
               <div className="flex items-center gap-3">
@@ -149,10 +149,10 @@ export default function PassengerServicesDrawer({
                   <SkyKidsIcon size={32} />
                 </div>
                 <div>
-                  <h5 className="text-xs font-extrabold text-gray-900 leading-snug">
+                  <h5 className="text-xs font-extrabold text-vj-text leading-snug">
                     Trẻ em bay một mình (12- dưới 14 tuổi)
                   </h5>
-                  <div className="text-xs sm:text-sm font-black text-red-600 italic mt-1 font-koho">
+                  <div className="text-xs sm:text-sm font-black text-vj-red-dark italic mt-1 font-koho">
                     1.000.000 VND
                   </div>
                 </div>
@@ -178,11 +178,11 @@ export default function PassengerServicesDrawer({
             <div className="mt-3 flex items-center gap-2 px-1">
               <label
                 onClick={() => setIsSelected(false)}
-                className="flex items-center gap-2 cursor-pointer text-xs font-medium text-gray-800 select-none"
+                className="flex items-center gap-2 cursor-pointer text-xs font-medium text-vj-text-strong select-none"
               >
                 <div
                   className={`w-4 h-4 rounded-full border flex items-center justify-center transition-all ${
-                    !isSelected ? 'border-green-600 bg-white' : 'border-gray-300 bg-white'
+                    !isSelected ? 'border-green-600 bg-white' : 'border-vj-line bg-white'
                   }`}
                 >
                   {!isSelected && <div className="w-2 h-2 rounded-full bg-green-600" />}
@@ -201,7 +201,7 @@ export default function PassengerServicesDrawer({
         </div>
 
         {/* Footer Red Bar matching Screenshot 1 */}
-        <div className="bg-primary-dark text-white p-3 flex items-center justify-between shadow-lg">
+        <div className="bg-primary-dark text-white p-3 flex items-center justify-between shadow-vj-lg">
           <div className="flex items-center gap-2.5">
             <div className="w-9 h-9 rounded-vj bg-accent flex items-center justify-center shrink-0 shadow-xs p-1">
               <BaggageLuggageIcon size={24} />
@@ -219,7 +219,7 @@ export default function PassengerServicesDrawer({
             aria-label="Đóng"
             type="button"
             onClick={onClose}
-            className="vj-cta font-black px-6 py-2.5 rounded-vj text-xs sm:text-sm shadow transition-all active:scale-95 cursor-pointer italic"
+            className="vj-cta font-black px-6 py-2.5 rounded-vj text-xs sm:text-sm shadow transition-all active:scale-98 cursor-pointer italic"
           >
             Xác nhận
           </button>

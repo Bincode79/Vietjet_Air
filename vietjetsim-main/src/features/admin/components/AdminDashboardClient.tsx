@@ -68,6 +68,7 @@ const NAV_ITEMS: {
   label: string;
   icon:
     | 'HomeIcon'
+    | 'AirplaneIcon'
     | 'PaperAirplaneIcon'
     | 'UsersIcon'
     | 'ChartBarIcon'
@@ -85,7 +86,7 @@ const NAV_ITEMS: {
   category?: 'management' | 'support' | 'system';
 }[] = [
   { id: 'overview', label: 'Tổng quan', icon: 'HomeIcon', category: 'management' },
-  { id: 'flights', label: 'Chuyến bay', icon: 'PaperAirplaneIcon', category: 'management' },
+  { id: 'flights', label: 'Chuyến bay', icon: 'AirplaneIcon', category: 'management' },
   { id: 'users', label: 'Người dùng', icon: 'UsersIcon', category: 'management' },
   { id: 'bookings', label: 'Đặt vé', icon: 'TicketIcon', category: 'management' },
   { id: 'airports', label: 'Sân bay', icon: 'BuildingOfficeIcon', category: 'management' },
@@ -344,7 +345,7 @@ export default function AdminDashboardClient() {
         <button
           key={item.id}
           onClick={() => handleTabSelect(item.id)}
-          className="w-full flex items-center justify-between px-4 py-3 rounded-xl mb-1 text-sm font-semibold transition-all text-left"
+          className="w-full flex items-center justify-between px-4 py-3 rounded-vj mb-1 text-sm font-semibold transition-all text-left"
           style={{
             background: activeTab === item.id ? 'var(--primary)' : 'transparent',
             color: activeTab === item.id ? 'white' : '#94a3b8',
@@ -355,7 +356,7 @@ export default function AdminDashboardClient() {
             <span>{item.label}</span>
           </div>
           {item.id === 'chat' && chatUnreadCount > 0 && (
-            <span className="bg-red-600 text-white text-3xs font-black px-1.5 py-0.5 rounded-full">
+            <span className="bg-vj-red-dark text-white text-3xs font-black px-1.5 py-0.5 rounded-full">
               {chatUnreadCount > 9 ? '9+' : chatUnreadCount}
             </span>
           )}
@@ -367,7 +368,7 @@ export default function AdminDashboardClient() {
       <div key={category} className="space-y-1">
         {!sidebarCollapsed && (
           <div className="px-4 pt-4 pb-1">
-            <span className="text-2xs font-bold text-slate-500 uppercase tracking-widest opacity-60">
+            <span className="text-2xs font-bold text-vj-text-muted uppercase tracking-widest opacity-60">
               {NAV_CATEGORIES.find((c) => c.id === category)?.label || category}
             </span>
           </div>
@@ -376,10 +377,10 @@ export default function AdminDashboardClient() {
           <button
             key={item.id}
             onClick={() => setActiveTab(item.id)}
-            className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all relative group overflow-hidden ${
+            className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-vj text-sm font-semibold transition-all relative group overflow-hidden ${
               activeTab === item.id
-                ? 'text-white shadow-lg shadow-indigo-500/20'
-                : 'text-slate-400 hover:text-white hover:bg-white/5'
+                ? 'text-white shadow-vj-lg shadow-vj-sm'
+                : 'text-vj-text-muted hover:text-white hover:bg-white/5'
             } ${sidebarCollapsed ? 'justify-center' : ''}`}
             style={{
               background: activeTab === item.id ? 'var(--primary)' : 'transparent',
@@ -398,7 +399,7 @@ export default function AdminDashboardClient() {
               <div className="flex items-center justify-between flex-1 min-w-0">
                 <span className="relative z-10 truncate">{item.label}</span>
                 {item.id === 'chat' && chatUnreadCount > 0 && (
-                  <span className="ml-auto bg-red-600 text-white text-3xs font-black px-1.5 py-0.5 rounded-full shadow-sm">
+                  <span className="ml-auto bg-vj-red-dark text-white text-3xs font-black px-1.5 py-0.5 rounded-full shadow-vj-sm">
                     {chatUnreadCount > 9 ? '9+' : chatUnreadCount}
                   </span>
                 )}
@@ -410,7 +411,7 @@ export default function AdminDashboardClient() {
                   <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-red-500 ring-2 ring-slate-900" />
                 )}
                 <span
-                  className="absolute left-full ml-3 px-3 py-2 text-white text-xs font-bold rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-all duration-300 translate-x-[-10px] group-hover:translate-x-0 z-50"
+                  className="absolute left-full ml-3 px-3 py-2 text-white text-xs font-bold rounded-vj whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-all duration-300 translate-x-[-10px] group-hover:translate-x-0 z-50"
                   style={{
                     background: 'rgba(30, 41, 59, 0.95)',
                     backdropFilter: 'blur(8px)',
@@ -443,12 +444,12 @@ export default function AdminDashboardClient() {
       >
         {/* Logo */}
         <div
-          className={`h-16 flex items-center border-b border-slate-700/50 px-4 gap-3 ${
+          className={`h-16 flex items-center border-b border-vj-border-light px-4 gap-3 ${
             sidebarCollapsed ? 'justify-center' : ''
           }`}
         >
           <div
-            className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+            className="w-10 h-10 rounded-vj flex items-center justify-center flex-shrink-0"
             style={{ background: 'var(--primary)' }}
           >
             <svg
@@ -472,7 +473,7 @@ export default function AdminDashboardClient() {
               >
                 Vietjet Air
               </span>
-              <div className="text-2xs text-indigo-400 font-medium tracking-wider uppercase">
+              <div className="text-2xs text-vj-blue font-medium tracking-wider uppercase">
                 Bảng Quản Trị
               </div>
             </div>
@@ -482,7 +483,7 @@ export default function AdminDashboardClient() {
         {/* Role badge */}
         {!sidebarCollapsed && (
           <div
-            className="mx-3 mt-4 mb-2 rounded-xl p-3"
+            className="mx-3 mt-4 mb-2 rounded-vj p-3"
             style={{
               background:
                 'linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(139, 92, 246, 0.1) 100%)',
@@ -491,7 +492,7 @@ export default function AdminDashboardClient() {
           >
             <div className="flex items-center gap-3">
               <div
-                className="w-9 h-9 rounded-lg flex items-center justify-center text-xs font-bold text-white overflow-hidden"
+                className="w-9 h-9 rounded-vj flex items-center justify-center text-xs font-bold text-white overflow-hidden"
                 style={{ background: 'var(--primary)' }}
               >
                 {profile?.avatarUrl ? (
@@ -510,8 +511,8 @@ export default function AdminDashboardClient() {
                 <div className="text-xs font-bold text-white truncate max-w-[140px] tracking-tight">
                   {profile?.fullName || user?.email?.split('@')[0] || 'Hệ Thống'}
                 </div>
-                <div className="text-2xs text-indigo-400/90 font-bold flex items-center gap-1.5 mt-0.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-glow-emerald animate-pulse"></span>
+                <div className="text-2xs text-vj-blue font-bold flex items-center gap-1.5 mt-0.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-vj-pay-green shadow-glow-emerald animate-pulse"></span>
                   {roleLabel}
                 </div>
               </div>
@@ -523,12 +524,12 @@ export default function AdminDashboardClient() {
         <nav className="flex-1 px-3 py-2 overflow-y-auto">{renderNavItems(NAV_ITEMS)}</nav>
 
         {/* Bottom actions */}
-        <div className="p-3 border-t border-slate-700/50 space-y-1">
+        <div className="p-3 border-t border-vj-border-light space-y-1">
           <button
             onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-            className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
+            className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-vj text-sm font-medium transition-all ${
               sidebarCollapsed ? 'justify-center' : ''
-            } text-slate-400 hover:text-white hover:bg-slate-800/50`}
+            } text-vj-text-muted hover:text-white hover:bg-slate-800`}
             title={sidebarCollapsed ? 'Mở rộng' : 'Thu gọn'}
           >
             <Icon name={sidebarCollapsed ? 'ChevronRightIcon' : 'ChevronLeftIcon'} size={16} />
@@ -536,9 +537,9 @@ export default function AdminDashboardClient() {
           </button>
           <Link
             href="/trang-chu"
-            className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
+            className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-vj text-sm font-medium transition-all ${
               sidebarCollapsed ? 'justify-center' : ''
-            } text-slate-400 hover:text-white hover:bg-slate-800/50`}
+            } text-vj-text-muted hover:text-white hover:bg-slate-800`}
             title={sidebarCollapsed ? 'Về trang chủ' : undefined}
           >
             <Icon name="ArrowLeftOnRectangleIcon" size={16} />
@@ -561,10 +562,10 @@ export default function AdminDashboardClient() {
               animation: 'slideInLeft 0.25s ease-out',
             }}
           >
-            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-700/50">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-vj-border-light">
               <div className="flex items-center gap-3">
                 <div
-                  className="w-10 h-10 rounded-xl flex items-center justify-center"
+                  className="w-10 h-10 rounded-vj flex items-center justify-center"
                   style={{ background: 'var(--primary)' }}
                 >
                   <svg
@@ -582,22 +583,22 @@ export default function AdminDashboardClient() {
                 </div>
                 <div>
                   <div className="text-white font-bold text-sm">Vietjet Air</div>
-                  <div className="text-2xs text-indigo-400 font-medium tracking-wider uppercase">
+                  <div className="text-2xs text-vj-blue font-medium tracking-wider uppercase">
                     Bảng Quản Trị
                   </div>
                 </div>
               </div>
               <button
                 onClick={() => setDrawerOpen(false)}
-                className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-slate-700/50 transition-colors"
+                className="w-8 h-8 flex items-center justify-center rounded-vj hover:bg-slate-700 transition-colors"
               >
-                <Icon name="XMarkIcon" size={18} className="text-slate-400" />
+                <Icon name="XMarkIcon" size={18} className="text-vj-text-muted" />
               </button>
             </div>
 
             {/* Role badge mobile */}
             <div
-              className="mx-4 mt-4 mb-2 rounded-xl p-3"
+              className="mx-4 mt-4 mb-2 rounded-vj p-3"
               style={{
                 background: 'rgb(236 32 41 / 0.10)',
                 border: '1px solid rgb(236 32 41 / 0.25)',
@@ -605,7 +606,7 @@ export default function AdminDashboardClient() {
             >
               <div className="flex items-center gap-3">
                 <div
-                  className="w-9 h-9 rounded-lg flex items-center justify-center text-xs font-bold text-white overflow-hidden"
+                  className="w-9 h-9 rounded-vj flex items-center justify-center text-xs font-bold text-white overflow-hidden"
                   style={{ background: 'var(--primary)' }}
                 >
                   {profile?.avatarUrl ? (
@@ -622,8 +623,8 @@ export default function AdminDashboardClient() {
                   <div className="text-xs font-semibold text-white truncate max-w-[140px]">
                     {profile?.fullName || user?.email?.split('@')[0] || 'Hệ Thống'}
                   </div>
-                  <div className="text-xs2 text-indigo-400 flex items-center gap-1">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                  <div className="text-xs2 text-vj-blue flex items-center gap-1">
+                    <span className="w-1.5 h-1.5 rounded-full bg-vj-pay-green"></span>
                     {roleLabel}
                   </div>
                 </div>
@@ -634,10 +635,10 @@ export default function AdminDashboardClient() {
               {renderNavItems(NAV_ITEMS, true)}
             </nav>
 
-            <div className="px-3 py-4 border-t border-slate-700/50">
+            <div className="px-3 py-4 border-t border-vj-border-light">
               <Link
                 href="/trang-chu"
-                className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all text-slate-400 hover:text-white hover:bg-slate-800/50"
+                className="flex items-center gap-3 px-4 py-3 rounded-vj text-sm font-semibold transition-all text-vj-text-muted hover:text-white hover:bg-slate-800"
               >
                 <Icon name="ArrowLeftOnRectangleIcon" size={18} />
                 Về trang chủ
@@ -660,14 +661,14 @@ export default function AdminDashboardClient() {
           <div className="flex items-center gap-3">
             <button
               onClick={() => setDrawerOpen(true)}
-              className="lg:hidden w-10 h-10 flex items-center justify-center rounded-xl transition-colors"
+              className="lg:hidden w-10 h-10 flex items-center justify-center rounded-vj transition-colors"
               style={{ background: 'rgba(148, 163, 184, 0.1)' }}
             >
-              <Icon name="Bars3Icon" size={20} className="text-slate-400" />
+              <Icon name="Bars3Icon" size={20} className="text-vj-text-muted" />
             </button>
             <div className="flex flex-col justify-center gap-1">
               <BreadcrumbNav items={breadcrumbItems} />
-              <p className="text-xs hidden sm:block text-slate-500">
+              <p className="text-xs hidden sm:block text-vj-text-muted">
                 {formattedDate} - {formattedTime}
               </p>
             </div>
@@ -676,7 +677,7 @@ export default function AdminDashboardClient() {
             {/* Global Search Button */}
             <button
               onClick={() => setSearchOpen(true)}
-              className="relative w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 hover:bg-white/10 group active:scale-95"
+              className="relative w-10 h-10 rounded-vj flex items-center justify-center transition-all duration-300 hover:bg-white/10 group active:scale-98"
               style={{
                 background: 'rgba(148, 163, 184, 0.08)',
                 border: '1px solid rgba(255,255,255,0.05)',
@@ -686,7 +687,7 @@ export default function AdminDashboardClient() {
               <Icon
                 name="MagnifyingGlassIcon"
                 size={18}
-                className="text-slate-400 group-hover:text-white transition-colors"
+                className="text-vj-text-muted group-hover:text-white transition-colors"
               />
             </button>
 

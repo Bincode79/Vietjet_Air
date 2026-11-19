@@ -103,7 +103,7 @@ export default function SendBookingEmailModal({
   };
 
   return (
-    <div className="fixed inset-0 z-[120] flex items-center justify-center p-3 sm:p-5 bg-slate-950/85 backdrop-blur-md animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-[120] flex items-center justify-center p-3 sm:p-5 bg-slate-950 backdrop-blur-md animate-in fade-in duration-200">
       <div
         className="bg-slate-900 border border-white/10 rounded-vj-sheet sm:rounded-vj-modal w-full max-w-2xl overflow-hidden shadow-2xl flex flex-col max-h-[92vh] animate-in zoom-in-95 duration-200"
         style={{ background: 'linear-gradient(145deg, #131b2e 0%, #0a0f1d 100%)' }}
@@ -129,7 +129,7 @@ export default function SendBookingEmailModal({
                   PNR: {pnr}
                 </span>
               </div>
-              <p className="text-2xs font-semibold text-slate-400 mt-0.5">
+              <p className="text-2xs font-semibold text-vj-text-muted mt-0.5">
                 Chuyến bay {booking.flightNo || 'VJ'} · {booking.route || 'Hành trình'}
               </p>
             </div>
@@ -137,22 +137,22 @@ export default function SendBookingEmailModal({
 
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-xl bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white flex items-center justify-center transition-colors"
+            className="w-8 h-8 rounded-vj bg-white/5 hover:bg-white/10 text-vj-text-muted hover:text-white flex items-center justify-center transition-colors"
           >
             <Icon name="XMarkIcon" size={18} />
           </button>
         </div>
 
         {/* Template Selector Tabs */}
-        <div className="px-6 sm:px-8 pt-4 pb-2 border-b border-white/5 bg-slate-900/60">
+        <div className="px-6 sm:px-8 pt-4 pb-2 border-b border-white/5 bg-slate-900">
           <div className="grid grid-cols-3 gap-2 p-1 bg-white/5 rounded-2xl border border-white/5">
             <button
               type="button"
               onClick={() => setTemplateType('payment_instruction')}
-              className={`py-2.5 px-3 rounded-xl text-2xs font-black uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 ${
+              className={`py-2.5 px-3 rounded-vj text-2xs font-black uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 ${
                 templateType === 'payment_instruction'
-                  ? 'bg-amber-500 text-slate-950 shadow-md shadow-amber-500/20'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-white/5'
+                  ? 'bg-amber-500 text-vj-text-muted shadow-vj-md shadow-amber-500/20'
+                  : 'text-vj-text-muted hover:text-vj-text-muted hover:bg-white/5'
               }`}
             >
               <Icon name="QrCodeIcon" size={15} />
@@ -162,10 +162,10 @@ export default function SendBookingEmailModal({
             <button
               type="button"
               onClick={() => setTemplateType('ticket_issuance')}
-              className={`py-2.5 px-3 rounded-xl text-2xs font-black uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 ${
+              className={`py-2.5 px-3 rounded-vj text-2xs font-black uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 ${
                 templateType === 'ticket_issuance'
-                  ? 'bg-emerald-500 text-slate-950 shadow-md shadow-emerald-500/20'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-white/5'
+                  ? 'bg-vj-pay-green text-vj-text-muted shadow-vj-md shadow-vj-sm'
+                  : 'text-vj-text-muted hover:text-vj-text-muted hover:bg-white/5'
               }`}
             >
               <Icon name="TicketIcon" size={15} />
@@ -175,10 +175,10 @@ export default function SendBookingEmailModal({
             <button
               type="button"
               onClick={() => setTemplateType('payment_failed')}
-              className={`py-2.5 px-3 rounded-xl text-2xs font-black uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 ${
+              className={`py-2.5 px-3 rounded-vj text-2xs font-black uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 ${
                 templateType === 'payment_failed'
-                  ? 'bg-rose-500 text-white shadow-md shadow-rose-500/20'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-white/5'
+                  ? 'bg-vj-red-dark text-white shadow-vj-md shadow-vj-sm'
+                  : 'text-vj-text-muted hover:text-vj-text-muted hover:bg-white/5'
               }`}
             >
               <Icon name="XCircleIcon" size={15} />
@@ -188,7 +188,7 @@ export default function SendBookingEmailModal({
 
           {/* Submode Switcher: Form vs Preview */}
           <div className="flex items-center justify-between mt-3 text-2xs">
-            <span className="text-slate-400 font-medium">
+            <span className="text-vj-text-muted font-medium">
               {templateType === 'payment_instruction' &&
                 'Gửi hướng dẫn quét mã VietQR và thông tin STK thụ hưởng cho khách'}
               {templateType === 'ticket_issuance' &&
@@ -197,14 +197,14 @@ export default function SendBookingEmailModal({
                 'Gửi thông báo giao dịch chuyển khoản bị từ chối/thất bại kèm link thử lại'}
             </span>
 
-            <div className="flex items-center gap-1 bg-white/5 p-0.5 rounded-lg border border-white/5">
+            <div className="flex items-center gap-1 bg-white/5 p-0.5 rounded-vj border border-white/5">
               <button
                 type="button"
                 onClick={() => setActiveTab('form')}
-                className={`px-2.5 py-1 rounded-md text-3xs font-black uppercase tracking-wider transition-colors ${
+                className={`px-2.5 py-1 rounded-vj text-3xs font-black uppercase tracking-wider transition-colors ${
                   activeTab === 'form'
                     ? 'bg-white/10 text-white'
-                    : 'text-slate-400 hover:text-white'
+                    : 'text-vj-text-muted hover:text-white'
                 }`}
               >
                 Nhập liệu
@@ -212,10 +212,10 @@ export default function SendBookingEmailModal({
               <button
                 type="button"
                 onClick={() => setActiveTab('preview')}
-                className={`px-2.5 py-1 rounded-md text-3xs font-black uppercase tracking-wider transition-colors flex items-center gap-1 ${
+                className={`px-2.5 py-1 rounded-vj text-3xs font-black uppercase tracking-wider transition-colors flex items-center gap-1 ${
                   activeTab === 'preview'
                     ? 'bg-white/10 text-white'
-                    : 'text-slate-400 hover:text-white'
+                    : 'text-vj-text-muted hover:text-white'
                 }`}
               >
                 <Icon name="EyeIcon" size={11} />
@@ -228,8 +228,12 @@ export default function SendBookingEmailModal({
         {/* Content Body */}
         <div className="p-6 sm:p-8 overflow-y-auto flex-1 space-y-5">
           {errorMessage && (
-            <div className="p-3.5 bg-rose-500/10 border border-rose-500/20 rounded-2xl flex items-center gap-2.5 text-rose-300 text-xs font-semibold">
-              <Icon name="ExclamationTriangleIcon" size={16} className="text-rose-400 shrink-0" />
+            <div className="p-3.5 bg-vj-red-dark border border-vj-red-dark rounded-2xl flex items-center gap-2.5 text-vj-red-dark text-xs font-semibold">
+              <Icon
+                name="ExclamationTriangleIcon"
+                size={16}
+                className="text-vj-red-dark shrink-0"
+              />
               <span>{errorMessage}</span>
             </div>
           )}
@@ -239,8 +243,8 @@ export default function SendBookingEmailModal({
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {/* Recipient Email */}
                 <div>
-                  <label className="block text-2xs font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">
-                    Hộp thư nhận Gmail <span className="text-rose-400">*</span>
+                  <label className="block text-2xs font-black text-vj-text-muted uppercase tracking-widest mb-1.5 ml-1">
+                    Hộp thư nhận Gmail <span className="text-vj-red-dark">*</span>
                   </label>
                   <div className="relative">
                     <input
@@ -254,14 +258,14 @@ export default function SendBookingEmailModal({
                     <Icon
                       name="EnvelopeIcon"
                       size={15}
-                      className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500"
+                      className="absolute left-3.5 top-1/2 -translate-y-1/2 text-vj-text-muted"
                     />
                   </div>
                 </div>
 
                 {/* Recipient Name */}
                 <div>
-                  <label className="block text-2xs font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">
+                  <label className="block text-2xs font-black text-vj-text-muted uppercase tracking-widest mb-1.5 ml-1">
                     Tên người nhận / Khách hàng
                   </label>
                   <div className="relative">
@@ -275,7 +279,7 @@ export default function SendBookingEmailModal({
                     <Icon
                       name="UserIcon"
                       size={15}
-                      className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500"
+                      className="absolute left-3.5 top-1/2 -translate-y-1/2 text-vj-text-muted"
                     />
                   </div>
                 </div>
@@ -284,7 +288,7 @@ export default function SendBookingEmailModal({
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {/* Amount */}
                 <div>
-                  <label className="block text-2xs font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">
+                  <label className="block text-2xs font-black text-vj-text-muted uppercase tracking-widest mb-1.5 ml-1">
                     Số tiền thanh toán (VNĐ)
                   </label>
                   <div className="relative">
@@ -292,9 +296,9 @@ export default function SendBookingEmailModal({
                       type="number"
                       value={amount}
                       onChange={(e) => setAmount(Number(e.target.value))}
-                      className="w-full pl-4 pr-14 py-3 bg-white/5 border border-white/10 rounded-2xl text-xs font-black text-emerald-400 focus:outline-none focus:border-emerald-500/60 transition-all focus:bg-white/10"
+                      className="w-full pl-4 pr-14 py-3 bg-white/5 border border-white/10 rounded-2xl text-xs font-black text-vj-pay-green focus:outline-none focus:border-vj-pay-green transition-all focus:bg-white/10"
                     />
-                    <span className="absolute right-4 top-1/2 -translate-y-1/2 text-2xs font-black text-slate-500">
+                    <span className="absolute right-4 top-1/2 -translate-y-1/2 text-2xs font-black text-vj-text-muted">
                       ₫
                     </span>
                   </div>
@@ -302,7 +306,7 @@ export default function SendBookingEmailModal({
 
                 {/* Booking Code PNR */}
                 <div>
-                  <label className="block text-2xs font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">
+                  <label className="block text-2xs font-black text-vj-text-muted uppercase tracking-widest mb-1.5 ml-1">
                     Mã đặt chỗ (PNR)
                   </label>
                   <div className="px-4 py-3 bg-white/5 border border-white/10 rounded-2xl text-xs font-black text-amber-300 tracking-widest">
@@ -318,7 +322,7 @@ export default function SendBookingEmailModal({
                     <Icon name="InformationCircleIcon" size={16} />
                     <span>Thông tin thụ hưởng VietQR trong email:</span>
                   </div>
-                  <div className="grid grid-cols-2 gap-2 text-2xs text-slate-300 pt-1">
+                  <div className="grid grid-cols-2 gap-2 text-2xs text-vj-text-muted pt-1">
                     <div>
                       Ngân hàng: <strong className="text-white">VIB (Quốc tế Việt Nam)</strong>
                     </div>
@@ -337,12 +341,12 @@ export default function SendBookingEmailModal({
 
               {templateType === 'ticket_issuance' && (
                 <div className="space-y-3">
-                  <div className="p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl space-y-2">
-                    <div className="flex items-center gap-2 text-emerald-300 text-xs font-black">
+                  <div className="p-4 bg-vj-pay-green border border-vj-pay-green rounded-2xl space-y-2">
+                    <div className="flex items-center gap-2 text-vj-pay-green text-xs font-black">
                       <Icon name="CheckCircleIcon" size={16} />
                       <span>Thông tin vé xuất trong email:</span>
                     </div>
-                    <div className="grid grid-cols-2 gap-2 text-2xs text-slate-300 pt-1">
+                    <div className="grid grid-cols-2 gap-2 text-2xs text-vj-text-muted pt-1">
                       <div>
                         Chuyến bay:{' '}
                         <strong className="text-white">{booking.flightNo || 'VJ120'}</strong>
@@ -367,9 +371,9 @@ export default function SendBookingEmailModal({
                         onChange={(e) => setAutoConfirm(e.target.checked)}
                         className="w-4 h-4 accent-emerald-500 rounded cursor-pointer"
                       />
-                      <span className="text-2xs font-bold text-slate-300">
+                      <span className="text-2xs font-bold text-vj-text-muted">
                         Đồng thời tự động chuyển trạng thái đơn hàng sang{' '}
-                        <strong className="text-emerald-400">Đã xác nhận (Confirmed)</strong>
+                        <strong className="text-vj-pay-green">Đã xác nhận (Confirmed)</strong>
                       </span>
                     </label>
                   )}
@@ -378,7 +382,7 @@ export default function SendBookingEmailModal({
 
               {/* Custom Admin Note */}
               <div>
-                <label className="block text-2xs font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">
+                <label className="block text-2xs font-black text-vj-text-muted uppercase tracking-widest mb-1.5 ml-1">
                   Lời nhắn / Ghi chú gửi kèm (Tùy chọn)
                 </label>
                 <textarea
@@ -393,13 +397,13 @@ export default function SendBookingEmailModal({
           ) : (
             /* Email Live Preview Tab */
             <div className="space-y-4">
-              <div className="bg-white rounded-2xl p-5 text-slate-800 shadow-lg border border-slate-200">
+              <div className="bg-white rounded-2xl p-5 text-vj-text-muted shadow-vj-lg border border-vj-border-light">
                 {/* Simulated Gmail Header */}
-                <div className="border-b border-slate-200 pb-3 mb-4">
-                  <div className="text-3xs uppercase tracking-widest text-slate-400 font-bold mb-1">
+                <div className="border-b border-vj-border-light pb-3 mb-4">
+                  <div className="text-3xs uppercase tracking-widest text-vj-text-muted font-bold mb-1">
                     Tiêu đề Gmail (Subject)
                   </div>
-                  <div className="text-xs font-black text-slate-900">
+                  <div className="text-xs font-black text-vj-text-muted">
                     {templateType === 'payment_instruction' &&
                       `Thông báo thanh toán đặt chỗ ${pnr} — Vietjet Air`}
                     {templateType === 'ticket_issuance' &&
@@ -407,10 +411,10 @@ export default function SendBookingEmailModal({
                     {templateType === 'payment_failed' &&
                       `Thông báo thanh toán chưa thành công ${pnr} — Vietjet Air`}
                   </div>
-                  <div className="text-2xs text-slate-500 mt-1">
+                  <div className="text-2xs text-vj-text-muted mt-1">
                     Người gửi: <strong>Vietjet Air &lt;booking@vietjet.shop&gt;</strong>
                   </div>
-                  <div className="text-2xs text-slate-500">
+                  <div className="text-2xs text-vj-text-muted">
                     Gửi tới: <strong>{recipientEmail || 'khachhang@gmail.com'}</strong>
                   </div>
                 </div>
@@ -423,13 +427,13 @@ export default function SendBookingEmailModal({
 
                   {templateType === 'payment_instruction' && (
                     <>
-                      <p className="text-slate-600">
+                      <p className="text-vj-text-muted">
                         Đặt chỗ của Quý khách đã được giữ tạm thời. Vui lòng hoàn tất thanh toán
                         trong vòng <strong>30 phút</strong> để đảm bảo giữ chỗ và được phát hành vé
                         điện tử chính thức:
                       </p>
-                      <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl text-center">
-                        <div className="text-3xs uppercase tracking-widest text-slate-400 font-bold">
+                      <div className="p-4 bg-slate-50 border border-vj-border-light rounded-vj text-center">
+                        <div className="text-3xs uppercase tracking-widest text-vj-text-muted font-bold">
                           MÃ ĐẶT CHỖ (PNR)
                         </div>
                         <div className="text-2xl font-black text-vj-red tracking-widest mt-1">
@@ -439,7 +443,7 @@ export default function SendBookingEmailModal({
                           Chờ thanh toán qua VietQR
                         </div>
                       </div>
-                      <div className="bg-slate-50 p-3 rounded-xl border border-slate-200 text-2xs space-y-1">
+                      <div className="bg-slate-50 p-3 rounded-vj border border-vj-border-light text-2xs space-y-1">
                         <div>
                           Số tiền: <strong>{formattedAmount} VNĐ</strong>
                         </div>
@@ -461,23 +465,23 @@ export default function SendBookingEmailModal({
 
                   {templateType === 'ticket_issuance' && (
                     <>
-                      <p className="text-slate-600">
+                      <p className="text-vj-text-muted">
                         Vietjet Air xin trân trọng thông báo giao dịch thanh toán của Quý khách đã{' '}
                         <strong>hoàn tất thành công</strong>. Vé điện tử đã được phát hành chính
                         thức:
                       </p>
-                      <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl text-center">
-                        <div className="text-3xs uppercase tracking-widest text-slate-400 font-bold">
+                      <div className="p-4 bg-slate-50 border border-vj-border-light rounded-vj text-center">
+                        <div className="text-3xs uppercase tracking-widest text-vj-text-muted font-bold">
                           MÃ ĐẶT CHỖ (PNR)
                         </div>
                         <div className="text-2xl font-black text-vj-red tracking-widest mt-1">
                           {pnr}
                         </div>
-                        <div className="text-2xs text-emerald-600 font-bold mt-1">
+                        <div className="text-2xs text-vj-pay-green font-bold mt-1">
                           ĐÃ THANH TOÁN • VÉ ĐÃ PHÁT HÀNH
                         </div>
                       </div>
-                      <div className="bg-slate-50 p-3 rounded-xl border border-slate-200 text-2xs space-y-1">
+                      <div className="bg-slate-50 p-3 rounded-vj border border-vj-border-light text-2xs space-y-1">
                         <div>
                           Trạng thái: <strong>Thành công (Đã xuất vé)</strong>
                         </div>
@@ -496,15 +500,15 @@ export default function SendBookingEmailModal({
 
                   {templateType === 'payment_failed' && (
                     <>
-                      <p className="text-slate-600">
+                      <p className="text-vj-text-muted">
                         Giao dịch thanh toán cho mã đặt chỗ của Quý khách{' '}
                         <strong>chưa được hoàn tất thành công</strong>.
                       </p>
-                      <div className="p-4 bg-rose-50 border border-rose-200 rounded-xl text-center">
-                        <div className="text-2xl font-black text-rose-600 tracking-widest">
+                      <div className="p-4 bg-vj-red-dark border border-vj-red-dark rounded-vj text-center">
+                        <div className="text-2xl font-black text-vj-red-dark tracking-widest">
                           {pnr}
                         </div>
-                        <div className="text-2xs text-rose-600 font-bold mt-1">
+                        <div className="text-2xs text-vj-red-dark font-bold mt-1">
                           THANH TOÁN THẤT BẠI / TỪ CHỐI ĐỐI SOÁT
                         </div>
                       </div>
@@ -512,14 +516,14 @@ export default function SendBookingEmailModal({
                   )}
 
                   {customNote && (
-                    <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl text-2xs text-amber-900">
+                    <div className="p-3 bg-amber-50 border border-amber-200 rounded-vj text-2xs text-amber-900">
                       <strong>Lời nhắn từ Hệ Thống:</strong>
                       <p className="mt-0.5">{customNote}</p>
                     </div>
                   )}
 
                   <div className="text-center pt-2">
-                    <span className="inline-block px-5 py-2.5 bg-vj-red text-white font-bold text-2xs rounded-lg uppercase tracking-wider">
+                    <span className="inline-block px-5 py-2.5 bg-vj-red text-white font-bold text-2xs rounded-vj uppercase tracking-wider">
                       {templateType === 'payment_instruction'
                         ? 'Thanh toán ngay bằng VietQR'
                         : 'Xem vé điện tử & Quản lý chuyến bay'}
@@ -537,7 +541,7 @@ export default function SendBookingEmailModal({
             type="button"
             onClick={onClose}
             disabled={isSending}
-            className="px-5 py-3 rounded-2xl bg-white/5 hover:bg-white/10 text-slate-300 font-black text-2xs uppercase tracking-widest transition-all"
+            className="px-5 py-3 rounded-2xl bg-white/5 hover:bg-white/10 text-vj-text-muted font-black text-2xs uppercase tracking-widest transition-all"
           >
             Hủy bỏ
           </button>
@@ -546,12 +550,12 @@ export default function SendBookingEmailModal({
             type="button"
             onClick={handleSend}
             disabled={isSending || !recipientEmail}
-            className={`px-7 py-3 rounded-2xl font-black text-2xs uppercase tracking-widest transition-all flex items-center gap-2 shadow-lg active:scale-95 disabled:opacity-50 ${
+            className={`px-7 py-3 rounded-2xl font-black text-2xs uppercase tracking-widest transition-all flex items-center gap-2 shadow-vj-lg active:scale-98 disabled:opacity-50 ${
               templateType === 'payment_instruction'
-                ? 'bg-amber-500 hover:bg-amber-400 text-slate-950 shadow-amber-500/20'
+                ? 'bg-amber-500 hover:bg-amber-400 text-vj-text-muted shadow-amber-500/20'
                 : templateType === 'ticket_issuance'
-                  ? 'bg-emerald-500 hover:bg-emerald-400 text-slate-950 shadow-emerald-500/20'
-                  : 'bg-rose-500 hover:bg-rose-400 text-white shadow-rose-500/20'
+                  ? 'bg-vj-pay-green hover:bg-vj-pay-green text-vj-text-muted shadow-vj-sm'
+                  : 'bg-vj-red-dark hover:bg-vj-red-dark text-white shadow-vj-sm'
             }`}
           >
             {isSending ? (

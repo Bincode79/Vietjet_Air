@@ -44,7 +44,7 @@ export default function TaxiServiceDrawer({
       {/* Drawer content */}
       <div className="relative w-full max-w-lg bg-white h-full shadow-2xl flex flex-col z-10 animate-slideInRight">
         {/* Header - Red bar matching Screenshot 3 */}
-        <div className="bg-primary-dark text-white px-4 py-3 flex items-center justify-between shadow-md">
+        <div className="bg-primary-dark text-white px-4 py-3 flex items-center justify-between shadow-vj-md">
           <h2 className="text-sm sm:text-base font-black uppercase tracking-wider">DỊCH VỤ TAXI</h2>
           <button
             onClick={onClose}
@@ -56,14 +56,14 @@ export default function TaxiServiceDrawer({
         </div>
 
         {/* Legs tabs */}
-        <div className="flex border-b border-gray-200 bg-white">
+        <div className="flex border-b border-vj-border-light bg-white">
           <button
             type="button"
             onClick={() => setActiveLeg('outbound')}
             className={`flex-1 py-2 text-center text-xs font-bold transition-all border-b-2 ${
               activeLeg === 'outbound'
                 ? 'border-primary-dark text-primary-dark'
-                : 'border-transparent text-gray-500 hover:text-gray-800'
+                : 'border-transparent text-vj-gray hover:text-vj-text-strong'
             }`}
           >
             Chuyến đi
@@ -75,7 +75,7 @@ export default function TaxiServiceDrawer({
               className={`flex-1 py-2 text-center text-xs font-bold transition-all border-b-2 ${
                 activeLeg === 'inbound'
                   ? 'border-primary-dark text-primary-dark'
-                  : 'border-transparent text-gray-500 hover:text-gray-800'
+                  : 'border-transparent text-vj-gray hover:text-vj-text-strong'
               }`}
             >
               Chuyến về
@@ -84,9 +84,9 @@ export default function TaxiServiceDrawer({
         </div>
 
         {/* Scrollable body */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-4 text-xs text-gray-700 leading-relaxed">
+        <div className="flex-1 overflow-y-auto p-4 space-y-4 text-xs text-vj-text-dim leading-relaxed">
           {/* Promo banner matching Screenshot 3 */}
-          <div className="rounded-vj overflow-hidden bg-gradient-to-r from-amber-500 via-orange-400 to-red-500 text-white p-4 shadow-sm relative">
+          <div className="rounded-vj overflow-hidden bg-gradient-to-r from-amber-500 via-orange-400 to-red-500 text-white p-4 shadow-vj-sm relative">
             <div className="relative z-10 max-w-[70%]">
               <span className="text-2xs font-bold bg-white text-primary-dark px-1.5 py-0.5 rounded uppercase">
                 vietjetAir.com
@@ -101,8 +101,8 @@ export default function TaxiServiceDrawer({
             </div>
           </div>
 
-          <div className="space-y-1.5 text-xs2 text-gray-600">
-            <p className="font-semibold text-gray-800">
+          <div className="space-y-1.5 text-xs2 text-vj-text-strong">
+            <p className="font-semibold text-vj-text-strong">
               Chặng bay:{' '}
               {activeLeg === 'outbound'
                 ? `${flight.from} → ${flight.to}`
@@ -122,17 +122,17 @@ export default function TaxiServiceDrawer({
           </div>
 
           {/* Green SM Taxi Card matching Screenshot 3 */}
-          <div className="p-3.5 rounded-vj border border-gray-200 bg-white hover:border-green-300 shadow-sm transition-all flex items-center justify-between gap-3">
+          <div className="p-3.5 rounded-vj border border-vj-border-light bg-white hover:border-green-300 shadow-vj-sm transition-all flex items-center justify-between gap-3">
             <div className="flex items-center gap-3">
               <div className="w-12 h-12 rounded-vj bg-cyan-900/10 border border-cyan-700/30 text-white flex items-center justify-center shrink-0 p-1">
                 <AirportTaxiIcon size={34} />
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <h4 className="font-black text-xs text-gray-900">Green SM Premium</h4>
-                  <span className="text-2xs text-gray-500 font-semibold">4 chỗ ngồi</span>
+                  <h4 className="font-black text-xs text-vj-text">Green SM Premium</h4>
+                  <span className="text-2xs text-vj-gray font-semibold">4 chỗ ngồi</span>
                 </div>
-                <p className="text-xs2 text-gray-500">Dịch Vụ Taxi Đón Sân bay</p>
+                <p className="text-xs2 text-vj-gray">Dịch Vụ Taxi Đón Sân bay</p>
                 <div className="mt-1 flex items-center gap-2">
                   <span className="text-2xs font-bold bg-green-100 text-green-800 px-2 py-0.5 rounded-full">
                     Gói 30 Km
@@ -149,7 +149,7 @@ export default function TaxiServiceDrawer({
               onClick={() => setSelectedTaxi(!selectedTaxi)}
               className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-lg transition-all shrink-0 ${
                 selectedTaxi
-                  ? 'bg-green-600 text-white shadow-sm'
+                  ? 'bg-green-600 text-white shadow-vj-sm'
                   : 'border-2 border-green-500 text-green-600 hover:bg-green-50'
               }`}
               aria-label="Chọn dịch vụ taxi"
@@ -160,7 +160,7 @@ export default function TaxiServiceDrawer({
         </div>
 
         {/* Footer Red Bar matching Screenshot 3 */}
-        <div className="bg-primary-dark text-white p-3 flex items-center justify-between shadow-lg">
+        <div className="bg-primary-dark text-white p-3 flex items-center justify-between shadow-vj-lg">
           <div className="flex items-center gap-2">
             <div className="w-9 h-9 rounded-vj bg-white/20 flex items-center justify-center shrink-0">
               <RiTaxiLine size={20} className="text-white" />
@@ -175,7 +175,7 @@ export default function TaxiServiceDrawer({
           <button
             type="button"
             onClick={handleConfirm}
-            className="bg-vjyellow hover:bg-accent-light text-gray-900 font-black px-6 py-2 rounded-vj text-sm shadow transition-all active:scale-95"
+            className="bg-vjyellow hover:bg-accent-light text-vj-text font-black px-6 py-2 rounded-vj text-sm shadow transition-all active:scale-98"
           >
             Xác nhận
           </button>

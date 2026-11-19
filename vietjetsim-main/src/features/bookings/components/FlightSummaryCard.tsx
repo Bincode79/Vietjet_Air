@@ -95,7 +95,7 @@ const FARE_BENEFITS: Record<string, FareBenefitInfo> = {
   },
   skyboss: {
     label: 'SkyBoss',
-    badgeClass: 'bg-rose-50 text-rose-800 border-rose-300 font-black',
+    badgeClass: 'bg-vj-red-dark text-vj-red-dark border-vj-red-dark font-black',
     cabinBaggage: '10kg xách tay',
     checkedBaggage: '30kg ký gửi + 01 bộ dụng cụ Golf',
     features: [
@@ -190,20 +190,20 @@ function FlightLegSection({
   const fare = getFareInfo(leg.class);
 
   return (
-    <div className={`p-4 sm:p-5 ${!isFirst ? 'border-t border-gray-100' : ''}`}>
+    <div className={`p-4 sm:p-5 ${!isFirst ? 'border-t border-vj-border-light' : ''}`}>
       {/* Header bar của chặng bay */}
       <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
         <div className="flex items-center gap-2">
-          <span className="px-2 py-0.5 rounded-sm bg-gray-100 text-gray-700 font-extrabold text-2xs uppercase tracking-wider">
+          <span className="px-2 py-0.5 rounded-sm bg-vj-pill text-vj-text-dim font-extrabold text-2xs uppercase tracking-wider">
             {label}
           </span>
-          <span className="text-xs font-extrabold text-gray-900">{dateFormatted}</span>
+          <span className="text-xs font-extrabold text-vj-text">{dateFormatted}</span>
         </div>
         <div className="flex items-center gap-2">
           <span className="px-2 py-0.5 rounded-sm bg-red-50 text-primary border border-red-200 font-mono font-bold text-3xs">
             {flightNo}
           </span>
-          <span className="text-3xs text-gray-500 font-medium hidden sm:inline-block">
+          <span className="text-3xs text-vj-gray font-medium hidden sm:inline-block">
             {aircraft}
           </span>
         </div>
@@ -214,23 +214,23 @@ function FlightLegSection({
         {/* Điểm khởi hành */}
         <div className="flex items-center sm:block gap-3">
           <div className="flex flex-col sm:block">
-            <span className="text-2xl sm:text-3xl font-black text-gray-950 font-mono tracking-tight leading-none">
+            <span className="text-2xl sm:text-3xl font-black text-vj-dark font-mono tracking-tight leading-none">
               {fromCode}
             </span>
-            <span className="block text-sm sm:text-base font-bold text-gray-800 mt-1">
+            <span className="block text-sm sm:text-base font-bold text-vj-text-strong mt-1">
               {departTime}
             </span>
-            <span className="text-2xs text-gray-500 font-medium mt-0.5 block">{fromCity}</span>
+            <span className="text-2xs text-vj-gray font-medium mt-0.5 block">{fromCity}</span>
           </div>
         </div>
 
         {/* Cột giữa: thời gian bay, đường bay dashed, nút chi tiết */}
         <div className="flex-1 px-1 sm:px-6 text-center">
-          <span className="text-3xs sm:text-2xs font-semibold text-gray-600 block mb-1">
+          <span className="text-3xs sm:text-2xs font-semibold text-vj-text-strong block mb-1">
             {duration}
           </span>
           <div className="relative flex items-center justify-center my-1.5">
-            <div className="w-full border-t border-gray-300 border-dashed" />
+            <div className="w-full border-t border-vj-line border-dashed" />
             <div className="absolute px-2.5 bg-white text-primary">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -254,7 +254,7 @@ function FlightLegSection({
           <button
             type="button"
             onClick={() => setIsOpen(!isOpen)}
-            className="text-3xs font-bold text-gray-700 hover:text-primary transition-colors cursor-pointer inline-flex items-center gap-1 active:scale-95"
+            className="text-3xs font-bold text-vj-text-dim hover:text-primary transition-colors cursor-pointer inline-flex items-center gap-1 active:scale-98"
             aria-expanded={isOpen}
           >
             <span>Bay thẳng | Chi tiết</span>
@@ -265,32 +265,32 @@ function FlightLegSection({
         {/* Điểm đến */}
         <div className="flex items-center sm:block gap-3 sm:text-right">
           <div className="flex flex-col sm:block sm:items-end">
-            <span className="text-2xl sm:text-3xl font-black text-gray-950 font-mono tracking-tight leading-none">
+            <span className="text-2xl sm:text-3xl font-black text-vj-dark font-mono tracking-tight leading-none">
               {toCode}
             </span>
-            <span className="block text-sm sm:text-base font-bold text-gray-800 mt-1">
+            <span className="block text-sm sm:text-base font-bold text-vj-text-strong mt-1">
               {arriveTime}
             </span>
-            <span className="text-2xs text-gray-500 font-medium mt-0.5 block">{toCity}</span>
+            <span className="text-2xs text-vj-gray font-medium mt-0.5 block">{toCity}</span>
           </div>
         </div>
 
         {/* Cột phải: Hạng vé, hành lý & Tổng tiền */}
-        <div className="sm:border-l sm:border-gray-200 sm:pl-6 pt-3 sm:pt-0 text-left sm:text-right flex sm:flex-col justify-between sm:justify-center items-center sm:items-end border-t border-gray-100 sm:border-t-0">
+        <div className="sm:border-l sm:border-vj-border-light sm:pl-6 pt-3 sm:pt-0 text-left sm:text-right flex sm:flex-col justify-between sm:justify-center items-center sm:items-end border-t border-vj-border-light sm:border-t-0">
           <div className="flex flex-col sm:items-end gap-1">
             <div
               className={`inline-block px-2.5 py-0.5 rounded-sm border text-xs tracking-wide ${fare.badgeClass}`}
             >
               {fare.label}
             </div>
-            <div className="flex items-center gap-1 text-3xs text-gray-600 font-medium">
+            <div className="flex items-center gap-1 text-3xs text-vj-text-strong font-medium">
               <span>🎒</span>
               <span>{fare.cabinBaggage}</span>
             </div>
           </div>
 
           <div className="flex flex-col items-end sm:mt-1">
-            <span className="text-3xs font-semibold text-gray-500">{paxCount} hành khách</span>
+            <span className="text-3xs font-semibold text-vj-gray">{paxCount} hành khách</span>
             {showPrice && totalPrice > 0 && (
               <span className="text-sm sm:text-base font-black text-primary tracking-tight">
                 {totalPrice.toLocaleString('vi-VN')} VND
@@ -302,62 +302,65 @@ function FlightLegSection({
 
       {/* Chi tiết lộ trình mở rộng */}
       {isOpen && (
-        <div className="mt-4 pt-3.5 border-t border-gray-100 bg-gray-50/80 -mx-4 sm:-mx-5 px-4 sm:px-5 py-3 rounded-b-vj text-xs space-y-3 animate-fadeIn">
+        <div className="mt-4 pt-3.5 border-t border-vj-border-light bg-vj-surface-2 -mx-4 sm:-mx-5 px-4 sm:px-5 py-3 rounded-b-vj text-xs space-y-3 animate-fadeIn">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {/* Lộ trình chuyến bay */}
-            <div className="bg-white p-3 rounded-vj border border-gray-200/80 shadow-2xs space-y-2">
-              <div className="flex items-center justify-between pb-1.5 border-b border-gray-100">
-                <span className="font-extrabold text-gray-900 text-2xs uppercase tracking-wide">
+            <div className="bg-white p-3 rounded-vj border border-vj-border-light/80 shadow-2xs space-y-2">
+              <div className="flex items-center justify-between pb-1.5 border-b border-vj-border-light">
+                <span className="font-extrabold text-vj-text text-2xs uppercase tracking-wide">
                   Chi tiết hành trình
                 </span>
                 <span className="font-mono font-black text-primary text-xs">{flightNo}</span>
               </div>
-              <div className="space-y-1.5 text-2xs text-gray-700">
+              <div className="space-y-1.5 text-2xs text-vj-text-dim">
                 <div className="flex items-start gap-2">
-                  <span className="text-emerald-600 font-bold">●</span>
+                  <span className="text-vj-pay-green font-bold">●</span>
                   <div>
-                    <span className="font-bold text-gray-900">{departTime}</span> — {fromAirport} (
+                    <span className="font-bold text-vj-text">{departTime}</span> — {fromAirport} (
                     {fromCode})
                   </div>
                 </div>
-                <div className="pl-3.5 text-3xs text-gray-500">
+                <div className="pl-3.5 text-3xs text-vj-gray">
                   Thời gian bay: {duration} (Bay thẳng) • Khai thác bởi Vietjet Air
                 </div>
                 <div className="flex items-start gap-2">
-                  <span className="text-rose-600 font-bold">●</span>
+                  <span className="text-vj-red-dark font-bold">●</span>
                   <div>
-                    <span className="font-bold text-gray-900">{arriveTime}</span> — {toAirport} (
+                    <span className="font-bold text-vj-text">{arriveTime}</span> — {toAirport} (
                     {toCode})
                   </div>
                 </div>
-                <div className="pt-1 flex items-center justify-between text-3xs text-gray-500 border-t border-gray-100 mt-2">
+                <div className="pt-1 flex items-center justify-between text-3xs text-vj-gray border-t border-vj-border-light mt-2">
                   <span>Dòng tàu bay:</span>
-                  <span className="font-semibold text-gray-800">{aircraft}</span>
+                  <span className="font-semibold text-vj-text-strong">{aircraft}</span>
                 </div>
               </div>
             </div>
 
             {/* Tiêu chuẩn hành lý & tiện ích */}
-            <div className="bg-white p-3 rounded-vj border border-gray-200/80 shadow-2xs space-y-2">
-              <div className="flex items-center justify-between pb-1.5 border-b border-gray-100">
-                <span className="font-extrabold text-gray-900 text-2xs uppercase tracking-wide">
+            <div className="bg-white p-3 rounded-vj border border-vj-border-light/80 shadow-2xs space-y-2">
+              <div className="flex items-center justify-between pb-1.5 border-b border-vj-border-light">
+                <span className="font-extrabold text-vj-text text-2xs uppercase tracking-wide">
                   Quyền lợi hạng vé: {fare.label}
                 </span>
-                <span className="text-3xs font-semibold text-gray-500">Tiêu chuẩn</span>
+                <span className="text-3xs font-semibold text-vj-gray">Tiêu chuẩn</span>
               </div>
-              <div className="space-y-1.5 text-2xs text-gray-700">
+              <div className="space-y-1.5 text-2xs text-vj-text-dim">
                 <div className="flex items-center justify-between">
-                  <span className="text-gray-600">Hành lý xách tay:</span>
-                  <span className="font-bold text-gray-900">{fare.cabinBaggage}</span>
+                  <span className="text-vj-text-strong">Hành lý xách tay:</span>
+                  <span className="font-bold text-vj-text">{fare.cabinBaggage}</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-gray-600">Hành lý ký gửi:</span>
-                  <span className="font-bold text-gray-900">{fare.checkedBaggage}</span>
+                  <span className="text-vj-text-strong">Hành lý ký gửi:</span>
+                  <span className="font-bold text-vj-text">{fare.checkedBaggage}</span>
                 </div>
-                <div className="pt-1.5 border-t border-gray-100 space-y-1">
+                <div className="pt-1.5 border-t border-vj-border-light space-y-1">
                   {fare.features.map((feat, idx) => (
-                    <div key={idx} className="flex items-center gap-1.5 text-3xs text-gray-600">
-                      <span className="text-emerald-500 font-bold">✓</span>
+                    <div
+                      key={idx}
+                      className="flex items-center gap-1.5 text-3xs text-vj-text-strong"
+                    >
+                      <span className="text-vj-pay-green font-bold">✓</span>
                       <span>{feat}</span>
                     </div>
                   ))}
@@ -384,7 +387,7 @@ export default function FlightSummaryCard({
 
   return (
     <div
-      className={`bg-white rounded-vj border border-gray-200/90 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden ${className}`}
+      className={`bg-white rounded-vj border border-vj-border-light/90 shadow-vj-sm hover:shadow-vj-md transition-all duration-300 overflow-hidden ${className}`}
     >
       {/* Header Card với thương hiệu Vietjet Air */}
       <div className="bg-gradient-to-r from-primary via-primary-dark to-primary-dark text-white px-4 sm:px-5 py-3 flex flex-wrap items-center justify-between gap-3 shadow-xs">

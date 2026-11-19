@@ -198,7 +198,7 @@ export default function SkyIdResetPassword() {
           </div>
         </div>
 
-        <ul className="mt-3 grid grid-cols-1 gap-1.5 rounded-md bg-[var(--surface-2)] px-4 py-3 text-xs sm:grid-cols-2">
+        <ul className="mt-3 grid grid-cols-1 gap-1.5 rounded-vj bg-[var(--surface-2)] px-4 py-3 text-xs sm:grid-cols-2">
           {requirements.map((req) => (
             <li
               key={req.label}

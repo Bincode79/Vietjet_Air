@@ -14,7 +14,7 @@ interface CardProps extends React.HTMLAttributes<HTMLElement> {
 export default function Card({ children, className = '', hover = true }: CardProps) {
   return (
     <div
-      className={`relative border border-[var(--border)] rounded-vj bg-[var(--background)] shadow-sm transition-all duration-160 ${
+      className={`relative border border-[var(--border)] rounded-vj bg-[var(--background)] shadow-vj-sm transition-all duration-160 ${
         hover ? 'hover:border-[rgba(236,32,41,0.28)] hover:shadow-vj-navy hover:-translate-y-1' : ''
       } ${className}`}
     >

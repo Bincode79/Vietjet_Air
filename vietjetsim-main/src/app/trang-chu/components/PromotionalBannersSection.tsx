@@ -131,7 +131,7 @@ export default function PromotionalBannersSection() {
               Ưu đãi và dịch vụ nổi bật
             </h2>
           </div>
-          <p className="max-w-md text-sm leading-6 text-gray-600">
+          <p className="max-w-md text-sm leading-6 text-vj-text-strong">
             Chọn dịch vụ phù hợp, chuẩn bị hành trình theo cách của bạn.
           </p>
         </div>
@@ -170,7 +170,7 @@ export default function PromotionalBannersSection() {
                 )}
                 {promotion.isVisual && (
                   <div className="absolute bottom-4 right-4">
-                    <div className="rounded-sm border-2 border-white bg-white/90 px-3 py-1.5 text-xs font-extrabold text-vjred shadow-sm backdrop-blur-sm transition-colors group-hover:bg-white">
+                    <div className="rounded-sm border-2 border-white bg-white/90 px-3 py-1.5 text-xs font-extrabold text-vjred shadow-vj-sm backdrop-blur-sm transition-colors group-hover:bg-white">
                       {promotion.action}
                     </div>
                   </div>

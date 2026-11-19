@@ -33,12 +33,12 @@ export function KPIWidget({
     >
       <div className="flex items-center justify-between">
         <div className="space-y-1">
-          <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">{title}</p>
+          <p className="text-xs font-bold text-vj-text-muted uppercase tracking-wider">{title}</p>
           <p className="text-2xl font-black font-koho text-white tracking-tight">{value}</p>
-          {subValue && <p className="text-xs text-slate-400">{subValue}</p>}
+          {subValue && <p className="text-xs text-vj-text-muted">{subValue}</p>}
         </div>
         <div
-          className={`w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center transition-transform group-hover:scale-110 ${colorClass}`}
+          className={`w-12 h-12 rounded-vj bg-white/5 border border-white/10 flex items-center justify-center transition-transform group-hover:scale-110 ${colorClass}`}
         >
           {icon}
         </div>
@@ -48,14 +48,14 @@ export function KPIWidget({
           <span
             className={`inline-flex items-center px-1.5 py-0.5 rounded text-2xs font-bold ${
               trend === 'up' || (trend === undefined && isPositive)
-                ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
-                : 'bg-rose-500/10 text-rose-400 border border-rose-500/20'
+                ? 'bg-vj-pay-green text-vj-pay-green border border-vj-pay-green'
+                : 'bg-vj-red-dark text-vj-red-dark border border-vj-red-dark'
             }`}
           >
             {isPositive ? '↑ +' : '↓ '}
             {Math.abs(change)}%
           </span>
-          <span className="text-slate-400 text-xs2">so với hôm qua</span>
+          <span className="text-vj-text-muted text-xs2">so với hôm qua</span>
         </div>
       )}
     </div>

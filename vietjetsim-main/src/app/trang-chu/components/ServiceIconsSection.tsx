@@ -124,14 +124,14 @@ export default function ServiceIconsSection() {
               >
                 {/* Badge if present */}
                 {'badge' in service && service.badge && (
-                  <span className="absolute top-2.5 right-2.5 text-3xs font-extrabold px-1.5 py-0.5 rounded-full bg-red-50 text-red-600 border border-red-200">
+                  <span className="absolute top-2.5 right-2.5 text-3xs font-extrabold px-1.5 py-0.5 rounded-full bg-red-50 text-vj-red-dark border border-red-200">
                     {service.badge}
                   </span>
                 )}
 
                 <div>
                   <div
-                    className="flex h-14 w-14 items-center justify-center rounded-14xs shadow-sm mb-3 transition-all duration-300 group-hover:scale-110"
+                    className="flex h-14 w-14 items-center justify-center rounded-14xs shadow-vj-sm mb-3 transition-all duration-300 group-hover:scale-110"
                     style={{
                       backgroundColor: `${service.color}18`,
                       border: `1.5px solid ${service.color}33`,

@@ -106,4 +106,18 @@ describe('UserChat — Vietjet-style launcher', () => {
     const { container } = render(<UserChat />);
     expect(container).toBeEmptyDOMElement();
   });
+
+  // The booking flow stacks its own chrome on top of the page: every modal and
+  // drawer in `features/bookings` is `z-50`, and the sticky total bar on the
+  // results screen is `z-[60]`. A launcher on `z-50` therefore landed UNDER the
+  // seat map and the bottom bar — the customer could not open the chat at all
+  // while booking. The widget sits at `z-[70]`, which clears both, and still
+  // stays below the admin console's own modals (`z-[100]` and up).
+  it('stacks the launcher above booking chrome with an elevated z-index', () => {
+    render(<UserChat />);
+    const launcher = screen.getByRole('button', { name: 'Mở chat hỗ trợ' });
+
+    const zIndex = Number((launcher.getAttribute('class') || '').match(/z-\[(\d+)\]/)?.[1] ?? '0');
+    expect(zIndex).toBeGreaterThan(60);
+  });
 });

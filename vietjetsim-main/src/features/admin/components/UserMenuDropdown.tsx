@@ -83,19 +83,19 @@ export default function UserMenuDropdown({ onNavigate }: UserMenuDropdownProps) 
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 px-2 py-1.5 rounded-xl transition-all hover:bg-slate-700/50"
+        className="flex items-center gap-2 px-2 py-1.5 rounded-vj transition-all hover:bg-slate-700"
         style={{ background: isOpen ? 'rgba(99, 102, 241, 0.2)' : 'transparent' }}
         title="Menu người dùng"
       >
         <div
-          className="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold text-white"
+          className="w-8 h-8 rounded-vj flex items-center justify-center text-xs font-bold text-white"
           style={{ background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)' }}
         >
           {profile?.avatarUrl ? (
             <img
               src={profile.avatarUrl}
               alt={profile.fullName}
-              className="w-full h-full rounded-lg object-cover"
+              className="w-full h-full rounded-vj object-cover"
             />
           ) : (
             getInitials(profile?.fullName || user?.email || 'Hệ Thống')
@@ -105,12 +105,12 @@ export default function UserMenuDropdown({ onNavigate }: UserMenuDropdownProps) 
           <div className="text-xs font-semibold text-white leading-tight">
             {profile?.fullName || user?.email?.split('@')[0] || 'Hệ Thống'}
           </div>
-          <div className="text-2xs text-indigo-400 leading-tight">{roleLabel}</div>
+          <div className="text-2xs text-vj-blue leading-tight">{roleLabel}</div>
         </div>
         <Icon
           name="ChevronUpDownIcon"
           size={14}
-          className={`text-slate-400 transition-transform hidden sm:block ${isOpen ? 'rotate-180' : ''}`}
+          className={`text-vj-text-muted transition-transform hidden sm:block ${isOpen ? 'rotate-180' : ''}`}
         />
       </button>
 
@@ -140,14 +140,14 @@ export default function UserMenuDropdown({ onNavigate }: UserMenuDropdownProps) 
           <div className="px-4 py-4 border-b" style={{ borderColor: 'rgba(148, 163, 184, 0.1)' }}>
             <div className="flex items-center gap-3">
               <div
-                className="w-12 h-12 rounded-xl flex items-center justify-center text-sm font-bold text-white"
+                className="w-12 h-12 rounded-vj flex items-center justify-center text-sm font-bold text-white"
                 style={{ background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)' }}
               >
                 {profile?.avatarUrl ? (
                   <img
                     src={profile.avatarUrl}
                     alt={profile.fullName}
-                    className="w-full h-full rounded-xl object-cover"
+                    className="w-full h-full rounded-vj object-cover"
                   />
                 ) : (
                   getInitials(profile?.fullName || user?.email || 'Hệ Thống')
@@ -157,7 +157,7 @@ export default function UserMenuDropdown({ onNavigate }: UserMenuDropdownProps) 
                 <p className="text-sm font-bold text-white truncate">
                   {profile?.fullName || 'Hệ Thống'}
                 </p>
-                <p className="text-xs text-slate-400 truncate">{user?.email}</p>
+                <p className="text-xs text-vj-text-muted truncate">{user?.email}</p>
                 <div className="flex items-center gap-1.5 mt-1">
                   <span
                     className="text-2xs font-semibold px-2 py-0.5 rounded-full"
@@ -168,8 +168,8 @@ export default function UserMenuDropdown({ onNavigate }: UserMenuDropdownProps) 
                   >
                     {roleLabel}
                   </span>
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-                  <span className="text-2xs text-emerald-400">Trực tuyến</span>
+                  <span className="w-1.5 h-1.5 rounded-full bg-vj-pay-green"></span>
+                  <span className="text-2xs text-vj-pay-green">Trực tuyến</span>
                 </div>
               </div>
             </div>
@@ -181,19 +181,19 @@ export default function UserMenuDropdown({ onNavigate }: UserMenuDropdownProps) 
               <button
                 key={item.id}
                 onClick={() => handleMenuClick(item.id)}
-                className="w-full flex items-center gap-3 px-4 py-3 hover:bg-slate-800/50 transition-colors text-left"
+                className="w-full flex items-center gap-3 px-4 py-3 hover:bg-slate-800 transition-colors text-left"
               >
                 <div
-                  className="w-8 h-8 rounded-lg flex items-center justify-center"
+                  className="w-8 h-8 rounded-vj flex items-center justify-center"
                   style={{ background: 'rgba(99, 102, 241, 0.15)' }}
                 >
-                  <Icon name={item.icon} size={16} className="text-indigo-400" />
+                  <Icon name={item.icon} size={16} className="text-vj-blue" />
                 </div>
                 <div className="flex-1">
                   <p className="text-sm font-medium text-white">{item.label}</p>
-                  <p className="text-xs2 text-slate-500">{item.description}</p>
+                  <p className="text-xs2 text-vj-text-muted">{item.description}</p>
                 </div>
-                <Icon name="ChevronRightIcon" size={14} className="text-slate-600" />
+                <Icon name="ChevronRightIcon" size={14} className="text-vj-text-muted" />
               </button>
             ))}
           </div>
@@ -202,17 +202,17 @@ export default function UserMenuDropdown({ onNavigate }: UserMenuDropdownProps) 
           <div className="mx-4 py-2 border-t" style={{ borderColor: 'rgba(148, 163, 184, 0.1)' }}>
             <Link
               href="/trang-chu"
-              className="flex items-center gap-3 px-4 py-3 hover:bg-slate-800/50 transition-colors rounded-lg"
+              className="flex items-center gap-3 px-4 py-3 hover:bg-slate-800 transition-colors rounded-vj"
             >
               <div
-                className="w-8 h-8 rounded-lg flex items-center justify-center"
+                className="w-8 h-8 rounded-vj flex items-center justify-center"
                 style={{ background: 'rgba(148, 163, 184, 0.1)' }}
               >
-                <Icon name="ArrowLeftOnRectangleIcon" size={16} className="text-slate-400" />
+                <Icon name="ArrowLeftOnRectangleIcon" size={16} className="text-vj-text-muted" />
               </div>
               <div className="flex-1">
-                <p className="text-sm font-medium text-slate-300">Về trang chủ</p>
-                <p className="text-xs2 text-slate-500"> Quay lại website</p>
+                <p className="text-sm font-medium text-vj-text-muted">Về trang chủ</p>
+                <p className="text-xs2 text-vj-text-muted"> Quay lại website</p>
               </div>
             </Link>
           </div>
@@ -222,14 +222,14 @@ export default function UserMenuDropdown({ onNavigate }: UserMenuDropdownProps) 
             <button
               onClick={handleLogout}
               disabled={isLoggingOut}
-              className="w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full flex items-center gap-3 px-4 py-3 rounded-vj transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               style={{
                 background: 'rgba(239, 68, 68, 0.1)',
                 border: '1px solid rgba(239, 68, 68, 0.2)',
               }}
             >
               <div
-                className="w-8 h-8 rounded-lg flex items-center justify-center"
+                className="w-8 h-8 rounded-vj flex items-center justify-center"
                 style={{ background: 'rgba(239, 68, 68, 0.2)' }}
               >
                 <Icon name="ArrowRightOnRectangleIcon" size={16} className="text-red-400" />

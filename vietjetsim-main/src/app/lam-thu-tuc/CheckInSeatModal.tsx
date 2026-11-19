@@ -116,7 +116,7 @@ export default function CheckInSeatModal({
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
       <div className="relative w-full max-w-2xl bg-white rounded-vj shadow-2xl overflow-hidden flex flex-col max-h-[90vh] animate-fadeIn">
         {/* Header */}
-        <div className="p-4 sm:p-5 bg-gradient-to-r from-primary via-red-600 to-primary text-white flex items-center justify-between shadow-md">
+        <div className="p-4 sm:p-5 bg-gradient-to-r from-primary via-red-600 to-primary text-white flex items-center justify-between shadow-vj-md">
           <div className="flex items-center gap-2">
             <Icon name="CheckCircleIcon" size={22} className="text-vjyellow" />
             <div>
@@ -129,8 +129,8 @@ export default function CheckInSeatModal({
                   <strong className="text-white">{selectedSeat || 'Chưa chọn'}</strong>
                 </span>
                 {liveSeatData && (
-                  <span className="inline-flex items-center gap-1 px-2 py-0.2 rounded-full bg-emerald-500/30 text-white border border-emerald-300/40">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-300 animate-pulse" />
+                  <span className="inline-flex items-center gap-1 px-2 py-0.2 rounded-full bg-vj-pay-green text-white border border-vj-pay-green">
+                    <span className="w-1.5 h-1.5 rounded-full bg-vj-pay-green animate-pulse" />
                     Đồng bộ thời gian thực
                   </span>
                 )}
@@ -148,7 +148,7 @@ export default function CheckInSeatModal({
 
         {/* SeatMap Content */}
         <div className="flex-1 overflow-y-auto p-4 sm:p-6 bg-slate-50">
-          <p className="text-xs text-gray-600 mb-4 text-center">
+          <p className="text-xs text-vj-text-strong mb-4 text-center">
             Nhấp vào một ghế còn trống trên sơ đồ bên dưới để chọn vị trí ngồi ưa thích trên chuyến
             bay của bạn.
           </p>
@@ -158,14 +158,14 @@ export default function CheckInSeatModal({
             selectedSeats={[selectedSeat]}
             onSeatToggle={handleSeatToggle}
             aircraftType="A321"
-            className="border border-gray-200 rounded-vj shadow-xs"
+            className="border border-vj-border-light rounded-vj shadow-xs"
           />
         </div>
 
         {/* Footer actions */}
-        <div className="p-4 bg-white border-t border-gray-200 flex items-center justify-between">
+        <div className="p-4 bg-white border-t border-vj-border-light flex items-center justify-between">
           <div className="text-xs">
-            <span className="text-gray-500">Đã chọn: </span>
+            <span className="text-vj-gray">Đã chọn: </span>
             <strong className="text-primary font-black text-sm">
               {selectedSeat || 'Chưa chọn'}
             </strong>
@@ -174,7 +174,7 @@ export default function CheckInSeatModal({
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-xs font-bold text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-vj transition-all"
+              className="px-4 py-2 text-xs font-bold text-vj-text-dim bg-vj-pill hover:bg-vj-surface-3 rounded-vj transition-all"
             >
               Hủy
             </button>
@@ -182,7 +182,7 @@ export default function CheckInSeatModal({
               type="button"
               disabled={!selectedSeat || saving}
               onClick={handleConfirm}
-              className="px-5 py-2 text-xs font-black text-white bg-primary hover:bg-primary-dark rounded-vj shadow-md transition-all disabled:opacity-50"
+              className="px-5 py-2 text-xs font-black text-white bg-primary hover:bg-primary-dark rounded-vj shadow-vj-md transition-all disabled:opacity-50"
             >
               Xác nhận chỗ ngồi
             </button>

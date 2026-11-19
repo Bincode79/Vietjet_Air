@@ -85,7 +85,7 @@ export default function AttractiveDestinationsSection() {
                 href={`/tim-ve?to=${encodeURIComponent(dest.code)}`}
                 className="group flex h-[126px] items-center gap-4 overflow-hidden rounded-2xl bg-[var(--vj-sky-card)] px-4 py-3 transition-transform duration-300 hover:-translate-y-1"
               >
-                <div className="relative h-[100px] w-[100px] shrink-0 overflow-hidden rounded-xl">
+                <div className="relative h-[100px] w-[100px] shrink-0 overflow-hidden rounded-vj">
                   <AppImage
                     src={dest.image}
                     alt={dest.alt}

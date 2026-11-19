@@ -638,8 +638,8 @@ export default function SeatSelectionStep({
                         Chọn chỗ ngồi
                       </h2>
                       {liveSeatData && (
-                        <span className="inline-flex items-center gap-1 text-3xs sm:text-2xs font-semibold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
-                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                        <span className="inline-flex items-center gap-1 text-3xs sm:text-2xs font-semibold px-2 py-0.5 rounded-full bg-vj-pay-green text-vj-pay-green border border-vj-pay-green">
+                          <span className="w-1.5 h-1.5 rounded-full bg-vj-pay-green animate-pulse" />
                           Trực tuyến
                         </span>
                       )}
@@ -784,7 +784,7 @@ export default function SeatSelectionStep({
                                         disabled={info.status === 'occupied'}
                                         aria-pressed={isSelected}
                                         aria-label={`Ghế ${seatId}, ${SEAT_STATUS_LABELS[info.status]}${isSelected ? ', đã chọn' : ''}, ${info.price.toLocaleString('vi-VN')}₫`}
-                                        className={`w-8 h-8 sm:w-8 sm:h-8 rounded-md text-2xs sm:text-xs2 font-bold seat flex-shrink-0 ${getHeatmapClass(
+                                        className={`w-8 h-8 sm:w-8 sm:h-8 rounded-vj text-2xs sm:text-xs2 font-bold seat flex-shrink-0 ${getHeatmapClass(
                                           seatId,
                                           info.status,
                                           info.occupancyLevel,
@@ -932,7 +932,7 @@ export default function SeatSelectionStep({
                       {SEAT_LEGEND.map((item) => (
                         <div key={item.label} className="flex items-center gap-1.5 sm:gap-2">
                           <span
-                            className={`w-5 h-5 sm:w-[22px] sm:h-[22px] rounded-md flex-shrink-0 ${item.swatch}`}
+                            className={`w-5 h-5 sm:w-[22px] sm:h-[22px] rounded-vj flex-shrink-0 ${item.swatch}`}
                             aria-hidden="true"
                           />
                           <span className="leading-tight">
@@ -1010,7 +1010,7 @@ export default function SeatSelectionStep({
                             className="flex items-center justify-between rounded-vj border border-[rgb(var(--primary-rgb))]/10 bg-[rgb(var(--primary-rgb))]/5 px-2.5 py-2 sm:px-3 sm:py-2.5"
                           >
                             <div className="flex items-center gap-1.5 sm:gap-2">
-                              <div className="w-5 h-5 sm:w-6 sm:h-6 bg-gradient-red rounded text-white text-2xs sm:text-xs font-black flex items-center justify-center shadow-sm">
+                              <div className="w-5 h-5 sm:w-6 sm:h-6 bg-gradient-red rounded text-white text-2xs sm:text-xs font-black flex items-center justify-center shadow-vj-sm">
                                 {i + 1}
                               </div>
                               <div>

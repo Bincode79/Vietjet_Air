@@ -145,7 +145,7 @@ export default function ItineraryModal({ isOpen, onClose, booking }: ItineraryMo
       aria-modal="true"
       aria-label="Thông tin hành trình của bạn"
     >
-      <div className="relative w-full max-w-3xl my-6 bg-white rounded-vj shadow-2xl border border-gray-200 overflow-hidden animate-fadeIn">
+      <div className="relative w-full max-w-3xl my-6 bg-white rounded-vj shadow-2xl border border-vj-border-light overflow-hidden animate-fadeIn">
         {/* Thanh tiêu đề Modal màu đỏ */}
         <div className="bg-primary text-white px-4 py-2.5 sm:py-3 flex items-center justify-between">
           <h3 className="font-bold text-sm sm:text-base tracking-wide flex items-center gap-2">
@@ -155,22 +155,22 @@ export default function ItineraryModal({ isOpen, onClose, booking }: ItineraryMo
             type="button"
             onClick={onClose}
             aria-label="Đóng"
-            className="text-white/90 hover:text-white p-1 rounded-md hover:bg-white/10 transition-colors text-lg font-bold leading-none cursor-pointer"
+            className="text-white/90 hover:text-white p-1 rounded-vj hover:bg-white/10 transition-colors text-lg font-bold leading-none cursor-pointer"
           >
             ✕
           </button>
         </div>
 
         {/* Nội dung tài liệu hành trình */}
-        <div ref={printContentRef} className="p-4 sm:p-6 space-y-4 text-gray-900 bg-white">
+        <div ref={printContentRef} className="p-4 sm:p-6 space-y-4 text-vj-text bg-white">
           {/* Header tài liệu: Logo Vietjet bên trái + Hotline 1900 1886 bên phải */}
-          <div className="flex items-center justify-between pb-3 border-b border-gray-100">
+          <div className="flex items-center justify-between pb-3 border-b border-vj-border-light">
             <div className="flex items-center gap-1.5">
               <span className="text-xl sm:text-2xl font-black text-primary tracking-tight font-serif italic">
                 vietjet<span className="text-accent">Air</span>.com
               </span>
             </div>
-            <div className="bg-accent text-gray-950 font-black px-3.5 py-1 rounded-full text-xs sm:text-sm tracking-wide shadow-2xs">
+            <div className="bg-accent text-vj-dark font-black px-3.5 py-1 rounded-full text-xs sm:text-sm tracking-wide shadow-2xs">
               1900 1886
             </div>
           </div>
@@ -185,40 +185,42 @@ export default function ItineraryModal({ isOpen, onClose, booking }: ItineraryMo
             <div className="bg-primary text-white font-bold text-xs uppercase px-3 py-1.5">
               1. THÔNG TIN ĐẶT CHỖ
             </div>
-            <div className="border border-gray-200 border-t-0 p-3 sm:p-4 grid grid-cols-1 md:grid-cols-[1fr_200px] gap-4 items-center">
+            <div className="border border-vj-border-light border-t-0 p-3 sm:p-4 grid grid-cols-1 md:grid-cols-[1fr_200px] gap-4 items-center">
               {/* Cột trái */}
               <div className="space-y-1.5 text-xs">
                 <div className="grid grid-cols-[130px_1fr] items-start">
-                  <span className="text-gray-600 font-medium">Họ và tên:</span>
-                  <span className="font-bold text-gray-900">{primaryName}</span>
+                  <span className="text-vj-text-strong font-medium">Họ và tên:</span>
+                  <span className="font-bold text-vj-text">{primaryName}</span>
                 </div>
                 <div className="grid grid-cols-[130px_1fr] items-start">
-                  <span className="text-gray-600 font-medium">Email:</span>
-                  <span className="font-mono text-gray-800">{maskedEmail}</span>
+                  <span className="text-vj-text-strong font-medium">Email:</span>
+                  <span className="font-mono text-vj-text-strong">{maskedEmail}</span>
                 </div>
                 <div className="grid grid-cols-[130px_1fr] items-start">
-                  <span className="text-gray-600 font-medium">Ngày đặt chỗ:</span>
-                  <span className="text-gray-800">{bookingDateStr}</span>
+                  <span className="text-vj-text-strong font-medium">Ngày đặt chỗ:</span>
+                  <span className="text-vj-text-strong">{bookingDateStr}</span>
                 </div>
                 <div className="grid grid-cols-[130px_1fr] items-start">
-                  <span className="text-gray-600 font-medium">Trạng thái đặt chỗ:</span>
+                  <span className="text-vj-text-strong font-medium">Trạng thái đặt chỗ:</span>
                   <div>
-                    <span className="inline-flex items-center gap-1 text-emerald-600 font-bold">
-                      <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block" />
+                    <span className="inline-flex items-center gap-1 text-vj-pay-green font-bold">
+                      <span className="w-2 h-2 rounded-full bg-vj-pay-green inline-block" />
                       Đã xác nhận
                     </span>
                     {!isPaid && (
                       <p className="text-3xs text-primary mt-0.5 leading-snug">
-                        Vé máy bay đã xác nhận/Mã đặt chỗ này sẽ bị hủy nếu không thanh toán trước
-                        TS: <span className="font-semibold">{expireDateStr}</span>
+                        Vé máy bay đã xác nhận: Mã đặt chỗ này sẽ bị hủy nếu không thanh toán trước{' '}
+                        <span className="font-semibold">{expireDateStr}</span>
                       </p>
                     )}
                   </div>
                 </div>
                 <div className="grid grid-cols-[130px_1fr] items-start">
-                  <span className="text-gray-600 font-medium">Trạng thái thanh toán:</span>
+                  <span className="text-vj-text-strong font-medium">Trạng thái thanh toán:</span>
                   <span
-                    className={isPaid ? 'text-emerald-600 font-bold' : 'text-red-600 font-bold'}
+                    className={
+                      isPaid ? 'text-vj-pay-green font-bold' : 'text-vj-red-dark font-bold'
+                    }
                   >
                     {isPaid ? 'Đã thanh toán' : 'Chưa thanh toán'}
                   </span>
@@ -226,17 +228,17 @@ export default function ItineraryModal({ isOpen, onClose, booking }: ItineraryMo
               </div>
 
               {/* Cột phải: Mã QR và PNR */}
-              <div className="flex flex-col items-center justify-center p-2 rounded-vj bg-gray-50 border border-gray-100">
+              <div className="flex flex-col items-center justify-center p-2 rounded-vj bg-vj-surface-2 border border-vj-border-light">
                 {qrDataUrl ? (
                   <img
                     src={qrDataUrl}
                     alt={`QR Code ${bookingCode}`}
-                    className="w-28 h-28 object-contain bg-white p-1 rounded-sm border border-gray-200"
+                    className="w-28 h-28 object-contain bg-white p-1 rounded-sm border border-vj-border-light"
                   />
                 ) : (
-                  <div className="w-28 h-28 bg-gray-200 animate-pulse rounded-sm" />
+                  <div className="w-28 h-28 bg-vj-surface-3 animate-pulse rounded-sm" />
                 )}
-                <span className="text-3xs font-bold text-gray-500 uppercase tracking-widest mt-1.5">
+                <span className="text-3xs font-bold text-vj-gray uppercase tracking-widest mt-1.5">
                   MÃ ĐẶT CHỖ
                 </span>
                 <span className="text-xl sm:text-2xl font-black text-primary tracking-wider font-mono">
@@ -251,9 +253,9 @@ export default function ItineraryModal({ isOpen, onClose, booking }: ItineraryMo
             <div className="bg-primary text-white font-bold text-xs uppercase px-3 py-1.5">
               2. THÔNG TIN HÀNH KHÁCH
             </div>
-            <div className="border border-gray-200 border-t-0 overflow-x-auto">
+            <div className="border border-vj-border-light border-t-0 overflow-x-auto">
               <table className="w-full text-xs text-left">
-                <thead className="bg-gray-50 border-b border-gray-200 font-bold text-gray-700">
+                <thead className="bg-vj-surface-2 border-b border-vj-border-light font-bold text-vj-text-dim">
                   <tr>
                     <th className="py-2 px-3 sm:px-4">Tên hành khách</th>
                     <th className="py-2 px-3 sm:px-4 text-right">Chỗ ngồi</th>
@@ -264,11 +266,11 @@ export default function ItineraryModal({ isOpen, onClose, booking }: ItineraryMo
                     booking.passengers.map((p, idx) => {
                       const seat = p.seat_number || booking.seats?.[idx]?.seat_number || '--';
                       return (
-                        <tr key={p.id || idx} className="hover:bg-gray-50/50">
-                          <td className="py-2.5 px-3 sm:px-4 font-bold text-gray-900 uppercase">
+                        <tr key={p.id || idx} className="hover:bg-vj-surface-2">
+                          <td className="py-2.5 px-3 sm:px-4 font-bold text-vj-text uppercase">
                             {p.name || 'HÀNH KHÁCH'}
                           </td>
-                          <td className="py-2.5 px-3 sm:px-4 text-right font-mono text-gray-700">
+                          <td className="py-2.5 px-3 sm:px-4 text-right font-mono text-vj-text-dim">
                             {flightNo} {seat}
                           </td>
                         </tr>
@@ -276,10 +278,10 @@ export default function ItineraryModal({ isOpen, onClose, booking }: ItineraryMo
                     })
                   ) : (
                     <tr>
-                      <td className="py-2.5 px-3 sm:px-4 font-bold text-gray-900 uppercase">
+                      <td className="py-2.5 px-3 sm:px-4 font-bold text-vj-text uppercase">
                         {primaryName}
                       </td>
-                      <td className="py-2.5 px-3 sm:px-4 text-right font-mono text-gray-700">
+                      <td className="py-2.5 px-3 sm:px-4 text-right font-mono text-vj-text-dim">
                         {flightNo} --
                       </td>
                     </tr>
@@ -294,9 +296,9 @@ export default function ItineraryModal({ isOpen, onClose, booking }: ItineraryMo
             <div className="bg-primary text-white font-bold text-xs uppercase px-3 py-1.5">
               3. THÔNG TIN CHUYẾN BAY
             </div>
-            <div className="border border-gray-200 border-t-0 overflow-x-auto">
+            <div className="border border-vj-border-light border-t-0 overflow-x-auto">
               <table className="w-full text-xs text-left">
-                <thead className="bg-gray-50 border-b border-gray-200 font-bold text-gray-700">
+                <thead className="bg-vj-surface-2 border-b border-vj-border-light font-bold text-vj-text-dim">
                   <tr>
                     <th className="py-2 px-2.5 sm:px-3">Số hiệu chuyến bay</th>
                     <th className="py-2 px-2.5 sm:px-3">Ngày</th>
@@ -306,19 +308,21 @@ export default function ItineraryModal({ isOpen, onClose, booking }: ItineraryMo
                   </tr>
                 </thead>
                 <tbody>
-                  <tr className="hover:bg-gray-50/50">
-                    <td className="py-2.5 px-2.5 sm:px-3 font-black text-gray-900 font-mono">
+                  <tr className="hover:bg-vj-surface-2">
+                    <td className="py-2.5 px-2.5 sm:px-3 font-black text-vj-text font-mono">
                       {flightNo}
                     </td>
-                    <td className="py-2.5 px-2.5 sm:px-3 text-gray-800">{departDateFormatted}</td>
-                    <td className="py-2.5 px-2.5 sm:px-3 font-semibold text-gray-800">
+                    <td className="py-2.5 px-2.5 sm:px-3 text-vj-text-strong">
+                      {departDateFormatted}
+                    </td>
+                    <td className="py-2.5 px-2.5 sm:px-3 font-semibold text-vj-text-strong">
                       {fareClassLabel}
                     </td>
-                    <td className="py-2.5 px-2.5 sm:px-3 text-gray-900">
+                    <td className="py-2.5 px-2.5 sm:px-3 text-vj-text">
                       <span className="font-bold">{departTimeFormatted}</span> - {fromCity} (
                       {fromCode})
                     </td>
-                    <td className="py-2.5 px-2.5 sm:px-3 text-gray-900">
+                    <td className="py-2.5 px-2.5 sm:px-3 text-vj-text">
                       <span className="font-bold">{arriveTimeFormatted}</span> - {toCity} ({toCode})
                     </td>
                   </tr>
@@ -332,14 +336,14 @@ export default function ItineraryModal({ isOpen, onClose, booking }: ItineraryMo
             <button
               type="button"
               onClick={handlePrint}
-              className="px-6 py-2 vj-cta font-bold rounded-md text-xs sm:text-sm tracking-wide shadow-xs active:scale-95 transition-all cursor-pointer flex items-center gap-1.5"
+              className="px-6 py-2 vj-cta font-bold rounded-vj text-xs sm:text-sm tracking-wide shadow-xs active:scale-98 transition-all cursor-pointer flex items-center gap-1.5"
             >
               <span>Print</span>
             </button>
             <button
               type="button"
               onClick={handlePrint}
-              className="px-6 py-2 vj-cta font-bold rounded-md text-xs sm:text-sm tracking-wide shadow-xs active:scale-95 transition-all cursor-pointer flex items-center gap-1.5"
+              className="px-6 py-2 vj-cta font-bold rounded-vj text-xs sm:text-sm tracking-wide shadow-xs active:scale-98 transition-all cursor-pointer flex items-center gap-1.5"
             >
               <span>Tải xuống PDF</span>
             </button>

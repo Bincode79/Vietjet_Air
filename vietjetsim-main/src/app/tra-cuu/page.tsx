@@ -164,7 +164,7 @@ export default function TrackBookingPage() {
             is deliberately restricted to the signed-in customer's own bookings
             rather than exposed as a public search. */}
           {!user && (
-            <div className="bg-white rounded-vj border border-stone-200 p-8 text-center shadow-sm">
+            <div className="bg-white rounded-vj border border-stone-200 p-8 text-center shadow-vj-sm">
               <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Icon name="LockClosedIcon" size={32} className="text-amber-600" />
               </div>
@@ -186,7 +186,7 @@ export default function TrackBookingPage() {
 
           {/* Search Form */}
           {user && !result && !notFound && (
-            <div className="bg-white rounded-vj border border-stone-200 overflow-hidden shadow-sm">
+            <div className="bg-white rounded-vj border border-stone-200 overflow-hidden shadow-vj-sm">
               <div className="p-6 space-y-4">
                 <div>
                   {/* `htmlFor`/`id` so the input has an accessible name. A screen
@@ -248,9 +248,9 @@ export default function TrackBookingPage() {
 
           {/* Not Found */}
           {notFound && (
-            <div className="bg-white rounded-vj border border-stone-200 p-8 text-center shadow-sm">
+            <div className="bg-white rounded-vj border border-stone-200 p-8 text-center shadow-vj-sm">
               <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Icon name="ExclamationCircleIcon" size={32} className="text-red-600" />
+                <Icon name="ExclamationCircleIcon" size={32} className="text-vj-red-dark" />
               </div>
               <h2 className="text-xl font-bold text-stone-900 mb-2">Không tìm thấy đặt chỗ</h2>
               <p className="text-stone-500 mb-6 text-sm">
@@ -296,11 +296,16 @@ export default function TrackBookingPage() {
               </div>
 
               {/* Booking Card */}
-              <div className="bg-white rounded-vj border border-stone-200 overflow-hidden shadow-sm">
+              <div className="bg-white rounded-vj border border-stone-200 overflow-hidden shadow-vj-sm">
                 {/* Header */}
                 <div className="px-6 py-4 bg-gradient-to-r from-[var(--vj-navy)] to-vj-navy-deepest flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <Icon name="PaperAirplaneIcon" size={18} className="text-white" />
+                    <img
+                      src="/images/brand/vietjet-air-circle.jpg"
+                      alt="VJ"
+                      className="w-5 h-5 rounded-full object-cover shrink-0 border border-white/40"
+                    />
+                    <Icon name="AirplaneIcon" size={16} className="text-white rotate-45" />
                     <span className="text-white font-bold">{result.flightNo}</span>
                   </div>
                   <span className="text-white/70 text-sm font-mono">{result.pnr}</span>
@@ -321,11 +326,7 @@ export default function TrackBookingPage() {
                       <div className="text-xs text-stone-400 mb-1">Bay thẳng</div>
                       <div className="w-full h-px bg-stone-300 relative">
                         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white px-2">
-                          <Icon
-                            name="PaperAirplaneIcon"
-                            size={16}
-                            className="text-primary rotate-90"
-                          />
+                          <Icon name="AirplaneIcon" size={16} className="text-primary rotate-90" />
                         </div>
                       </div>
                       <div className="text-xs text-stone-400 mt-1">{result.date}</div>
@@ -393,7 +394,7 @@ export default function TrackBookingPage() {
                 {result.status === 'pending' ? (
                   <Link
                     href={`/thanh-toan?bookingId=${result.pnr}`}
-                    className="flex items-center justify-center gap-2 py-3 bg-[var(--vj-red)] hover:bg-vj-red-dark text-white font-black rounded-vj text-xs uppercase tracking-wider transition-all shadow-md active:scale-95"
+                    className="flex items-center justify-center gap-2 py-3 bg-[var(--vj-red)] hover:bg-vj-red-dark text-white font-black rounded-vj text-xs uppercase tracking-wider transition-all shadow-vj-md active:scale-98"
                   >
                     <Icon name="CreditCardIcon" size={18} />
                     Thanh toán ngay
@@ -409,7 +410,7 @@ export default function TrackBookingPage() {
                 )}
                 <Link
                   href={`/dat-ve/${result.pnr}`}
-                  className="flex items-center justify-center gap-2 py-3 bg-accent hover:bg-accent-light text-gray-950 font-bold rounded-vj text-xs uppercase tracking-wider transition-all shadow-xs"
+                  className="flex items-center justify-center gap-2 py-3 bg-accent hover:bg-accent-light text-vj-dark font-bold rounded-vj text-xs uppercase tracking-wider transition-all shadow-xs"
                 >
                   <Icon name="DocumentTextIcon" size={18} />
                   Xem hành trình

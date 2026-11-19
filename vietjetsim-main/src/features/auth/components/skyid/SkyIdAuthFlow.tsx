@@ -465,7 +465,7 @@ export default function SkyIdAuthFlow({
     <ul
       role="listbox"
       aria-label="Mã quốc gia"
-      className="absolute left-0 top-[calc(100%+4px)] z-40 w-44 overflow-hidden rounded-md border border-[var(--vj-skyid-border)] bg-white py-1 shadow-lg"
+      className="absolute left-0 top-[calc(100%+4px)] z-40 w-44 overflow-hidden rounded-vj border border-[var(--vj-skyid-border)] bg-white py-1 shadow-vj-lg"
     >
       {COUNTRY_CODES.map((c) => (
         <li key={c.code}>

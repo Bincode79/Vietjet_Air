@@ -30,14 +30,14 @@ export default function UserDashboardError({
           <h2 className="text-2xl font-bold text-vj-navy font-koho mb-3">Đã xảy ra lỗi</h2>
 
           {/* Description */}
-          <p className="text-gray-600 mb-4 font-heading-sm">
+          <p className="text-vj-text-strong mb-4 font-heading-sm">
             Rất tiếc, đã có sự cố xảy ra khi tải dữ liệu. Vui lòng thử lại.
           </p>
 
           {/* Error Code */}
           {error.digest && (
-            <div className="bg-gray-50 rounded-lg p-3 border border-gray-200 mb-6">
-              <p className="text-xs text-gray-500 font-mono font-heading-sm">
+            <div className="bg-vj-surface-2 rounded-vj p-3 border border-vj-border-light mb-6">
+              <p className="text-xs text-vj-gray font-mono font-heading-sm">
                 Mã lỗi: {error.digest}
               </p>
             </div>
@@ -46,7 +46,7 @@ export default function UserDashboardError({
           {/* Retry Button */}
           <button
             onClick={reset}
-            className="inline-flex items-center justify-center gap-2 bg-primary hover:bg-primary-dark text-white font-semibold px-8 py-3 rounded-lg transition-colors duration-200 shadow-md hover:shadow-lg active:scale-95 font-koho"
+            className="inline-flex items-center justify-center gap-2 bg-primary hover:bg-primary-dark text-white font-semibold px-8 py-3 rounded-vj transition-colors duration-200 shadow-vj-md hover:shadow-vj-lg active:scale-98 font-koho"
           >
             <Icon name="ArrowPathIcon" variant="outline" size={20} />
             Thử lại

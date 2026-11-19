@@ -201,22 +201,22 @@ export default function AdminRBACPanel({ onToast }: { onToast?: ToastAPI }) {
         </div>
         <button
           onClick={() => setShowAssignModal(true)}
-          className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-white text-sm font-bold transition-all shadow-md hover:shadow-lg bg-primary-solid"
+          className="flex items-center gap-2 px-4 py-2.5 rounded-vj text-white text-sm font-bold transition-all shadow-vj-md hover:shadow-vj-lg bg-primary-solid"
         >
           <Icon name="UserPlusIcon" size={16} /> Gán quyền Hệ Thống
         </button>
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 bg-gray-100 rounded-xl p-1 overflow-x-auto">
+      <div className="flex gap-1 bg-vj-pill rounded-vj p-1 overflow-x-auto">
         {TABS.map((t) => (
           <button
             key={t.id}
             onClick={() => setActiveTab(t.id)}
-            className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-semibold transition-all whitespace-nowrap ${
+            className={`flex items-center gap-1.5 px-4 py-2 rounded-vj text-xs font-semibold transition-all whitespace-nowrap ${
               activeTab === t.id
                 ? 'bg-white shadow text-red-700 font-bold'
-                : 'text-gray-500 hover:text-gray-700'
+                : 'text-vj-gray hover:text-vj-text-dim'
             } font-koho`}
           >
             <Icon name={t.icon} size={14} /> {t.label}
@@ -232,7 +232,7 @@ export default function AdminRBACPanel({ onToast }: { onToast?: ToastAPI }) {
             {Object.values(SYSTEM_ROLES).map((def) => (
               <div
                 key={def.name}
-                className={`rounded-xl p-4 border ${def.bgColor.replace('bg-gradient-to-r', 'bg')} border-opacity-20`}
+                className={`rounded-vj p-4 border ${def.bgColor.replace('bg-gradient-to-r', 'bg')} border-opacity-20`}
                 style={{
                   borderColor: def.color.includes('red')
                     ? '#FCA5A5'
@@ -272,16 +272,16 @@ export default function AdminRBACPanel({ onToast }: { onToast?: ToastAPI }) {
                   >
                     Level {def.level}
                   </span>
-                  <span className="text-2xs text-gray-400">{def.permissions.size} quyền</span>
+                  <span className="text-2xs text-vj-muted">{def.permissions.size} quyền</span>
                 </div>
               </div>
             ))}
           </div>
 
           {/* Full permission matrix table */}
-          <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+          <div className="bg-white rounded-vj border border-vj-border-light overflow-hidden">
             <div
-              className="px-4 py-3 border-b border-gray-100 flex items-center justify-between"
+              className="px-4 py-3 border-b border-vj-border-light flex items-center justify-between"
               style={{ background: 'linear-gradient(135deg, #1A2948 0%, #0F1E3A 100%)' }}
             >
               <span className="text-white font-bold text-sm font-koho">
@@ -296,8 +296,8 @@ export default function AdminRBACPanel({ onToast }: { onToast?: ToastAPI }) {
             <div className="overflow-x-auto">
               <table className="w-full text-xs">
                 <thead>
-                  <tr className="bg-gray-50">
-                    <th className="text-left px-3 py-2 font-semibold text-gray-500 uppercase tracking-wider min-w-[140px]">
+                  <tr className="bg-vj-surface-2">
+                    <th className="text-left px-3 py-2 font-semibold text-vj-gray uppercase tracking-wider min-w-[140px]">
                       Nhóm / Quyền
                     </th>
                     {Object.keys(SYSTEM_ROLES).map((roleKey) => {
@@ -319,10 +319,10 @@ export default function AdminRBACPanel({ onToast }: { onToast?: ToastAPI }) {
                   {PERMISSION_CATEGORIES.map((cat) => (
                     <React.Fragment key={cat.key}>
                       {/* Category header row */}
-                      <tr className="border-t border-gray-100 bg-gray-50/50">
+                      <tr className="border-t border-vj-border-light bg-vj-surface-2/50">
                         <td
                           colSpan={Object.keys(SYSTEM_ROLES).length + 1}
-                          className="px-3 py-1.5 font-bold text-gray-700 text-2xs uppercase tracking-wider flex items-center gap-1.5 font-koho"
+                          className="px-3 py-1.5 font-bold text-vj-text-dim text-2xs uppercase tracking-wider flex items-center gap-1.5 font-koho"
                         >
                           <Icon name={cat.icon} size={12} /> {cat.label}
                         </td>
@@ -331,9 +331,9 @@ export default function AdminRBACPanel({ onToast }: { onToast?: ToastAPI }) {
                       {cat.permissions.map((perm) => (
                         <tr
                           key={perm}
-                          className="border-b border-gray-50 hover:bg-red-50/30 transition-colors"
+                          className="border-b border-gray-50 hover:bg-vj-surface-rose/30 transition-colors"
                         >
-                          <td className="px-3 py-1.5 font-medium text-gray-600" title={perm}>
+                          <td className="px-3 py-1.5 font-medium text-vj-text-strong" title={perm}>
                             {PERMISSION_LABELS[perm]}
                           </td>
                           {(
@@ -351,7 +351,7 @@ export default function AdminRBACPanel({ onToast }: { onToast?: ToastAPI }) {
                                   &#10003;
                                 </span>
                               ) : (
-                                <span className="inline-flex items-center justify-center w-5 h-5 rounded-full text-gray-300">
+                                <span className="inline-flex items-center justify-center w-5 h-5 rounded-full text-vj-muted">
                                   &#x2715;
                                 </span>
                               )}
@@ -370,9 +370,9 @@ export default function AdminRBACPanel({ onToast }: { onToast?: ToastAPI }) {
 
       {/* ═══════ TAB: ROLES MANAGEMENT ══════ */}
       {activeTab === 'roles' && (
-        <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+        <div className="bg-white rounded-vj border border-vj-border-light overflow-hidden">
           <div
-            className="px-4 py-3 border-b border-gray-100 flex items-center justify-between"
+            className="px-4 py-3 border-b border-vj-border-light flex items-center justify-between"
             style={{ background: 'linear-gradient(135deg, #1A2948 0%, #0F1E3A 100%)' }}
           >
             <span className="text-white font-bold text-sm font-koho">
@@ -386,12 +386,12 @@ export default function AdminRBACPanel({ onToast }: { onToast?: ToastAPI }) {
               <div className="w-8 h-8 border-4 border-red-200 border-t-red-600 rounded-full animate-spin" />
             </div>
           ) : adminRoles.length === 0 ? (
-            <div className="p-12 text-center text-gray-400">
+            <div className="p-12 text-center text-vj-muted">
               <Icon name="UsersIcon" size={32} className="mx-auto mb-2 opacity-40" />
               <p className="text-sm">Chưa có tài khoản hệ thống nào được gán role chi tiết</p>
               <button
                 onClick={() => setShowAssignModal(true)}
-                className="mt-3 inline-flex items-center gap-1.5 text-sm font-bold text-white px-4 py-2 rounded-lg bg-primary-solid"
+                className="mt-3 inline-flex items-center gap-1.5 text-sm font-bold text-white px-4 py-2 rounded-vj bg-primary-solid"
               >
                 <Icon name="PlusIcon" size={14} /> Gán quyền đầu tiên
               </button>
@@ -405,11 +405,11 @@ export default function AdminRBACPanel({ onToast }: { onToast?: ToastAPI }) {
                   : null;
                 const permList = perms || (roleDef ? Array.from(roleDef.permissions) : []);
                 return (
-                  <div key={ar.id} className="px-4 py-3 hover:bg-gray-50 transition-colors">
+                  <div key={ar.id} className="px-4 py-3 hover:bg-vj-surface-2 transition-colors">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
                         <div
-                          className="w-9 h-9 rounded-lg flex items-center justify-center text-white text-xs font-bold"
+                          className="w-9 h-9 rounded-vj flex items-center justify-center text-white text-xs font-bold"
                           style={{
                             background: (roleDef?.bgColor || '#6B7280').split(' ')[1] || '#6B7280',
                           }}
@@ -420,14 +420,14 @@ export default function AdminRBACPanel({ onToast }: { onToast?: ToastAPI }) {
                           <div className="font-semibold text-sm text-navy">
                             {ar.full_name || 'Unknown'}
                           </div>
-                          <div className="text-xs text-gray-400">{ar.email}</div>
+                          <div className="text-xs text-vj-muted">{ar.email}</div>
                         </div>
                       </div>
 
                       <div className="flex items-center gap-3">
                         {/* Role badge */}
                         <span
-                          className={`text-xs2 font-bold px-2.5 py-1 rounded-full ${roleDef?.bgColor || 'bg-gray-200'} text-white`}
+                          className={`text-xs2 font-bold px-2.5 py-1 rounded-full ${roleDef?.bgColor || 'bg-vj-surface-3'} text-white`}
                         >
                           {roleDef?.label || ar.role_name}
                         </span>
@@ -440,7 +440,7 @@ export default function AdminRBACPanel({ onToast }: { onToast?: ToastAPI }) {
                         {/* Actions */}
                         <button
                           onClick={() => handleRemoveRole(ar.user_id, ar.email)}
-                          className="w-7 h-7 rounded-lg flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors"
+                          className="w-7 h-7 rounded-vj flex items-center justify-center text-vj-muted hover:text-vj-red hover:bg-vj-surface-rose transition-colors"
                           title="Xóa role"
                         >
                           <Icon name="TrashIcon" size={13} />
@@ -453,13 +453,13 @@ export default function AdminRBACPanel({ onToast }: { onToast?: ToastAPI }) {
                       {permList.slice(0, 8).map((p) => (
                         <span
                           key={p}
-                          className="text-2xs px-1.5 py-0.5 rounded bg-gray-100 text-gray-500 font-mono truncate max-w-[120px]"
+                          className="text-2xs px-1.5 py-0.5 rounded bg-vj-pill text-vj-gray font-mono truncate max-w-[120px]"
                         >
                           {p}
                         </span>
                       ))}
                       {permList.length > 8 && (
-                        <span className="text-2xs px-1.5 py-0.5 rounded bg-gray-100 text-gray-400">
+                        <span className="text-2xs px-1.5 py-0.5 rounded bg-vj-pill text-vj-muted">
                           +{permList.length - 8} nữa
                         </span>
                       )}
@@ -474,9 +474,9 @@ export default function AdminRBACPanel({ onToast }: { onToast?: ToastAPI }) {
 
       {/* ═══════ TAB: AUDIT LOG ══════ */}
       {activeTab === 'audit' && (
-        <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+        <div className="bg-white rounded-vj border border-vj-border-light overflow-hidden">
           <div
-            className="px-4 py-3 border-b border-gray-100 flex items-center justify-between"
+            className="px-4 py-3 border-b border-vj-border-light flex items-center justify-between"
             style={{ background: 'linear-gradient(135deg, #1A2948 0%, #0F1E3A 100%)' }}
           >
             <span className="text-white font-bold text-sm font-koho">
@@ -491,19 +491,19 @@ export default function AdminRBACPanel({ onToast }: { onToast?: ToastAPI }) {
           </div>
 
           {auditLogs.length === 0 ? (
-            <div className="p-12 text-center text-gray-400">
+            <div className="p-12 text-center text-vj-muted">
               <Icon name="DocumentTextIcon" size={32} className="mx-auto mb-2 opacity-40" />
               <p className="text-sm">Chưa có bản ghi audit</p>
             </div>
           ) : (
             <div className="divide-y divide-gray-50 max-h-[600px] overflow-y-auto">
               {auditLogs.map((log) => (
-                <div key={log.id} className="px-4 py-2.5 hover:bg-gray-50 transition-colors">
+                <div key={log.id} className="px-4 py-2.5 hover:bg-vj-surface-2 transition-colors">
                   <div className="flex items-start gap-3">
                     <span
                       className={`mt-0.5 w-2 h-2 rounded-full flex-shrink-0 ${
                         log.status === 'success'
-                          ? 'bg-emerald-500'
+                          ? 'bg-vj-pay-green'
                           : log.status === 'denied'
                             ? 'bg-red-500'
                             : 'bg-amber-500'
@@ -511,22 +511,22 @@ export default function AdminRBACPanel({ onToast }: { onToast?: ToastAPI }) {
                     />
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <code className="text-xs2 font-mono font-bold px-1.5 py-0.5 rounded bg-gray-100 text-purple-700">
+                        <code className="text-xs2 font-mono font-bold px-1.5 py-0.5 rounded bg-vj-pill text-purple-700">
                           {log.action}
                         </code>
-                        <span className="text-2xs text-gray-400">→</span>
-                        <span className="text-2xs font-semibold text-gray-600">
+                        <span className="text-2xs text-vj-muted">→</span>
+                        <span className="text-2xs font-semibold text-vj-text-strong">
                           {log.target_type}
                         </span>
                         {log.target_id && (
-                          <span className="text-2xs font-mono text-gray-400">
+                          <span className="text-2xs font-mono text-vj-muted">
                             #{log.target_id.slice(0, 8)}
                           </span>
                         )}
                         <span
                           className={`ml-auto text-2xs font-bold px-1.5 py-0.5 rounded ${
                             log.status === 'success'
-                              ? 'bg-emerald-50 text-emerald-700'
+                              ? 'bg-vj-pay-green text-vj-pay-green'
                               : log.status === 'denied'
                                 ? 'bg-red-50 text-red-700'
                                 : 'bg-amber-50 text-amber-700'
@@ -535,7 +535,7 @@ export default function AdminRBACPanel({ onToast }: { onToast?: ToastAPI }) {
                           {log.status}
                         </span>
                       </div>
-                      <div className="flex items-center gap-3 mt-1 text-2xs text-gray-400">
+                      <div className="flex items-center gap-3 mt-1 text-2xs text-vj-muted">
                         <span className="font-semibold">{log.admin_email}</span>
                         <span>{new Date(log.created_at).toLocaleString('vi-VN')}</span>
                       </div>
@@ -550,7 +550,7 @@ export default function AdminRBACPanel({ onToast }: { onToast?: ToastAPI }) {
 
       {/* ═══════ TAB: CONFIG ══════ */}
       {activeTab === 'config' && (
-        <div className="bg-white rounded-xl border border-gray-200 p-6">
+        <div className="bg-white rounded-vj border border-vj-border-light p-6">
           <div className="flex items-center justify-between gap-3 mb-4">
             <h3 className="font-bold text-base font-koho">Cấu hình hệ thống</h3>
             <button
@@ -563,14 +563,14 @@ export default function AdminRBACPanel({ onToast }: { onToast?: ToastAPI }) {
           </div>
 
           {configError ? (
-            <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+            <div className="rounded-vj border border-red-200 bg-red-50 p-4 text-sm text-red-700">
               Không thể tải cấu hình hệ thống.
             </div>
           ) : (
             <>
-              <p className="text-xs text-gray-500 mb-4">
+              <p className="text-xs text-vj-gray mb-4">
                 Giá trị đọc trực tiếp từ bảng{' '}
-                <code className="bg-gray-100 px-1 rounded">system_config</code>. Chỉ các cài đặt có
+                <code className="bg-vj-pill px-1 rounded">system_config</code>. Chỉ các cài đặt có
                 tác dụng thật mới được liệt kê — cài đặt không có trong danh sách này sẽ không ảnh
                 hưởng gì tới hệ thống.
               </p>
@@ -586,13 +586,13 @@ export default function AdminRBACPanel({ onToast }: { onToast?: ToastAPI }) {
                   return (
                     <div
                       key={key}
-                      className="rounded-xl border border-gray-200 p-4 hover:border-primary/40 hover:shadow-sm transition-all"
+                      className="rounded-vj border border-vj-border-light p-4 hover:border-primary/40 hover:shadow-vj-sm transition-all"
                     >
                       <div className="flex items-center gap-2 mb-2">
-                        <div className="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center">
+                        <div className="w-8 h-8 rounded-vj bg-red-50 flex items-center justify-center">
                           <Icon name="Cog6ToothIcon" size={15} className="text-primary" />
                         </div>
-                        <span className="text-2xs font-mono text-gray-400">{key}</span>
+                        <span className="text-2xs font-mono text-vj-muted">{key}</span>
                       </div>
                       <div className="font-bold text-sm text-navy">{spec.description}</div>
 
@@ -604,11 +604,11 @@ export default function AdminRBACPanel({ onToast }: { onToast?: ToastAPI }) {
                           disabled={isSaving}
                           onClick={() => handleToggleConfig(key)}
                           className={`relative w-12 h-6 mt-3 rounded-full transition-all duration-300 disabled:opacity-50 ${
-                            isOn ? 'bg-emerald-500' : 'bg-gray-300'
+                            isOn ? 'bg-vj-pay-green' : 'bg-vj-surface-3'
                           }`}
                         >
                           <span
-                            className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow-md transition-transform duration-300 ${
+                            className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow-vj-md transition-transform duration-300 ${
                               isOn ? 'translate-x-6' : 'translate-x-0.5'
                             }`}
                           />
@@ -617,7 +617,7 @@ export default function AdminRBACPanel({ onToast }: { onToast?: ToastAPI }) {
                         <div className="text-lg font-black mt-1 font-koho">{currentValue}</div>
                       )}
 
-                      <div className="text-2xs text-gray-400 mt-2">
+                      <div className="text-2xs text-vj-muted mt-2">
                         {isBoolean ? (isOn ? 'Đang bật' : 'Đang tắt') : `Mặc định: ${spec.default}`}
                       </div>
                     </div>
@@ -626,7 +626,7 @@ export default function AdminRBACPanel({ onToast }: { onToast?: ToastAPI }) {
               </div>
 
               <div
-                className="mt-4 p-3 rounded-lg flex items-start gap-2"
+                className="mt-4 p-3 rounded-vj flex items-start gap-2"
                 style={{ background: '#FFFBEB', border: '1px solid #FDE68A' }}
               >
                 <Icon
@@ -657,7 +657,7 @@ export default function AdminRBACPanel({ onToast }: { onToast?: ToastAPI }) {
             style={{ animation: 'fadeInUp 0.25s ease-out' }}
           >
             <div
-              className="px-5 py-4 border-b border-gray-100"
+              className="px-5 py-4 border-b border-vj-border-light"
               style={{ background: 'linear-gradient(135deg, #EC2029 0%, #D91A21 100%)' }}
             >
               <h3 className="text-white font-bold font-heading-sm">Gán quyền cho Hệ Thống</h3>
@@ -666,7 +666,7 @@ export default function AdminRBACPanel({ onToast }: { onToast?: ToastAPI }) {
 
             <div className="p-5 space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1.5">
+                <label className="block text-xs font-semibold text-vj-muted uppercase tracking-wider mb-1.5">
                   Email / User ID
                 </label>
                 <input
@@ -674,12 +674,12 @@ export default function AdminRBACPanel({ onToast }: { onToast?: ToastAPI }) {
                   value={selectedUserEmail}
                   onChange={(e) => setSelectedUserEmail(e.target.value)}
                   placeholder="user@example.com hoặc user ID"
-                  className="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-red-400 focus:ring-2 focus:ring-red-100"
+                  className="w-full px-3 py-2.5 bg-vj-surface-2 border border-vj-border-light rounded-vj text-sm focus:outline-none focus:border-red-400 focus:ring-2 focus:ring-red-100"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
+                <label className="block text-xs font-semibold text-vj-muted uppercase tracking-wider mb-2">
                   Chọn Role
                 </label>
                 <div className="grid grid-cols-1 gap-2">
@@ -693,15 +693,15 @@ export default function AdminRBACPanel({ onToast }: { onToast?: ToastAPI }) {
                       key={key}
                       type="button"
                       onClick={() => setAssignRoleName(key)}
-                      className={`flex items-center justify-between px-4 py-3 rounded-xl border-2 transition-all text-left ${
+                      className={`flex items-center justify-between px-4 py-3 rounded-vj border-2 transition-all text-left ${
                         assignRoleName === key
                           ? 'border-red-500 bg-red-50'
-                          : 'border-gray-200 hover:border-gray-300'
+                          : 'border-vj-border-light hover:border-vj-line'
                       }`}
                     >
                       <div className="flex items-center gap-3">
                         <div
-                          className={`w-8 h-8 rounded-lg flex items-center justify-center text-white text-xs font-bold ${def.bgColor}`}
+                          className={`w-8 h-8 rounded-vj flex items-center justify-center text-white text-xs font-bold ${def.bgColor}`}
                         >
                           L{def.level}
                         </div>
@@ -712,7 +712,7 @@ export default function AdminRBACPanel({ onToast }: { onToast?: ToastAPI }) {
                           >
                             {def.label}
                           </div>
-                          <div className="text-2xs text-gray-400">
+                          <div className="text-2xs text-vj-muted">
                             {def.permissions.size} permissions
                           </div>
                         </div>
@@ -730,12 +730,12 @@ export default function AdminRBACPanel({ onToast }: { onToast?: ToastAPI }) {
                 const selected = SYSTEM_ROLES[assignRoleName];
                 return (
                   <div
-                    className="rounded-lg p-3 space-y-2"
+                    className="rounded-vj p-3 space-y-2"
                     style={{ background: '#F8FAFC', border: '1px solid #E2E8F0' }}
                   >
                     <div className="flex items-center gap-2">
-                      <Icon name="EyeIcon" size={13} className="text-gray-400" />
-                      <span className="text-2xs font-bold uppercase tracking-wider text-gray-500">
+                      <Icon name="EyeIcon" size={13} className="text-vj-muted" />
+                      <span className="text-2xs font-bold uppercase tracking-wider text-vj-gray">
                         Preview quyền:
                       </span>
                     </div>
@@ -745,13 +745,13 @@ export default function AdminRBACPanel({ onToast }: { onToast?: ToastAPI }) {
                         .map((p) => (
                           <span
                             key={p}
-                            className="text-3xs px-1.5 py-0.5 rounded bg-white border border-gray-200 text-gray-600 font-mono"
+                            className="text-3xs px-1.5 py-0.5 rounded bg-white border border-vj-border-light text-vj-text-strong font-mono"
                           >
                             {p}
                           </span>
                         ))}
                       {selected!.permissions.size > 12 && (
-                        <span className="text-3xs px-1.5 py-0.5 rounded bg-red-50 text-red-600 font-bold">
+                        <span className="text-3xs px-1.5 py-0.5 rounded bg-red-50 text-vj-red-dark font-bold">
                           +{selected!.permissions.size - 12} nữa
                         </span>
                       )}
@@ -764,14 +764,14 @@ export default function AdminRBACPanel({ onToast }: { onToast?: ToastAPI }) {
                 <button
                   onClick={() => setShowAssignModal(false)}
                   disabled={isAssigning}
-                  className="flex-1 border border-gray-300 text-gray-600 font-semibold py-2.5 rounded-xl text-sm hover:bg-gray-50 disabled:opacity-50 font-koho"
+                  className="flex-1 border border-vj-line text-vj-text-strong font-semibold py-2.5 rounded-vj text-sm hover:bg-vj-surface-2 disabled:opacity-50 font-koho"
                 >
                   Huỷ
                 </button>
                 <button
                   onClick={handleAssignRole}
                   disabled={!selectedUserEmail || isAssigning}
-                  className="flex-1 text-white font-bold py-2.5 rounded-xl text-sm disabled:opacity-40 flex items-center justify-center gap-2"
+                  className="flex-1 text-white font-bold py-2.5 rounded-vj text-sm disabled:opacity-40 flex items-center justify-center gap-2"
                   style={{
                     background: isAssigning ? '#9CA3AF' : '#EC2029',
                   }}

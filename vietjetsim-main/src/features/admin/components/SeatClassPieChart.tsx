@@ -46,14 +46,14 @@ const CustomTooltip = ({ active, payload }: CustomTooltipProps) => {
 
   return (
     <div
-      className="rounded-xl border border-white/10 p-3 text-xs shadow-xl backdrop-blur-md"
+      className="rounded-vj border border-white/10 p-3 text-xs shadow-xl backdrop-blur-md"
       style={{ background: 'rgba(15, 23, 42, 0.95)' }}
     >
       <div className="flex items-center gap-2 font-bold text-white mb-1.5">
         <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: color }} />
         <span>{item.name || item.class}</span>
       </div>
-      <div className="space-y-1 text-slate-300">
+      <div className="space-y-1 text-vj-text-muted">
         <div>
           Số lượng:{' '}
           <span className="font-bold text-white">{item.count.toLocaleString('vi-VN')}</span>
@@ -86,14 +86,14 @@ export default function SeatClassPieChart({
       <div className="flex items-center justify-between mb-4">
         <div>
           <h3 className="font-bold text-white text-base tracking-tight">{title}</h3>
-          <p className="text-xs text-slate-400 mt-0.5">
+          <p className="text-xs text-vj-text-muted mt-0.5">
             Tỷ lệ theo từng hạng vé Eco, Deluxe, SkyBoss, Business
           </p>
         </div>
       </div>
 
       {!hasData ? (
-        <div className="h-[280px] flex flex-col items-center justify-center text-sm text-slate-400">
+        <div className="h-[280px] flex flex-col items-center justify-center text-sm text-vj-text-muted">
           <p>Chưa có dữ liệu phân bổ hạng vé</p>
         </div>
       ) : (
@@ -109,7 +109,7 @@ export default function SeatClassPieChart({
                 formatter={(value: string) => {
                   const item = data.find((d) => (d.name || d.class) === value);
                   return (
-                    <span className="text-slate-300 text-xs font-medium ml-1 mr-3">
+                    <span className="text-vj-text-muted text-xs font-medium ml-1 mr-3">
                       {value} {item ? `(${item.percent}%)` : ''}
                     </span>
                   );

@@ -38,7 +38,7 @@ export default function NotificationSettingsTab() {
       id: 'flight_changes',
       label: 'Thay đổi chuyến bay',
       description: 'Cảnh báo về thay đổi lịch bay, cổng ra máy bay hoặc trạng thái chuyến bay',
-      icon: 'PaperAirplaneIcon',
+      icon: 'AirplaneIcon',
       enabled: true,
     },
     {
@@ -107,7 +107,7 @@ export default function NotificationSettingsTab() {
       >
         <div className="flex items-center gap-3 mb-1">
           <div
-            className="w-10 h-10 rounded-xl flex items-center justify-center"
+            className="w-10 h-10 rounded-vj flex items-center justify-center"
             style={{ background: 'rgba(208,2,27,0.1)' }}
           >
             <Icon name="BellIcon" className="w-5 h-5" style={{ color: 'var(--primary)' }} />
@@ -140,7 +140,7 @@ export default function NotificationSettingsTab() {
             >
               <div className="flex items-center gap-4">
                 <div
-                  className={`w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 ${alert.enabled ? 'bg-red-50' : 'bg-[var(--surface-2)]'}`}
+                  className={`w-9 h-9 rounded-vj flex items-center justify-center flex-shrink-0 ${alert.enabled ? 'bg-red-50' : 'bg-[var(--surface-2)]'}`}
                 >
                   <Icon
                     name={alert.icon}
@@ -193,7 +193,7 @@ export default function NotificationSettingsTab() {
             >
               <div className="flex items-center gap-4">
                 <div
-                  className={`w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 ${method.enabled ? 'bg-amber-50' : 'bg-[var(--surface-2)]'}`}
+                  className={`w-9 h-9 rounded-vj flex items-center justify-center flex-shrink-0 ${method.enabled ? 'bg-amber-50' : 'bg-[var(--surface-2)]'}`}
                 >
                   <Icon
                     name={method.icon}
@@ -233,7 +233,7 @@ export default function NotificationSettingsTab() {
         style={{ boxShadow: '0 4px 16px rgba(0,0,0,0.08)' }}
       >
         <div className="flex items-center gap-3 mb-4">
-          <div className="w-9 h-9 rounded-xl flex items-center justify-center bg-blue-50 flex-shrink-0">
+          <div className="w-9 h-9 rounded-vj flex items-center justify-center bg-blue-50 flex-shrink-0">
             <Icon name="MoonIcon" className="w-4 h-4 text-blue-500" />
           </div>
           <div>
@@ -248,7 +248,7 @@ export default function NotificationSettingsTab() {
             <label className="block text-xs font-semibold text-[var(--foreground-muted)] mb-1.5">
               Từ
             </label>
-            <select className="w-full border border-[var(--border)] rounded-xl px-3 py-2.5 text-sm text-vj-navy focus:outline-none focus:ring-2 focus:ring-red-200 bg-[var(--surface-2)]">
+            <select className="w-full border border-[var(--border)] rounded-vj px-3 py-2.5 text-sm text-vj-navy focus:outline-none focus:ring-2 focus:ring-red-200 bg-[var(--surface-2)]">
               <option>22:00</option>
               <option>21:00</option>
               <option>23:00</option>
@@ -259,7 +259,7 @@ export default function NotificationSettingsTab() {
             <label className="block text-xs font-semibold text-[var(--foreground-muted)] mb-1.5">
               Đến
             </label>
-            <select className="w-full border border-[var(--border)] rounded-xl px-3 py-2.5 text-sm text-vj-navy focus:outline-none focus:ring-2 focus:ring-red-200 bg-[var(--surface-2)]">
+            <select className="w-full border border-[var(--border)] rounded-vj px-3 py-2.5 text-sm text-vj-navy focus:outline-none focus:ring-2 focus:ring-red-200 bg-[var(--surface-2)]">
               <option>07:00</option>
               <option>06:00</option>
               <option>08:00</option>
@@ -279,7 +279,7 @@ export default function NotificationSettingsTab() {
         )}
         <button
           onClick={handleSave}
-          className="px-6 py-2.5 rounded-xl text-sm font-semibold text-white transition-all hover:opacity-90 active:scale-95"
+          className="px-6 py-2.5 rounded-vj text-sm font-semibold text-white transition-all hover:opacity-90 active:scale-98"
           style={{ background: 'var(--primary)' }}
         >
           Lưu cài đặt

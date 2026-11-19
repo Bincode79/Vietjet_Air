@@ -47,7 +47,7 @@ export default function FAQSection() {
             <Link
               key={topic}
               href={`/hoi-dap?topic=${encodeURIComponent(topic)}`}
-              className="flex flex-col items-center justify-center rounded-vj bg-[var(--accent)] px-4 py-4 text-[var(--foreground)] font-black text-sm sm:text-base shadow-glow-yellow-sm transition-all duration-200 hover:bg-vj-gold-pale-1 hover:shadow-glow-yellow active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2"
+              className="flex flex-col items-center justify-center rounded-vj bg-[var(--accent)] px-4 py-4 text-[var(--foreground)] font-black text-sm sm:text-base shadow-glow-yellow-sm transition-all duration-200 hover:bg-vj-gold-pale-1 hover:shadow-glow-yellow active:scale-98 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2"
               aria-label={`Hỏi đáp: ${topic}`}
             >
               {topic}

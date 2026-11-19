@@ -55,7 +55,7 @@ const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
 
   return (
     <div
-      className="rounded-xl border border-white/10 p-3 text-xs shadow-xl backdrop-blur-md"
+      className="rounded-vj border border-white/10 p-3 text-xs shadow-xl backdrop-blur-md"
       style={{ background: 'rgba(15, 23, 42, 0.95)' }}
     >
       <div className="font-bold text-white mb-2 pb-1 border-b border-white/10">
@@ -66,7 +66,7 @@ const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
           const isRevenue = item.dataKey === 'revenue';
           return (
             <div key={index} className="flex items-center justify-between gap-4">
-              <span className="flex items-center gap-1.5 text-slate-300">
+              <span className="flex items-center gap-1.5 text-vj-text-muted">
                 <span
                   className="w-2.5 h-2.5 rounded-full inline-block"
                   style={{ backgroundColor: item.color }}
@@ -106,14 +106,14 @@ export default function RevenueChart({
       <div className="flex items-center justify-between mb-4">
         <div>
           <h3 className="font-bold text-white text-base tracking-tight">{title}</h3>
-          <p className="text-xs text-slate-400 mt-0.5">
+          <p className="text-xs text-vj-text-muted mt-0.5">
             Biểu đồ kết hợp doanh thu (VND) và số lượng vé bán
           </p>
         </div>
       </div>
 
       {!hasData ? (
-        <div className="h-[280px] flex flex-col items-center justify-center text-sm text-slate-400">
+        <div className="h-[280px] flex flex-col items-center justify-center text-sm text-vj-text-muted">
           <p>Chưa có dữ liệu doanh thu</p>
         </div>
       ) : (
@@ -152,7 +152,7 @@ export default function RevenueChart({
                 align="right"
                 wrapperStyle={{ paddingBottom: 10, fontSize: 12 }}
                 formatter={(value: string) => (
-                  <span className="text-slate-300 font-medium">{value}</span>
+                  <span className="text-vj-text-muted font-medium">{value}</span>
                 )}
               />
               <Bar

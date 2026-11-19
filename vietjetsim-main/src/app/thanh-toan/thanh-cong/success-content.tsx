@@ -19,9 +19,9 @@ type ViewState = 'loading' | 'confirmed' | 'pending' | 'cancelled' | 'not-found'
 
 function SummaryRow({ label, value }: { label: string; value: React.ReactNode }) {
   return (
-    <div className="flex justify-between items-center gap-4 text-gray-600">
+    <div className="flex justify-between items-center gap-4 text-vj-text-strong">
       <span>{label}</span>
-      <span className="font-bold text-gray-900 text-right">{value}</span>
+      <span className="font-bold text-vj-text text-right">{value}</span>
     </div>
   );
 }
@@ -29,13 +29,13 @@ function SummaryRow({ label, value }: { label: string; value: React.ReactNode })
 function PnrBox({ pnr }: { pnr: string }) {
   return (
     <div className="bg-red-50/80 rounded-2xl border border-red-200 p-4 space-y-1">
-      <div className="text-3xs uppercase tracking-widest text-gray-500 font-bold">
+      <div className="text-3xs uppercase tracking-widest text-vj-gray font-bold">
         Mã đặt chỗ (PNR)
       </div>
       <div className="text-3xl sm:text-4xl font-black text-primary font-mono tracking-widest">
         {pnr}
       </div>
-      <div className="text-2xs text-gray-500">
+      <div className="text-2xs text-vj-gray">
         Vui lòng lưu lại mã đặt chỗ để làm thủ tục check-in trực tuyến.
       </div>
     </div>
@@ -47,7 +47,7 @@ function ActionLinks({ bookingId }: { bookingId?: string }) {
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
       <Link
         href="/chuyen-bay-cua-toi"
-        className="w-full py-3 rounded-xl bg-primary hover:bg-primary-dark text-white font-bold text-xs uppercase tracking-wider font-koho transition-all shadow-md inline-flex items-center justify-center gap-1.5"
+        className="w-full py-3 rounded-vj bg-primary hover:bg-primary-dark text-white font-bold text-xs uppercase tracking-wider font-koho transition-all shadow-vj-md inline-flex items-center justify-center gap-1.5"
       >
         <Icon name="MagnifyingGlassIcon" size={16} />
         <span>Chuyến bay của tôi</span>
@@ -56,7 +56,7 @@ function ActionLinks({ bookingId }: { bookingId?: string }) {
       {bookingId ? (
         <Link
           href={`/dat-ve/${encodeURIComponent(bookingId)}`}
-          className="w-full py-3 rounded-xl border border-gray-300 hover:bg-gray-50 text-gray-700 font-bold text-xs uppercase tracking-wider font-koho transition-all inline-flex items-center justify-center gap-1.5"
+          className="w-full py-3 rounded-vj border border-vj-line hover:bg-vj-surface-2 text-vj-text-dim font-bold text-xs uppercase tracking-wider font-koho transition-all inline-flex items-center justify-center gap-1.5"
         >
           <Icon name="DocumentTextIcon" size={16} />
           <span>Xem hành trình</span>
@@ -64,7 +64,7 @@ function ActionLinks({ bookingId }: { bookingId?: string }) {
       ) : (
         <Link
           href="/"
-          className="w-full py-3 rounded-xl border border-gray-300 hover:bg-gray-50 text-gray-700 font-bold text-xs uppercase tracking-wider font-koho transition-all inline-flex items-center justify-center gap-1.5"
+          className="w-full py-3 rounded-vj border border-vj-line hover:bg-vj-surface-2 text-vj-text-dim font-bold text-xs uppercase tracking-wider font-koho transition-all inline-flex items-center justify-center gap-1.5"
         >
           <Icon name="HomeIcon" size={16} />
           <span>Về trang chủ</span>
@@ -93,7 +93,7 @@ function StateCard({
       : 'bg-gradient-to-r from-slate-600 to-slate-700';
   return (
     <div className="max-w-xl mx-auto py-10 px-4">
-      <div className="bg-white rounded-3xl border border-gray-200/90 shadow-lg overflow-hidden text-center">
+      <div className="bg-white rounded-3xl border border-vj-border-light/90 shadow-vj-lg overflow-hidden text-center">
         <div className={`${header} text-white p-8 space-y-3`}>
           <div className="w-16 h-16 rounded-full bg-white/20 text-white flex items-center justify-center mx-auto ring-4 ring-white/10">
             {icon}
@@ -172,7 +172,7 @@ export default function SuccessContent() {
 
   if (view === 'loading') {
     return (
-      <div className="max-w-xl mx-auto py-16 px-4 text-center text-sm text-gray-500">
+      <div className="max-w-xl mx-auto py-16 px-4 text-center text-sm text-vj-gray">
         Đang tải kết quả thanh toán…
       </div>
     );
@@ -192,7 +192,7 @@ export default function SuccessContent() {
         <ActionLinks />
         <Link
           href="/tra-cuu"
-          className="inline-flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-primary hover:bg-primary-dark text-white font-bold text-xs uppercase tracking-wider transition-all"
+          className="inline-flex items-center justify-center gap-2 w-full py-3 rounded-vj bg-primary hover:bg-primary-dark text-white font-bold text-xs uppercase tracking-wider transition-all"
         >
           <Icon name="TicketIcon" size={16} />
           <span>Tra cứu đặt chỗ</span>
@@ -225,7 +225,7 @@ export default function SuccessContent() {
         </div>
         <Link
           href={`/thanh-toan?bookingId=${encodeURIComponent(booking.id)}`}
-          className="inline-flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-primary hover:bg-primary-dark text-white font-bold text-xs uppercase tracking-wider transition-all"
+          className="inline-flex items-center justify-center gap-2 w-full py-3 rounded-vj bg-primary hover:bg-primary-dark text-white font-bold text-xs uppercase tracking-wider transition-all"
         >
           <Icon name="CreditCardIcon" size={16} />
           <span>Thanh toán ngay</span>
@@ -251,7 +251,7 @@ export default function SuccessContent() {
 
   return (
     <div className="max-w-xl mx-auto py-10 px-4">
-      <div className="bg-white rounded-3xl border border-gray-200/90 shadow-lg overflow-hidden text-center">
+      <div className="bg-white rounded-3xl border border-vj-border-light/90 shadow-vj-lg overflow-hidden text-center">
         {/* Success Header */}
         <div className="bg-gradient-to-r from-emerald-600 to-teal-700 text-white p-8 space-y-3">
           <div className="w-16 h-16 rounded-full bg-white/20 text-white flex items-center justify-center mx-auto ring-4 ring-white/10">
@@ -268,7 +268,7 @@ export default function SuccessContent() {
           <PnrBox pnr={pnr} />
 
           {/* Booking Summary */}
-          <div className="bg-gray-50 rounded-2xl p-4 border border-gray-200 text-xs space-y-2 text-left font-koho">
+          <div className="bg-vj-surface-2 rounded-2xl p-4 border border-vj-border-light text-xs space-y-2 text-left font-koho">
             <SummaryRow label="Chuyến bay:" value={booking.flightNo || '—'} />
             <SummaryRow
               label="Hành trình:"
@@ -278,7 +278,7 @@ export default function SuccessContent() {
             />
             <SummaryRow
               label="Trạng thái đặt chỗ:"
-              value={<span className="text-emerald-600 uppercase">Đã xác nhận</span>}
+              value={<span className="text-vj-pay-green uppercase">Đã xác nhận</span>}
             />
             <SummaryRow
               label="Tổng tiền thanh toán:"

@@ -541,34 +541,34 @@ function FlightBookingClientInner({
   return (
     <div className="font-body">
       {/* Vietjet Header: Thông tin hành trình (MUI parity) */}
-      <div className="w-full bg-white border-b border-gray-200 shadow-xs mb-4">
+      <div className="w-full bg-white border-b border-vj-border-light shadow-xs mb-4">
         <div className="mx-auto max-w-[1240px] px-3 py-3 sm:px-6">
           {/* Thông tin chuyến bay & sân bay */}
           <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-6 text-xs sm:text-sm font-koho">
-            <p className="font-bold text-gray-950 flex items-center gap-1.5">
+            <p className="font-bold text-vj-dark flex items-center gap-1.5">
               <span>{isRoundTrip ? 'Chuyến bay khứ hồi' : 'Chuyến bay một chiều'}</span>
-              <span className="text-gray-400">|</span>
+              <span className="text-vj-muted">|</span>
               <span>{params.pax || '1'} Người lớn</span>
               {Number(params.child || 0) > 0 && <span>, {params.child} Trẻ em</span>}
               {Number(params.infant || 0) > 0 && <span>, {params.infant} Em bé</span>}
             </p>
 
-            <div className="flex items-center gap-1.5 text-gray-800">
+            <div className="flex items-center gap-1.5 text-vj-text-strong">
               <svg viewBox="0 0 24 24" className="w-4 h-4 text-primary fill-current shrink-0">
                 <path d="M2.5 19h19v2h-19zm19.57-9.36c-.21-.8-1.04-1.28-1.84-1.06L14.92 10 8.86 3.65 6.94 4.16l3.87 6.36-4.5 1.2-1.78-1.42L3 10.7l2.12 3.67 15.63-4.18c.81-.22 1.29-1.05 1.07-1.85z" />
               </svg>
-              <span className="font-semibold text-gray-500">Điểm khởi hành</span>
-              <span className="font-bold text-gray-950">
+              <span className="font-semibold text-vj-gray">Điểm khởi hành</span>
+              <span className="font-bold text-vj-dark">
                 {getAirportCity(params.from || '')} ( {params.from?.toUpperCase()} )
               </span>
             </div>
 
-            <div className="flex items-center gap-1.5 text-gray-800">
+            <div className="flex items-center gap-1.5 text-vj-text-strong">
               <svg viewBox="0 0 24 24" className="w-4 h-4 text-primary fill-current shrink-0">
                 <path d="M2.5 19h19v2h-19zm16.84-3.15c.8.21 1.62-.26 1.84-1.06.21-.8-.26-1.63-1.06-1.84L4.49 8.77 2.37 12.44l1.52.41 1.78-1.42 4.5 1.2-3.87 6.36 1.92.51 6.06-6.35 5.31 1.42z" />
               </svg>
-              <span className="font-semibold text-gray-500">Điểm đến</span>
-              <span className="font-bold text-gray-950">
+              <span className="font-semibold text-vj-gray">Điểm đến</span>
+              <span className="font-bold text-vj-dark">
                 {getAirportCity(params.to || '')} ( {params.to?.toUpperCase()} )
               </span>
             </div>
@@ -867,7 +867,7 @@ export default function FlightBookingClient(props: FlightBookingClientProps) {
 function FlightSearchSkeleton() {
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
-      <div className="bg-[var(--surface)] rounded-vj shadow-lg p-8 animate-pulse">
+      <div className="bg-[var(--surface)] rounded-vj shadow-vj-lg p-8 animate-pulse">
         <div className="h-8 bg-[var(--surface-2)] rounded-vj w-1/3 mb-6" />
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {[1, 2, 3, 4].map((i) => (

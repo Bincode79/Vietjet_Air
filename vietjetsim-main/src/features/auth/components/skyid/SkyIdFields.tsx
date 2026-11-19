@@ -235,7 +235,7 @@ export function SkyIdPinInput({ length, value, onChange, id = 'skyid-otp' }: Sky
             onChange={(e) => handleChange(index, e.target.value)}
             onKeyDown={(e) => handleKeyDown(index, e)}
             aria-label={`Chữ số thứ ${index + 1}`}
-            className="vj-skyid-pin border border-gray-300 rounded-lg focus:border-primary focus:ring-2 focus:ring-primary/20 shadow-xs"
+            className="vj-skyid-pin border border-vj-line rounded-vj focus:border-primary focus:ring-2 focus:ring-primary/20 shadow-xs"
             style={isFilled ? undefined : { backgroundImage: 'none' }}
           />
         );

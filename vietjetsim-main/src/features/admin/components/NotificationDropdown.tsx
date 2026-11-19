@@ -110,7 +110,7 @@ export default function NotificationDropdown({
       case 'refund':
         return 'BanknotesIcon';
       case 'flight':
-        return 'PaperAirplaneIcon';
+        return 'AirplaneIcon';
       case 'system':
         return 'CogIcon';
       case 'warning':
@@ -125,21 +125,21 @@ export default function NotificationDropdown({
   const getNotificationColor = (type: string) => {
     switch (type) {
       case 'booking':
-        return 'bg-blue-100 text-blue-600';
+        return 'bg-blue-100 text-vj-blue';
       case 'payment':
         return 'bg-green-100 text-green-600';
       case 'refund':
         return 'bg-amber-100 text-amber-600';
       case 'flight':
-        return 'bg-red-100 text-red-600';
+        return 'bg-red-100 text-vj-red-dark';
       case 'system':
         return 'bg-purple-100 text-purple-600';
       case 'warning':
         return 'bg-orange-100 text-orange-600';
       case 'success':
-        return 'bg-emerald-100 text-emerald-600';
+        return 'bg-vj-pay-green text-vj-pay-green';
       default:
-        return 'bg-gray-100 text-gray-600';
+        return 'bg-vj-pill text-vj-text-strong';
     }
   };
 
@@ -162,11 +162,11 @@ export default function NotificationDropdown({
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="relative w-10 h-10 rounded-xl flex items-center justify-center transition-colors hover:bg-slate-700/50"
+        className="relative w-10 h-10 rounded-vj flex items-center justify-center transition-colors hover:bg-slate-700"
         style={{ background: 'rgba(148, 163, 184, 0.1)' }}
         title="Thông báo"
       >
-        <Icon name="BellIcon" size={18} className="text-slate-400" />
+        <Icon name="BellIcon" size={18} className="text-vj-text-muted" />
         {unreadCount > 0 && (
           <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 flex items-center justify-center text-2xs font-black text-white bg-primary rounded-full animate-pulse shadow-xs">
             {unreadCount > 99 ? '99+' : unreadCount}
@@ -176,7 +176,7 @@ export default function NotificationDropdown({
 
       {isOpen && (
         <div
-          className="absolute right-0 top-full mt-2 w-96 max-h-[480px] rounded-2xl shadow-2xl overflow-hidden z-50 bg-slate-800 border border-slate-700/60"
+          className="absolute right-0 top-full mt-2 w-96 max-h-[480px] rounded-2xl shadow-2xl overflow-hidden z-50 bg-slate-800 border border-vj-border-light"
           style={{
             animation: 'slideDown 0.2s ease-out',
           }}
@@ -194,11 +194,11 @@ export default function NotificationDropdown({
             }
           `}</style>
 
-          <div className="flex items-center justify-between px-4 py-3 border-b border-slate-700/60">
+          <div className="flex items-center justify-between px-4 py-3 border-b border-vj-border-light">
             <div className="flex items-center gap-2">
               <h3 className="font-black text-white text-sm">Thông báo</h3>
               {unreadCount > 0 && (
-                <span className="text-xs2 font-bold px-2 py-0.5 rounded-full bg-red-600/30 text-red-400 border border-red-500/30">
+                <span className="text-xs2 font-bold px-2 py-0.5 rounded-full bg-vj-red-dark/30 text-red-400 border border-red-500/30">
                   {unreadCount} mới
                 </span>
               )}
@@ -215,9 +215,9 @@ export default function NotificationDropdown({
               )}
               <button
                 onClick={() => setIsOpen(false)}
-                className="w-6 h-6 flex items-center justify-center rounded-lg hover:bg-slate-700/50 transition-colors ml-2"
+                className="w-6 h-6 flex items-center justify-center rounded-vj hover:bg-slate-700 transition-colors ml-2"
               >
-                <Icon name="XMarkIcon" size={14} className="text-slate-400" />
+                <Icon name="XMarkIcon" size={14} className="text-vj-text-muted" />
               </button>
             </div>
           </div>
@@ -225,8 +225,8 @@ export default function NotificationDropdown({
           <div className="overflow-y-auto max-h-[360px]">
             {isLoading ? (
               <div className="flex flex-col items-center justify-center py-12 gap-3">
-                <div className="w-8 h-8 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
-                <span className="text-slate-400 text-xs">Đang tải thông báo...</span>
+                <div className="w-8 h-8 border-2 border-vj-blue border-t-transparent rounded-full animate-spin" />
+                <span className="text-vj-text-muted text-xs">Đang tải thông báo...</span>
               </div>
             ) : notifications.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-12 gap-3">
@@ -234,11 +234,11 @@ export default function NotificationDropdown({
                   className="w-16 h-16 rounded-full flex items-center justify-center"
                   style={{ background: 'rgba(148, 163, 184, 0.1)' }}
                 >
-                  <Icon name="BellSlashIcon" size={24} className="text-slate-500" />
+                  <Icon name="BellSlashIcon" size={24} className="text-vj-text-muted" />
                 </div>
                 <div className="text-center">
-                  <p className="text-slate-300 text-sm font-medium">Không có thông báo</p>
-                  <p className="text-slate-500 text-xs mt-1">Bạn sẽ nhận thông báo ở đây</p>
+                  <p className="text-vj-text-muted text-sm font-medium">Không có thông báo</p>
+                  <p className="text-vj-text-muted text-xs mt-1">Bạn sẽ nhận thông báo ở đây</p>
                 </div>
               </div>
             ) : (
@@ -246,8 +246,8 @@ export default function NotificationDropdown({
                 {notifications.map((notification) => (
                   <div
                     key={notification.id}
-                    className={`px-4 py-3 hover:bg-slate-800/50 transition-colors cursor-pointer ${
-                      !notification.is_read ? 'bg-slate-800/30' : ''
+                    className={`px-4 py-3 hover:bg-slate-800 transition-colors cursor-pointer ${
+                      !notification.is_read ? 'bg-slate-800' : ''
                     }`}
                     onClick={() => {
                       if (!notification.is_read) {
@@ -257,7 +257,7 @@ export default function NotificationDropdown({
                   >
                     <div className="flex gap-3">
                       <div
-                        className={`w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 ${getNotificationColor(
+                        className={`w-9 h-9 rounded-vj flex items-center justify-center flex-shrink-0 ${getNotificationColor(
                           notification.type
                         )}`}
                       >
@@ -267,19 +267,19 @@ export default function NotificationDropdown({
                         <div className="flex items-start justify-between gap-2">
                           <p
                             className={`text-sm font-medium truncate ${
-                              !notification.is_read ? 'text-white' : 'text-slate-300'
+                              !notification.is_read ? 'text-white' : 'text-vj-text-muted'
                             }`}
                           >
                             {notification.title}
                           </p>
                           {!notification.is_read && (
-                            <span className="w-2 h-2 rounded-full bg-indigo-500 flex-shrink-0 mt-1.5" />
+                            <span className="w-2 h-2 rounded-full bg-vj-blue flex-shrink-0 mt-1.5" />
                           )}
                         </div>
-                        <p className="text-xs text-slate-400 mt-0.5 line-clamp-2">
+                        <p className="text-xs text-vj-text-muted mt-0.5 line-clamp-2">
                           {notification.message}
                         </p>
-                        <p className="text-xs2 text-slate-500 mt-1.5">
+                        <p className="text-xs2 text-vj-text-muted mt-1.5">
                           {formatTime(notification.created_at)}
                         </p>
                       </div>
@@ -298,7 +298,7 @@ export default function NotificationDropdown({
               <Link
                 href="/quan-tri?tab=notifications"
                 onClick={() => setIsOpen(false)}
-                className="text-xs font-semibold text-indigo-400 hover:text-indigo-300 transition-colors"
+                className="text-xs font-semibold text-vj-blue hover:text-vj-blue transition-colors"
               >
                 Xem tất cả thông báo
               </Link>

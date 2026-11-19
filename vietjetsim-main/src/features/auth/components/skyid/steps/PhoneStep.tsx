@@ -67,7 +67,7 @@ export default function PhoneStep({
         <div
           role="tablist"
           aria-label="Kiểu định danh đăng nhập"
-          className="mb-4 flex gap-1 rounded-lg bg-[var(--surface-2)] p-1"
+          className="mb-4 flex gap-1 rounded-vj bg-[var(--surface-2)] p-1"
         >
           {(
             [
@@ -81,9 +81,9 @@ export default function PhoneStep({
               role="tab"
               aria-selected={identifierMode === tab.id}
               onClick={() => onIdentifierModeChange(tab.id)}
-              className={`flex-1 cursor-pointer rounded-md px-2 sm:px-3 py-1.5 text-xs sm:text-sm font-semibold transition whitespace-nowrap ${
+              className={`flex-1 cursor-pointer rounded-vj px-2 sm:px-3 py-1.5 text-xs sm:text-sm font-semibold transition whitespace-nowrap ${
                 identifierMode === tab.id
-                  ? 'bg-white text-[var(--vj-skyid-ink)] shadow-sm'
+                  ? 'bg-white text-[var(--vj-skyid-ink)] shadow-vj-sm'
                   : 'text-[var(--vj-skyid-muted)] hover:text-[var(--vj-skyid-ink)]'
               }`}
             >

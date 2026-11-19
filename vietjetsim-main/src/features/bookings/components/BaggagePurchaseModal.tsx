@@ -155,7 +155,7 @@ export default function BaggagePurchaseModal({
           )}
 
           <div className="space-y-2">
-            <p className="text-xs font-bold uppercase text-gray-600">Chọn gói hành lý</p>
+            <p className="text-xs font-bold uppercase text-vj-text-strong">Chọn gói hành lý</p>
             <div className="grid gap-2">
               {packages.map((pkg) => {
                 const active = selected === pkg.id;
@@ -167,12 +167,12 @@ export default function BaggagePurchaseModal({
                     className={`flex items-center justify-between rounded-vj border px-3 py-2.5 text-left transition-colors ${
                       active
                         ? 'border-primary bg-[rgb(var(--vj-red-rgb))]/5'
-                        : 'border-gray-200 bg-white hover:border-gray-300'
+                        : 'border-vj-border-light bg-white hover:border-vj-line'
                     }`}
                   >
                     <span className="flex items-center gap-2">
                       <MdLuggage className="h-4 w-4 text-primary" />
-                      <span className="text-xs font-bold text-gray-900">{pkg.label}</span>
+                      <span className="text-xs font-bold text-vj-text">{pkg.label}</span>
                     </span>
                     <span className="text-xs font-black text-primary">
                       {pkg.price.toLocaleString('vi-VN')}₫
@@ -183,22 +183,22 @@ export default function BaggagePurchaseModal({
             </div>
           </div>
 
-          <div className="flex items-center justify-between rounded-vj border border-gray-200 bg-white px-3 py-2.5">
-            <span className="text-xs font-bold uppercase text-gray-600">Số lượng</span>
+          <div className="flex items-center justify-between rounded-vj border border-vj-border-light bg-white px-3 py-2.5">
+            <span className="text-xs font-bold uppercase text-vj-text-strong">Số lượng</span>
             <div className="flex items-center gap-2">
               <button
                 type="button"
                 onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                className="h-7 w-7 rounded-full border border-gray-300 font-bold text-gray-700 hover:bg-gray-100"
+                className="h-7 w-7 rounded-full border border-vj-line font-bold text-vj-text-dim hover:bg-vj-pill"
                 aria-label="Giảm số lượng"
               >
                 −
               </button>
-              <span className="w-6 text-center text-sm font-black text-gray-900">{quantity}</span>
+              <span className="w-6 text-center text-sm font-black text-vj-text">{quantity}</span>
               <button
                 type="button"
                 onClick={() => setQuantity((q) => Math.min(5, q + 1))}
-                className="h-7 w-7 rounded-full border border-gray-300 font-bold text-gray-700 hover:bg-gray-100"
+                className="h-7 w-7 rounded-full border border-vj-line font-bold text-vj-text-dim hover:bg-vj-pill"
                 aria-label="Tăng số lượng"
               >
                 +
@@ -208,18 +208,18 @@ export default function BaggagePurchaseModal({
 
           {owned.length > 0 && (
             <div className="space-y-2">
-              <p className="text-xs font-bold uppercase text-gray-600">Đã mua thêm</p>
+              <p className="text-xs font-bold uppercase text-vj-text-strong">Đã mua thêm</p>
               {owned.map((record) => (
                 <div
                   key={record.id}
-                  className="flex items-center justify-between rounded-vj border border-gray-200 bg-white px-3 py-2 text-xs"
+                  className="flex items-center justify-between rounded-vj border border-vj-border-light bg-white px-3 py-2 text-xs"
                 >
-                  <span className="flex items-center gap-1.5 font-semibold text-gray-800">
-                    <MdCheckCircle className="h-4 w-4 text-emerald-600" />
+                  <span className="flex items-center gap-1.5 font-semibold text-vj-text-strong">
+                    <MdCheckCircle className="h-4 w-4 text-vj-pay-green" />
                     {packages.find((p) => p.id === record.package_id)?.label ?? record.package_id}
                     {record.quantity > 1 ? ` × ${record.quantity}` : ''}
                   </span>
-                  <span className="font-black text-gray-900">
+                  <span className="font-black text-vj-text">
                     {(record.unit_price * record.quantity).toLocaleString('vi-VN')}₫
                   </span>
                 </div>
@@ -236,7 +236,7 @@ export default function BaggagePurchaseModal({
                 type="button"
                 disabled={paying}
                 onClick={() => void handlePay()}
-                className="inline-flex w-full items-center justify-center gap-2 rounded-vj bg-[var(--vj-red)] px-4 py-2.5 text-xs font-black text-white shadow-md transition-all hover:bg-vj-red-dark disabled:opacity-50"
+                className="inline-flex w-full items-center justify-center gap-2 rounded-vj bg-[var(--vj-red)] px-4 py-2.5 text-xs font-black text-white shadow-vj-md transition-all hover:bg-vj-red-dark disabled:opacity-50"
               >
                 <MdPayment className="h-4 w-4" />
                 {paying
@@ -250,8 +250,8 @@ export default function BaggagePurchaseModal({
           )}
         </div>
 
-        <div className="flex items-center justify-between gap-3 border-t border-gray-200 bg-white px-5 py-4">
-          <p className="text-2xs text-gray-500">
+        <div className="flex items-center justify-between gap-3 border-t border-vj-border-light bg-white px-5 py-4">
+          <p className="text-2xs text-vj-gray">
             Giá do hệ thống xác nhận. Hành lý chưa thanh toán sẽ được tính tiền khi làm thủ tục tại
             sân bay.
           </p>
@@ -259,7 +259,7 @@ export default function BaggagePurchaseModal({
             <button
               type="button"
               onClick={onClose}
-              className="rounded-vj bg-gray-100 px-4 py-2 text-xs font-bold text-gray-700 transition-all hover:bg-gray-200"
+              className="rounded-vj bg-vj-pill px-4 py-2 text-xs font-bold text-vj-text-dim transition-all hover:bg-vj-surface-3"
             >
               Đóng
             </button>
@@ -267,7 +267,7 @@ export default function BaggagePurchaseModal({
               type="button"
               disabled={!selected || loading}
               onClick={() => void handleAdd()}
-              className="inline-flex items-center gap-1.5 rounded-vj bg-primary px-5 py-2 text-xs font-black text-white shadow-md transition-all hover:bg-primary-dark disabled:opacity-50"
+              className="inline-flex items-center gap-1.5 rounded-vj bg-primary px-5 py-2 text-xs font-black text-white shadow-vj-md transition-all hover:bg-primary-dark disabled:opacity-50"
             >
               <MdAdd className="h-4 w-4" />
               {loading ? 'Đang thêm...' : 'Thêm'}

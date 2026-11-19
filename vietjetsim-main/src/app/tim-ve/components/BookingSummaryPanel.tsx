@@ -130,7 +130,7 @@ export default function BookingSummaryPanel({
           gradient đỏ `359.2deg` cao `56px` với `h3` 20px/700 trắng, các thanh
           mục cao `52px` nền `#F1F1F1` tiêu đề `18px/600`, thanh tổng nền trắng
           "Tổng tiền" `20px/600` + giá `22px/700`, nút "Đi tiếp" `127×39`. */}
-      <aside className="hidden lg:flex lg:w-[380px] lg:flex-none flex-col rounded-vj-panel overflow-hidden shadow-sm border border-gray-200 bg-white h-fit sticky top-4">
+      <aside className="hidden lg:flex lg:w-[380px] lg:flex-none flex-col rounded-vj-panel overflow-hidden shadow-vj-sm border border-vj-border-light bg-white h-fit sticky top-4">
         {/* Panel header — gradient đỏ 359.2deg, cao 56px */}
         <div className="vj-summary-head px-4 flex items-center justify-center">
           <h3 className="font-koho text-2xl3 font-bold uppercase text-white tracking-normal">
@@ -139,7 +139,7 @@ export default function BookingSummaryPanel({
         </div>
 
         {/* Bar: Thông tin hành khách */}
-        <div className="border-b border-gray-200/80">
+        <div className="border-b border-vj-border-light/80">
           <div
             className="vj-summary-bar px-4 flex items-center justify-between cursor-pointer"
             onClick={() => setShowPaxDetail(!showPaxDetail)}
@@ -153,21 +153,21 @@ export default function BookingSummaryPanel({
             </div>
           </div>
           {showPaxDetail && (
-            <div className="px-4 py-2 space-y-1 text-xs2 text-gray-600 bg-[var(--vj-bar-gray)] border-t border-[var(--vj-bar-gray)]">
+            <div className="px-4 py-2 space-y-1 text-xs2 text-vj-text-strong bg-[var(--vj-bar-gray)] border-t border-[var(--vj-bar-gray)]">
               <div className="flex justify-between">
                 <span>Người lớn</span>
-                <span className="font-bold text-gray-900">{adultCount}</span>
+                <span className="font-bold text-vj-text">{adultCount}</span>
               </div>
               {childCount > 0 && (
                 <div className="flex justify-between">
                   <span>Trẻ em (2 - 11 tuổi)</span>
-                  <span className="font-bold text-gray-900">{childCount}</span>
+                  <span className="font-bold text-vj-text">{childCount}</span>
                 </div>
               )}
               {infantCount > 0 && (
                 <div className="flex justify-between">
                   <span>Em bé (&lt; 2 tuổi)</span>
-                  <span className="font-bold text-gray-900">{infantCount}</span>
+                  <span className="font-bold text-vj-text">{infantCount}</span>
                 </div>
               )}
             </div>
@@ -175,7 +175,7 @@ export default function BookingSummaryPanel({
         </div>
 
         {/* Section: Chuyến đi — nền #F1F1F1, chữ #333333 (quy ước 1 bảng màu) */}
-        <div className="border-b border-gray-200/80">
+        <div className="border-b border-vj-border-light/80">
           <div className="vj-summary-bar px-4 flex items-center justify-between text-lg font-semibold text-vj-text">
             <span>Chuyến đi</span>
             {data.flightNo && (
@@ -193,14 +193,14 @@ export default function BookingSummaryPanel({
               <SummaryPlaneIcon />
               <span>{destination}</span>
             </div>
-            <div className="text-sm font-medium text-gray-600 flex items-center flex-wrap gap-1">
+            <div className="text-sm font-medium text-vj-text-strong flex items-center flex-wrap gap-1">
               <span>
                 {data.flightNo
                   ? `${formatViSummaryDate(data.date)} | ${data.departTime || '04:40'} - ${data.arriveTime || '06:50'} | ${data.flightNo} | `
                   : '--- | --- | --- | '}
               </span>
               {data.flightNo ? (
-                <span className="inline-block px-1.5 py-0.5 rounded text-xs font-semibold bg-vj-fare-bg text-vj-text border border-gray-200">
+                <span className="inline-block px-1.5 py-0.5 rounded text-xs font-semibold bg-vj-fare-bg text-vj-text border border-vj-border-light">
                   {formatFareClassName(data.fareClass)}
                 </span>
               ) : (
@@ -211,7 +211,7 @@ export default function BookingSummaryPanel({
         </div>
 
         {/* Bar: Giá vé */}
-        <div className="border-b border-gray-200/80">
+        <div className="border-b border-vj-border-light/80">
           <div
             className="vj-summary-bar px-4 flex items-center justify-between cursor-pointer"
             onClick={() => setShowFareDetail(!showFareDetail)}
@@ -226,7 +226,7 @@ export default function BookingSummaryPanel({
           </div>
 
           {showFareDetail && data.fare && data.fare > 0 && (
-            <div className="px-4 py-2 space-y-1 text-xs2 text-gray-500 bg-[var(--vj-bar-gray)] border-t border-[var(--vj-bar-gray)]">
+            <div className="px-4 py-2 space-y-1 text-xs2 text-vj-gray bg-[var(--vj-bar-gray)] border-t border-[var(--vj-bar-gray)]">
               <div className="flex justify-between">
                 <span>Người lớn x {adultCount}</span>
                 <span>{(singleAdultFare * adultCount).toLocaleString('vi-VN')} VND</span>
@@ -248,7 +248,7 @@ export default function BookingSummaryPanel({
         </div>
 
         {/* Bar: Thuế, phí */}
-        <div className="border-b border-gray-200/80">
+        <div className="border-b border-vj-border-light/80">
           <div
             className="vj-summary-bar px-4 flex items-center justify-between cursor-pointer"
             onClick={() => setShowTaxDetail(!showTaxDetail)}
@@ -265,7 +265,7 @@ export default function BookingSummaryPanel({
           </div>
 
           {showTaxDetail && (
-            <div className="px-4 py-2 space-y-1 text-xs2 text-gray-500 bg-[var(--vj-bar-gray)] border-t border-[var(--vj-bar-gray)]">
+            <div className="px-4 py-2 space-y-1 text-xs2 text-vj-gray bg-[var(--vj-bar-gray)] border-t border-[var(--vj-bar-gray)]">
               <div className="flex justify-between">
                 <span>Phí an ninh soi chiếu</span>
                 <span>{feeSecurity.toLocaleString('vi-VN')} VND</span>
@@ -292,7 +292,7 @@ export default function BookingSummaryPanel({
 
         {/* Bar: Dịch vụ */}
         <div
-          className="vj-summary-bar px-4 border-b border-gray-200/80 flex items-center justify-between cursor-pointer"
+          className="vj-summary-bar px-4 border-b border-vj-border-light/80 flex items-center justify-between cursor-pointer"
           onClick={() => setShowServiceDetail(!showServiceDetail)}
         >
           <span className="font-koho text-lg font-semibold text-vj-text">Dịch vụ</span>
@@ -304,7 +304,7 @@ export default function BookingSummaryPanel({
 
         {/* Section: Chuyến về (always present for roundtrip matching screenshot) */}
         {(data.isRoundTrip || data.returnLeg !== undefined) && (
-          <div className="border-b border-gray-200/80">
+          <div className="border-b border-vj-border-light/80">
             <div className="vj-summary-bar px-4 flex items-center justify-between text-lg font-semibold text-vj-text">
               <span>Chuyến về</span>
               {data.returnLeg?.flightNo && (
@@ -325,14 +325,14 @@ export default function BookingSummaryPanel({
                 <SummaryPlaneIcon />
                 <span>{origin}</span>
               </div>
-              <div className="text-sm font-medium text-gray-600 flex items-center flex-wrap gap-1">
+              <div className="text-sm font-medium text-vj-text-strong flex items-center flex-wrap gap-1">
                 <span>
                   {data.returnLeg?.flightNo
                     ? `${formatViSummaryDate(data.returnLeg.date ?? data.date)} | ${data.returnLeg.departTime || '---'} - ${data.returnLeg.arriveTime || '---'} | ${data.returnLeg.flightNo} | `
                     : '--- | --- | --- | '}
                 </span>
                 {data.returnLeg?.flightNo ? (
-                  <span className="inline-block px-1.5 py-0.5 rounded text-xs font-semibold bg-vj-fare-bg text-vj-text border border-gray-200">
+                  <span className="inline-block px-1.5 py-0.5 rounded text-xs font-semibold bg-vj-fare-bg text-vj-text border border-vj-border-light">
                     {formatFareClassName(data.returnLeg.fareClass)}
                   </span>
                 ) : (
@@ -342,7 +342,7 @@ export default function BookingSummaryPanel({
             </div>
 
             {/* Bar: Giá vé (Chuyến về) */}
-            <div className="border-b border-gray-200/80">
+            <div className="border-b border-vj-border-light/80">
               <div
                 className="vj-summary-bar px-4 flex items-center justify-between cursor-pointer"
                 onClick={() => setShowReturnFareDetail(!showReturnFareDetail)}
@@ -361,7 +361,7 @@ export default function BookingSummaryPanel({
               </div>
 
               {showReturnFareDetail && data.returnLeg?.fare && data.returnLeg.fare > 0 && (
-                <div className="px-4 py-2 space-y-1 text-xs2 text-gray-500 bg-[var(--vj-bar-gray)] border-t border-[var(--vj-bar-gray)]">
+                <div className="px-4 py-2 space-y-1 text-xs2 text-vj-gray bg-[var(--vj-bar-gray)] border-t border-[var(--vj-bar-gray)]">
                   <div className="flex justify-between">
                     <span>Người lớn x {adultCount}</span>
                     <span>{(returnSingleAdultFare * adultCount).toLocaleString('vi-VN')} VND</span>

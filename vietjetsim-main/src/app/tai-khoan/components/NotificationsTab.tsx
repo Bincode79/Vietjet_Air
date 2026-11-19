@@ -184,17 +184,17 @@ function MetadataBadge({ type, metadata }: { type: string; metadata?: Record<str
       },
       schedule_change: {
         label: 'Đổi giờ',
-        icon: <RiTimeLine className="inline text-blue-600 mr-1" />,
+        icon: <RiTimeLine className="inline text-vj-blue mr-1" />,
       },
       delay: { label: 'Trễ chuyến', icon: <RiAlertLine className="inline text-orange-600 mr-1" /> },
       cancellation: {
         label: 'Huỷ chuyến',
-        icon: <RiCloseCircleLine className="inline text-red-600 mr-1" />,
+        icon: <RiCloseCircleLine className="inline text-vj-red-dark mr-1" />,
       },
     };
     const item = delayDetails[metadata.delay_type];
     return (
-      <span className="inline-flex items-center text-xs font-semibold px-2 py-0.5 rounded-full bg-red-50/10 text-red-600 border border-red-100">
+      <span className="inline-flex items-center text-xs font-semibold px-2 py-0.5 rounded-full bg-red-50/10 text-vj-red-dark border border-red-100">
         {item ? (
           <>
             {item.icon}
@@ -322,7 +322,7 @@ function NotifCard({ notif, onMarkRead, onDismiss, onArchive, onSnooze }: NotifC
       >
         {/* Icon */}
         <div
-          className="flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center"
+          className="flex-shrink-0 w-10 h-10 rounded-vj flex items-center justify-center"
           style={{ background: notif.accentBg }}
         >
           <Icon name={notif.icon} size={20} style={{ color: notif.accent }} />
@@ -378,14 +378,14 @@ function NotifCard({ notif, onMarkRead, onDismiss, onArchive, onSnooze }: NotifC
           <div className="flex items-center gap-1.5 mt-3" onClick={(e) => e.stopPropagation()}>
             <button
               onClick={() => onArchive(notif.id)}
-              className="flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-lg border border-[var(--border)] text-[var(--foreground-muted)] bg-white hover:bg-[var(--surface-2)] hover:border-[var(--border)] transition-all"
+              className="flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-vj border border-[var(--border)] text-[var(--foreground-muted)] bg-white hover:bg-[var(--surface-2)] hover:border-[var(--border)] transition-all"
             >
               <Icon name="ArchiveBoxIcon" size={13} />
               <span className="hidden sm:inline">Lưu trữ</span>
             </button>
             <button
               onClick={() => onDismiss(notif.id)}
-              className="flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-lg border border-[var(--border)] text-[var(--foreground-muted)] bg-white hover:bg-red-50 hover:border-red-200 hover:text-red-500 transition-all"
+              className="flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-vj border border-[var(--border)] text-[var(--foreground-muted)] bg-white hover:bg-vj-surface-rose hover:border-red-200 hover:text-vj-red transition-all"
             >
               <Icon name="XMarkIcon" size={13} />
               <span className="hidden sm:inline">Xoá</span>
@@ -396,13 +396,13 @@ function NotifCard({ notif, onMarkRead, onDismiss, onArchive, onSnooze }: NotifC
                   e.stopPropagation();
                   setShowSnoozeMenu((s) => !s);
                 }}
-                className="flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-lg border border-[var(--border)] text-[var(--foreground-muted)] bg-white hover:bg-amber-50 hover:border-[rgb(var(--accent-rgb))]/30 hover:text-amber-600 transition-all"
+                className="flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-vj border border-[var(--border)] text-[var(--foreground-muted)] bg-white hover:bg-amber-50 hover:border-[rgb(var(--accent-rgb))]/30 hover:text-amber-600 transition-all"
               >
                 <Icon name="ClockIcon" size={13} />
                 <span className="hidden sm:inline">Nhắc lại</span>
               </button>
               {showSnoozeMenu && (
-                <div className="absolute left-0 bottom-full mb-1 bg-white border border-[var(--border)] rounded-xl shadow-lg z-20 overflow-hidden min-w-[120px]">
+                <div className="absolute left-0 bottom-full mb-1 bg-white border border-[var(--border)] rounded-vj shadow-vj-lg z-20 overflow-hidden min-w-[120px]">
                   {SNOOZE_OPTIONS.map((opt) => (
                     <button
                       key={opt.ms}
@@ -466,10 +466,10 @@ function StatsBar({ notifications }: { notifications: Notification[] }) {
       ].map((item) => (
         <div
           key={item.key}
-          className="flex items-center gap-2 bg-white rounded-xl px-3 py-2 border border-[var(--border)]"
+          className="flex items-center gap-2 bg-white rounded-vj px-3 py-2 border border-[var(--border)]"
         >
           <div
-            className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0"
+            className="w-7 h-7 rounded-vj flex items-center justify-center flex-shrink-0"
             style={{ background: item.bg }}
           >
             <Icon name={item.icon} size={14} style={{ color: item.color }} />
@@ -655,8 +655,8 @@ export default function NotificationsTab({ onUnreadCountChange }: NotificationsT
       <div className="px-5 py-4 border-b border-[var(--border)]">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-xl flex items-center justify-center bg-red-50/10">
-              <Icon name="BellIcon" size={16} className="text-red-500" />
+            <div className="w-8 h-8 rounded-vj flex items-center justify-center bg-red-50/10">
+              <Icon name="BellIcon" size={16} className="text-vj-red" />
             </div>
             <div>
               <h2 className="font-bold text-base leading-tight text-[var(--foreground)]">
@@ -704,7 +704,7 @@ export default function NotificationsTab({ onUnreadCountChange }: NotificationsT
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Tìm kiếm thông báo..."
-            className="w-full pl-8 pr-4 py-2 bg-[var(--surface-2)] border border-[var(--border)] rounded-xl text-xs text-[var(--foreground)] placeholder-[var(--foreground-muted)] focus:outline-none transition-all"
+            className="w-full pl-8 pr-4 py-2 bg-[var(--surface-2)] border border-[var(--border)] rounded-vj text-xs text-[var(--foreground)] placeholder-[var(--foreground-muted)] focus:outline-none transition-all"
           />
         </div>
 
@@ -720,9 +720,9 @@ export default function NotificationsTab({ onUnreadCountChange }: NotificationsT
               <button
                 key={type}
                 onClick={() => setActiveType(type)}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all flex-shrink-0 ${
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-vj text-xs font-semibold whitespace-nowrap transition-all flex-shrink-0 ${
                   activeType === type
-                    ? 'text-white shadow-sm'
+                    ? 'text-white shadow-vj-sm'
                     : 'text-[var(--foreground-muted)]bg-[var(--surface-2)]hover:bg-[var(--surface)]:bg-[var(--dark-surface)]'
                 }`}
                 style={activeType === type ? { background: conf.color } : {}}
@@ -731,7 +731,7 @@ export default function NotificationsTab({ onUnreadCountChange }: NotificationsT
                 {conf.label}
                 {typeUnread > 0 && (
                   <span
-                    className={`text-xs font-bold px-1.5 py-0 rounded-full ${activeType === type ? 'bg-white/30 text-white' : 'bg-red-100/20 text-red-600'}`}
+                    className={`text-xs font-bold px-1.5 py-0 rounded-full ${activeType === type ? 'bg-white/30 text-white' : 'bg-red-100/20 text-vj-red-dark'}`}
                   >
                     {typeUnread}
                   </span>
@@ -746,7 +746,7 @@ export default function NotificationsTab({ onUnreadCountChange }: NotificationsT
           <select
             value={timestampFilter}
             onChange={(e) => setTimestampFilter(e.target.value as TimestampFilter)}
-            className="text-xs border border-[var(--border)] rounded-lg px-2 py-1.5 bg-[var(--surface)] text-[var(--foreground-muted)] focus:outline-none"
+            className="text-xs border border-[var(--border)] rounded-vj px-2 py-1.5 bg-[var(--surface)] text-[var(--foreground-muted)] focus:outline-none"
           >
             <option value="all">Tất cả thời gian</option>
             <option value="today">Hôm nay</option>
@@ -755,7 +755,7 @@ export default function NotificationsTab({ onUnreadCountChange }: NotificationsT
           </select>
           <button
             onClick={() => setShowUnreadOnly((v) => !v)}
-            className={`flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-xl border transition-all ${
+            className={`flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-vj border transition-all ${
               showUnreadOnly
                 ? 'text-white border-transparent bg-[var(--primary)]'
                 : 'text-[var(--foreground-muted)]border-[var(--border)]hover:bg-[var(--surface-2)]:bg-[var(--dark-surface-2)]'
@@ -766,7 +766,7 @@ export default function NotificationsTab({ onUnreadCountChange }: NotificationsT
           </button>
           <button
             onClick={() => setShowArchived((v) => !v)}
-            className={`flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-xl border transition-all ${
+            className={`flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-vj border transition-all ${
               showArchived
                 ? 'bg-[var(--surface-2)]text-[var(--foreground-muted)]border-[var(--border)]'
                 : 'text-[var(--foreground-muted)]border-[var(--border)]hover:bg-[var(--surface-2)]:bg-[var(--dark-surface-2)]'
@@ -805,7 +805,7 @@ export default function NotificationsTab({ onUnreadCountChange }: NotificationsT
                 setShowUnreadOnly(false);
                 setTimestampFilter('all');
               }}
-              className="mt-3 text-xs font-semibold text-white px-4 py-2 rounded-xl transition-all bg-[var(--primary)]"
+              className="mt-3 text-xs font-semibold text-white px-4 py-2 rounded-vj transition-all bg-[var(--primary)]"
             >
               Đặt lại bộ lọc
             </button>

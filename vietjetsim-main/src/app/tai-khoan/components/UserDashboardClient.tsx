@@ -18,7 +18,7 @@ const NotificationsTab = dynamic(() => import('./NotificationsTab'), {
   loading: () => (
     <div className="space-y-3 p-4">
       {[1, 2, 3].map((i) => (
-        <div key={i} className="h-24 bg-[var(--surface-2)] rounded-xl animate-pulse" />
+        <div key={i} className="h-24 bg-[var(--surface-2)] rounded-vj animate-pulse" />
       ))}
     </div>
   ),
@@ -28,7 +28,7 @@ const NotificationSettingsTab = dynamic(() => import('./NotificationSettingsTab'
   loading: () => (
     <div className="p-4 space-y-4">
       {[1, 2, 3].map((i) => (
-        <div key={i} className="h-12 bg-[var(--surface-2)] rounded-lg animate-pulse" />
+        <div key={i} className="h-12 bg-[var(--surface-2)] rounded-vj animate-pulse" />
       ))}
     </div>
   ),
@@ -50,7 +50,7 @@ const PaymentHistoryTab = dynamic(
     loading: () => (
       <div className="p-4 space-y-3">
         {[1, 2, 3, 4].map((i) => (
-          <div key={i} className="h-20 bg-[var(--surface-2)] rounded-xl animate-pulse" />
+          <div key={i} className="h-20 bg-[var(--surface-2)] rounded-vj animate-pulse" />
         ))}
       </div>
     ),
@@ -141,6 +141,18 @@ type UiBooking = {
   alt?: string;
 };
 
+const DESTINATION_IMAGES: Record<string, string> = {
+  SGN: '/images/hero/hero-artwork-beach-sunset.jpg',
+  HAN: '/images/hero/hero-vietjet-holiday.jpg',
+  DAD: '/images/hero/hero-sale-aerial.jpg',
+  PQC: '/images/hero/hero-tet-celebration.jpg',
+  BKK: '/images/promos/promo-bangkok.jpg',
+  SIN: '/images/promos/promo-singapore.jpg',
+  ICN: '/images/promos/promo-seoul.jpg',
+  DPS: '/images/promos/promo-bali.jpg',
+  HKG: '/images/promos/promo-hongkong.jpg',
+};
+
 /**
  * Map a DB booking record (from /api/dat-ve) to UiBooking format.
  * DB returns: { id, status, total_price, flight: { flight_no, from_code, to_code, depart_time, arrive_time }, passengers: [] }
@@ -182,6 +194,8 @@ function mapDbBookingToUi(b: BookingListItem): UiBooking {
     seat: firstPassenger?.seat_number || '--',
     price: typeof b.total_price === 'number' ? b.total_price : Number(b.total_price) || 0,
     status: b.status || 'confirmed',
+    image: DESTINATION_IMAGES[flight.to_code] || '/images/promos/promo-vietnam.jpg',
+    alt: `Chuyến bay đến ${AIRPORT_CITIES[flight.to_code] || flight.to_code}`,
   };
 }
 
@@ -667,10 +681,10 @@ export default function UserDashboardClient() {
                   <UpcomingBookingsSkeleton count={2} />
                 ) : upcomingError ? (
                   <div
-                    className="bg-[var(--surface)] rounded-xl sm:rounded-2xl border border-[rgb(var(--primary-rgb))]/20 p-6 sm:p-8 text-center"
+                    className="bg-[var(--surface)] rounded-vj sm:rounded-2xl border border-[rgb(var(--primary-rgb))]/20 p-6 sm:p-8 text-center"
                     style={{ boxShadow: '0 4px 16px rgba(0,0,0,0.08)' }}
                   >
-                    <div className="w-10 h-10 sm:w-14 sm:h-14 bg-[var(--surface-2)] rounded-xl sm:rounded-2xl flex items-center justify-center mx-auto mb-2 sm:mb-3 border border-[rgb(var(--primary-rgb))]/20">
+                    <div className="w-10 h-10 sm:w-14 sm:h-14 bg-[var(--surface-2)] rounded-vj sm:rounded-2xl flex items-center justify-center mx-auto mb-2 sm:mb-3 border border-[rgb(var(--primary-rgb))]/20">
                       <Icon
                         name="ExclamationTriangleIcon"
                         size={28}
@@ -685,7 +699,7 @@ export default function UserDashboardClient() {
                     </p>
                     <button
                       onClick={retryUpcoming}
-                      className="inline-flex items-center gap-1.5 sm:gap-2 text-white font-semibold text-2xs sm:text-xs px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl transition-all"
+                      className="inline-flex items-center gap-1.5 sm:gap-2 text-white font-semibold text-2xs sm:text-xs px-4 sm:px-5 py-2 sm:py-2.5 rounded-vj transition-all"
                       style={{ background: 'var(--primary)' }}
                     >
                       <Icon name="ArrowPathIcon" size={14} />
@@ -725,18 +739,18 @@ export default function UserDashboardClient() {
                         <div className="flex flex-wrap gap-1.5 sm:gap-2 justify-center sm:justify-start">
                           <Link
                             href="/tim-ve"
-                            className="inline-flex items-center gap-1.5 sm:gap-2 text-white font-bold px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl text-2xs sm:text-sm transition-all hover:opacity-90 active:scale-95 shadow-lg"
+                            className="inline-flex items-center gap-1.5 sm:gap-2 text-white font-bold px-4 sm:px-6 py-2.5 sm:py-3 rounded-vj sm:rounded-2xl text-2xs sm:text-sm transition-all hover:opacity-90 active:scale-98 shadow-vj-lg"
                             style={{
                               background: 'linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%)',
                               boxShadow: '0 4px 16px rgba(245, 158, 11, 0.3)',
                             }}
                           >
-                            <Icon name="PaperAirplaneIcon" size={15} />
+                            <Icon name="AirplaneIcon" size={15} />
                             Đặt vé ngay
                           </Link>
                           <button
                             onClick={retryUpcoming}
-                            className="inline-flex items-center gap-1.5 sm:gap-2 text-amber-700 font-semibold px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl text-2xs sm:text-sm border border-[rgb(var(--accent-rgb))]/30 hover:bg-amber-50 transition-all bg-[var(--surface)]"
+                            className="inline-flex items-center gap-1.5 sm:gap-2 text-amber-700 font-semibold px-4 sm:px-5 py-2.5 sm:py-3 rounded-vj sm:rounded-2xl text-2xs sm:text-sm border border-[rgb(var(--accent-rgb))]/30 hover:bg-amber-50 transition-all bg-[var(--surface)]"
                           >
                             <Icon name="ArrowPathIcon" size={14} />
                             Tải lại
@@ -776,8 +790,13 @@ export default function UserDashboardClient() {
                           <div className="sm:col-span-2 p-5">
                             <div className="flex items-start justify-between mb-3">
                               <div>
-                                <div className="font-black text-sm text-[var(--foreground)]">
-                                  {booking.flightNo}
+                                <div className="flex items-center gap-1.5 font-black text-sm text-[var(--foreground)]">
+                                  <img
+                                    src="/images/brand/vietjet-air-circle.jpg"
+                                    alt="VJ"
+                                    className="w-4 h-4 rounded-full object-cover shrink-0 border border-white/60 shadow-2xs"
+                                  />
+                                  <span>{booking.flightNo}</span>
                                 </div>
                                 <div className="text-xs text-[var(--foreground-muted)] mt-0.5">
                                   {booking.date}
@@ -800,7 +819,11 @@ export default function UserDashboardClient() {
                                 </div>
                               </div>
                               <div className="flex-1 flex flex-col items-center">
-                                <Icon name="PaperAirplaneIcon" size={16} className="text-primary" />
+                                <Icon
+                                  name="AirplaneIcon"
+                                  size={16}
+                                  className="text-primary rotate-90"
+                                />
                                 <div className="text-xs text-[var(--foreground-muted)] mt-0.5">
                                   Bay thẳng
                                 </div>
@@ -829,7 +852,7 @@ export default function UserDashboardClient() {
                                 </div>
                               </div>
                               <div
-                                className="font-black text-sm px-3 py-1 rounded-lg"
+                                className="font-black text-sm px-3 py-1 rounded-vj"
                                 style={{
                                   color: 'var(--foreground)',
                                   background: 'var(--surface-2)',
@@ -840,7 +863,7 @@ export default function UserDashboardClient() {
                               </div>
                             </div>
                             <div className="mt-3 flex items-center gap-3">
-                              <div className="w-12 h-12 bg-[var(--surface-2)] rounded-lg flex items-center justify-center border border-dashed border-[var(--border)]">
+                              <div className="w-12 h-12 bg-[var(--surface-2)] rounded-vj flex items-center justify-center border border-dashed border-[var(--border)]">
                                 <Icon
                                   name="QrCodeIcon"
                                   size={20}
@@ -857,7 +880,7 @@ export default function UserDashboardClient() {
                                 onClick={() =>
                                   (window.location.href = `/lam-thu-tuc?bookingId=${booking.id}`)
                                 }
-                                className="ml-auto text-xs font-semibold border px-3 py-1.5 rounded-lg transition-all"
+                                className="ml-auto text-xs font-semibold border px-3 py-1.5 rounded-vj transition-all"
                                 style={{
                                   color: 'var(--primary)',
                                   borderColor: 'var(--primary)',
@@ -902,7 +925,7 @@ export default function UserDashboardClient() {
                         <>
                           <button
                             onClick={exportCSV}
-                            className="flex items-center gap-1.5 text-xs font-semibold text-green-700 hover:text-green-800 bg-green-50/20 hover:bg-green-100 border border-green-200 px-3 py-1.5 rounded-lg transition-all"
+                            className="flex items-center gap-1.5 text-xs font-semibold text-green-700 hover:text-green-800 bg-green-50/20 hover:bg-green-100 border border-green-200 px-3 py-1.5 rounded-vj transition-all"
                             title="Xuất CSV"
                           >
                             <Icon name="TableCellsIcon" size={13} />
@@ -910,7 +933,7 @@ export default function UserDashboardClient() {
                           </button>
                           <button
                             onClick={exportPDF}
-                            className="flex items-center gap-1.5 text-xs font-semibold text-[var(--primary)] hover:text-[var(--primary-dark)] bg-[var(--surface-2)] hover:bg-[rgb(var(--primary-rgb))]/10 border border-[rgb(var(--primary-rgb))]/20 px-3 py-1.5 rounded-lg transition-all"
+                            className="flex items-center gap-1.5 text-xs font-semibold text-[var(--primary)] hover:text-[var(--primary-dark)] bg-[var(--surface-2)] hover:bg-[rgb(var(--primary-rgb))]/10 border border-[rgb(var(--primary-rgb))]/20 px-3 py-1.5 rounded-vj transition-all"
                             title="Xuất PDF"
                           >
                             <Icon name="DocumentArrowDownIcon" size={13} />
@@ -921,7 +944,7 @@ export default function UserDashboardClient() {
                       {hasActiveFilters && (
                         <button
                           onClick={clearFilters}
-                          className="flex items-center gap-1.5 text-xs font-semibold border px-3 py-1.5 rounded-lg transition-all"
+                          className="flex items-center gap-1.5 text-xs font-semibold border px-3 py-1.5 rounded-vj transition-all"
                           style={{ color: 'var(--primary)', borderColor: 'var(--primary)' }}
                         >
                           <Icon name="XMarkIcon" size={12} />
@@ -945,7 +968,7 @@ export default function UserDashboardClient() {
                         setHistoryPage(1);
                       }}
                       placeholder="Tìm theo mã đặt chỗ, chuyến bay, thành phố..."
-                      className="w-full pl-9 pr-9 py-2.5 bg-[var(--surface-2)] border border-[var(--border)] rounded-xl text-sm text-[var(--foreground)] placeholder-[var(--foreground-muted)] focus:outline-none transition-all"
+                      className="w-full pl-9 pr-9 py-2.5 bg-[var(--surface-2)] border border-[var(--border)] rounded-vj text-sm text-[var(--foreground)] placeholder-[var(--foreground-muted)] focus:outline-none transition-all"
                       style={{ outline: 'none' }}
                       onFocus={(e) => {
                         e.target.style.borderColor = 'var(--primary)';
@@ -984,7 +1007,7 @@ export default function UserDashboardClient() {
                             setHistoryDateFrom(e.target.value);
                             setHistoryPage(1);
                           }}
-                          className="w-full pl-8 pr-3 py-2 bg-[var(--surface-2)] border border-[var(--border)] rounded-xl text-xs text-[var(--foreground)] focus:outline-none transition-all"
+                          className="w-full pl-8 pr-3 py-2 bg-[var(--surface-2)] border border-[var(--border)] rounded-vj text-xs text-[var(--foreground)] focus:outline-none transition-all"
                         />
                       </div>
                       <span className="text-[var(--foreground-muted)] text-xs flex-shrink-0">
@@ -1003,11 +1026,11 @@ export default function UserDashboardClient() {
                             setHistoryDateTo(e.target.value);
                             setHistoryPage(1);
                           }}
-                          className="w-full pl-8 pr-3 py-2 bg-[var(--surface-2)] border border-[var(--border)] rounded-xl text-xs text-[var(--foreground)] focus:outline-none transition-all"
+                          className="w-full pl-8 pr-3 py-2 bg-[var(--surface-2)] border border-[var(--border)] rounded-vj text-xs text-[var(--foreground)] focus:outline-none transition-all"
                         />
                       </div>
                     </div>
-                    <div className="flex items-center gap-1 bg-[var(--surface-2)] border border-[var(--border)] rounded-xl p-1 flex-shrink-0">
+                    <div className="flex items-center gap-1 bg-[var(--surface-2)] border border-[var(--border)] rounded-vj p-1 flex-shrink-0">
                       {(
                         [
                           { value: 'all', label: 'Tất cả' },
@@ -1022,7 +1045,7 @@ export default function UserDashboardClient() {
                             setHistoryStatus(opt.value);
                             setHistoryPage(1);
                           }}
-                          className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all whitespace-nowrap ${historyStatus === opt.value ? 'text-white border-transparent' : 'text-[var(--foreground-muted)] hover:text-[var(--foreground)] hover:bg-[var(--surface)]'}`}
+                          className={`px-3 py-1.5 rounded-vj text-xs font-semibold transition-all whitespace-nowrap ${historyStatus === opt.value ? 'text-white border-transparent' : 'text-[var(--foreground-muted)] hover:text-[var(--foreground)] hover:bg-[var(--surface)]'}`}
                           style={
                             historyStatus === opt.value
                               ? { background: 'var(--primary)', borderColor: 'var(--primary)' }
@@ -1147,7 +1170,7 @@ export default function UserDashboardClient() {
                                 <Icon
                                   name="ExclamationTriangleIcon"
                                   size={28}
-                                  className="text-red-500"
+                                  className="text-vj-red"
                                 />
                               </div>
                               <div>
@@ -1160,7 +1183,7 @@ export default function UserDashboardClient() {
                               </div>
                               <button
                                 onClick={retryHistory}
-                                className="inline-flex items-center gap-2 text-white font-semibold text-xs px-5 py-2.5 rounded-xl transition-all"
+                                className="inline-flex items-center gap-2 text-white font-semibold text-xs px-5 py-2.5 rounded-vj transition-all"
                                 style={{ background: 'var(--primary)' }}
                               >
                                 <Icon name="ArrowPathIcon" size={14} />
@@ -1193,7 +1216,7 @@ export default function UserDashboardClient() {
                                     const el = document.querySelector('form');
                                     el?.scrollIntoView({ behavior: 'smooth' });
                                   }}
-                                  className="inline-flex items-center gap-1.5 text-xs font-bold text-white px-4 py-2 rounded-xl transition-all hover:opacity-90 active:scale-95"
+                                  className="inline-flex items-center gap-1.5 text-xs font-bold text-white px-4 py-2 rounded-vj transition-all hover:opacity-90 active:scale-98"
                                   style={{ background: 'var(--primary)' }}
                                 >
                                   <Icon name="PlusIcon" size={13} />
@@ -1217,9 +1240,9 @@ export default function UserDashboardClient() {
                             </td>
                             <td className="px-4 py-2.5">
                               <div className="flex items-center gap-2">
-                                <div className="h-6 px-1.5 bg-gradient-red rounded-lg flex items-center justify-center shrink-0">
+                                <div className="h-6 px-1.5 bg-gradient-red rounded-vj flex items-center justify-center shrink-0">
                                   <img
-                                    src="/logo-internal.svg"
+                                    src="/images/vj-logo.svg"
                                     alt="Vietjet Air"
                                     className="h-3 w-auto brightness-0 invert"
                                   />
@@ -1293,7 +1316,7 @@ export default function UserDashboardClient() {
                             setHistoryPageSize(Number(e.target.value));
                             setHistoryPage(1);
                           }}
-                          className="text-xs font-semibold border border-[var(--border)] rounded-lg px-2 py-1 bg-[var(--surface)] text-[var(--foreground)] focus:outline-none cursor-pointer"
+                          className="text-xs font-semibold border border-[var(--border)] rounded-vj px-2 py-1 bg-[var(--surface)] text-[var(--foreground)] focus:outline-none cursor-pointer"
                         >
                           <option value={10}>10</option>
                           <option value={25}>25</option>
@@ -1357,7 +1380,7 @@ export default function UserDashboardClient() {
                           <h2 className="font-bold text-base text-[var(--vj-navy)]">
                             Yêu cầu hoàn tiền
                           </h2>
-                          <span className="px-2 py-0.5 rounded-full bg-emerald-100/10 text-emerald-700 text-2xs font-bold">
+                          <span className="px-2 py-0.5 rounded-full bg-vj-pay-green text-vj-pay-green text-2xs font-bold">
                             Giao diện mới
                           </span>
                         </div>
@@ -1375,11 +1398,11 @@ export default function UserDashboardClient() {
                     />
 
                     {!refundFeatureEnabled && (
-                      <div className="mb-4 bg-red-50 border border-red-200 rounded-xl px-4 py-3 flex items-start gap-3">
+                      <div className="mb-4 bg-red-50 border border-red-200 rounded-vj px-4 py-3 flex items-start gap-3">
                         <Icon
                           name="LockClosedIcon"
                           size={16}
-                          className="text-red-500 mt-0.5 flex-shrink-0"
+                          className="text-vj-red mt-0.5 flex-shrink-0"
                         />
                         <p className="text-xs text-red-700 leading-relaxed">
                           Tính năng yêu cầu hoàn tiền đang tạm khoá. Vui lòng liên hệ hotline hoặc
@@ -1388,7 +1411,7 @@ export default function UserDashboardClient() {
                       </div>
                     )}
                     {refundFeatureEnabled && refundAwaitingReview && (
-                      <div className="mb-4 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 flex items-start gap-3">
+                      <div className="mb-4 bg-amber-50 border border-amber-200 rounded-vj px-4 py-3 flex items-start gap-3">
                         <Icon
                           name="ClockIcon"
                           size={16}
@@ -1424,7 +1447,7 @@ export default function UserDashboardClient() {
                             loadRefundRequests();
                             setRefundAwaitingReview(false);
                           }}
-                          className="inline-flex items-center gap-2 text-white font-bold px-6 py-2.5 rounded-xl text-sm transition-all hover:opacity-90 bg-[var(--primary)]"
+                          className="inline-flex items-center gap-2 text-white font-bold px-6 py-2.5 rounded-vj text-sm transition-all hover:opacity-90 bg-[var(--primary)]"
                         >
                           <Icon name="ArrowPathIcon" size={15} />
                           Tải lại trạng thái
@@ -1486,7 +1509,7 @@ export default function UserDashboardClient() {
                             className="block text-xs font-bold uppercase tracking-wider mb-1.5"
                             style={{ color: 'var(--vj-navy)' }}
                           >
-                            Mã đặt chỗ <span className="text-red-500">*</span>
+                            Mã đặt chỗ <span className="text-vj-red">*</span>
                           </label>
                           <div className="relative">
                             <Icon
@@ -1500,7 +1523,7 @@ export default function UserDashboardClient() {
                               onChange={(e) => setRefundBookingId(e.target.value.toUpperCase())}
                               placeholder="VD: VJ2B4K9"
                               required
-                              className="w-full pl-9 pr-4 py-2.5 bg-[var(--surface-2)] border border-[var(--border)] rounded-xl text-sm text-[var(--foreground)] placeholder-[var(--foreground-subtle)] focus:outline-none transition-all"
+                              className="w-full pl-9 pr-4 py-2.5 bg-[var(--surface-2)] border border-[var(--border)] rounded-vj text-sm text-[var(--foreground)] placeholder-[var(--foreground-subtle)] focus:outline-none transition-all"
                               onFocus={(e) => {
                                 e.target.style.borderColor = 'var(--primary)';
                                 e.target.style.boxShadow =
@@ -1518,7 +1541,7 @@ export default function UserDashboardClient() {
                               className="block text-xs font-bold uppercase tracking-wider mb-1.5"
                               style={{ color: 'var(--vj-navy)' }}
                             >
-                              Số tiền hoàn <span className="text-red-500">*</span>
+                              Số tiền hoàn <span className="text-vj-red">*</span>
                             </label>
                             <div className="relative">
                               <Icon
@@ -1537,7 +1560,7 @@ export default function UserDashboardClient() {
                                 }}
                                 placeholder="VD: 1.250.000"
                                 required
-                                className="w-full pl-9 pr-14 py-2.5 bg-[var(--surface-2)] border border-[var(--border)] rounded-xl text-sm text-[var(--foreground)] placeholder-[var(--foreground-subtle)] focus:outline-none transition-all"
+                                className="w-full pl-9 pr-14 py-2.5 bg-[var(--surface-2)] border border-[var(--border)] rounded-vj text-sm text-[var(--foreground)] placeholder-[var(--foreground-subtle)] focus:outline-none transition-all"
                               />
                               <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[var(--foreground-muted)]">
                                 VND
@@ -1550,9 +1573,9 @@ export default function UserDashboardClient() {
                         </div>
 
                         {/* Bank account info section */}
-                        <div className="rounded-xl border border-[var(--border)] overflow-hidden">
+                        <div className="rounded-vj border border-[var(--border)] overflow-hidden">
                           <div className="flex items-center gap-2 px-4 py-3 bg-[var(--surface-2)] border-b border-[var(--border)]">
-                            <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-[rgb(var(--vj-red-rgb))]/10">
+                            <div className="flex h-6 w-6 items-center justify-center rounded-vj bg-[rgb(var(--vj-red-rgb))]/10">
                               <Icon
                                 name="CreditCardIcon"
                                 size={13}
@@ -1565,13 +1588,13 @@ export default function UserDashboardClient() {
                             >
                               Thông tin tài khoản ngân hàng nhận tiền
                             </span>
-                            <span className="text-red-500 text-xs font-bold">*</span>
+                            <span className="text-vj-red text-xs font-bold">*</span>
                           </div>
                           <div className="p-4 space-y-3">
                             {/* Bank name */}
                             <div>
                               <label className="block text-xs font-semibold text-[var(--foreground-muted)] mb-1.5">
-                                Tên ngân hàng <span className="text-red-500">*</span>
+                                Tên ngân hàng <span className="text-vj-red">*</span>
                               </label>
                               <div className="relative">
                                 <Icon
@@ -1585,7 +1608,7 @@ export default function UserDashboardClient() {
                                   onChange={(e) => setRefundBankName(e.target.value)}
                                   placeholder="VD: Vietcombank, Techcombank, MB Bank..."
                                   required
-                                  className="w-full pl-8 pr-4 py-2.5 bg-[var(--surface)] border border-[var(--border)] rounded-xl text-sm text-[var(--foreground)] placeholder-[var(--foreground-subtle)] focus:outline-none transition-all"
+                                  className="w-full pl-8 pr-4 py-2.5 bg-[var(--surface)] border border-[var(--border)] rounded-vj text-sm text-[var(--foreground)] placeholder-[var(--foreground-subtle)] focus:outline-none transition-all"
                                   onFocus={(e) => {
                                     e.target.style.borderColor = 'var(--primary)';
                                     e.target.style.boxShadow =
@@ -1601,7 +1624,7 @@ export default function UserDashboardClient() {
                             {/* Account number */}
                             <div>
                               <label className="block text-xs font-semibold text-[var(--foreground-muted)] mb-1.5">
-                                Số tài khoản <span className="text-red-500">*</span>
+                                Số tài khoản <span className="text-vj-red">*</span>
                               </label>
                               <div className="relative">
                                 <Icon
@@ -1617,7 +1640,7 @@ export default function UserDashboardClient() {
                                   }
                                   placeholder="Nhập số tài khoản ngân hàng"
                                   required
-                                  className="w-full pl-8 pr-4 py-2.5 bg-[var(--surface)] border border-[var(--border)] rounded-xl text-sm text-[var(--foreground)] placeholder-[var(--foreground-subtle)] focus:outline-none transition-all"
+                                  className="w-full pl-8 pr-4 py-2.5 bg-[var(--surface)] border border-[var(--border)] rounded-vj text-sm text-[var(--foreground)] placeholder-[var(--foreground-subtle)] focus:outline-none transition-all"
                                   onFocus={(e) => {
                                     e.target.style.borderColor = 'var(--primary)';
                                     e.target.style.boxShadow =
@@ -1633,7 +1656,7 @@ export default function UserDashboardClient() {
                             {/* Account holder */}
                             <div>
                               <label className="block text-xs font-semibold text-[var(--foreground-muted)] mb-1.5">
-                                Tên chủ tài khoản <span className="text-red-500">*</span>
+                                Tên chủ tài khoản <span className="text-vj-red">*</span>
                               </label>
                               <div className="relative">
                                 <Icon
@@ -1649,7 +1672,7 @@ export default function UserDashboardClient() {
                                   }
                                   placeholder="Nhập tên chủ tài khoản (in hoa)"
                                   required
-                                  className="w-full pl-8 pr-4 py-2.5 bg-[var(--surface)] border border-[var(--border)] rounded-xl text-sm text-[var(--foreground)] placeholder-[var(--foreground-subtle)] focus:outline-none transition-all"
+                                  className="w-full pl-8 pr-4 py-2.5 bg-[var(--surface)] border border-[var(--border)] rounded-vj text-sm text-[var(--foreground)] placeholder-[var(--foreground-subtle)] focus:outline-none transition-all"
                                   onFocus={(e) => {
                                     e.target.style.borderColor = 'var(--primary)';
                                     e.target.style.boxShadow =
@@ -1668,7 +1691,7 @@ export default function UserDashboardClient() {
                             {/* Contact phone */}
                             <div>
                               <label className="block text-xs font-semibold text-[var(--foreground-muted)] mb-1.5">
-                                Số điện thoại liên hệ <span className="text-red-500">*</span>
+                                Số điện thoại liên hệ <span className="text-vj-red">*</span>
                               </label>
                               <div className="relative">
                                 <Icon
@@ -1683,7 +1706,7 @@ export default function UserDashboardClient() {
                                   onChange={(e) => setRefundPhone(e.target.value)}
                                   placeholder="VD: 0912 345 678"
                                   required
-                                  className="w-full pl-8 pr-4 py-2.5 bg-[var(--surface)] border border-[var(--border)] rounded-xl text-sm text-[var(--foreground)] placeholder-[var(--foreground-subtle)] focus:outline-none transition-all"
+                                  className="w-full pl-8 pr-4 py-2.5 bg-[var(--surface)] border border-[var(--border)] rounded-vj text-sm text-[var(--foreground)] placeholder-[var(--foreground-subtle)] focus:outline-none transition-all"
                                   onFocus={(e) => {
                                     e.target.style.borderColor = 'var(--primary)';
                                     e.target.style.boxShadow =
@@ -1700,7 +1723,7 @@ export default function UserDashboardClient() {
                         </div>
 
                         {/* Notice */}
-                        <div className="bg-amber-50 border border-[rgb(var(--accent-rgb))]/30 rounded-xl px-4 py-3 flex items-start gap-3">
+                        <div className="bg-amber-50 border border-[rgb(var(--accent-rgb))]/30 rounded-vj px-4 py-3 flex items-start gap-3">
                           <Icon
                             name="InformationCircleIcon"
                             size={16}
@@ -1727,7 +1750,7 @@ export default function UserDashboardClient() {
                               !refundFeatureEnabled ||
                               refundSubmitting
                             }
-                            className="flex items-center gap-2 text-white font-bold px-6 py-2.5 rounded-xl transition-all text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="flex items-center gap-2 text-white font-bold px-6 py-2.5 rounded-vj transition-all text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                             style={{ background: 'var(--primary)' }}
                           >
                             {refundSubmitting ? (
@@ -1755,7 +1778,7 @@ export default function UserDashboardClient() {
                               </>
                             ) : (
                               <>
-                                <Icon name="PaperAirplaneIcon" size={15} />
+                                <Icon name="AirplaneIcon" size={15} />
                                 Gửi yêu cầu ngay
                               </>
                             )}
@@ -1771,7 +1794,7 @@ export default function UserDashboardClient() {
                               setRefundAccountHolder('');
                               setRefundPhone('');
                             }}
-                            className="px-6 py-2.5 border border-[var(--border)] font-semibold rounded-xl text-sm transition-all hover:bg-[var(--surface-2)] text-[var(--foreground-muted)]"
+                            className="px-6 py-2.5 border border-[var(--border)] font-semibold rounded-vj text-sm transition-all hover:bg-[var(--surface-2)] text-[var(--foreground-muted)]"
                           >
                             Xoá trắng
                           </button>
@@ -1818,12 +1841,12 @@ export default function UserDashboardClient() {
                         <Icon
                           name="ExclamationTriangleIcon"
                           size={14}
-                          className="text-red-500 flex-shrink-0"
+                          className="text-vj-red flex-shrink-0"
                         />
-                        <p className="text-xs text-red-600 flex-1">{refundError}</p>
+                        <p className="text-xs text-vj-red-dark flex-1">{refundError}</p>
                         <button
                           onClick={loadRefundRequests}
-                          className="text-xs font-semibold text-red-600 underline"
+                          className="text-xs font-semibold text-vj-red-dark underline"
                         >
                           Thử lại
                         </button>
@@ -1855,7 +1878,7 @@ export default function UserDashboardClient() {
                               const el = document.querySelector('form');
                               el?.scrollIntoView({ behavior: 'smooth' });
                             }}
-                            className="inline-flex items-center gap-1.5 text-xs font-bold text-white px-4 py-2 rounded-xl transition-all hover:opacity-90 active:scale-95"
+                            className="inline-flex items-center gap-1.5 text-xs font-bold text-white px-4 py-2 rounded-vj transition-all hover:opacity-90 active:scale-98"
                             style={{ background: 'var(--primary)' }}
                           >
                             <Icon name="PlusIcon" size={13} />
@@ -1872,7 +1895,7 @@ export default function UserDashboardClient() {
                           >
                             <div className="flex items-start gap-3 min-w-0">
                               <div
-                                className={`w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 mt-0.5 ${req.status === 'approved' ? 'bg-green-50/10' : req.status === 'rejected' ? 'bg-red-50/10' : 'bg-amber-50/10'}`}
+                                className={`w-9 h-9 rounded-vj flex items-center justify-center flex-shrink-0 mt-0.5 ${req.status === 'approved' ? 'bg-green-50/10' : req.status === 'rejected' ? 'bg-red-50/10' : 'bg-amber-50/10'}`}
                               >
                                 <Icon
                                   name={
@@ -1887,7 +1910,7 @@ export default function UserDashboardClient() {
                                     req.status === 'approved'
                                       ? 'text-green-500'
                                       : req.status === 'rejected'
-                                        ? 'text-red-500'
+                                        ? 'text-vj-red'
                                         : 'text-amber-500'
                                   }
                                 />
@@ -1913,7 +1936,7 @@ export default function UserDashboardClient() {
                                 </div>
                                 {req.adminNote && (
                                   <div
-                                    className={`mt-1.5 text-xs px-2.5 py-1.5 rounded-lg ${req.status === 'approved' ? 'bg-green-50/10 text-green-700' : req.status === 'rejected' ? 'bg-red-50/10 text-red-700' : 'bg-amber-50/10 text-amber-700'}`}
+                                    className={`mt-1.5 text-xs px-2.5 py-1.5 rounded-vj ${req.status === 'approved' ? 'bg-green-50/10 text-green-700' : req.status === 'rejected' ? 'bg-red-50/10 text-red-700' : 'bg-amber-50/10 text-amber-700'}`}
                                   >
                                     <span className="font-semibold">Hệ Thống: </span>
                                     {req.adminNote}

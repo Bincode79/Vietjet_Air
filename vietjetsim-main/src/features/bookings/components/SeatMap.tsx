@@ -102,7 +102,7 @@ export function SeatMap({
     if (seat.class === 'business') {
       return 'bg-amber-100/70 hover:bg-amber-200 text-amber-900 border border-amber-300';
     }
-    return 'bg-vj-surface-fare hover:bg-gray-100 text-vj-text border border-[var(--vj-field-line)]';
+    return 'bg-vj-surface-fare hover:bg-vj-pill text-vj-text border border-[var(--vj-field-line)]';
   };
 
   const formatPrice = (price: number) => {
@@ -112,7 +112,7 @@ export function SeatMap({
   return (
     <div className={`bg-white rounded-vj p-4 ${className}`}>
       {/* Legend — nhãn 14px/500, swatch 24×24 bo 2px (đo 13/11/2026) */}
-      <div className="flex flex-wrap gap-4 mb-6 pb-4 border-b border-gray-200">
+      <div className="flex flex-wrap gap-4 mb-6 pb-4 border-b border-vj-border-light">
         <div className="flex items-center gap-2">
           <div className="w-6 h-6 rounded border-2 border-[var(--vj-field-line)] bg-vj-surface-fare" />
           <span className="text-sm font-medium text-vj-text">Ghế tiêu chuẩn</span>
@@ -166,7 +166,7 @@ export function SeatMap({
             return (
               <div key={row} className="flex items-center mb-1">
                 {/* Row Number */}
-                <div className="w-8 text-center text-xs text-gray-500">{row}</div>
+                <div className="w-8 text-center text-xs text-vj-gray">{row}</div>
 
                 {/* Left Aisle Seats */}
                 {columns.slice(0, 3).map((col) => {
@@ -226,7 +226,7 @@ export function SeatMap({
                 })}
 
                 {/* Row Number */}
-                <div className="w-8 text-center text-xs text-gray-500">{row}</div>
+                <div className="w-8 text-center text-xs text-vj-gray">{row}</div>
               </div>
             );
           })}

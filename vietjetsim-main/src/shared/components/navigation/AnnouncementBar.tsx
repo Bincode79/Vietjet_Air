@@ -102,7 +102,7 @@ export default function AnnouncementBar() {
 
   // Nút điều hướng thông báo: 25×25px (đo được trên site thật), bo tròn.
   const controlClass =
-    'grid h-[25px] w-[25px] place-items-center rounded-full text-[var(--foreground-muted)] transition-colors hover:bg-gray-100 hover:text-[var(--foreground)] focus:outline-hidden focus:ring-1 focus:ring-gray-300';
+    'grid h-[25px] w-[25px] place-items-center rounded-full text-[var(--foreground-muted)] transition-colors hover:bg-vj-pill hover:text-[var(--foreground)] focus:outline-hidden focus:ring-1 focus:ring-gray-300';
 
   return (
     <div
@@ -112,7 +112,7 @@ export default function AnnouncementBar() {
       // container nội dung 1200px. Xem docs/qa/VIETJET_THAM_SO_GIAO_DIEN_2026-11-13.md §4.
       // Mobile: đo được 35px (đo lại trực tiếp site thật 13/11/2026, 390×844) —
       // hàng nội dung cao 26px, nên thanh không được cộng thêm `py-2` như desktop.
-      className="w-full min-h-[35px] lg:min-h-[50px] bg-vj-announce-bg text-[var(--foreground)] border-b border-gray-200 flex items-center"
+      className="w-full min-h-[35px] lg:min-h-[50px] bg-vj-announce-bg text-[var(--foreground)] border-b border-vj-border-light flex items-center"
     >
       <div className="mx-auto flex w-full max-w-[1200px] items-center gap-3.5 px-4 sm:px-6 py-0 lg:py-2 text-lg2 lg:text-lg2">
         {/* Icon chuông: 24×26px (đo được trên site thật). */}
@@ -144,7 +144,7 @@ export default function AnnouncementBar() {
           >
             <RiArrowLeftSLine aria-hidden="true" className="text-xl" />
           </button>
-          <span className="min-w-[28px] text-center text-xs font-semibold tabular-nums text-gray-500">
+          <span className="min-w-[28px] text-center text-xs font-semibold tabular-nums text-vj-gray">
             {index + 1}/{total}
           </span>
           <button

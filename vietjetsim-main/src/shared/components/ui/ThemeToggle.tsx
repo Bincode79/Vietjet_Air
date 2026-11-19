@@ -21,9 +21,9 @@ export function ThemeToggle() {
     <div className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-1 px-3 py-1.5 text-sm font-medium rounded-lg transition-all
-          bg-gray-100text-gray-700          hover:bg-gray-200:bg-gray-700
-          border border-gray-200"
+        className="flex items-center gap-1 px-3 py-1.5 text-sm font-medium rounded-vj transition-all
+          bg-vj-pilltext-vj-text-dim          hover:bg-vj-surface-3:bg-gray-700
+          border border-vj-border-light"
         aria-label="Đổi giao diện"
       >
         <IconComponent className="w-4 h-4" />
@@ -33,7 +33,7 @@ export function ThemeToggle() {
       {isOpen && (
         <>
           <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />
-          <div className="absolute right-0 mt-2 w-40 py-2 bg-white rounded-vj shadow-lg border border-gray-200 z-50">
+          <div className="absolute right-0 mt-2 w-40 py-2 bg-white rounded-vj shadow-vj-lg border border-vj-border-light z-50">
             {options.map((option) => {
               const OptionIcon = option.icon;
               return (
@@ -46,8 +46,8 @@ export function ThemeToggle() {
                   className={`w-full flex items-center gap-3 px-4 py-2 text-sm transition-colors
                     ${
                       theme === option.value
-                        ? 'bg-blue-50/30 text-blue-600'
-                        : 'text-gray-700hover:bg-gray-50:bg-gray-800'
+                        ? 'bg-blue-50/30 text-vj-blue'
+                        : 'text-vj-text-dimhover:bg-vj-surface-2:bg-gray-800'
                     }`}
                 >
                   <OptionIcon className="w-4 h-4" />

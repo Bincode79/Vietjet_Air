@@ -38,7 +38,7 @@ export default function PetServiceDrawer({
       {/* Drawer content */}
       <div className="relative w-full max-w-lg bg-white h-full shadow-2xl flex flex-col z-10 animate-slideInRight">
         {/* Header - Red bar with Vietjet curve top-right (Screenshot 2) */}
-        <div className="relative bg-primary-dark text-white px-4 py-3 flex items-center justify-between shadow-md overflow-hidden">
+        <div className="relative bg-primary-dark text-white px-4 py-3 flex items-center justify-between shadow-vj-md overflow-hidden">
           <div className="w-8 shrink-0" />
           <h2 className="font-koho font-bold tracking-wide text-base sm:text-lg uppercase text-white text-center">
             MANG THEO THÚ CƯNG
@@ -46,7 +46,7 @@ export default function PetServiceDrawer({
           <div className="relative z-10">
             <button
               onClick={onClose}
-              className="text-gray-900 bg-white/90 hover:bg-white p-1 rounded-full transition-colors flex items-center justify-center h-7 w-7 cursor-pointer"
+              className="text-vj-text bg-white/90 hover:bg-white p-1 rounded-full transition-colors flex items-center justify-center h-7 w-7 cursor-pointer"
               aria-label="Đóng"
             >
               <RiCloseLine size={20} />
@@ -66,14 +66,14 @@ export default function PetServiceDrawer({
         </div>
 
         {/* Legs tabs */}
-        <div className="flex border-b border-gray-200 bg-white">
+        <div className="flex border-b border-vj-border-light bg-white">
           <button
             type="button"
             onClick={() => setActiveLeg('outbound')}
             className={`flex-1 py-2.5 text-center text-xs font-bold transition-all border-b-2 ${
               activeLeg === 'outbound'
                 ? 'border-primary-dark text-primary-dark'
-                : 'border-transparent text-gray-500 hover:text-gray-800'
+                : 'border-transparent text-vj-gray hover:text-vj-text-strong'
             }`}
           >
             Chuyến đi
@@ -85,7 +85,7 @@ export default function PetServiceDrawer({
               className={`flex-1 py-2.5 text-center text-xs font-bold transition-all border-b-2 ${
                 activeLeg === 'inbound'
                   ? 'border-primary-dark text-primary-dark'
-                  : 'border-transparent text-gray-500 hover:text-gray-800'
+                  : 'border-transparent text-vj-gray hover:text-vj-text-strong'
               }`}
             >
               Chuyến về
@@ -94,13 +94,13 @@ export default function PetServiceDrawer({
         </div>
 
         {/* Passenger card matching Screenshot 2 */}
-        <div className="p-4 bg-gray-50 border-b border-gray-200">
-          <div className="max-w-xs mx-auto overflow-hidden rounded-vj border border-red-200 shadow-sm bg-white text-center">
+        <div className="p-4 bg-vj-surface-2 border-b border-vj-border-light">
+          <div className="max-w-xs mx-auto overflow-hidden rounded-vj border border-red-200 shadow-vj-sm bg-white text-center">
             <div className="bg-primary-dark py-2 px-4 text-white">
               <div className="text-3xs uppercase tracking-wider text-white/80">Người lớn</div>
               <div className="text-sm font-black uppercase tracking-tight">{passengerName}</div>
             </div>
-            <div className="py-2.5 px-4 text-sm font-bold text-gray-900 font-koho">
+            <div className="py-2.5 px-4 text-sm font-bold text-vj-text font-koho">
               {activeLeg === 'outbound'
                 ? `${flight.from} - ${flight.to}`
                 : `${flight.to} - ${flight.from}`}
@@ -109,40 +109,40 @@ export default function PetServiceDrawer({
         </div>
 
         {/* Scrollable body */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-4 text-xs text-gray-700 leading-relaxed bg-slate-50">
+        <div className="flex-1 overflow-y-auto p-4 space-y-4 text-xs text-vj-text-dim leading-relaxed bg-slate-50">
           {/* Banner "THÚ CƯNG ƠI, BAY THÔI!" matching Screenshot 2 */}
-          <div className="rounded-vj overflow-hidden bg-gradient-to-r from-amber-100 via-orange-100 to-sky-100 border border-amber-300 p-4 text-center shadow-sm relative">
+          <div className="rounded-vj overflow-hidden bg-gradient-to-r from-amber-100 via-orange-100 to-sky-100 border border-amber-300 p-4 text-center shadow-vj-sm relative">
             <div className="relative z-10">
-              <h3 className="text-base font-bold text-red-600 tracking-wide mb-2 uppercase flex items-center justify-center gap-1.5 font-koho drop-shadow-2xs">
+              <h3 className="text-base font-bold text-vj-red-dark tracking-wide mb-2 uppercase flex items-center justify-center gap-1.5 font-koho drop-shadow-2xs">
                 <span>THÚ CƯNG ƠI, BAY THÔI!</span>
-                <RiHeartFill className="text-red-500 text-sm" />
+                <RiHeartFill className="text-vj-red text-sm" />
               </h3>
 
               {/* 3 airplane window frames with pets */}
               <div className="flex justify-center items-center gap-3 py-2">
-                <div className="w-16 h-20 rounded-full border-4 border-amber-200/90 bg-white/90 shadow-md flex flex-col items-center justify-center p-1 overflow-hidden relative">
+                <div className="w-16 h-20 rounded-full border-4 border-amber-200/90 bg-white/90 shadow-vj-md flex flex-col items-center justify-center p-1 overflow-hidden relative">
                   <PetTravelIcon size={30} />
-                  <span className="text-4xs text-gray-700 font-extrabold mt-0.5">Poodle</span>
+                  <span className="text-4xs text-vj-text-dim font-extrabold mt-0.5">Poodle</span>
                 </div>
-                <div className="w-16 h-20 rounded-full border-4 border-amber-200/90 bg-white/90 shadow-md flex flex-col items-center justify-center p-1 overflow-hidden relative">
+                <div className="w-16 h-20 rounded-full border-4 border-amber-200/90 bg-white/90 shadow-vj-md flex flex-col items-center justify-center p-1 overflow-hidden relative">
                   <PetTravelIcon size={30} />
-                  <span className="text-4xs text-gray-700 font-extrabold mt-0.5">Mèo cưng</span>
+                  <span className="text-4xs text-vj-text-dim font-extrabold mt-0.5">Mèo cưng</span>
                 </div>
-                <div className="w-16 h-20 rounded-full border-4 border-amber-200/90 bg-white/90 shadow-md flex flex-col items-center justify-center p-1 overflow-hidden relative">
+                <div className="w-16 h-20 rounded-full border-4 border-amber-200/90 bg-white/90 shadow-vj-md flex flex-col items-center justify-center p-1 overflow-hidden relative">
                   <PetTravelIcon size={30} />
-                  <span className="text-4xs text-gray-700 font-extrabold mt-0.5">Cún yêu</span>
+                  <span className="text-4xs text-vj-text-dim font-extrabold mt-0.5">Cún yêu</span>
                 </div>
               </div>
             </div>
           </div>
 
-          <p className="text-gray-700 text-xs leading-relaxed bg-white p-3 rounded-vj border border-gray-100 shadow-2xs">
+          <p className="text-vj-text-dim text-xs leading-relaxed bg-white p-3 rounded-vj border border-vj-border-light shadow-2xs">
             Vietjet cung cấp dịch vụ vận chuyển thú cưng (động vật cảnh) dành cho hành khách có nhu
             cầu đi du lịch cùng thú cưng (chó, mèo), cho phép bạn mang thú cưng lên khoang hành
             khách; mang đến sự an toàn; thoải mái cho bạn và thú cưng suốt trọn hành trình.{' '}
             <a
               href="#"
-              className="text-blue-600 font-bold underline"
+              className="text-vj-blue font-bold underline"
               onClick={(e) => e.preventDefault()}
             >
               Chi tiết xem tại đây
@@ -151,7 +151,7 @@ export default function PetServiceDrawer({
 
           {/* Section: Chọn gói dịch vụ matching Screenshot 2 */}
           <div>
-            <h4 className="text-xs sm:text-sm font-extrabold text-gray-900 mb-2.5">
+            <h4 className="text-xs sm:text-sm font-extrabold text-vj-text mb-2.5">
               Chọn gói dịch vụ
             </h4>
 
@@ -161,7 +161,7 @@ export default function PetServiceDrawer({
               className={`p-3.5 rounded-vj border bg-white shadow-2xs flex items-center justify-between cursor-pointer transition-all ${
                 isSelected
                   ? 'border-green-600 ring-1 ring-green-600'
-                  : 'border-gray-200 hover:border-red-300'
+                  : 'border-vj-border-light hover:border-red-300'
               }`}
             >
               <div className="flex items-center gap-3">
@@ -169,10 +169,10 @@ export default function PetServiceDrawer({
                   <PetTravelIcon size={28} />
                 </div>
                 <div>
-                  <h5 className="text-xs font-extrabold text-gray-900 leading-snug">
+                  <h5 className="text-xs font-extrabold text-vj-text leading-snug">
                     Mang theo thú cưng
                   </h5>
-                  <div className="text-xs sm:text-sm font-black text-red-600 italic mt-1 font-koho">
+                  <div className="text-xs sm:text-sm font-black text-vj-red-dark italic mt-1 font-koho">
                     4.000.000 VND
                   </div>
                 </div>
@@ -197,7 +197,7 @@ export default function PetServiceDrawer({
         </div>
 
         {/* Footer Red Bar matching Screenshot 2 */}
-        <div className="bg-primary-dark text-white p-3 flex items-center justify-between shadow-lg">
+        <div className="bg-primary-dark text-white p-3 flex items-center justify-between shadow-vj-lg">
           <div className="flex items-center gap-2.5">
             <div className="w-9 h-9 rounded-vj bg-accent flex items-center justify-center shrink-0 shadow-xs p-1">
               <PetTravelIcon size={24} />
@@ -215,7 +215,7 @@ export default function PetServiceDrawer({
             aria-label="Đóng"
             type="button"
             onClick={onClose}
-            className="vj-cta font-black px-6 py-2.5 rounded-vj text-xs sm:text-sm shadow transition-all active:scale-95 cursor-pointer italic"
+            className="vj-cta font-black px-6 py-2.5 rounded-vj text-xs sm:text-sm shadow transition-all active:scale-98 cursor-pointer italic"
           >
             Xác nhận
           </button>

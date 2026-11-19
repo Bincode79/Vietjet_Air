@@ -45,7 +45,7 @@ function LegButton({
       title={disabled ? 'Hãy chọn chuyến đi trước' : undefined}
       className={`flex-1 min-w-0 flex items-center gap-2 px-3 py-2 text-left transition-all ${
         active
-          ? 'bg-vjred text-white shadow-sm'
+          ? 'bg-vjred text-white shadow-vj-sm'
           : disabled
             ? 'bg-white text-vjdark/40 cursor-not-allowed'
             : info.selected
@@ -94,7 +94,7 @@ export default function TripLegTabs({ active, outbound, inbound, onChange }: Tri
   return (
     <div className="mt-3 px-1">
       <div
-        className="flex items-stretch overflow-hidden rounded-vj border border-black/10 bg-white shadow-sm"
+        className="flex items-stretch overflow-hidden rounded-vj border border-black/10 bg-white shadow-vj-sm"
         role="tablist"
         aria-label="Chặng bay"
       >

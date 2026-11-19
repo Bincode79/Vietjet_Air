@@ -294,6 +294,7 @@ const OPERATING_TABLES_SQL = `
   UNION ALL SELECT 'booking_seat_changes=' || count(*) FROM booking_seat_changes
   UNION ALL SELECT 'email_log=' || count(*) FROM email_log
   UNION ALL SELECT 'payments=' || count(*) FROM payments
+  UNION ALL SELECT 'movi_credit_applications=' || count(*) FROM movi_credit_applications
   ORDER BY 1
 `;
 
@@ -460,6 +461,24 @@ function seedOperatingRows() {
     WHERE g.payment_id IS NULL
       AND g.booking_id IN (SELECT b.id FROM bookings b JOIN user_profiles u ON u.id = b.user_id
                              WHERE u.email = 'migration-canary@vietjetsim.invalid');
+
+    -- Migration 055: hồ sơ tín dụng MOVI. Bảng này mang dữ liệu khách hàng
+    -- (họ tên, ngày sinh, CCCD, kỳ hạn), nên phải được đo ở
+    -- OPERATING_TABLES_SQL — và một bảng luôn rỗng thì phép đo không đo được
+    -- gì. Canary này đồng thời chứng minh: bảng tồn tại, UNIQUE
+    -- (booking_id) chạy, CHECK status chấp nhận 'submitted', và FK tới
+    -- bookings/user_profiles giữ được.
+    INSERT INTO movi_credit_applications
+      (booking_id, user_id, full_name, birth_date, national_id, phone,
+       tenor_months, amount, status)
+    SELECT b.id, u.id, 'CANARY', '1990-01-01', '001099000001', '0900000777',
+           3, 1000, 'submitted'
+    FROM bookings b JOIN user_profiles u ON u.id = b.user_id
+    WHERE u.email = 'migration-canary@vietjetsim.invalid'
+      AND b.leg_role = 'outbound'
+      AND NOT EXISTS (
+        SELECT 1 FROM movi_credit_applications m WHERE m.booking_id = b.id
+      );
   `);
 }
 /** The canary must survive every re-apply: an empty table means a file dropped it. */

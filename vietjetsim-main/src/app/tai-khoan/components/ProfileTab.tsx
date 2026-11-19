@@ -263,7 +263,7 @@ export default function ProfileTab({ user }: { user: User }) {
   };
 
   const inputBaseClass =
-    'w-full px-4 py-3 bg-[var(--surface-2)] border border-[var(--border)] rounded-xl text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[rgb(var(--primary-rgb))]/20 focus:border-[var(--primary)]';
+    'w-full px-4 py-3 bg-[var(--surface-2)] border border-[var(--border)] rounded-vj text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[rgb(var(--primary-rgb))]/20 focus:border-[var(--primary)]';
   const inputDisabledClass =
     'bg-[var(--surface-2)] text-[var(--foreground-muted)] cursor-not-allowed';
   const inputErrorClass = 'border-[var(--primary)] bg-red-50/10';
@@ -312,7 +312,7 @@ export default function ProfileTab({ user }: { user: User }) {
               </div>
               <label
                 htmlFor="avatar-upload"
-                className="absolute bottom-0 right-0 w-10 h-10 bg-[var(--primary)] rounded-full flex items-center justify-center cursor-pointer hover:bg-[var(--primary-dark)] transition-colors shadow-lg"
+                className="absolute bottom-0 right-0 w-10 h-10 bg-[var(--primary)] rounded-full flex items-center justify-center cursor-pointer hover:bg-[var(--primary-dark)] transition-colors shadow-vj-lg"
               >
                 <Icon name="CameraIcon" size={18} className="text-white" />
                 <input
@@ -458,7 +458,7 @@ export default function ProfileTab({ user }: { user: User }) {
                 <button
                   type="submit"
                   disabled={isSaving || isLoading}
-                  className="flex items-center gap-2 px-6 py-2.5 bg-[var(--primary)] text-white rounded-xl font-semibold text-sm font-[KoHo,sans-serif] hover:bg-[var(--primary-dark)] transition-all duration-200 shadow-md hover:shadow-lg active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex items-center gap-2 px-6 py-2.5 bg-[var(--primary)] text-white rounded-vj font-semibold text-sm font-[KoHo,sans-serif] hover:bg-[var(--primary-dark)] transition-all duration-200 shadow-vj-md hover:shadow-vj-lg active:scale-98 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isSaving ? (
                     <>
@@ -488,7 +488,7 @@ export default function ProfileTab({ user }: { user: User }) {
           {!showPasswordForm && (
             <button
               onClick={() => setShowPasswordForm(true)}
-              className="flex items-center gap-2 px-4 py-2 bg-[var(--vj-navy)] text-white rounded-lg text-sm font-semibold font-[KoHo,sans-serif] hover:bg-[var(--vj-navy-2)] transition-all duration-200 active:scale-95"
+              className="flex items-center gap-2 px-4 py-2 bg-[var(--vj-navy)] text-white rounded-vj text-sm font-semibold font-[KoHo,sans-serif] hover:bg-[var(--vj-navy-2)] transition-all duration-200 active:scale-98"
             >
               <Icon name="LockClosedIcon" size={16} />
               Thay đổi
@@ -547,7 +547,7 @@ export default function ProfileTab({ user }: { user: User }) {
                 <button
                   type="submit"
                   disabled={isChangingPassword}
-                  className="flex items-center gap-2 px-6 py-2.5 bg-[var(--primary)] text-white rounded-xl font-semibold text-sm font-[KoHo,sans-serif] hover:bg-[var(--primary-dark)] transition-all duration-200 shadow-md hover:shadow-lg active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex items-center gap-2 px-6 py-2.5 bg-[var(--primary)] text-white rounded-vj font-semibold text-sm font-[KoHo,sans-serif] hover:bg-[var(--primary-dark)] transition-all duration-200 shadow-vj-md hover:shadow-vj-lg active:scale-98 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isChangingPassword ? (
                     <>
@@ -569,7 +569,7 @@ export default function ProfileTab({ user }: { user: User }) {
                     setErrors({});
                   }}
                   disabled={isChangingPassword}
-                  className="px-6 py-2.5 bg-[var(--surface-2)] text-[var(--foreground-muted)] rounded-xl font-semibold text-sm font-[KoHo,sans-serif] hover:bg-[var(--surface-3)] transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-6 py-2.5 bg-[var(--surface-2)] text-[var(--foreground-muted)] rounded-vj font-semibold text-sm font-[KoHo,sans-serif] hover:bg-[var(--surface-3)] transition-all duration-200 active:scale-98 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Hủy
                 </button>

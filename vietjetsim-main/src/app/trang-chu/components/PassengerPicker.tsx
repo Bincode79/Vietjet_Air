@@ -171,7 +171,7 @@ export default function PassengerPicker({
               <span className="vj-booking-field__value truncate">{describePax(value)}</span>
             </div>
             <MdExpandMore
-              className={`shrink-0 text-gray-500 text-xl transition-transform duration-200 ${
+              className={`shrink-0 text-vj-gray text-xl transition-transform duration-200 ${
                 open ? 'rotate-180' : ''
               }`}
             />
@@ -304,7 +304,7 @@ export default function PassengerPicker({
               <button
                 type="button"
                 onClick={() => setOpen(false)}
-                className="rounded-vj bg-[var(--accent)] px-4 py-1.5 text-xs font-bold text-black shadow-sm hover:brightness-105 active:scale-95 transition-all cursor-pointer"
+                className="rounded-vj bg-[var(--accent)] px-4 py-1.5 text-xs font-bold text-black shadow-vj-sm hover:brightness-105 active:scale-98 transition-all cursor-pointer"
               >
                 Xác nhận
               </button>

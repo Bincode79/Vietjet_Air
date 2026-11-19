@@ -157,7 +157,7 @@ export default function HowItWorksSection() {
       </div>
 
       {/* How it works - 3 steps */}
-      <div className="py-10 border-t border-gray-100" style={{ background: '#F7F7F7' }}>
+      <div className="py-10 border-t border-vj-border-light" style={{ background: '#F7F7F7' }}>
         <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-8 reveal-up">
             <span className="vj-section-label">Đơn giản &amp; Nhanh chóng</span>
@@ -173,13 +173,13 @@ export default function HowItWorksSection() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 relative">
-            <div className="hidden sm:block absolute top-10 left-[calc(16.67%+1rem)] right-[calc(16.67%+1rem)] h-px bg-gray-200 z-0" />
+            <div className="hidden sm:block absolute top-10 left-[calc(16.67%+1rem)] right-[calc(16.67%+1rem)] h-px bg-vj-surface-3 z-0" />
 
             {HOW_STEPS?.map((step, i) => (
               <div
                 key={step?.num}
                 style={{ transitionDelay: `${i * 150}ms` }}
-                className="relative bg-white rounded-vj p-6 shadow-sm border border-gray-100 hover:shadow-lg hover:-translate-y-2 transition-all duration-300 reveal-up z-10 cursor-default"
+                className="relative bg-white rounded-vj p-6 shadow-vj-sm border border-vj-border-light hover:shadow-vj-lg hover:-translate-y-2 transition-all duration-300 reveal-up z-10 cursor-default"
                 onMouseEnter={(e) => (e.currentTarget.style.borderColor = 'rgba(236,32,41,0.2)')}
                 onMouseLeave={(e) => (e.currentTarget.style.borderColor = 'rgb(243,244,246)')}
               >
@@ -193,7 +193,7 @@ export default function HowItWorksSection() {
                   {step?.num}
                 </div>
                 <div
-                  className="w-12 h-12 rounded-vj flex items-center justify-center shadow-sm mb-4"
+                  className="w-12 h-12 rounded-vj flex items-center justify-center shadow-vj-sm mb-4"
                   style={{ background: step.color }}
                 >
                   <step.Icon className="w-6 h-6 text-white" />

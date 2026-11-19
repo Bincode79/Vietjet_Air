@@ -60,7 +60,7 @@ const fieldLabelClass = 'block text-base font-medium text-vj-currency-gray mb-1 
 
 /** Bề rộng/cao của radio và checkbox theo chuẩn form hiện đại Vietjet. */
 const RADIO_CLASS = 'w-[18px] h-[18px] cursor-pointer accent-primary shrink-0';
-const CHECKBOX_CLASS = 'w-[14px] h-[14px] rounded border-gray-300 accent-primary shrink-0';
+const CHECKBOX_CLASS = 'w-[14px] h-[14px] rounded border-vj-line accent-primary shrink-0';
 
 /**
  * Ô nhập kiểu Material-UI underline — cao 40px, gạch chân 1px `#D9D9D9`
@@ -214,16 +214,16 @@ export default function PassengerInfoStep({
         <h2 className="text-lg font-semibold text-vj-text mb-3 font-koho">Thông tin hành khách</h2>
 
         {/* SkyJoy Banner Card matching screenshot */}
-        <div className="bg-white rounded-vj border border-gray-200/90 p-3.5 sm:p-4 flex items-center justify-between mb-4 shadow-sm">
+        <div className="bg-white rounded-vj border border-vj-border-light/90 p-3.5 sm:p-4 flex items-center justify-between mb-4 shadow-vj-sm">
           <div className="flex items-center gap-3.5">
             <div className="w-11 h-11 rounded-full bg-amber-50 flex items-center justify-center shrink-0 border border-amber-200 p-1.5 shadow-2xs">
               <SkyJoyStarIcon size={26} />
             </div>
             <div>
-              <h3 className="font-bold text-xs sm:text-sm text-gray-900 leading-tight font-koho">
+              <h3 className="font-bold text-xs sm:text-sm text-vj-text leading-tight font-koho">
                 Tận hưởng các đặc quyền dành riêng cho thành viên
               </h3>
-              <p className="text-2xs sm:text-xs text-gray-500 mt-0.5 leading-normal">
+              <p className="text-2xs sm:text-xs text-vj-gray mt-0.5 leading-normal">
                 Dễ dàng quy đổi điểm để thanh toán qua SkyJoy và đặt vé nhanh hơn với quy trình
                 thanh toán thuận tiện.
               </p>
@@ -238,22 +238,22 @@ export default function PassengerInfoStep({
         </div>
 
         {/* Passenger Summary & Steppers: Chọn số lượng hành khách */}
-        <div className="bg-white rounded-vj border border-gray-200/90 p-4 mb-4 shadow-sm">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-3 border-b border-gray-100 gap-2">
+        <div className="bg-white rounded-vj border border-vj-border-light/90 p-4 mb-4 shadow-vj-sm">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-3 border-b border-vj-border-light gap-2">
             <div>
-              <div className="text-sm font-bold text-gray-900 font-koho flex items-center gap-2">
+              <div className="text-sm font-bold text-vj-text font-koho flex items-center gap-2">
                 <span>Chọn số lượng hành khách</span>
                 <span className="text-2xs bg-red-50 text-primary font-bold px-2 py-0.5 rounded border border-red-200">
                   Tổng cộng: {passengers.length} hành khách
                 </span>
               </div>
-              <div className="text-2xs text-gray-500 mt-0.5 font-medium">
+              <div className="text-2xs text-vj-gray mt-0.5 font-medium">
                 {adultsCount} Người lớn
                 {childrenCount > 0 ? `, ${childrenCount} Trẻ em` : ''}
                 {infantsCount > 0 ? `, ${infantsCount} Em bé` : ''}
               </div>
             </div>
-            <div className="text-2xs text-gray-400 font-medium">
+            <div className="text-2xs text-vj-muted font-medium">
               Tối đa 9 hành khách mỗi lần đặt chỗ
             </div>
           </div>
@@ -261,10 +261,10 @@ export default function PassengerInfoStep({
           {/* Steppers: Người lớn, Trẻ em, Em bé */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-3">
             {/* Người lớn */}
-            <div className="flex items-center justify-between p-3 rounded-vj border border-gray-200 bg-gray-50/50 hover:bg-gray-50 transition-colors">
+            <div className="flex items-center justify-between p-3 rounded-vj border border-vj-border-light bg-vj-surface-2/50 hover:bg-vj-surface-2 transition-colors">
               <div>
-                <div className="text-xs font-bold text-gray-900">Người lớn :</div>
-                <div className="text-2xs text-gray-500">12 tuổi trở lên</div>
+                <div className="text-xs font-bold text-vj-text">Người lớn :</div>
+                <div className="text-2xs text-vj-gray">12 tuổi trở lên</div>
               </div>
               <div className="flex items-center gap-2">
                 <button
@@ -272,11 +272,11 @@ export default function PassengerInfoStep({
                   onClick={() => removeLastOfType('adult')}
                   disabled={adultsCount <= 1}
                   aria-label="Giảm Người lớn"
-                  className="w-7 h-7 flex items-center justify-center rounded-full border border-gray-300 bg-white text-gray-700 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-all font-bold text-sm cursor-pointer"
+                  className="w-7 h-7 flex items-center justify-center rounded-full border border-vj-line bg-white text-vj-text-dim hover:bg-vj-pill disabled:opacity-30 disabled:cursor-not-allowed transition-all font-bold text-sm cursor-pointer"
                 >
                   -
                 </button>
-                <span className="w-5 text-center text-xs font-bold text-gray-900">
+                <span className="w-5 text-center text-xs font-bold text-vj-text">
                   {adultsCount}
                 </span>
                 <button
@@ -284,7 +284,7 @@ export default function PassengerInfoStep({
                   onClick={() => addPassenger('adult')}
                   disabled={passengers.length >= 9}
                   aria-label="+ Người lớn"
-                  className="w-7 h-7 flex items-center justify-center rounded-full border border-gray-300 bg-white text-gray-700 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-all font-bold text-sm cursor-pointer"
+                  className="w-7 h-7 flex items-center justify-center rounded-full border border-vj-line bg-white text-vj-text-dim hover:bg-vj-pill disabled:opacity-30 disabled:cursor-not-allowed transition-all font-bold text-sm cursor-pointer"
                 >
                   +
                 </button>
@@ -292,10 +292,10 @@ export default function PassengerInfoStep({
             </div>
 
             {/* Trẻ em */}
-            <div className="flex items-center justify-between p-3 rounded-vj border border-gray-200 bg-gray-50/50 hover:bg-gray-50 transition-colors">
+            <div className="flex items-center justify-between p-3 rounded-vj border border-vj-border-light bg-vj-surface-2/50 hover:bg-vj-surface-2 transition-colors">
               <div>
-                <div className="text-xs font-bold text-gray-900">Trẻ em :</div>
-                <div className="text-2xs text-gray-500">2 - 11 tuổi (75% giá vé)</div>
+                <div className="text-xs font-bold text-vj-text">Trẻ em :</div>
+                <div className="text-2xs text-vj-gray">2 - 11 tuổi (75% giá vé)</div>
               </div>
               <div className="flex items-center gap-2">
                 <button
@@ -303,11 +303,11 @@ export default function PassengerInfoStep({
                   onClick={() => removeLastOfType('child')}
                   disabled={childrenCount <= 0}
                   aria-label="Giảm Trẻ em"
-                  className="w-7 h-7 flex items-center justify-center rounded-full border border-gray-300 bg-white text-gray-700 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-all font-bold text-sm cursor-pointer"
+                  className="w-7 h-7 flex items-center justify-center rounded-full border border-vj-line bg-white text-vj-text-dim hover:bg-vj-pill disabled:opacity-30 disabled:cursor-not-allowed transition-all font-bold text-sm cursor-pointer"
                 >
                   -
                 </button>
-                <span className="w-5 text-center text-xs font-bold text-gray-900">
+                <span className="w-5 text-center text-xs font-bold text-vj-text">
                   {childrenCount}
                 </span>
                 <button
@@ -315,7 +315,7 @@ export default function PassengerInfoStep({
                   onClick={() => addPassenger('child')}
                   disabled={passengers.length >= 9 || childrenCount >= adultsCount * 2}
                   aria-label="+ Trẻ em"
-                  className="w-7 h-7 flex items-center justify-center rounded-full border border-gray-300 bg-white text-gray-700 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-all font-bold text-sm cursor-pointer"
+                  className="w-7 h-7 flex items-center justify-center rounded-full border border-vj-line bg-white text-vj-text-dim hover:bg-vj-pill disabled:opacity-30 disabled:cursor-not-allowed transition-all font-bold text-sm cursor-pointer"
                 >
                   +
                 </button>
@@ -323,10 +323,10 @@ export default function PassengerInfoStep({
             </div>
 
             {/* Em bé */}
-            <div className="flex items-center justify-between p-3 rounded-vj border border-gray-200 bg-gray-50/50 hover:bg-gray-50 transition-colors">
+            <div className="flex items-center justify-between p-3 rounded-vj border border-vj-border-light bg-vj-surface-2/50 hover:bg-vj-surface-2 transition-colors">
               <div>
-                <div className="text-xs font-bold text-gray-900">Em bé :</div>
-                <div className="text-2xs text-gray-500">Dưới 2 tuổi (Miễn phí vé)</div>
+                <div className="text-xs font-bold text-vj-text">Em bé :</div>
+                <div className="text-2xs text-vj-gray">Dưới 2 tuổi (Miễn phí vé)</div>
               </div>
               <div className="flex items-center gap-2">
                 <button
@@ -334,11 +334,11 @@ export default function PassengerInfoStep({
                   onClick={() => removeLastOfType('infant')}
                   disabled={infantsCount <= 0}
                   aria-label="Giảm Em bé"
-                  className="w-7 h-7 flex items-center justify-center rounded-full border border-gray-300 bg-white text-gray-700 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-all font-bold text-sm cursor-pointer"
+                  className="w-7 h-7 flex items-center justify-center rounded-full border border-vj-line bg-white text-vj-text-dim hover:bg-vj-pill disabled:opacity-30 disabled:cursor-not-allowed transition-all font-bold text-sm cursor-pointer"
                 >
                   -
                 </button>
-                <span className="w-5 text-center text-xs font-bold text-gray-900">
+                <span className="w-5 text-center text-xs font-bold text-vj-text">
                   {infantsCount}
                 </span>
                 <button
@@ -346,7 +346,7 @@ export default function PassengerInfoStep({
                   onClick={() => addPassenger('infant')}
                   disabled={passengers.length >= 9 || infantsCount >= adultsCount}
                   aria-label="+ Em bé"
-                  className="w-7 h-7 flex items-center justify-center rounded-full border border-gray-300 bg-white text-gray-700 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-all font-bold text-sm cursor-pointer"
+                  className="w-7 h-7 flex items-center justify-center rounded-full border border-vj-line bg-white text-vj-text-dim hover:bg-vj-pill disabled:opacity-30 disabled:cursor-not-allowed transition-all font-bold text-sm cursor-pointer"
                 >
                   +
                 </button>
@@ -365,7 +365,7 @@ export default function PassengerInfoStep({
             <div
               role="alert"
               data-testid="passenger-form-error"
-              className="p-3 rounded-vj bg-red-50 border border-red-200 text-xs font-semibold text-red-600 font-koho flex items-center gap-2"
+              className="p-3 rounded-vj bg-red-50 border border-red-200 text-xs font-semibold text-vj-red-dark font-koho flex items-center gap-2"
             >
               <span aria-hidden="true">⚠️</span>
               <span>{formError}</span>
@@ -382,13 +382,13 @@ export default function PassengerInfoStep({
             return (
               <div
                 key={i}
-                className="bg-white rounded-vj border border-gray-200/90 overflow-hidden shadow-sm"
+                className="bg-white rounded-vj border border-vj-border-light/90 overflow-hidden shadow-vj-sm"
               >
                 {/* Passenger Accordion Header */}
-                <div className="bg-gray-100 px-4 py-2.5 border-b border-gray-200/80 flex items-center justify-between cursor-pointer">
-                  <div className="flex items-center gap-2 text-xs font-bold text-gray-800">
+                <div className="bg-vj-pill px-4 py-2.5 border-b border-vj-border-light/80 flex items-center justify-between cursor-pointer">
+                  <div className="flex items-center gap-2 text-xs font-bold text-vj-text-strong">
                     <svg
-                      className="w-4 h-4 text-gray-500 shrink-0"
+                      className="w-4 h-4 text-vj-gray shrink-0"
                       viewBox="0 0 20 20"
                       fill="currentColor"
                     >
@@ -410,14 +410,14 @@ export default function PassengerInfoStep({
                           e.stopPropagation();
                           removePassenger(i);
                         }}
-                        className="text-2xs font-bold text-red-600 hover:text-red-700 hover:underline px-2 py-0.5 rounded transition-colors"
+                        className="text-2xs font-bold text-vj-red-dark hover:text-red-700 hover:underline px-2 py-0.5 rounded transition-colors"
                         title={`Xóa ${typeLabel} ${ordinal}`}
                         aria-label={`Xóa ${typeLabel} ${ordinal}`}
                       >
                         Xóa
                       </button>
                     )}
-                    <span className="text-xs text-gray-500 font-bold">▲</span>
+                    <span className="text-xs text-vj-gray font-bold">▲</span>
                   </div>
                 </div>
 
@@ -547,7 +547,7 @@ export default function PassengerInfoStep({
                         >
                           <span className="flex items-center gap-1 pr-2 text-base font-medium text-vj-text select-none shrink-0">
                             {getCountryDialCode(p.countryCode)}{' '}
-                            <span className="text-3xs text-gray-400">▾</span>
+                            <span className="text-3xs text-vj-muted">▾</span>
                           </span>
                           <input
                             id={`passenger-${i}-phone`}
@@ -578,7 +578,7 @@ export default function PassengerInfoStep({
                         {phoneTouched[i] && !/^0\d{8,9}$/.test(p.phone.replace(/\s/g, '')) && (
                           <p
                             id={`passenger-${i}-phone-error`}
-                            className="mt-1 text-xs2 font-medium text-red-600"
+                            className="mt-1 text-xs2 font-medium text-vj-red-dark"
                           >
                             Vui lòng nhập số điện thoại.
                           </p>
@@ -611,7 +611,7 @@ export default function PassengerInfoStep({
                         {emailTouched[i] && !/^\S+@\S+\.\S+$/.test(p.email) && (
                           <p
                             id={`passenger-${i}-email-error`}
-                            className="mt-1 text-xs2 font-medium text-red-600"
+                            className="mt-1 text-xs2 font-medium text-vj-red-dark"
                           >
                             Vui lòng nhập địa chỉ email của bạn.
                           </p>
@@ -687,8 +687,8 @@ export default function PassengerInfoStep({
                   )}
 
                   {/* Privacy note & Checkboxes inside passenger card */}
-                  <div className="mt-4 pt-3 border-t border-gray-100 text-xs font-koho">
-                    <div className="flex items-start gap-1.5 text-xs text-blue-600 leading-relaxed mb-2.5 font-medium">
+                  <div className="mt-4 pt-3 border-t border-vj-border-light text-xs font-koho">
+                    <div className="flex items-start gap-1.5 text-xs text-vj-blue leading-relaxed mb-2.5 font-medium">
                       <span className="font-bold text-xs leading-none">ℹ</span>
                       <span>
                         Dữ liệu cá nhân của Quý khách sẽ được Vietjet xử lý theo{' '}
@@ -700,7 +700,7 @@ export default function PassengerInfoStep({
                       </span>
                     </div>
                     <div className="space-y-2 pl-4">
-                      <label className="flex items-center gap-2 cursor-pointer text-xs text-gray-700 select-none font-koho">
+                      <label className="flex items-center gap-2 cursor-pointer text-xs text-vj-text-dim select-none font-koho">
                         <input
                           type="checkbox"
                           checked={consents.marketing}
@@ -711,7 +711,7 @@ export default function PassengerInfoStep({
                         />
                         <span>Gửi thông tin khuyến mãi, ưu đãi</span>
                       </label>
-                      <label className="flex items-center gap-2 cursor-pointer text-xs text-gray-700 select-none font-koho">
+                      <label className="flex items-center gap-2 cursor-pointer text-xs text-vj-text-dim select-none font-koho">
                         <input
                           type="checkbox"
                           checked={consents.survey}
@@ -728,8 +728,8 @@ export default function PassengerInfoStep({
           })}
 
           {/* Card: Lưu thông tin hành khách */}
-          <div className="bg-white rounded-vj border border-gray-200/90 p-3.5 shadow-sm">
-            <label className="flex items-center gap-2.5 cursor-pointer text-xs text-gray-800 select-none">
+          <div className="bg-white rounded-vj border border-vj-border-light/90 p-3.5 shadow-vj-sm">
+            <label className="flex items-center gap-2.5 cursor-pointer text-xs text-vj-text-strong select-none">
               <input
                 type="checkbox"
                 checked={consents.retainForFutureBooking}
@@ -743,8 +743,8 @@ export default function PassengerInfoStep({
           </div>
 
           {/* Card: Điều khoản và điều kiện */}
-          <div className="bg-white rounded-vj border border-gray-200/90 p-3.5 shadow-sm">
-            <label className="flex items-start gap-2.5 cursor-pointer text-xs text-gray-800 leading-relaxed select-none">
+          <div className="bg-white rounded-vj border border-vj-border-light/90 p-3.5 shadow-vj-sm">
+            <label className="flex items-start gap-2.5 cursor-pointer text-xs text-vj-text-strong leading-relaxed select-none">
               <input
                 id="passenger-policy-consent"
                 name="passenger-policy-consent"
@@ -757,16 +757,16 @@ export default function PassengerInfoStep({
               />
               <span>
                 Tôi đã đọc, hiểu và đồng ý với{' '}
-                <span className="text-blue-600 underline cursor-pointer">
+                <span className="text-vj-blue underline cursor-pointer">
                   Chính sách về quyền riêng tư
                 </span>
-                , <span className="text-blue-600 underline cursor-pointer">Điều lệ vận chuyển</span>
-                , <span className="text-blue-600 underline cursor-pointer">Điều kiện vé</span> và{' '}
-                <span className="text-blue-600 underline cursor-pointer">
+                , <span className="text-vj-blue underline cursor-pointer">Điều lệ vận chuyển</span>,{' '}
+                <span className="text-vj-blue underline cursor-pointer">Điều kiện vé</span> và{' '}
+                <span className="text-vj-blue underline cursor-pointer">
                   Quy định vật dụng bị cấm
                 </span>{' '}
                 mang lên máy bay và các điều kiện giao dịch chung tại website{' '}
-                <span className="text-blue-600 underline cursor-pointer">Vietjetair.com</span>
+                <span className="text-vj-blue underline cursor-pointer">Vietjetair.com</span>
               </span>
             </label>
           </div>

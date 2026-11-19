@@ -208,7 +208,7 @@ export default function FlightBookingResultsWrapper({
         {/* Băng trip: mobile cố định dưới header (full-bleed, pill "Tổng" bên
             trái + 4 bước bên phải); desktop nằm trong container 1200px bo góc
             16px như site thật. */}
-        <div className="vj-booking-strip fixed inset-x-0 top-12 z-[45] mx-auto flex w-full max-w-[1200px] flex-row items-center justify-between px-4.25 py-2.5 text-gray-950 lg:static lg:z-auto lg:rounded-2xl lg:px-6 lg:py-2.5">
+        <div className="vj-booking-strip fixed inset-x-0 top-12 z-[45] mx-auto flex w-full max-w-[1200px] flex-row items-center justify-between px-4.25 py-2.5 text-vj-dark lg:static lg:z-auto lg:rounded-2xl lg:px-6 lg:py-2.5">
           {/* Mobile pill: [Tổng 0 VND ▾] — đo 15/11/2026 (472×915):
               khung trắng `260×31px`, bo tròn `50px`, padding `0 14px 0 10px`,
               nhãn "Tổng" `14px/600` `#333333`, giá trị `14px/400` `#EC2029`
@@ -216,7 +216,7 @@ export default function FlightBookingResultsWrapper({
           <button
             type="button"
             onClick={() => setShowSummaryModal(true)}
-            className="vj-total-pill cursor-pointer active:scale-95 transition-transform"
+            className="vj-total-pill cursor-pointer active:scale-98 transition-transform"
             aria-label="Xem chi tiết tổng tiền đặt chỗ"
           >
             <span className="vj-total-pill-label">Tổng</span>
@@ -237,7 +237,7 @@ export default function FlightBookingResultsWrapper({
               }`}
               title="Chọn chuyến bay"
             >
-              <Icon name="PaperAirplaneIcon" size={16} className="rotate-45" />
+              <Icon name="AirplaneIcon" size={15} className="rotate-45" />
             </div>
             <div
               className={`vj-step-dot ${
@@ -360,7 +360,7 @@ export default function FlightBookingResultsWrapper({
               "Chi tiết" nằm ở x=842 nhờ `padding-right: 291.547px` của
               khối giữa — tức nó thẳng hàng với dòng "Tổng tiền", lệch
               phải ~73px, KHÔNG nằm giữa hai khối. */}
-          <div className="vj-total-bar hidden sm:block fixed bottom-0 left-0 right-0 z-[60] border-t border-gray-200 shadow-vj-up-sm">
+          <div className="vj-total-bar hidden sm:block fixed bottom-0 left-0 right-0 z-[60] border-t border-vj-border-light shadow-vj-up-sm">
             {/* Site thật: container 1200px (x=120), padding trong `10px`, lề phải
                 `20px` → cụm "Tổng tiền" tại x=769, nút "Đi tiếp" 127×39 tại x=1173. */}
             <div className="vj-total-bar-inner mx-auto max-w-[1200px] pl-2.5 pr-5">
@@ -387,7 +387,7 @@ export default function FlightBookingResultsWrapper({
                 type="button"
                 onClick={handleContinue}
                 disabled={!bookings.outbound}
-                className="vj-cta vj-cta--booking shrink-0 disabled:opacity-50 disabled:cursor-not-allowed transition-all active:scale-95 cursor-pointer"
+                className="vj-cta vj-cta--booking shrink-0 disabled:opacity-50 disabled:cursor-not-allowed transition-all active:scale-98 cursor-pointer"
               >
                 Đi tiếp
               </button>
@@ -405,7 +405,7 @@ export default function FlightBookingResultsWrapper({
               type="button"
               onClick={handleContinue}
               disabled={!bookings.outbound}
-              className="vj-cta vj-cta--booking pointer-events-auto h-[40px] w-[157px] min-w-[157px] max-w-[157px] disabled:opacity-50 disabled:cursor-not-allowed active:scale-95 transition-all cursor-pointer"
+              className="vj-cta vj-cta--booking pointer-events-auto h-[40px] w-[157px] min-w-[157px] max-w-[157px] disabled:opacity-50 disabled:cursor-not-allowed active:scale-98 transition-all cursor-pointer"
             >
               Đi tiếp
             </button>

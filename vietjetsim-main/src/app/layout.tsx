@@ -30,11 +30,11 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Vietjet Air | Bay là thích ngay! | Website chính thức',
     description: 'Bay cùng Vietjet với hàng ngàn ưu đãi hấp dẫn, giá vé ưu đãi',
-    images: ['/logo-internal.png'],
+    images: ['/images/brand/vietjet-logo-red.png'],
   },
   icons: {
     icon: [{ url: '/favicon.ico', type: 'image/x-icon' }],
-    apple: [{ url: '/logo-internal.png' }],
+    apple: [{ url: '/images/brand/vietjet-air-circle.jpg' }],
   },
 };
 
@@ -70,7 +70,7 @@ export default function RootLayout({
             ở ghi chú trên `<div>` bên dưới. */}
         <a
           href="#main-content"
-          className="vj-skip-link sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded-lg focus:bg-[var(--primary)] focus:px-4 focus:py-2 focus:font-bold focus:text-white"
+          className="vj-skip-link sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded-vj focus:bg-[var(--primary)] focus:px-4 focus:py-2 focus:font-bold focus:text-white"
         >
           Bỏ qua tới nội dung chính
         </a>

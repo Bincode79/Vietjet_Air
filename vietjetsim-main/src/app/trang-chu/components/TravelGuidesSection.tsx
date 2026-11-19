@@ -88,7 +88,7 @@ export default function TravelGuidesSection() {
             <a
               key={i}
               href="#"
-              className="group flex flex-col bg-white rounded-vj overflow-hidden border border-gray-100 hover:border-primary/30 hover:shadow-lg transition-all duration-300"
+              className="group flex flex-col bg-white rounded-vj overflow-hidden border border-vj-border-light hover:border-primary/30 hover:shadow-vj-lg transition-all duration-300"
             >
               <div className="relative aspect-[16/10] overflow-hidden">
                 <AppImage
@@ -108,7 +108,7 @@ export default function TravelGuidesSection() {
                 <h3 className="text-sm sm:text-base font-bold text-navy line-clamp-3 group-hover:text-primary transition-colors leading-snug mb-3 flex-1">
                   {guide.title}
                 </h3>
-                <div className="flex items-center gap-1.5 text-xs text-vj-gray pt-3 border-t border-gray-100">
+                <div className="flex items-center gap-1.5 text-xs text-vj-gray pt-3 border-t border-vj-border-light">
                   <FaCalendarAlt size={10} />
                   <span>{guide.date}</span>
                 </div>

@@ -182,21 +182,21 @@ export default function BulkPriceAdjustmentModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
-      <div className="bg-slate-900 border border-slate-700/80 rounded-2xl w-full max-w-4xl max-h-[92vh] flex flex-col shadow-2xl overflow-hidden">
+      <div className="bg-slate-900 border border-vj-border-light rounded-2xl w-full max-w-4xl max-h-[92vh] flex flex-col shadow-2xl overflow-hidden">
         {/* Header */}
-        <div className="flex items-center justify-between p-5 border-b border-white/10 bg-slate-950/60">
+        <div className="flex items-center justify-between p-5 border-b border-white/10 bg-slate-950">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500/20 to-orange-500/20 border border-amber-500/30 flex items-center justify-center text-amber-400">
+            <div className="w-10 h-10 rounded-vj bg-gradient-to-br from-amber-500/20 to-orange-500/20 border border-amber-500/30 flex items-center justify-center text-amber-400">
               <Icon name="CurrencyDollarIcon" size={20} />
             </div>
             <div>
               <div className="flex items-center gap-2">
                 <h2 className="text-lg font-bold text-white">Điều Chỉnh Giá Vé Hàng Loạt</h2>
-                <span className="text-2xs font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                <span className="text-2xs font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-vj-pay-green text-vj-pay-green border border-vj-pay-green">
                   Rẻ hơn Vietjet 200K
                 </span>
               </div>
-              <p className="text-xs text-slate-400 mt-0.5">
+              <p className="text-xs text-vj-text-muted mt-0.5">
                 Cập nhật giá vé theo chặng, khoảng ngày hoặc áp dụng chính sách chiết khấu toàn hệ
                 thống
               </p>
@@ -206,7 +206,7 @@ export default function BulkPriceAdjustmentModal({
             aria-label="Đóng"
             type="button"
             onClick={onClose}
-            className="p-2 text-slate-400 hover:text-white rounded-lg hover:bg-white/5 transition-all"
+            className="p-2 text-vj-text-muted hover:text-white rounded-vj hover:bg-white/5 transition-all"
           >
             <Icon name="XMarkIcon" size={20} />
           </button>
@@ -215,21 +215,21 @@ export default function BulkPriceAdjustmentModal({
         {/* Body (scrollable) */}
         <div className="flex-1 overflow-y-auto p-5 space-y-5">
           {/* 1. Bộ lọc phạm vi */}
-          <div className="bg-white/[0.02] border border-white/5 rounded-xl p-4 space-y-3">
-            <h3 className="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-2">
-              <Icon name="FunnelIcon" size={14} className="text-indigo-400" />
+          <div className="bg-white/[0.02] border border-white/5 rounded-vj p-4 space-y-3">
+            <h3 className="text-xs font-bold text-vj-text-muted uppercase tracking-wider flex items-center gap-2">
+              <Icon name="FunnelIcon" size={14} className="text-vj-blue" />
               1. Phạm Vi Áp Dụng (Bộ lọc)
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
               <div>
-                <label className="block text-xs text-slate-400 mb-1">Nơi đi (From)</label>
+                <label className="block text-xs text-vj-text-muted mb-1">Nơi đi (From)</label>
                 <select
                   value={fromCode}
                   onChange={(e) => {
                     setFromCode(e.target.value);
                     setPreviewSamples(null);
                   }}
-                  className="w-full bg-slate-800 border border-white/10 text-white text-xs rounded-lg px-3 py-2 outline-none focus:border-indigo-500"
+                  className="w-full bg-slate-800 border border-white/10 text-white text-xs rounded-vj px-3 py-2 outline-none focus:border-vj-blue"
                 >
                   <option value="all">Tất cả sân bay đi</option>
                   {AIRPORTS.map((a) => (
@@ -241,14 +241,14 @@ export default function BulkPriceAdjustmentModal({
               </div>
 
               <div>
-                <label className="block text-xs text-slate-400 mb-1">Nơi đến (To)</label>
+                <label className="block text-xs text-vj-text-muted mb-1">Nơi đến (To)</label>
                 <select
                   value={toCode}
                   onChange={(e) => {
                     setToCode(e.target.value);
                     setPreviewSamples(null);
                   }}
-                  className="w-full bg-slate-800 border border-white/10 text-white text-xs rounded-lg px-3 py-2 outline-none focus:border-indigo-500"
+                  className="w-full bg-slate-800 border border-white/10 text-white text-xs rounded-vj px-3 py-2 outline-none focus:border-vj-blue"
                 >
                   <option value="all">Tất cả sân bay đến</option>
                   {AIRPORTS.map((a) => (
@@ -260,7 +260,7 @@ export default function BulkPriceAdjustmentModal({
               </div>
 
               <div>
-                <label className="block text-xs text-slate-400 mb-1">Số hiệu chuyến bay</label>
+                <label className="block text-xs text-vj-text-muted mb-1">Số hiệu chuyến bay</label>
                 <input
                   type="text"
                   placeholder="Ví dụ: VJ121 hoặc để trống"
@@ -269,12 +269,12 @@ export default function BulkPriceAdjustmentModal({
                     setFlightNo(e.target.value.toUpperCase());
                     setPreviewSamples(null);
                   }}
-                  className="w-full bg-slate-800 border border-white/10 text-white text-xs rounded-lg px-3 py-2 outline-none focus:border-indigo-500 placeholder:text-slate-600 uppercase"
+                  className="w-full bg-slate-800 border border-white/10 text-white text-xs rounded-vj px-3 py-2 outline-none focus:border-vj-blue placeholder:text-vj-text-muted uppercase"
                 />
               </div>
 
               <div>
-                <label className="block text-xs text-slate-400 mb-1">Từ ngày khởi hành</label>
+                <label className="block text-xs text-vj-text-muted mb-1">Từ ngày khởi hành</label>
                 <input
                   type="date"
                   value={fromDate}
@@ -282,12 +282,12 @@ export default function BulkPriceAdjustmentModal({
                     setFromDate(e.target.value);
                     setPreviewSamples(null);
                   }}
-                  className="w-full bg-slate-800 border border-white/10 text-white text-xs rounded-lg px-3 py-2 outline-none focus:border-indigo-500"
+                  className="w-full bg-slate-800 border border-white/10 text-white text-xs rounded-vj px-3 py-2 outline-none focus:border-vj-blue"
                 />
               </div>
 
               <div>
-                <label className="block text-xs text-slate-400 mb-1">Đến ngày khởi hành</label>
+                <label className="block text-xs text-vj-text-muted mb-1">Đến ngày khởi hành</label>
                 <input
                   type="date"
                   value={toDate}
@@ -295,19 +295,19 @@ export default function BulkPriceAdjustmentModal({
                     setToDate(e.target.value);
                     setPreviewSamples(null);
                   }}
-                  className="w-full bg-slate-800 border border-white/10 text-white text-xs rounded-lg px-3 py-2 outline-none focus:border-indigo-500"
+                  className="w-full bg-slate-800 border border-white/10 text-white text-xs rounded-vj px-3 py-2 outline-none focus:border-vj-blue"
                 />
               </div>
 
               <div>
-                <label className="block text-xs text-slate-400 mb-1">Hạng vé áp dụng</label>
+                <label className="block text-xs text-vj-text-muted mb-1">Hạng vé áp dụng</label>
                 <select
                   value={seatClass}
                   onChange={(e) => {
                     setSeatClass(e.target.value as 'all' | 'economy' | 'business');
                     setPreviewSamples(null);
                   }}
-                  className="w-full bg-slate-800 border border-white/10 text-white text-xs rounded-lg px-3 py-2 outline-none focus:border-indigo-500"
+                  className="w-full bg-slate-800 border border-white/10 text-white text-xs rounded-vj px-3 py-2 outline-none focus:border-vj-blue"
                 >
                   <option value="all">Tất cả hạng vé</option>
                   <option value="economy">Chỉ Phổ thông (Economy)</option>
@@ -318,8 +318,8 @@ export default function BulkPriceAdjustmentModal({
           </div>
 
           {/* 2. Phương thức điều chỉnh giá */}
-          <div className="bg-white/[0.02] border border-white/5 rounded-xl p-4 space-y-4">
-            <h3 className="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-2">
+          <div className="bg-white/[0.02] border border-white/5 rounded-vj p-4 space-y-4">
+            <h3 className="text-xs font-bold text-vj-text-muted uppercase tracking-wider flex items-center gap-2">
               <Icon name="AdjustmentsHorizontalIcon" size={14} className="text-amber-400" />
               2. Phương Thức Điều Chỉnh Giá
             </h3>
@@ -331,10 +331,10 @@ export default function BulkPriceAdjustmentModal({
                   key={opt.value}
                   type="button"
                   onClick={() => handleActionChange(opt.value)}
-                  className={`p-3 rounded-xl border text-left transition-all ${
+                  className={`p-3 rounded-vj border text-left transition-all ${
                     action === opt.value
                       ? 'bg-amber-500/10 border-amber-500/50 text-white ring-1 ring-amber-500/30'
-                      : 'bg-slate-800/60 border-white/5 text-slate-300 hover:border-white/10 hover:bg-slate-800'
+                      : 'bg-slate-800 border-white/5 text-vj-text-muted hover:border-white/10 hover:bg-slate-800'
                   }`}
                 >
                   <div className="flex items-center justify-between">
@@ -342,25 +342,25 @@ export default function BulkPriceAdjustmentModal({
                     <span
                       className={`text-2xs font-bold px-1.5 py-0.5 rounded ${
                         action === opt.value
-                          ? 'bg-amber-400 text-slate-950'
-                          : 'bg-white/10 text-slate-400'
+                          ? 'bg-amber-400 text-vj-text-muted'
+                          : 'bg-white/10 text-vj-text-muted'
                       }`}
                     >
                       {opt.badge}
                     </span>
                   </div>
-                  <p className="text-xs2 text-slate-400 mt-1 line-clamp-2">{opt.desc}</p>
+                  <p className="text-xs2 text-vj-text-muted mt-1 line-clamp-2">{opt.desc}</p>
                 </button>
               ))}
             </div>
 
             {/* Amount Input */}
-            <div className="bg-slate-950/60 border border-white/5 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="bg-slate-950 border border-white/5 rounded-vj p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div>
-                <span className="text-xs font-bold text-slate-300">
+                <span className="text-xs font-bold text-vj-text-muted">
                   {action.includes('percent') ? 'Tỷ lệ điều chỉnh (%)' : 'Số tiền điều chỉnh (VND)'}
                 </span>
-                <p className="text-xs2 text-slate-500 mt-0.5">
+                <p className="text-xs2 text-vj-text-muted mt-0.5">
                   {action === 'discount_fixed'
                     ? 'Nhập 200.000 để tự động rẻ hơn giá vé Vietjet 200K'
                     : action.includes('percent')
@@ -379,56 +379,56 @@ export default function BulkPriceAdjustmentModal({
                     setAmount(Number(e.target.value));
                     setPreviewSamples(null);
                   }}
-                  className="w-40 bg-slate-800 border border-amber-500/30 text-amber-300 font-bold text-sm rounded-lg px-3 py-2 text-right outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500/50"
+                  className="w-40 bg-slate-800 border border-amber-500/30 text-amber-300 font-bold text-sm rounded-vj px-3 py-2 text-right outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500/50"
                 />
-                <span className="text-xs text-slate-400 font-bold min-w-[32px]">
+                <span className="text-xs text-vj-text-muted font-bold min-w-[32px]">
                   {action.includes('percent') ? '%' : 'VND'}
                 </span>
               </div>
             </div>
 
             {/* Note & Policy */}
-            <div className="text-xs2 text-slate-400 flex items-start gap-2 bg-indigo-500/5 border border-indigo-500/10 rounded-lg p-2.5">
+            <div className="text-xs2 text-vj-text-muted flex items-start gap-2 bg-vj-blue border border-vj-blue rounded-vj p-2.5">
               <Icon
                 name="InformationCircleIcon"
                 size={15}
-                className="text-indigo-400 shrink-0 mt-0.5"
+                className="text-vj-blue shrink-0 mt-0.5"
               />
               <div>
-                <span className="font-semibold text-slate-300">Quy tắc bảo toàn giá:</span> Giá vé
-                sau khi giảm luôn được đảm bảo không thấp hơn mức sàn tối thiểu{' '}
-                <span className="text-indigo-400 font-bold">99.000 VND</span>. Giá vé hạng Thương
-                gia được tự động chuẩn hóa theo hệ số 2.77x vé Phổ thông theo chuẩn hãng.
+                <span className="font-semibold text-vj-text-muted">Quy tắc bảo toàn giá:</span> Giá
+                vé sau khi giảm luôn được đảm bảo không thấp hơn mức sàn tối thiểu{' '}
+                <span className="text-vj-blue font-bold">99.000 VND</span>. Giá vé hạng Thương gia
+                được tự động chuẩn hóa theo hệ số 2.77x vé Phổ thông theo chuẩn hãng.
               </div>
             </div>
           </div>
 
           {/* 3. Bảng Xem trước (Dry Run Result) */}
           {matchedCount !== null && (
-            <div className="bg-slate-950/80 border border-white/10 rounded-xl p-4 space-y-3 animate-fade-in">
+            <div className="bg-slate-950 border border-white/10 rounded-vj p-4 space-y-3 animate-fade-in">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
+                  <span className="w-2.5 h-2.5 rounded-full bg-vj-pay-green animate-pulse" />
                   <h4 className="text-xs font-bold text-white uppercase tracking-wider">
                     Kết Quả Xem Trước
                   </h4>
-                  <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                  <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-vj-pay-green text-vj-pay-green border border-vj-pay-green">
                     {matchedCount.toLocaleString('vi-VN')} chuyến bay khớp
                   </span>
                 </div>
-                <span className="text-xs2 text-slate-400">Hiển thị mẫu 10 chuyến đầu tiên</span>
+                <span className="text-xs2 text-vj-text-muted">Hiển thị mẫu 10 chuyến đầu tiên</span>
               </div>
 
               {previewSamples && previewSamples.length > 0 ? (
                 <div className="overflow-x-auto">
                   <table className="w-full text-left text-xs">
                     <thead>
-                      <tr className="border-b border-white/10 text-slate-400">
+                      <tr className="border-b border-white/10 text-vj-text-muted">
                         <th className="pb-2 font-semibold">Chuyến bay</th>
                         <th className="pb-2 font-semibold">Chặng</th>
                         <th className="pb-2 font-semibold">Khởi hành</th>
                         <th className="pb-2 font-semibold text-right">Giá Eco cũ</th>
-                        <th className="pb-2 font-semibold text-right text-emerald-400">
+                        <th className="pb-2 font-semibold text-right text-vj-pay-green">
                           Giá Eco mới
                         </th>
                         <th className="pb-2 font-semibold text-right">Chênh lệch</th>
@@ -438,17 +438,17 @@ export default function BulkPriceAdjustmentModal({
                       {previewSamples.map((s) => (
                         <tr key={s.id} className="hover:bg-white/[0.02]">
                           <td className="py-2.5 font-bold text-white">{s.flight_no}</td>
-                          <td className="py-2.5 text-slate-300">{s.route}</td>
-                          <td className="py-2.5 text-slate-400">{s.depart_time}</td>
-                          <td className="py-2.5 text-right text-slate-400 line-through">
+                          <td className="py-2.5 text-vj-text-muted">{s.route}</td>
+                          <td className="py-2.5 text-vj-text-muted">{s.depart_time}</td>
+                          <td className="py-2.5 text-right text-vj-text-muted line-through">
                             {vnd(s.old_economy_price)}đ
                           </td>
-                          <td className="py-2.5 text-right font-bold text-emerald-400">
+                          <td className="py-2.5 text-right font-bold text-vj-pay-green">
                             {vnd(s.new_economy_price)}đ
                           </td>
                           <td
                             className={`py-2.5 text-right font-semibold ${
-                              s.diff < 0 ? 'text-emerald-400' : 'text-amber-400'
+                              s.diff < 0 ? 'text-vj-pay-green' : 'text-amber-400'
                             }`}
                           >
                             {s.diff < 0 ? `-${vnd(Math.abs(s.diff))}đ` : `+${vnd(s.diff)}đ`}
@@ -459,7 +459,7 @@ export default function BulkPriceAdjustmentModal({
                   </table>
                 </div>
               ) : (
-                <p className="text-xs text-slate-500 italic py-2">
+                <p className="text-xs text-vj-text-muted italic py-2">
                   Không có chuyến bay nào thoả mãn bộ lọc đã chọn.
                 </p>
               )}
@@ -468,12 +468,12 @@ export default function BulkPriceAdjustmentModal({
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between p-4 border-t border-white/10 bg-slate-950/80">
+        <div className="flex items-center justify-between p-4 border-t border-white/10 bg-slate-950">
           <button
             type="button"
             onClick={handlePreview}
             disabled={isPreviewLoading || isSubmitting}
-            className="flex items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 disabled:opacity-50 text-white text-xs font-bold rounded-xl border border-white/10 transition-all shadow-sm"
+            className="flex items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 disabled:opacity-50 text-white text-xs font-bold rounded-vj border border-white/10 transition-all shadow-vj-sm"
           >
             {isPreviewLoading ? (
               <>
@@ -494,7 +494,7 @@ export default function BulkPriceAdjustmentModal({
               type="button"
               onClick={onClose}
               disabled={isSubmitting}
-              className="px-4 py-2 text-slate-400 hover:text-white text-xs font-bold rounded-xl hover:bg-white/5 transition-all"
+              className="px-4 py-2 text-vj-text-muted hover:text-white text-xs font-bold rounded-vj hover:bg-white/5 transition-all"
             >
               Hủy
             </button>
@@ -502,7 +502,7 @@ export default function BulkPriceAdjustmentModal({
               type="button"
               onClick={handleExecute}
               disabled={isSubmitting}
-              className="flex items-center gap-2 px-5 py-2 bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 disabled:opacity-50 text-white text-xs font-bold rounded-xl shadow-lg shadow-orange-500/20 transition-all"
+              className="flex items-center gap-2 px-5 py-2 bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 disabled:opacity-50 text-white text-xs font-bold rounded-vj shadow-vj-lg shadow-orange-500/20 transition-all"
             >
               {isSubmitting ? (
                 <>

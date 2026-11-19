@@ -325,7 +325,7 @@ export default function HeroBookingWidget() {
                 type="button"
                 aria-label="Đổi điểm khởi hành và điểm đến"
                 onClick={swapAirports}
-                className="absolute -left-[19px] top-1/2 z-10 grid h-7 w-6 -translate-y-1/2 cursor-pointer place-items-center text-white transition hover:scale-110 active:scale-95"
+                className="absolute -left-[19px] top-1/2 z-10 grid h-7 w-6 -translate-y-1/2 cursor-pointer place-items-center text-white transition hover:scale-110 active:scale-98"
               >
                 <MdSwapHoriz className="text-xl5" />
               </button>
@@ -375,7 +375,7 @@ export default function HeroBookingWidget() {
               >
                 <span
                   aria-hidden="true"
-                  className={`absolute top-1/2 h-[16px] w-[16px] -translate-y-1/2 rounded-full bg-white shadow-sm transition-all duration-200 ${
+                  className={`absolute top-1/2 h-[16px] w-[16px] -translate-y-1/2 rounded-full bg-white shadow-vj-sm transition-all duration-200 ${
                     cheapestOnly ? 'left-[18px]' : 'left-[2px]'
                   }`}
                 />
@@ -398,7 +398,7 @@ export default function HeroBookingWidget() {
           </div>
 
           {searchError && (
-            <div className="mx-4.75 mb-3 rounded-vj bg-white/95 px-3 py-1.5 text-center text-xs font-bold text-vjred shadow-sm">
+            <div className="mx-4.75 mb-3 rounded-vj bg-white/95 px-3 py-1.5 text-center text-xs font-bold text-vjred shadow-vj-sm">
               {searchError}
             </div>
           )}

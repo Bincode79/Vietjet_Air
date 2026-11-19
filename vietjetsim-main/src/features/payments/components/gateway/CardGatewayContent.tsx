@@ -67,23 +67,23 @@ export default function CardGatewayContent({
 
   return (
     <div className="max-w-xl mx-auto py-6 px-4">
-      <div className="bg-white rounded-3xl border border-gray-200/90 p-5 sm:p-8 shadow-sm space-y-6">
+      <div className="bg-white rounded-3xl border border-vj-border-light/90 p-5 sm:p-8 shadow-vj-sm space-y-6">
         {/* Title */}
         <div className="text-center space-y-1">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-50 border border-red-200 text-primary text-xs font-bold font-koho uppercase tracking-wider">
             <Icon name="CreditCardIcon" size={16} />
             CỔNG THANH TOÁN THẺ QUỐC TẾ • 3D SECURE
           </div>
-          <h2 className="text-xl sm:text-2xl font-black text-gray-900 font-koho">
+          <h2 className="text-xl sm:text-2xl font-black text-vj-text font-koho">
             Thẻ tín dụng / Ghi nợ quốc tế
           </h2>
-          <p className="text-xs sm:text-sm text-gray-500">
+          <p className="text-xs sm:text-sm text-vj-gray">
             Hỗ trợ Visa, MasterCard, JCB, American Express bảo mật cao
           </p>
         </div>
 
         {/* Card Mockup Visual */}
-        <div className="rounded-2xl bg-gradient-to-tr from-gray-900 via-gray-800 to-gray-700 text-white p-5 shadow-lg relative overflow-hidden">
+        <div className="rounded-2xl bg-gradient-to-tr from-gray-900 via-gray-800 to-gray-700 text-white p-5 shadow-vj-lg relative overflow-hidden">
           <div className="flex justify-between items-start mb-6">
             <div className="w-10 h-7 rounded bg-amber-400/80 border border-amber-300 flex items-center justify-center text-3xs font-black text-amber-950">
               CHIP
@@ -95,13 +95,13 @@ export default function CardGatewayContent({
           <div className="font-mono text-lg sm:text-xl font-bold tracking-widest mb-4">
             {cardNumber || '•••• •••• •••• ••••'}
           </div>
-          <div className="flex justify-between text-2xs uppercase text-gray-300 font-koho">
+          <div className="flex justify-between text-2xs uppercase text-vj-muted font-koho">
             <div>
-              <span className="block text-3xs text-gray-400">Chủ thẻ</span>
+              <span className="block text-3xs text-vj-muted">Chủ thẻ</span>
               <span className="font-bold text-white text-xs">{cardHolder || 'TEN CHU THE'}</span>
             </div>
             <div className="text-right">
-              <span className="block text-3xs text-gray-400">Hết hạn</span>
+              <span className="block text-3xs text-vj-muted">Hết hạn</span>
               <span className="font-bold text-white text-xs">{expiry || 'MM/YY'}</span>
             </div>
           </div>
@@ -110,8 +110,8 @@ export default function CardGatewayContent({
         {/* Card Form */}
         <form onSubmit={handleSubmit} className="space-y-4 font-koho">
           <div>
-            <label className="block text-xs font-bold text-gray-700 uppercase mb-1">
-              Số thẻ <span className="text-red-500">*</span>
+            <label className="block text-xs font-bold text-vj-text-dim uppercase mb-1">
+              Số thẻ <span className="text-vj-red">*</span>
             </label>
             <input
               id="cardNumber"
@@ -120,13 +120,13 @@ export default function CardGatewayContent({
               placeholder="4111 2222 3333 4444"
               value={cardNumber}
               onChange={(e) => handleCardNumberChange(e.target.value)}
-              className="w-full px-3.5 py-2.5 rounded-xl border border-gray-300 font-mono text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-hidden"
+              className="w-full px-3.5 py-2.5 rounded-vj border border-vj-line font-mono text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-hidden"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-gray-700 uppercase mb-1">
-              Tên in trên thẻ (không dấu) <span className="text-red-500">*</span>
+            <label className="block text-xs font-bold text-vj-text-dim uppercase mb-1">
+              Tên in trên thẻ (không dấu) <span className="text-vj-red">*</span>
             </label>
             <input
               id="cardName"
@@ -135,14 +135,14 @@ export default function CardGatewayContent({
               placeholder="NGUYEN VAN A"
               value={cardHolder}
               onChange={(e) => setCardHolder(e.target.value.toUpperCase())}
-              className="w-full px-3.5 py-2.5 rounded-xl border border-gray-300 font-sans uppercase text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-hidden"
+              className="w-full px-3.5 py-2.5 rounded-vj border border-vj-line font-sans uppercase text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-hidden"
             />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-bold text-gray-700 uppercase mb-1">
-                Ngày hết hạn (MM/YY) <span className="text-red-500">*</span>
+              <label className="block text-xs font-bold text-vj-text-dim uppercase mb-1">
+                Ngày hết hạn (MM/YY) <span className="text-vj-red">*</span>
               </label>
               <input
                 id="cardExpiry"
@@ -151,12 +151,12 @@ export default function CardGatewayContent({
                 placeholder="12/28"
                 value={expiry}
                 onChange={(e) => handleExpiryChange(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-xl border border-gray-300 font-mono text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-hidden"
+                className="w-full px-3.5 py-2.5 rounded-vj border border-vj-line font-mono text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-hidden"
               />
             </div>
             <div>
-              <label className="block text-xs font-bold text-gray-700 uppercase mb-1">
-                CVV / CVC <span className="text-red-500">*</span>
+              <label className="block text-xs font-bold text-vj-text-dim uppercase mb-1">
+                CVV / CVC <span className="text-vj-red">*</span>
               </label>
               <input
                 id="cardCvv"
@@ -166,7 +166,7 @@ export default function CardGatewayContent({
                 placeholder="•••"
                 value={cvv}
                 onChange={(e) => setCvv(e.target.value.replace(/\D/g, ''))}
-                className="w-full px-3.5 py-2.5 rounded-xl border border-gray-300 font-mono text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-hidden"
+                className="w-full px-3.5 py-2.5 rounded-vj border border-vj-line font-mono text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-hidden"
               />
             </div>
           </div>
@@ -174,7 +174,7 @@ export default function CardGatewayContent({
           <button
             type="submit"
             disabled={isProcessing || cardNumber.length < 16}
-            className="w-full mt-4 py-3.5 rounded-xl bg-gradient-to-r from-red-600 to-primary hover:from-red-700 hover:to-primary-dark text-white font-black text-sm uppercase tracking-wide transition-all shadow-md disabled:opacity-50 cursor-pointer"
+            className="w-full mt-4 py-3.5 rounded-vj bg-gradient-to-r from-red-600 to-primary hover:from-red-700 hover:to-primary-dark text-white font-black text-sm uppercase tracking-wide transition-all shadow-vj-md disabled:opacity-50 cursor-pointer"
           >
             {isProcessing
               ? 'Đang kết nối cổng thẻ...'
@@ -186,13 +186,11 @@ export default function CardGatewayContent({
         {showOtpModal && (
           <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4">
             <div className="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl space-y-4 text-center animate-scaleIn">
-              <div className="w-12 h-12 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center mx-auto">
+              <div className="w-12 h-12 rounded-full bg-blue-50 text-vj-blue flex items-center justify-center mx-auto">
                 <Icon name="ShieldCheckIcon" size={28} />
               </div>
-              <h3 className="font-bold text-gray-900 text-base font-koho">
-                Xác thực 3D Secure OTP
-              </h3>
-              <p className="text-xs text-gray-500">
+              <h3 className="font-bold text-vj-text text-base font-koho">Xác thực 3D Secure OTP</h3>
+              <p className="text-xs text-vj-gray">
                 Mã OTP xác nhận giao dịch đã được gửi đến số điện thoại đăng ký của chủ thẻ.
               </p>
               <input
@@ -201,12 +199,12 @@ export default function CardGatewayContent({
                 placeholder="Nhập 6 số OTP (hoặc 123456)"
                 value={otp}
                 onChange={(e) => setOtp(e.target.value)}
-                className="w-full text-center text-lg tracking-widest font-mono font-bold px-3 py-2 border rounded-xl"
+                className="w-full text-center text-lg tracking-widest font-mono font-bold px-3 py-2 border rounded-vj"
               />
               <button
                 type="button"
                 onClick={handleVerifyOtp}
-                className="w-full py-2.5 bg-primary text-white rounded-xl font-bold text-sm cursor-pointer hover:bg-primary-dark"
+                className="w-full py-2.5 bg-primary text-white rounded-vj font-bold text-sm cursor-pointer hover:bg-primary-dark"
               >
                 Xác nhận thanh toán
               </button>

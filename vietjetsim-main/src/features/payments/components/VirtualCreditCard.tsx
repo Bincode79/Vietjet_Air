@@ -63,7 +63,7 @@ export default function VirtualCreditCard({
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 {/* Gold EMV Chip */}
-                <div className="w-10 h-7 rounded-md bg-gradient-to-tr from-amber-400 via-yellow-200 to-amber-500 border border-amber-300/60 p-1 flex flex-col justify-between shadow-xs">
+                <div className="w-10 h-7 rounded-vj bg-gradient-to-tr from-amber-400 via-yellow-200 to-amber-500 border border-amber-300/60 p-1 flex flex-col justify-between shadow-xs">
                   <div className="w-full h-0.5 bg-amber-700/30 rounded-xs" />
                   <div className="flex justify-between">
                     <div className="w-1 h-2 bg-amber-700/30 rounded-xs" />

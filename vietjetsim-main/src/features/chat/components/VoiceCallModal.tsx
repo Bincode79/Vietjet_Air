@@ -218,11 +218,11 @@ export default function VoiceCallModal({
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
       <div className="relative w-full max-w-sm overflow-hidden rounded-3xl bg-gradient-to-b from-gray-900 via-slate-900 to-black text-white shadow-2xl border border-gray-800 p-6 flex flex-col items-center">
         {/* Glow effect */}
-        <div className="absolute -top-16 -left-16 w-32 h-32 bg-red-600/30 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -top-16 -left-16 w-32 h-32 bg-vj-red-dark/30 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute -bottom-16 -right-16 w-32 h-32 bg-amber-500/20 rounded-full blur-3xl pointer-events-none" />
 
         {/* Top Header Badge */}
-        <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/15 text-xs mb-6 text-gray-300">
+        <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/15 text-xs mb-6 text-vj-muted">
           <span
             className={`w-2 h-2 rounded-full ${
               isConnected ? 'bg-green-400 animate-pulse' : 'bg-amber-400 animate-ping'
@@ -245,7 +245,7 @@ export default function VoiceCallModal({
               !isConnected ? 'animate-ping' : ''
             }`}
           />
-          <div className="relative w-24 h-24 rounded-full bg-gradient-to-br from-red-600 to-red-700 flex items-center justify-center shadow-lg border-2 border-white/20">
+          <div className="relative w-24 h-24 rounded-full bg-gradient-to-br from-red-600 to-red-700 flex items-center justify-center shadow-vj-lg border-2 border-white/20">
             {currentRole === 'user' ? (
               <span className="font-black italic text-lg tracking-tighter text-white">vietjet</span>
             ) : (
@@ -258,7 +258,7 @@ export default function VoiceCallModal({
         <h3 className="text-lg font-bold font-koho text-white text-center leading-tight mb-1">
           {partnerName}
         </h3>
-        <p className="text-xs text-gray-400 text-center mb-4">
+        <p className="text-xs text-vj-muted text-center mb-4">
           {currentRole === 'user'
             ? 'Hỗ trợ chuyến bay, hành lý & dịch vụ 24/7'
             : `Đàm thoại trực tiếp cùng hành khách`}
@@ -287,7 +287,7 @@ export default function VoiceCallModal({
             {isMuted && <span className="text-3xs text-red-400 font-medium">Micro đang tắt</span>}
           </div>
         ) : (
-          <div className="mb-8 flex items-center gap-2 text-xs text-gray-400">
+          <div className="mb-8 flex items-center gap-2 text-xs text-vj-muted">
             <div className="flex gap-1">
               <span
                 className="w-1.5 h-1.5 bg-red-500 rounded-full animate-bounce"
@@ -318,10 +318,10 @@ export default function VoiceCallModal({
                 className="flex flex-col items-center gap-2 group"
                 title="Từ chối cuộc gọi"
               >
-                <div className="w-14 h-14 rounded-full bg-red-600 hover:bg-red-700 flex items-center justify-center text-white shadow-lg transition-transform group-hover:scale-105 active:scale-95">
+                <div className="w-14 h-14 rounded-full bg-vj-red-dark hover:bg-red-700 flex items-center justify-center text-white shadow-vj-lg transition-transform group-hover:scale-105 active:scale-98">
                   <Icon name="PhoneXMarkIcon" size={26} />
                 </div>
-                <span className="text-xs text-gray-300 font-medium">Từ chối</span>
+                <span className="text-xs text-vj-muted font-medium">Từ chối</span>
               </button>
 
               {/* Accept */}
@@ -331,7 +331,7 @@ export default function VoiceCallModal({
                 className="flex flex-col items-center gap-2 group"
                 title="Trả lời cuộc gọi"
               >
-                <div className="w-14 h-14 rounded-full bg-green-600 hover:bg-green-700 flex items-center justify-center text-white shadow-lg animate-bounce transition-transform group-hover:scale-105 active:scale-95">
+                <div className="w-14 h-14 rounded-full bg-green-600 hover:bg-green-700 flex items-center justify-center text-white shadow-vj-lg animate-bounce transition-transform group-hover:scale-105 active:scale-98">
                   <Icon name="PhoneIcon" size={26} />
                 </div>
                 <span className="text-xs text-green-400 font-bold">Trả lời</span>
@@ -362,7 +362,7 @@ export default function VoiceCallModal({
                     onClick={handleToggleSpeaker}
                     className={`w-12 h-12 rounded-full flex items-center justify-center transition-all ${
                       !isSpeakerOn
-                        ? 'bg-gray-700 text-gray-400'
+                        ? 'bg-gray-700 text-vj-muted'
                         : 'bg-white/10 text-white hover:bg-white/20'
                     }`}
                     title={isSpeakerOn ? 'Tắt loa ngoài' : 'Bật loa ngoài'}
@@ -376,7 +376,7 @@ export default function VoiceCallModal({
               <button
                 type="button"
                 onClick={handleEndCall}
-                className="flex items-center gap-2 px-6 py-3 rounded-full bg-red-600 hover:bg-red-700 text-white font-bold text-sm shadow-lg shadow-red-600/30 transition-transform hover:scale-105 active:scale-95"
+                className="flex items-center gap-2 px-6 py-3 rounded-full bg-vj-red-dark hover:bg-red-700 text-white font-bold text-sm shadow-vj-lg shadow-red-600/30 transition-transform hover:scale-105 active:scale-98"
               >
                 <Icon name="PhoneXMarkIcon" size={20} />
                 <span>Kết thúc cuộc gọi</span>

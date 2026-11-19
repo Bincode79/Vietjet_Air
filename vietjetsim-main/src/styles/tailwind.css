@@ -601,19 +601,17 @@ h6 {
     }
   }
 
-  /* Nút "Tìm chuyến bay" trong hero: 174×44px, bo góc 10px — đúng số đo
-   * trên newweb.vietjetair.com (MUI button rộng 174px, cao 44px, font 16px/500).
+  /* Nút "Tìm chuyến bay" trong hero: 200×39px, bo góc 10px — đúng số đo
+   * trên vietjetair.com (đo 13/11/2026, viewport 1440×900).
    *
-   * Đo live 14/11/2026:
+   * Đo live 13/11/2026:
    *   - Button gốc: `font-family: KoHo`, `text-transform: none`, padding `0 15px`.
-   *   - Bên trong có một `<span>` label `display:flex; gap:10px` chứa chữ
-   *     (JambonoMedium 16px/500) + mũi tên `arrow_forward` 18×18.
    *   - Nền trong suốt + gradient vàng 26.73deg, radius 10px. */
   .vj-cta--hero {
-    min-height: 44px;
-    height: 44px;
-    width: 174px;
-    max-width: 174px;
+    min-height: 39px;
+    height: 39px;
+    width: 200px;
+    max-width: 200px;
     border-radius: 10px;
     text-transform: none;
     font-family: var(--vj-font-body, 'KoHo');
@@ -1342,14 +1340,14 @@ h6 {
   font-weight: 500;
 }
 
-/* Mục của dải dịch vụ phụ: icon 25×25 + chữ 16px/700. */
+/* Mục của dải dịch vụ phụ: icon 25×25 + chữ 16px/500 (đo được trên site thật). */
 .vj-quick-rail li a {
   display: flex;
   align-items: center;
   gap: 8px;
   height: 35px;
   font-size: 16px;
-  font-weight: 700;
+  font-weight: 500;
   color: #ffffff;
   white-space: nowrap;
   transition: color 160ms ease;
@@ -2028,8 +2026,9 @@ h6 {
   font-family: 'KoHo', ui-sans-serif, system-ui, sans-serif;
   font-size: 14px;
   line-height: 20px;
-  font-weight: 400;
+  font-weight: 500;
   color: var(--vj-text);
+  text-shadow: 0 1px 3px rgba(255, 255, 255, 0.9);
   text-align: center;
 }
 

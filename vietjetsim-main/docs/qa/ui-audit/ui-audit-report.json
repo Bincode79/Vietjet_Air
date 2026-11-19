@@ -1,0 +1,385 @@
+[
+  {
+    "page": "01_trang_chu",
+    "title": "Trang chủ",
+    "url": "/trang-chu",
+    "viewport": "desktop",
+    "hasHorizontalOverflow": false,
+    "bodyScrollWidth": 1280,
+    "windowInnerWidth": 1280,
+    "overflowingElements": [],
+    "brokenImages": [
+      {
+        "src": "http://127.0.0.1:4028/_next/image?url=%2Fimages%2Fhero%2Fhero-sale-aerial.jpg&w=3840&q=85",
+        "alt": "Đà Nẵng — cầu Rồng và biển",
+        "className": "object-cover transition-transform duration-500 group-hover:scale-105 bg-gray-200"
+      },
+      {
+        "src": "http://127.0.0.1:4028/_next/image?url=%2Fimages%2Fhero%2Fhero-tet-celebration.jpg&w=3840&q=85",
+        "alt": "Phú Quốc — bãi biển trắng nước xanh",
+        "className": "object-cover transition-transform duration-500 group-hover:scale-105 bg-gray-200"
+      },
+      {
+        "src": "http://127.0.0.1:4028/_next/image?url=%2Fimages%2Fhero%2Fhero-hongkong-skyline.jpg&w=3840&q=85",
+        "alt": "Hà Nội — phố cổ và hồ Gươm",
+        "className": "object-cover transition-transform duration-500 group-hover:scale-105 bg-gray-200"
+      },
+      {
+        "src": "http://127.0.0.1:4028/_next/image?url=%2Fimages%2Fhero%2Fhero-bali-terraces.jpg&w=3840&q=85",
+        "alt": "Bali — ruộng bậc thang",
+        "className": "object-cover transition-transform duration-500 group-hover:scale-105 bg-gray-200"
+      },
+      {
+        "src": "http://127.0.0.1:4028/_next/image?url=%2Fimages%2Fhero%2Fhero-skyboss-cabin.jpg&w=3840&q=85",
+        "alt": "Khoang cabin Vietjet với hàng hóa miễn thuế",
+        "className": "object-cover bg-gray-200"
+      }
+    ],
+    "screenshot": "/Users/user/orca/vietjet/Vietjet/vietjetsim-main/docs/qa/ui-audit/01_trang_chu_desktop.png"
+  },
+  {
+    "page": "01_trang_chu",
+    "title": "Trang chủ",
+    "url": "/trang-chu",
+    "viewport": "mobile",
+    "hasHorizontalOverflow": false,
+    "bodyScrollWidth": 390,
+    "windowInnerWidth": 390,
+    "overflowingElements": [],
+    "brokenImages": [
+      {
+        "src": "http://127.0.0.1:4028/_next/image?url=%2Fimages%2Fhero%2Fhero-artwork-beach-sunset.jpg&w=3840&q=85",
+        "alt": "TP. Hồ Chí Minh nhìn từ trên cao",
+        "className": "object-cover transition-transform duration-500 group-hover:scale-105 bg-gray-200"
+      },
+      {
+        "src": "http://127.0.0.1:4028/_next/image?url=%2Fimages%2Fhero%2Fhero-hongkong-skyline.jpg&w=3840&q=85",
+        "alt": "Hà Nội — phố cổ và hồ Hoàn Kiếm",
+        "className": "object-cover transition-transform duration-500 group-hover:scale-105 bg-gray-200"
+      },
+      {
+        "src": "http://127.0.0.1:4028/_next/image?url=%2Fimages%2Fhero%2Fhero-sale-aerial.jpg&w=3840&q=85",
+        "alt": "Đà Nẵng — cầu Rồng và biển",
+        "className": "object-cover transition-transform duration-500 group-hover:scale-105 bg-gray-200"
+      },
+      {
+        "src": "http://127.0.0.1:4028/_next/image?url=%2Fimages%2Fhero%2Fhero-tet-celebration.jpg&w=3840&q=85",
+        "alt": "Phú Quốc — bãi biển và lá cừ",
+        "className": "object-cover transition-transform duration-500 group-hover:scale-105 bg-gray-200"
+      },
+      {
+        "src": "http://127.0.0.1:4028/_next/image?url=%2Fimages%2Fhero%2Fhero-sale-aerial.jpg&w=3840&q=85",
+        "alt": "Đà Nẵng — cầu Rồng và biển",
+        "className": "object-cover transition-transform duration-500 group-hover:scale-105 bg-gray-200"
+      },
+      {
+        "src": "http://127.0.0.1:4028/_next/image?url=%2Fimages%2Fhero%2Fhero-tet-celebration.jpg&w=3840&q=85",
+        "alt": "Phú Quốc — bãi biển trắng nước xanh",
+        "className": "object-cover transition-transform duration-500 group-hover:scale-105 bg-gray-200"
+      },
+      {
+        "src": "http://127.0.0.1:4028/_next/image?url=%2Fimages%2Fhero%2Fhero-hongkong-skyline.jpg&w=3840&q=85",
+        "alt": "Hà Nội — phố cổ và hồ Gươm",
+        "className": "object-cover transition-transform duration-500 group-hover:scale-105 bg-gray-200"
+      },
+      {
+        "src": "http://127.0.0.1:4028/_next/image?url=%2Fimages%2Fhero%2Fhero-bali-terraces.jpg&w=3840&q=85",
+        "alt": "Bali — ruộng bậc thang",
+        "className": "object-cover transition-transform duration-500 group-hover:scale-105 bg-gray-200"
+      }
+    ],
+    "screenshot": "/Users/user/orca/vietjet/Vietjet/vietjetsim-main/docs/qa/ui-audit/01_trang_chu_mobile.png"
+  },
+  {
+    "page": "02_tim_ve",
+    "title": "Chọn chuyến bay",
+    "url": "/tim-ve?from=SGN&to=HAN&depart=2026-11-25&adults=1",
+    "viewport": "desktop",
+    "hasHorizontalOverflow": false,
+    "bodyScrollWidth": 1280,
+    "windowInnerWidth": 1280,
+    "overflowingElements": [
+      {
+        "tag": "div",
+        "className": "ml-auto flex items-center gap-3",
+        "right": 1436,
+        "width": 431,
+        "diff": 156
+      },
+      {
+        "tag": "a",
+        "className": "vj-subheader-pill",
+        "right": 1346,
+        "width": 141,
+        "diff": 66
+      },
+      {
+        "tag": "button",
+        "className": "vj-subheader-pill vj-subheader-pill--gold",
+        "right": 1436,
+        "width": 78,
+        "diff": 156
+      }
+    ],
+    "brokenImages": [],
+    "screenshot": "/Users/user/orca/vietjet/Vietjet/vietjetsim-main/docs/qa/ui-audit/02_tim_ve_desktop.png"
+  },
+  {
+    "page": "02_tim_ve",
+    "title": "Chọn chuyến bay",
+    "url": "/tim-ve?from=SGN&to=HAN&depart=2026-11-25&adults=1",
+    "viewport": "mobile",
+    "hasHorizontalOverflow": false,
+    "bodyScrollWidth": 390,
+    "windowInnerWidth": 390,
+    "overflowingElements": [],
+    "brokenImages": [],
+    "screenshot": "/Users/user/orca/vietjet/Vietjet/vietjetsim-main/docs/qa/ui-audit/02_tim_ve_mobile.png"
+  },
+  {
+    "page": "03_chuyen_bay_cua_toi",
+    "title": "Chuyến bay của tôi",
+    "url": "/chuyen-bay-cua-toi",
+    "viewport": "desktop",
+    "hasHorizontalOverflow": false,
+    "bodyScrollWidth": 1280,
+    "windowInnerWidth": 1280,
+    "overflowingElements": [
+      {
+        "tag": "div",
+        "className": "ml-auto flex items-center gap-3",
+        "right": 1436,
+        "width": 431,
+        "diff": 156
+      },
+      {
+        "tag": "a",
+        "className": "vj-subheader-pill",
+        "right": 1346,
+        "width": 141,
+        "diff": 66
+      },
+      {
+        "tag": "button",
+        "className": "vj-subheader-pill vj-subheader-pill--gold",
+        "right": 1436,
+        "width": 78,
+        "diff": 156
+      }
+    ],
+    "brokenImages": [],
+    "screenshot": "/Users/user/orca/vietjet/Vietjet/vietjetsim-main/docs/qa/ui-audit/03_chuyen_bay_cua_toi_desktop.png"
+  },
+  {
+    "page": "03_chuyen_bay_cua_toi",
+    "title": "Chuyến bay của tôi",
+    "url": "/chuyen-bay-cua-toi",
+    "viewport": "mobile",
+    "hasHorizontalOverflow": false,
+    "bodyScrollWidth": 390,
+    "windowInnerWidth": 390,
+    "overflowingElements": [],
+    "brokenImages": [],
+    "screenshot": "/Users/user/orca/vietjet/Vietjet/vietjetsim-main/docs/qa/ui-audit/03_chuyen_bay_cua_toi_mobile.png"
+  },
+  {
+    "page": "04_dat_ve_chi_tiet",
+    "title": "Chi tiết đặt vé",
+    "url": "/dat-ve/HLJXC1",
+    "viewport": "desktop",
+    "hasHorizontalOverflow": false,
+    "bodyScrollWidth": 1280,
+    "windowInnerWidth": 1280,
+    "overflowingElements": [
+      {
+        "tag": "div",
+        "className": "fixed -bottom-6 -right-6 pointer-events-none z-0 opacity-95 hidden sm:block",
+        "right": 1304,
+        "width": 220,
+        "diff": 24
+      },
+      {
+        "tag": "svg",
+        "className": "[object SVGAnimatedString]",
+        "right": 1304,
+        "width": 220,
+        "diff": 24
+      },
+      {
+        "tag": "path",
+        "className": "[object SVGAnimatedString]",
+        "right": 1304,
+        "width": 220,
+        "diff": 24
+      },
+      {
+        "tag": "path",
+        "className": "[object SVGAnimatedString]",
+        "right": 1304,
+        "width": 185,
+        "diff": 24
+      },
+      {
+        "tag": "path",
+        "className": "[object SVGAnimatedString]",
+        "right": 1304,
+        "width": 145,
+        "diff": 24
+      }
+    ],
+    "brokenImages": [],
+    "screenshot": "/Users/user/orca/vietjet/Vietjet/vietjetsim-main/docs/qa/ui-audit/04_dat_ve_chi_tiet_desktop.png"
+  },
+  {
+    "page": "04_dat_ve_chi_tiet",
+    "title": "Chi tiết đặt vé",
+    "url": "/dat-ve/HLJXC1",
+    "viewport": "mobile",
+    "hasHorizontalOverflow": false,
+    "bodyScrollWidth": 390,
+    "windowInnerWidth": 390,
+    "overflowingElements": [],
+    "brokenImages": [],
+    "screenshot": "/Users/user/orca/vietjet/Vietjet/vietjetsim-main/docs/qa/ui-audit/04_dat_ve_chi_tiet_mobile.png"
+  },
+  {
+    "page": "05_thanh_toan",
+    "title": "Trang thanh toán",
+    "url": "/thanh-toan?bookingId=HLJXC1",
+    "viewport": "desktop",
+    "hasHorizontalOverflow": false,
+    "bodyScrollWidth": 1280,
+    "windowInnerWidth": 1280,
+    "overflowingElements": [
+      {
+        "tag": "div",
+        "className": "ml-auto flex items-center gap-3",
+        "right": 1436,
+        "width": 431,
+        "diff": 156
+      },
+      {
+        "tag": "a",
+        "className": "vj-subheader-pill",
+        "right": 1346,
+        "width": 141,
+        "diff": 66
+      },
+      {
+        "tag": "button",
+        "className": "vj-subheader-pill vj-subheader-pill--gold",
+        "right": 1436,
+        "width": 78,
+        "diff": 156
+      }
+    ],
+    "brokenImages": [],
+    "screenshot": "/Users/user/orca/vietjet/Vietjet/vietjetsim-main/docs/qa/ui-audit/05_thanh_toan_desktop.png"
+  },
+  {
+    "page": "05_thanh_toan",
+    "title": "Trang thanh toán",
+    "url": "/thanh-toan?bookingId=HLJXC1",
+    "viewport": "mobile",
+    "hasHorizontalOverflow": false,
+    "bodyScrollWidth": 390,
+    "windowInnerWidth": 390,
+    "overflowingElements": [],
+    "brokenImages": [],
+    "screenshot": "/Users/user/orca/vietjet/Vietjet/vietjetsim-main/docs/qa/ui-audit/05_thanh_toan_mobile.png"
+  },
+  {
+    "page": "06_lam_thu_tuc",
+    "title": "Check-in trực tuyến",
+    "url": "/lam-thu-tuc",
+    "viewport": "desktop",
+    "hasHorizontalOverflow": false,
+    "bodyScrollWidth": 1280,
+    "windowInnerWidth": 1280,
+    "overflowingElements": [
+      {
+        "tag": "div",
+        "className": "ml-auto flex items-center gap-3",
+        "right": 1436,
+        "width": 431,
+        "diff": 156
+      },
+      {
+        "tag": "a",
+        "className": "vj-subheader-pill",
+        "right": 1346,
+        "width": 141,
+        "diff": 66
+      },
+      {
+        "tag": "button",
+        "className": "vj-subheader-pill vj-subheader-pill--gold",
+        "right": 1436,
+        "width": 78,
+        "diff": 156
+      }
+    ],
+    "brokenImages": [],
+    "screenshot": "/Users/user/orca/vietjet/Vietjet/vietjetsim-main/docs/qa/ui-audit/06_lam_thu_tuc_desktop.png"
+  },
+  {
+    "page": "06_lam_thu_tuc",
+    "title": "Check-in trực tuyến",
+    "url": "/lam-thu-tuc",
+    "viewport": "mobile",
+    "hasHorizontalOverflow": false,
+    "bodyScrollWidth": 390,
+    "windowInnerWidth": 390,
+    "overflowingElements": [],
+    "brokenImages": [],
+    "screenshot": "/Users/user/orca/vietjet/Vietjet/vietjetsim-main/docs/qa/ui-audit/06_lam_thu_tuc_mobile.png"
+  },
+  {
+    "page": "07_dich_vu",
+    "title": "Dịch vụ chuyến bay",
+    "url": "/dich-vu",
+    "viewport": "desktop",
+    "hasHorizontalOverflow": false,
+    "bodyScrollWidth": 1280,
+    "windowInnerWidth": 1280,
+    "overflowingElements": [],
+    "brokenImages": [],
+    "screenshot": "/Users/user/orca/vietjet/Vietjet/vietjetsim-main/docs/qa/ui-audit/07_dich_vu_desktop.png"
+  },
+  {
+    "page": "07_dich_vu",
+    "title": "Dịch vụ chuyến bay",
+    "url": "/dich-vu",
+    "viewport": "mobile",
+    "hasHorizontalOverflow": false,
+    "bodyScrollWidth": 390,
+    "windowInnerWidth": 390,
+    "overflowingElements": [],
+    "brokenImages": [],
+    "screenshot": "/Users/user/orca/vietjet/Vietjet/vietjetsim-main/docs/qa/ui-audit/07_dich_vu_mobile.png"
+  },
+  {
+    "page": "08_tai_khoan",
+    "title": "Tài khoản người dùng",
+    "url": "/tai-khoan",
+    "viewport": "desktop",
+    "hasHorizontalOverflow": false,
+    "bodyScrollWidth": 1280,
+    "windowInnerWidth": 1280,
+    "overflowingElements": [],
+    "brokenImages": [],
+    "screenshot": "/Users/user/orca/vietjet/Vietjet/vietjetsim-main/docs/qa/ui-audit/08_tai_khoan_desktop.png"
+  },
+  {
+    "page": "08_tai_khoan",
+    "title": "Tài khoản người dùng",
+    "url": "/tai-khoan",
+    "viewport": "mobile",
+    "hasHorizontalOverflow": false,
+    "bodyScrollWidth": 390,
+    "windowInnerWidth": 390,
+    "overflowingElements": [],
+    "brokenImages": [],
+    "screenshot": "/Users/user/orca/vietjet/Vietjet/vietjetsim-main/docs/qa/ui-audit/08_tai_khoan_mobile.png"
+  }
+]

@@ -78,7 +78,7 @@ export default function MealSelectionDrawer({
       {/* Drawer content */}
       <div className="relative w-full max-w-lg bg-white h-full shadow-2xl flex flex-col z-10 animate-slideInRight">
         {/* Header with Vietjet curve top-right (Screenshot 11) */}
-        <div className="relative bg-primary-dark text-white px-4 py-3 flex items-center justify-between shadow-md overflow-hidden">
+        <div className="relative bg-primary-dark text-white px-4 py-3 flex items-center justify-between shadow-vj-md overflow-hidden">
           <div className="w-8 shrink-0" />
           <h2 className="font-koho font-bold tracking-wide text-base sm:text-lg uppercase text-white text-center">
             CHỌN SUẤT ĂN
@@ -86,7 +86,7 @@ export default function MealSelectionDrawer({
           <div className="relative z-10">
             <button
               onClick={onClose}
-              className="text-gray-900 bg-white/90 hover:bg-white p-1 rounded-full transition-colors flex items-center justify-center h-7 w-7 cursor-pointer"
+              className="text-vj-text bg-white/90 hover:bg-white p-1 rounded-full transition-colors flex items-center justify-center h-7 w-7 cursor-pointer"
               aria-label="Đóng"
             >
               <RiCloseLine size={20} />
@@ -106,14 +106,14 @@ export default function MealSelectionDrawer({
         </div>
 
         {/* Legs tabs */}
-        <div className="flex border-b border-gray-200 bg-white">
+        <div className="flex border-b border-vj-border-light bg-white">
           <button
             type="button"
             onClick={() => setActiveLeg('outbound')}
             className={`flex-1 py-2.5 text-center text-xs font-bold transition-all border-b-2 ${
               activeLeg === 'outbound'
                 ? 'border-primary-dark text-primary-dark'
-                : 'border-transparent text-gray-500 hover:text-gray-800'
+                : 'border-transparent text-vj-gray hover:text-vj-text-strong'
             }`}
           >
             Chuyến đi
@@ -125,7 +125,7 @@ export default function MealSelectionDrawer({
               className={`flex-1 py-2.5 text-center text-xs font-bold transition-all border-b-2 ${
                 activeLeg === 'inbound'
                   ? 'border-primary-dark text-primary-dark'
-                  : 'border-transparent text-gray-500 hover:text-gray-800'
+                  : 'border-transparent text-vj-gray hover:text-vj-text-strong'
               }`}
             >
               Chuyến về
@@ -134,13 +134,13 @@ export default function MealSelectionDrawer({
         </div>
 
         {/* Passenger Card matching Screenshot 11 */}
-        <div className="p-4 bg-gray-50 border-b border-gray-200">
-          <div className="max-w-xs mx-auto overflow-hidden rounded-vj border border-red-200 shadow-sm bg-white text-center">
+        <div className="p-4 bg-vj-surface-2 border-b border-vj-border-light">
+          <div className="max-w-xs mx-auto overflow-hidden rounded-vj border border-red-200 shadow-vj-sm bg-white text-center">
             <div className="bg-primary-dark py-2 px-4 text-white">
               <div className="text-3xs uppercase tracking-wider text-white/80">Người lớn</div>
               <div className="text-sm font-black uppercase tracking-tight">{passengerName}</div>
             </div>
-            <div className="py-2.5 px-4 text-sm font-bold text-gray-900 font-koho">
+            <div className="py-2.5 px-4 text-sm font-bold text-vj-text font-koho">
               {activeLeg === 'outbound'
                 ? `${flight.from} - ${flight.to}`
                 : `${flight.to} - ${flight.from}`}
@@ -151,7 +151,7 @@ export default function MealSelectionDrawer({
         {/* Scrollable body */}
         <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50">
           {/* Banner matching Screenshot 11 */}
-          <div className="rounded-vj overflow-hidden bg-gradient-to-r from-red-900 via-amber-950 to-red-950 text-white p-4 shadow-sm relative min-h-[90px] flex items-center">
+          <div className="rounded-vj overflow-hidden bg-gradient-to-r from-red-900 via-amber-950 to-red-950 text-white p-4 shadow-vj-sm relative min-h-[90px] flex items-center">
             <div className="relative z-10 max-w-[80%]">
               <h3 className="text-sm sm:text-base font-black italic text-white leading-snug drop-shadow-sm">
                 Mời bạn thưởng thức những món ăn nóng hổi, tươi ngon
@@ -163,7 +163,7 @@ export default function MealSelectionDrawer({
           </div>
 
           <div>
-            <h4 className="text-xs sm:text-sm font-bold text-gray-900 mb-3">
+            <h4 className="text-xs sm:text-sm font-bold text-vj-text mb-3">
               Hãy chọn mua thêm suất ăn bạn yêu thích nhé !
             </h4>
 
@@ -174,7 +174,7 @@ export default function MealSelectionDrawer({
                 return (
                   <div
                     key={meal.id}
-                    className="flex flex-col justify-between p-2.5 sm:p-3 rounded-vj border border-gray-200 hover:border-red-300 hover:shadow-md transition-all bg-white"
+                    className="flex flex-col justify-between p-2.5 sm:p-3 rounded-vj border border-vj-border-light hover:border-red-300 hover:shadow-vj-md transition-all bg-white"
                   >
                     <div>
                       {/* Meal thumbnail container */}
@@ -184,25 +184,25 @@ export default function MealSelectionDrawer({
                           size={64}
                           className="drop-shadow-sm transition-transform hover:scale-105 duration-200"
                         />
-                        <div className="absolute top-1 right-1 bg-red-600 text-white text-3xs font-black px-1.5 py-0.5 rounded-full uppercase shadow-xs">
+                        <div className="absolute top-1 right-1 bg-vj-red-dark text-white text-3xs font-black px-1.5 py-0.5 rounded-full uppercase shadow-xs">
                           Hot
                         </div>
                       </div>
 
-                      <h5 className="text-xs font-extrabold text-gray-900 line-clamp-2 leading-tight">
+                      <h5 className="text-xs font-extrabold text-vj-text line-clamp-2 leading-tight">
                         {meal.name}
                       </h5>
                     </div>
 
-                    <div className="mt-2.5 pt-2 border-t border-gray-100">
-                      <span className="text-xs sm:text-sm font-black text-red-600 italic block mb-2 font-koho">
+                    <div className="mt-2.5 pt-2 border-t border-vj-border-light">
+                      <span className="text-xs sm:text-sm font-black text-vj-red-dark italic block mb-2 font-koho">
                         {meal.price.toLocaleString('vi-VN')} VND
                       </span>
 
                       <div className="flex items-center justify-between gap-1">
                         <button
                           type="button"
-                          className="text-3xs text-gray-600 bg-gray-100 hover:bg-gray-200 px-2 py-1 rounded font-medium flex items-center gap-0.5"
+                          className="text-3xs text-vj-text-strong bg-vj-pill hover:bg-vj-surface-3 px-2 py-1 rounded font-medium flex items-center gap-0.5"
                         >
                           <span>ⓘ</span> Chi tiết
                         </button>
@@ -211,27 +211,27 @@ export default function MealSelectionDrawer({
                           <button
                             type="button"
                             onClick={() => updateQuantity(meal.id, 1)}
-                            className="w-7 h-7 rounded-full border border-green-600 bg-white text-green-600 hover:bg-green-600 hover:text-white flex items-center justify-center font-black text-base transition-all shadow-2xs active:scale-95 cursor-pointer"
+                            className="w-7 h-7 rounded-full border border-green-600 bg-white text-green-600 hover:bg-green-600 hover:text-white flex items-center justify-center font-black text-base transition-all shadow-2xs active:scale-98 cursor-pointer"
                             aria-label={`Thêm ${meal.name}`}
                           >
                             <RiAddLine size={16} />
                           </button>
                         ) : (
-                          <div className="flex items-center gap-1 bg-gray-100 rounded-full px-1.5 py-0.5">
+                          <div className="flex items-center gap-1 bg-vj-pill rounded-full px-1.5 py-0.5">
                             <button
                               type="button"
                               onClick={() => updateQuantity(meal.id, -1)}
-                              className="w-5 h-5 rounded-full bg-white text-gray-700 flex items-center justify-center hover:bg-red-50 hover:text-red-600 transition-colors shadow-2xs text-xs font-bold"
+                              className="w-5 h-5 rounded-full bg-white text-vj-text-dim flex items-center justify-center hover:bg-vj-surface-rose hover:text-vj-red-dark transition-colors shadow-2xs text-xs font-bold"
                             >
                               -
                             </button>
-                            <span className="text-xs font-black text-gray-900 w-3 text-center">
+                            <span className="text-xs font-black text-vj-text w-3 text-center">
                               {count}
                             </span>
                             <button
                               type="button"
                               onClick={() => updateQuantity(meal.id, 1)}
-                              className="w-5 h-5 rounded-full bg-red-600 text-white flex items-center justify-center hover:bg-red-700 transition-colors shadow-2xs text-xs font-bold"
+                              className="w-5 h-5 rounded-full bg-vj-red-dark text-white flex items-center justify-center hover:bg-red-700 transition-colors shadow-2xs text-xs font-bold"
                             >
                               +
                             </button>
@@ -247,7 +247,7 @@ export default function MealSelectionDrawer({
         </div>
 
         {/* Footer Red Bar matching Screenshot 11 */}
-        <div className="bg-primary-dark text-white p-3 flex items-center justify-between shadow-lg">
+        <div className="bg-primary-dark text-white p-3 flex items-center justify-between shadow-vj-lg">
           <div className="flex items-center gap-2.5">
             <div className="w-9 h-9 rounded-vj bg-accent flex items-center justify-center shrink-0 shadow-xs p-1">
               <HotMealIcon size={24} />
@@ -264,7 +264,7 @@ export default function MealSelectionDrawer({
           <button
             type="button"
             onClick={handleConfirm}
-            className="vj-cta font-black px-5 py-2.5 rounded-vj text-xs sm:text-sm shadow transition-all active:scale-95 cursor-pointer italic"
+            className="vj-cta font-black px-5 py-2.5 rounded-vj text-xs sm:text-sm shadow transition-all active:scale-98 cursor-pointer italic"
           >
             {totalCount > 0 ? 'Xác nhận' : 'Không, cảm ơn'}
           </button>

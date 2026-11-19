@@ -89,7 +89,7 @@ export default function SkyIdForgotPassword({
         </p>
 
         {directResetUrl ? (
-          <div className="mt-4 rounded-md border border-[var(--vj-skyid-border)] bg-[var(--surface-2)] px-4 py-3 text-xs text-[var(--vj-skyid-ink)]">
+          <div className="mt-4 rounded-vj border border-[var(--vj-skyid-border)] bg-[var(--surface-2)] px-4 py-3 text-xs text-[var(--vj-skyid-ink)]">
             <p className="font-semibold">Môi trường phát triển — mở trực tiếp:</p>
             <Link href={directResetUrl} className="vj-skyid-link mt-1 inline-block font-semibold">
               Mở liên kết đặt lại mật khẩu →

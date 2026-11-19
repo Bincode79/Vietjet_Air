@@ -88,11 +88,17 @@ const STATUS_LABELS: Record<TripLeg['status'], { label: string; color: string; b
 
 /** Nhãn trạng thái chuyến bay realtime (SSE). */
 const FLIGHT_STATUS_LABELS: Record<string, { label: string; className: string }> = {
-  active: { label: 'Đúng giờ', className: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
+  active: { label: 'Đúng giờ', className: 'bg-vj-pay-green text-vj-pay-green border-vj-pay-green' },
   delayed: { label: 'Trễ giờ', className: 'bg-amber-50 text-amber-700 border-amber-200' },
   cancelled: { label: 'Hủy chuyến', className: 'bg-red-50 text-red-700 border-red-200' },
-  completed: { label: 'Đã hoàn thành', className: 'bg-slate-50 text-slate-600 border-slate-200' },
-  departed: { label: 'Đã cất cánh', className: 'bg-slate-50 text-slate-600 border-slate-200' },
+  completed: {
+    label: 'Đã hoàn thành',
+    className: 'bg-slate-50 text-vj-text-muted border-vj-border-light',
+  },
+  departed: {
+    label: 'Đã cất cánh',
+    className: 'bg-slate-50 text-vj-text-muted border-vj-border-light',
+  },
 };
 
 const formatDate = (iso?: string) => {
@@ -235,13 +241,15 @@ export default function TripCard({ trip }: TripCardProps) {
   );
 
   return (
-    <article className="overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--background)] shadow-sm transition-shadow hover:shadow-md">
+    <article className="overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--background)] shadow-vj-sm transition-shadow hover:shadow-vj-md">
       {/* Đầu phiếu: PNR thật + trạng thái */}
       <div className="flex flex-wrap items-center justify-between gap-3 bg-[var(--vj-red)] px-4 py-3 text-white">
-        <div className="flex items-center gap-2">
-          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-white/20 text-white">
-            <FlightIcon className="h-5 w-5" />
-          </div>
+        <div className="flex items-center gap-2.5">
+          <img
+            src="/images/brand/vietjet-air-circle.jpg"
+            alt="Vietjet"
+            className="h-9 w-9 rounded-full object-cover border border-white/40 shadow-xs shrink-0"
+          />
           <div>
             <p className="text-sm font-black text-[var(--vj-yellow)]">
               {primaryLeg.bookingCode || '—'}
@@ -317,7 +325,9 @@ export default function TripCard({ trip }: TripCardProps) {
                   <div className="flex items-center gap-1">
                     <div className="h-2 w-2 rounded-full bg-[var(--foreground-muted)]" />
                     <div className="flex-1 border-t-2 border-dashed border-[var(--foreground-muted)]" />
-                    <FlightIcon className="h-5 w-5 text-[var(--vj-red)]" />
+                    <FlightIcon
+                      className={`h-5 w-5 text-[var(--vj-red)] ${leg.legRole === 'inbound' ? 'rotate-180' : ''}`}
+                    />
                     <div className="flex-1 border-t-2 border-dashed border-[var(--foreground-muted)]" />
                     <div className="h-2 w-2 rounded-full bg-[var(--foreground-muted)]" />
                   </div>
@@ -341,12 +351,12 @@ export default function TripCard({ trip }: TripCardProps) {
               {/* Chip thông tin */}
               <div className="mt-4 flex flex-wrap gap-2">
                 {seatNumbers && (
-                  <span className="inline-flex items-center gap-1 rounded-lg bg-[rgb(var(--vj-blue-rgb))]/10 px-2 py-1 text-2xs text-[var(--vj-blue)]">
+                  <span className="inline-flex items-center gap-1 rounded-vj bg-[rgb(var(--vj-blue-rgb))]/10 px-2 py-1 text-2xs text-[var(--vj-blue)]">
                     <MdAirlineSeatReclineNormal className="h-3.5 w-3.5" /> Ghế {seatNumbers}
                   </span>
                 )}
                 {hasCheckIn && (
-                  <span className="inline-flex items-center gap-1 rounded-lg bg-[rgb(var(--vj-green-rgb))]/10 px-2 py-1 text-2xs text-[var(--vj-green)]">
+                  <span className="inline-flex items-center gap-1 rounded-vj bg-[rgb(var(--vj-green-rgb))]/10 px-2 py-1 text-2xs text-[var(--vj-green)]">
                     <MdCheckCircle className="h-3.5 w-3.5" /> Đã check-in
                     {leg.check_ins[0]?.check_in_number
                       ? ` · ${leg.check_ins[0].check_in_number}`
@@ -354,12 +364,12 @@ export default function TripCard({ trip }: TripCardProps) {
                   </span>
                 )}
                 {leg.passengers.length > 0 && (
-                  <span className="inline-flex items-center gap-1 rounded-lg bg-[rgb(var(--vj-yellow-rgb))]/25 px-2 py-1 text-2xs font-bold text-[var(--vj-red)]">
+                  <span className="inline-flex items-center gap-1 rounded-vj bg-[rgb(var(--vj-yellow-rgb))]/25 px-2 py-1 text-2xs font-bold text-[var(--vj-red)]">
                     {leg.passengers.length} hành khách
                   </span>
                 )}
                 {leg.status === 'pending' && (
-                  <span className="inline-flex items-center gap-1 rounded-lg bg-red-100 px-2 py-1 text-2xs font-bold text-[var(--vj-red)]">
+                  <span className="inline-flex items-center gap-1 rounded-vj bg-red-100 px-2 py-1 text-2xs font-bold text-[var(--vj-red)]">
                     <MdWarning className="h-3.5 w-3.5" /> Chưa thanh toán
                   </span>
                 )}
@@ -371,7 +381,7 @@ export default function TripCard({ trip }: TripCardProps) {
                   {leg.status === 'pending' && (
                     <Link
                       href={`/thanh-toan?bookingId=${leg.bookingCode || leg.id}`}
-                      className="inline-flex items-center gap-1.5 rounded-xl bg-[var(--vj-red)] px-3 py-1.5 text-xs font-black text-white transition-all hover:bg-vj-red-dark active:scale-95"
+                      className="inline-flex items-center gap-1.5 rounded-vj bg-[var(--vj-red)] px-3 py-1.5 text-xs font-black text-white transition-all hover:bg-vj-red-dark active:scale-98"
                     >
                       <MdPayment className="h-3.5 w-3.5" /> Thanh toán ngay
                     </Link>
@@ -379,7 +389,7 @@ export default function TripCard({ trip }: TripCardProps) {
                   {!hasCheckIn && leg.status === 'confirmed' && (
                     <Link
                       href={`/lam-thu-tuc?code=${leg.bookingCode || leg.id}`}
-                      className="inline-flex items-center gap-1.5 rounded-xl bg-[var(--vj-yellow)] px-3 py-1.5 text-xs font-black text-[var(--vj-red)] transition-colors hover:bg-[var(--vj-yellow-2)]"
+                      className="inline-flex items-center gap-1.5 rounded-vj bg-[var(--vj-yellow)] px-3 py-1.5 text-xs font-black text-[var(--vj-red)] transition-colors hover:bg-[var(--vj-yellow-2)]"
                     >
                       <MdAirlineSeatReclineNormal className="h-3.5 w-3.5" /> Check-in
                     </Link>
@@ -387,7 +397,7 @@ export default function TripCard({ trip }: TripCardProps) {
                   {hasCheckIn && (
                     <Link
                       href={`/lam-thu-tuc?code=${leg.bookingCode || leg.id}`}
-                      className="inline-flex items-center gap-1.5 rounded-lg bg-[rgb(var(--vj-yellow-rgb))]/25 px-3 py-1.5 text-xs font-bold text-[var(--vj-red)] transition-colors hover:bg-[rgb(var(--vj-yellow-rgb))]/40"
+                      className="inline-flex items-center gap-1.5 rounded-vj bg-[rgb(var(--vj-yellow-rgb))]/25 px-3 py-1.5 text-xs font-bold text-[var(--vj-red)] transition-colors hover:bg-[rgb(var(--vj-yellow-rgb))]/40"
                     >
                       <MdCheckCircle className="h-3.5 w-3.5" /> Thẻ lên tàu
                     </Link>
@@ -395,7 +405,7 @@ export default function TripCard({ trip }: TripCardProps) {
                   <button
                     type="button"
                     onClick={() => void handleShareTicket(leg)}
-                    className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--border)] px-3 py-1.5 text-xs font-semibold transition-colors hover:bg-[rgb(var(--vj-yellow-rgb))]/10"
+                    className="inline-flex items-center gap-1.5 rounded-vj border border-[var(--border)] px-3 py-1.5 text-xs font-semibold transition-colors hover:bg-[rgb(var(--vj-yellow-rgb))]/10"
                   >
                     <MdPrint className="h-3.5 w-3.5" /> Vé điện tử
                   </button>
@@ -405,14 +415,14 @@ export default function TripCard({ trip }: TripCardProps) {
                       <button
                         type="button"
                         onClick={() => setBaggageModal(leg)}
-                        className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--border)] px-3 py-1.5 text-xs font-semibold transition-colors hover:bg-[rgb(var(--vj-yellow-rgb))]/10"
+                        className="inline-flex items-center gap-1.5 rounded-vj border border-[var(--border)] px-3 py-1.5 text-xs font-semibold transition-colors hover:bg-[rgb(var(--vj-yellow-rgb))]/10"
                       >
                         <MdLuggage className="h-3.5 w-3.5" /> Mua thêm hành lý
                       </button>
                       <button
                         type="button"
                         onClick={() => setSeatModal({ leg })}
-                        className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--border)] px-3 py-1.5 text-xs font-semibold transition-colors hover:bg-[rgb(var(--vj-yellow-rgb))]/10"
+                        className="inline-flex items-center gap-1.5 rounded-vj border border-[var(--border)] px-3 py-1.5 text-xs font-semibold transition-colors hover:bg-[rgb(var(--vj-yellow-rgb))]/10"
                       >
                         <MdSwapHoriz className="h-3.5 w-3.5" /> Đổi ghế
                       </button>

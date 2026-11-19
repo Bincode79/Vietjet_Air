@@ -70,7 +70,7 @@ export default function BookingBottomBar({
           <button
             type="button"
             onClick={onBack}
-            className="h-9.75 shrink-0 rounded-5xs border border-[var(--vj-border-back)] bg-white px-3 text-sm font-bold text-vj-text transition-colors hover:bg-gray-50 active:scale-95 sm:px-4"
+            className="h-9.75 shrink-0 rounded-5xs border border-[var(--vj-border-back)] bg-white px-3 text-sm font-bold text-vj-text transition-colors hover:bg-vj-surface-2 active:scale-98 sm:px-4"
           >
             Quay lại
           </button>
@@ -96,7 +96,7 @@ export default function BookingBottomBar({
           onClick={isSubmit ? undefined : action}
           disabled={isDisabled}
           data-testid="booking-continue-btn"
-          className={`vj-cta vj-cta--booking shrink-0 transition-all disabled:cursor-not-allowed disabled:opacity-50 active:scale-95 ${
+          className={`vj-cta vj-cta--booking shrink-0 transition-all disabled:cursor-not-allowed disabled:opacity-50 active:scale-98 ${
             fitsBookingWidth ? 'px-3 sm:px-0' : 'w-auto min-w-0 max-w-none px-3 sm:px-6'
           }`}
         >

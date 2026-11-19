@@ -84,6 +84,13 @@ export default function VietjetMobileDrawer({ isOpen, onClose }: VietjetMobileDr
 
         {/* User Profile Header */}
         <div className="border-b border-white/20 px-5 pt-6 pb-4">
+          <div className="mb-4 flex items-center justify-between pr-8">
+            <img
+              src="/images/vj-logo.svg"
+              alt="Vietjet Air"
+              className="h-6 w-auto brightness-0 invert"
+            />
+          </div>
           {user ? (
             <div className="space-y-2">
               <div className="flex items-center gap-3">
@@ -145,7 +152,7 @@ export default function VietjetMobileDrawer({ isOpen, onClose }: VietjetMobileDr
                   key={item.label}
                   href={item.href}
                   onClick={onClose}
-                  className={`flex items-center justify-between px-3.5 py-2.5 rounded-lg text-sm4 font-semibold transition-colors ${
+                  className={`flex items-center justify-between px-3.5 py-2.5 rounded-vj text-sm4 font-semibold transition-colors ${
                     isActive
                       ? 'bg-white/20 text-white font-bold'
                       : 'text-white/95 hover:bg-white/10 hover:text-white'

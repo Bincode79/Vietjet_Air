@@ -38,7 +38,7 @@ export default function UserDashboardMobileNav({
       <div className="flex items-center gap-3 mb-4 lg:hidden">
         <button
           onClick={onOpenDrawer}
-          className="flex items-center gap-2 bg-white border border-[rgb(var(--accent-rgb))]/30 rounded-2xl px-4 py-2.5 text-sm font-semibold shadow-sm"
+          className="flex items-center gap-2 bg-white border border-[rgb(var(--accent-rgb))]/30 rounded-2xl px-4 py-2.5 text-sm font-semibold shadow-vj-sm"
           style={{ color: '#d97706' }}
         >
           <Icon name="Bars3Icon" size={18} />
@@ -47,7 +47,7 @@ export default function UserDashboardMobileNav({
         </button>
         <button
           onClick={() => onSelectTab('notifications')}
-          className="relative ml-auto flex items-center justify-center w-10 h-10 bg-white border border-[rgb(var(--accent-rgb))]/30 rounded-2xl shadow-sm"
+          className="relative ml-auto flex items-center justify-center w-10 h-10 bg-white border border-[rgb(var(--accent-rgb))]/30 rounded-2xl shadow-vj-sm"
           title="Thông báo"
         >
           <Icon name="BellIcon" size={18} style={{ color: '#d97706' }} />
@@ -87,7 +87,7 @@ export default function UserDashboardMobileNav({
               <button
                 aria-label="Đóng"
                 onClick={onCloseDrawer}
-                className="w-8 h-8 flex items-center justify-center rounded-xl bg-white/20 hover:bg-white/30 transition-colors"
+                className="w-8 h-8 flex items-center justify-center rounded-vj bg-white/20 hover:bg-white/30 transition-colors"
               >
                 <Icon name="XMarkIcon" size={18} className="text-white" />
               </button>
@@ -130,7 +130,7 @@ export default function UserDashboardMobileNav({
             <div className="px-3 py-4 border-t border-[rgb(var(--accent-rgb))]/20">
               <Link
                 href="/dang-nhap"
-                className="flex items-center gap-3 px-4 py-3.5 rounded-2xl text-sm font-semibold transition-all text-[var(--accent-dark)] hover:bg-red-50 hover:text-red-600"
+                className="flex items-center gap-3 px-4 py-3.5 rounded-2xl text-sm font-semibold transition-all text-[var(--accent-dark)] hover:bg-vj-surface-rose hover:text-vj-red-dark"
               >
                 <Icon name="ArrowRightOnRectangleIcon" size={20} className="text-[var(--accent)]" />
                 Đăng xuất

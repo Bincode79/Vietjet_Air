@@ -230,7 +230,7 @@ function DateStrip({ value, onSelect }: { value?: string; onSelect?: (iso: strin
   };
 
   const arrowClass =
-    'shrink-0 w-8 h-8 rounded-full bg-white shadow-sm border border-gray-200 flex items-center justify-center text-gray-700 hover:bg-gray-100 hover:text-black transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer';
+    'shrink-0 w-8 h-8 rounded-full bg-white shadow-vj-sm border border-vj-border-light flex items-center justify-center text-vj-text-dim hover:bg-vj-pill hover:text-black transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer';
 
   return (
     <div
@@ -262,18 +262,18 @@ function DateStrip({ value, onSelect }: { value?: string; onSelect?: (iso: strin
                 type="button"
                 onClick={() => onSelect?.(iso)}
                 aria-current="date"
-                className="relative flex h-[82px] sm:h-[95px] w-[114px] sm:w-[156px] shrink-0 flex-col items-center justify-center text-center cursor-pointer focus:outline-none focus:ring-0 z-10 transition-transform active:scale-95 bg-[url('/images/flights/cloud-bg-4.webp')] bg-contain bg-center bg-no-repeat drop-shadow-[0_4px_10px_rgba(245,130,32,0.35)]"
+                className="relative flex h-[82px] sm:h-[95px] w-[114px] sm:w-[156px] shrink-0 flex-col items-center justify-center text-center cursor-pointer focus:outline-none focus:ring-0 z-10 transition-transform active:scale-98 bg-[url('/images/flights/cloud-bg-4.webp')] bg-contain bg-center bg-no-repeat drop-shadow-[0_4px_10px_rgba(245,130,32,0.35)]"
               >
                 <div className="relative z-10 flex flex-col items-center justify-center px-2 py-1">
                   <span className="block text-2xs sm:text-xs font-bold text-amber-900 leading-tight">
                     {WEEKDAY_LABELS[day.getDay()]}
                   </span>
-                  <span className="block text-xs sm:text-base font-black text-gray-950 leading-tight my-0.5">
+                  <span className="block text-xs sm:text-base font-black text-vj-dark leading-tight my-0.5">
                     {day.getDate()} tháng {day.getMonth() + 1}
                   </span>
-                  <span className="block text-3xs sm:text-xs font-semibold text-gray-800 leading-tight">
+                  <span className="block text-3xs sm:text-xs font-semibold text-vj-text-strong leading-tight">
                     Từ <span className="font-bold text-vj-fare-red-ink">{price.split(' ')[0]}</span>{' '}
-                    <span className="italic text-gray-700">000 VND</span>
+                    <span className="italic text-vj-text-dim">000 VND</span>
                   </span>
                 </div>
               </button>
@@ -287,17 +287,17 @@ function DateStrip({ value, onSelect }: { value?: string; onSelect?: (iso: strin
               onClick={() => onSelect?.(iso)}
               className={`${
                 isOuterDay ? 'hidden sm:flex' : 'flex'
-              } h-[76px] sm:h-[95px] w-[95px] sm:w-[156px] shrink-0 flex-col items-center justify-center text-center border border-gray-200/90 bg-white cursor-pointer focus:outline-none focus:ring-0 rounded-xl shadow-xs hover:border-amber-300 transition-all`}
+              } h-[76px] sm:h-[95px] w-[95px] sm:w-[156px] shrink-0 flex-col items-center justify-center text-center border border-vj-border-light/90 bg-white cursor-pointer focus:outline-none focus:ring-0 rounded-vj shadow-xs hover:border-amber-300 transition-all`}
             >
-              <span className="text-2xs sm:text-sm2 font-medium text-gray-600 leading-tight">
+              <span className="text-2xs sm:text-sm2 font-medium text-vj-text-strong leading-tight">
                 {WEEKDAY_LABELS[day.getDay()]}
               </span>
-              <span className="text-xs sm:text-base font-bold text-gray-900 leading-tight my-0.5">
+              <span className="text-xs sm:text-base font-bold text-vj-text leading-tight my-0.5">
                 {day.getDate()} tháng {day.getMonth() + 1}
               </span>
-              <span className="text-3xs sm:text-sm2 font-medium text-gray-700 leading-tight">
-                Từ <span className="font-bold text-gray-900">{price.split(' ')[0]}</span>{' '}
-                <span className="italic text-gray-500">000 VND</span>
+              <span className="text-3xs sm:text-sm2 font-medium text-vj-text-dim leading-tight">
+                Từ <span className="font-bold text-vj-text">{price.split(' ')[0]}</span>{' '}
+                <span className="italic text-vj-gray">000 VND</span>
               </span>
             </button>
           );
@@ -330,8 +330,8 @@ function formatDateVi(iso?: string) {
 /**
  * Nền khối "quyền lợi hạng vé" khi mở rộng.
  *
- * Trước đây mỗi hạng vé một màu pastel riêng (`bg-emerald-50` cho Eco,
- * `bg-amber-50` cho Deluxe, `bg-rose-50` cho SkyBOSS, `bg-yellow-50` cho
+ * Trước đây mỗi hạng vé một màu pastel riêng (`bg-vj-pay-green` cho Eco,
+ * `bg-amber-50` cho Deluxe, `bg-vj-red-dark` cho SkyBOSS, `bg-yellow-50` cho
  * Business) — đúng cái "chip 4 màu" mà quy ước một bảng màu của dự án đã
  * loại bỏ, và nó nằm ngay cạnh các CTA đỏ nên càng đọc như nhiễu. Cả bốn
  * hạng dùng chung một nền đỏ nhạt (`rgb(var(--vj-red-rgb))` ở 5% — cùng
@@ -1134,7 +1134,7 @@ export default function FlightResultsStep({
                 key={flight.id}
                 data-testid="flight-result-card"
                 style={{ transitionDelay: `${Math.min(idx * 50, 300)}ms` }}
-                className="bg-white rounded-vj border border-gray-200 overflow-hidden shadow-xs hover:shadow-md transition-shadow duration-200 relative flex flex-row flex-wrap mb-2 sm:mb-3"
+                className="bg-white rounded-vj border border-vj-border-light overflow-hidden shadow-xs hover:shadow-vj-md transition-shadow duration-200 relative flex flex-row flex-wrap mb-2 sm:mb-3"
               >
                 {/* Left: Flight Info - bright yellow box matching real Vietjet */}
                 <div
@@ -1176,29 +1176,34 @@ export default function FlightResultsStep({
                 >
                   <div className="flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-2.5">
                     <div className="flex items-center gap-1">
-                      <span className="text-3xs sm:text-2xs font-bold text-gray-900 tracking-wider uppercase leading-tight">
+                      <img
+                        src="/images/brand/vietjet-air-circle.jpg"
+                        alt="VJ"
+                        className="w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-full object-cover shrink-0 shadow-2xs border border-white/60"
+                      />
+                      <span className="text-3xs sm:text-2xs font-bold text-vj-text tracking-wider uppercase leading-tight">
                         {flight.flightNo}
                       </span>
                       <FlightRowStatusBadge flightId={flight.id} defaultStatus={flight.status} />
                     </div>
 
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1.5 whitespace-nowrap">
-                      <span className="text-xs sm:text-base lg:text-xl font-black text-gray-950 font-koho leading-none">
+                      <span className="text-xs sm:text-base lg:text-xl font-black text-vj-dark font-koho leading-none">
                         {flight.departTime}
                       </span>
-                      <span className="text-5xs sm:text-2xs font-bold text-gray-700 leading-none">
+                      <span className="text-5xs sm:text-2xs font-bold text-vj-text-dim leading-none">
                         Đến
                       </span>
-                      <span className="text-xs sm:text-base lg:text-xl font-black text-gray-950 font-koho leading-none">
+                      <span className="text-xs sm:text-base lg:text-xl font-black text-vj-dark font-koho leading-none">
                         {flight.arriveTime}
                       </span>
                     </div>
                   </div>
 
-                  <div className="text-5xs sm:text-2xs text-gray-800 font-medium leading-tight flex items-center justify-center whitespace-nowrap gap-0.5 sm:gap-1 mt-0.5 sm:mt-1">
+                  <div className="text-5xs sm:text-2xs text-vj-text-strong font-medium leading-tight flex items-center justify-center whitespace-nowrap gap-0.5 sm:gap-1 mt-0.5 sm:mt-1">
                     <span className="inline-flex items-center justify-center gap-0.5 sm:gap-1">
                       <svg
-                        className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-gray-800 shrink-0 rotate-45 inline-block"
+                        className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-vj-text-strong shrink-0 rotate-45 inline-block"
                         viewBox="0 0 24 24"
                         fill="currentColor"
                         aria-hidden="true"
@@ -1207,20 +1212,22 @@ export default function FlightResultsStep({
                       </svg>
                       <span className="inline">{flight.aircraft ?? 'Airbus A321'}</span>
                     </span>
-                    <span className="text-gray-500"> - </span>
+                    <span className="text-vj-gray"> - </span>
                     <span className="text-red-700 font-bold inline">Bay thẳng</span>
                   </div>
 
                   {/* Mũi tên chỉ xuống `v` — trên site thật hiện ở CẢ mobile
                       (cột trái hẹp 105px, nên ký tự `v` nhỏ thay vì icon). */}
-                  <span className="text-3xs sm:text-xs text-gray-700 mt-0.5 leading-none">∨</span>
+                  <span className="text-3xs sm:text-xs text-vj-text-dim mt-0.5 leading-none">
+                    ∨
+                  </span>
                 </div>
 
                 {/* Right: Fare Classes — 4 cột 1 hàng ngang trên cả mobile và desktop.
                     Ô hạng 141×96 (đo site thật 13/11/2026): cột trái 790px −
                     khối thông tin 226px = 564px, chia 4 → đúng 141px/ô nên
                     desktop không có khe (gap-0). */}
-                <div className="flex-1 min-w-0 grid grid-cols-4 gap-0.5 sm:gap-0 p-0.5 sm:p-0 bg-gray-100/60">
+                <div className="flex-1 min-w-0 grid grid-cols-4 gap-0.5 sm:gap-0 p-0.5 sm:p-0 bg-vj-pill/60">
                   {fareClasses.map((fc) => {
                     const fares = Object.fromEntries(
                       fareClasses.map((item) => [item.id, item.price])
@@ -1237,7 +1244,7 @@ export default function FlightResultsStep({
                         key={fc.id}
                         className={`relative flex min-w-0 min-h-[96px] flex-col overflow-hidden transition-all duration-200 ${
                           isSoldOut
-                            ? 'bg-gray-100/80 text-gray-400'
+                            ? 'bg-vj-pill/80 text-vj-muted'
                             : isSelected
                               ? fc.id === 'business'
                                 ? 'bg-amber-50/90 ring-2 ring-inset ring-vj-fare-business shadow-xs'
@@ -1283,17 +1290,17 @@ export default function FlightResultsStep({
 
                         {isSoldOut ? (
                           <div className="flex-1 flex flex-col items-center justify-center p-1 sm:p-2 text-center select-none min-h-[56px] sm:min-h-[78px]">
-                            <div className="w-5 h-5 sm:w-7 sm:h-7 rounded-full border border-gray-400/50 flex items-center justify-center text-gray-400 mb-0.5 sm:mb-1 relative">
+                            <div className="w-5 h-5 sm:w-7 sm:h-7 rounded-full border border-gray-400/50 flex items-center justify-center text-vj-muted mb-0.5 sm:mb-1 relative">
                               <Icon
-                                name="PaperAirplaneIcon"
+                                name="AirplaneIcon"
                                 size={12}
-                                className="rotate-45 opacity-60 text-gray-400"
+                                className="rotate-45 opacity-60 text-vj-muted"
                               />
                               <div className="absolute inset-0 flex items-center justify-center">
                                 <div className="w-full h-0.5 bg-gray-400 rotate-45" />
                               </div>
                             </div>
-                            <span className="text-2xs sm:text-xs font-semibold text-vj-sold-out leading-tight text-gray-400">
+                            <span className="text-2xs sm:text-xs font-semibold text-vj-sold-out leading-tight text-vj-muted">
                               Hết chỗ
                             </span>
                             <button
@@ -1351,17 +1358,19 @@ export default function FlightResultsStep({
                                       : fc.id === 'deluxe'
                                         ? 'text-vj-fare-deluxe'
                                         : 'text-primary'
-                                  : 'text-gray-950 group-hover:text-primary'
+                                  : 'text-vj-dark group-hover:text-primary'
                               }`}
                             >
                               {Math.floor(fc.price / 1000).toLocaleString('vi-VN')}
                             </span>
-                            <span className="text-2xs sm:text-xs italic text-gray-500 font-medium leading-tight mt-0.5 whitespace-nowrap">
+                            <span className="text-2xs sm:text-xs italic text-vj-gray font-medium leading-tight mt-0.5 whitespace-nowrap">
                               000 VND
                             </span>
                             <svg
-                              className={`w-2 h-2 sm:w-3 sm:h-3 text-gray-400 mt-0.5 transition-transform duration-200 ${
-                                isSelected ? 'rotate-180 text-primary' : 'group-hover:text-gray-600'
+                              className={`w-2 h-2 sm:w-3 sm:h-3 text-vj-muted mt-0.5 transition-transform duration-200 ${
+                                isSelected
+                                  ? 'rotate-180 text-primary'
+                                  : 'group-hover:text-vj-text-strong'
                               }`}
                               viewBox="0 0 20 20"
                               fill="currentColor"
@@ -1388,19 +1397,19 @@ export default function FlightResultsStep({
                     {/* Header route line */}
                     <div className="flex items-center justify-between text-xs sm:text-sm py-2 sm:py-3 px-2 sm:px-10 border-b border-black/5">
                       <div className="text-center min-w-0">
-                        <div className="font-bold text-gray-950 text-sm leading-tight font-koho">
+                        <div className="font-bold text-vj-dark text-sm leading-tight font-koho">
                           {flight.from}
                         </div>
-                        <div className="text-xs text-gray-600 truncate">
+                        <div className="text-xs text-vj-text-strong truncate">
                           {getAirportCity(flight.from)}
                         </div>
-                        <div className="text-2xs text-gray-500 font-medium mt-0.5">
+                        <div className="text-2xs text-vj-gray font-medium mt-0.5">
                           {flight.departTime}, {formatDateVi(flight.departDate || search?.depart)}
                         </div>
                       </div>
 
                       <div className="flex-1 min-w-0 max-w-[120px] sm:max-w-[280px] mx-1 sm:mx-4 flex flex-col items-center">
-                        <span className="text-2xs text-gray-700 font-semibold mb-0.5">
+                        <span className="text-2xs text-vj-text-dim font-semibold mb-0.5">
                           {flight.duration || '2 giờ 10 phút'}
                         </span>
                         <div className="w-full flex items-center gap-1.5 my-0.5">
@@ -1415,10 +1424,10 @@ export default function FlightResultsStep({
                           </svg>
                           <span className="h-px flex-1 border-t border-dashed border-gray-400" />
                         </div>
-                        <div className="flex items-center gap-1.5 text-2xs text-gray-700 font-medium">
+                        <div className="flex items-center gap-1.5 text-2xs text-vj-text-dim font-medium">
                           <span className="inline-flex items-center gap-1">
                             <svg
-                              className="w-2.5 h-2.5 text-gray-700 shrink-0 rotate-45 inline-block"
+                              className="w-2.5 h-2.5 text-vj-text-dim shrink-0 rotate-45 inline-block"
                               viewBox="0 0 24 24"
                               fill="currentColor"
                               aria-hidden="true"
@@ -1427,38 +1436,38 @@ export default function FlightResultsStep({
                             </svg>
                             <span>{flight.aircraft ?? 'Airbus A321'}</span>
                           </span>
-                          <span className="text-gray-400">•</span>
+                          <span className="text-vj-muted">•</span>
                           <span className="text-red-700 font-bold">Bay thẳng</span>
                         </div>
                       </div>
 
                       <div className="text-center min-w-0">
-                        <div className="font-bold text-gray-950 text-sm leading-tight font-koho">
+                        <div className="font-bold text-vj-dark text-sm leading-tight font-koho">
                           {flight.to}
                         </div>
-                        <div className="text-xs text-gray-600 truncate">
+                        <div className="text-xs text-vj-text-strong truncate">
                           {getAirportCity(flight.to)}
                         </div>
-                        <div className="text-2xs text-gray-500 font-medium mt-0.5">
+                        <div className="text-2xs text-vj-gray font-medium mt-0.5">
                           {flight.arriveTime}, {formatDateVi(flight.departDate || search?.depart)}
                         </div>
                       </div>
                     </div>
 
                     {/* Benefits checklist */}
-                    <div className="p-4 sm:p-6 text-xs text-gray-900 space-y-3.5">
+                    <div className="p-4 sm:p-6 text-xs text-vj-text space-y-3.5">
                       {benefits.included.length > 0 && (
                         <div>
-                          <h5 className="font-black text-gray-950 mb-2 text-xs font-koho uppercase tracking-wider">
+                          <h5 className="font-black text-vj-dark mb-2 text-xs font-koho uppercase tracking-wider">
                             Bao gồm:
                           </h5>
                           <ul className="space-y-2">
                             {benefits.included.map((item, i) => (
                               <li
                                 key={i}
-                                className="flex items-start gap-2.5 text-xs text-gray-800 leading-relaxed"
+                                className="flex items-start gap-2.5 text-xs text-vj-text-strong leading-relaxed"
                               >
-                                <span className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-emerald-600 text-white text-3xs shrink-0 mt-0.5 font-black shadow-xs">
+                                <span className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-vj-pay-green text-white text-3xs shrink-0 mt-0.5 font-black shadow-xs">
                                   ✓
                                 </span>
                                 <span>{item}</span>
@@ -1470,14 +1479,14 @@ export default function FlightResultsStep({
 
                       {benefits.notIncluded.length > 0 && (
                         <div className="pt-1">
-                          <h5 className="font-black text-gray-950 mb-2 text-xs font-koho uppercase tracking-wider">
+                          <h5 className="font-black text-vj-dark mb-2 text-xs font-koho uppercase tracking-wider">
                             Chưa bao gồm (Có thể mua thêm với phí):
                           </h5>
                           <ul className="space-y-2">
                             {benefits.notIncluded.map((item, i) => (
                               <li
                                 key={i}
-                                className="flex items-start gap-2.5 text-xs text-gray-800 leading-relaxed"
+                                className="flex items-start gap-2.5 text-xs text-vj-text-strong leading-relaxed"
                               >
                                 <span className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-primary text-white text-3xs shrink-0 mt-0.5 font-black shadow-xs">
                                   ✕
@@ -1494,7 +1503,7 @@ export default function FlightResultsStep({
                         <button
                           type="button"
                           onClick={() => setCompareFare(activeFareClass)}
-                          className="flex items-center gap-1.5 text-xs text-blue-600 hover:underline font-bold"
+                          className="flex items-center gap-1.5 text-xs text-vj-blue hover:underline font-bold"
                         >
                           <span className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-blue-600 text-white text-3xs font-bold">
                             i
@@ -1502,8 +1511,8 @@ export default function FlightResultsStep({
                           <span>Xem quy định giá vé</span>
                         </button>
 
-                        <div className="flex items-center gap-1.5 text-emerald-600 text-xs font-bold">
-                          <span className="inline-flex items-center justify-center w-4 h-4 rounded-full border-2 border-emerald-600 text-emerald-600 text-2xs font-black">
+                        <div className="flex items-center gap-1.5 text-vj-pay-green text-xs font-bold">
+                          <span className="inline-flex items-center justify-center w-4 h-4 rounded-full border-2 border-vj-pay-green text-vj-pay-green text-2xs font-black">
                             ✓
                           </span>
                           <span>Đã chọn</span>
@@ -1652,7 +1661,7 @@ export default function FlightResultsStep({
                   {searchQuery && (
                     <button
                       onClick={() => setSearchQuery('')}
-                      className="inline-flex items-center gap-1.5 sm:gap-2 text-2xs sm:text-sm font-bold text-white px-4 sm:px-5 py-2 sm:py-2.5 rounded-vj transition-all hover:opacity-90 hover:shadow-md active:scale-95"
+                      className="inline-flex items-center gap-1.5 sm:gap-2 text-2xs sm:text-sm font-bold text-white px-4 sm:px-5 py-2 sm:py-2.5 rounded-vj transition-all hover:opacity-90 hover:shadow-vj-md active:scale-98"
                       style={{ background: 'var(--primary)' }}
                     >
                       <Icon name="XMarkIcon" size={12} />
@@ -1662,7 +1671,7 @@ export default function FlightResultsStep({
                   {activeFilterCount > 0 && (
                     <button
                       onClick={resetFilters}
-                      className="inline-flex items-center gap-1.5 sm:gap-2 text-2xs sm:text-sm font-bold text-white px-4 sm:px-5 py-2 sm:py-2.5 rounded-vj transition-all hover:opacity-90 hover:shadow-md active:scale-95"
+                      className="inline-flex items-center gap-1.5 sm:gap-2 text-2xs sm:text-sm font-bold text-white px-4 sm:px-5 py-2 sm:py-2.5 rounded-vj transition-all hover:opacity-90 hover:shadow-vj-md active:scale-98"
                       style={{ background: 'var(--primary)' }}
                     >
                       <Icon name="ArrowPathIcon" size={12} />
@@ -1796,7 +1805,7 @@ export default function FlightResultsStep({
                             className={`h-7 px-2 rounded-vj flex items-center justify-center shrink-0 ${flight.class === 'business' ? 'bg-accent' : 'bg-gradient-red'}`}
                           >
                             <img
-                              src="/logo-internal.svg"
+                              src="/images/vj-logo.svg"
                               alt="Vietjet Air"
                               className={`h-3 w-auto ${flight.class === 'business' ? '' : 'brightness-0 invert'}`}
                             />

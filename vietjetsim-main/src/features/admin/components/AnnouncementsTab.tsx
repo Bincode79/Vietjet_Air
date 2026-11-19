@@ -21,8 +21,8 @@ const PAGE_SIZE = 10;
 const TYPE_CONFIG: Record<string, { label: string; cls: string }> = {
   info: { label: 'Thông tin', cls: 'bg-blue-500/15 text-blue-400' },
   warning: { label: 'Cảnh báo', cls: 'bg-amber-500/15 text-amber-400' },
-  promotion: { label: 'Khuyến mãi', cls: 'bg-emerald-500/15 text-emerald-400' },
-  system: { label: 'Hệ thống', cls: 'bg-slate-500/15 text-slate-300' },
+  promotion: { label: 'Khuyến mãi', cls: 'bg-vj-pay-green text-vj-pay-green' },
+  system: { label: 'Hệ thống', cls: 'bg-slate-500 text-vj-text-muted' },
 };
 
 const TYPE_OPTIONS = [
@@ -206,14 +206,14 @@ export default function AnnouncementsTab({ onToast }: { onToast?: ToastAPI }) {
           <Icon
             name="MagnifyingGlassIcon"
             size={18}
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500"
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-vj-text-muted"
           />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => handleSearch(e.target.value)}
             placeholder="Tìm theo tiêu đề, nội dung..."
-            className="w-full pl-10 pr-4 py-2.5 bg-slate-900/60 border border-white/10 rounded-xl text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-indigo-500/50"
+            className="w-full pl-10 pr-4 py-2.5 bg-slate-900 border border-white/10 rounded-vj text-sm text-white placeholder:text-vj-text-muted focus:outline-none focus:border-vj-blue"
           />
         </div>
         <select
@@ -222,7 +222,7 @@ export default function AnnouncementsTab({ onToast }: { onToast?: ToastAPI }) {
             setTypeFilter(e.target.value);
             setCurrentPage(1);
           }}
-          className="px-3 py-2.5 bg-slate-900/60 border border-white/10 rounded-xl text-sm text-white focus:outline-none focus:border-indigo-500/50"
+          className="px-3 py-2.5 bg-slate-900 border border-white/10 rounded-vj text-sm text-white focus:outline-none focus:border-vj-blue"
         >
           <option value="">Tất cả loại</option>
           {TYPE_OPTIONS.map((opt) => (
@@ -242,19 +242,19 @@ export default function AnnouncementsTab({ onToast }: { onToast?: ToastAPI }) {
           <table className="w-full">
             <thead>
               <tr className="border-b border-white/5">
-                <th className="text-left text-2xs font-black text-slate-500 uppercase tracking-widest px-5 py-4">
+                <th className="text-left text-2xs font-black text-vj-text-muted uppercase tracking-widest px-5 py-4">
                   Tiêu đề
                 </th>
-                <th className="text-left text-2xs font-black text-slate-500 uppercase tracking-widest px-5 py-4 hidden sm:table-cell">
+                <th className="text-left text-2xs font-black text-vj-text-muted uppercase tracking-widest px-5 py-4 hidden sm:table-cell">
                   Loại
                 </th>
-                <th className="text-left text-2xs font-black text-slate-500 uppercase tracking-widest px-5 py-4 hidden md:table-cell">
+                <th className="text-left text-2xs font-black text-vj-text-muted uppercase tracking-widest px-5 py-4 hidden md:table-cell">
                   Mục tiêu
                 </th>
-                <th className="text-center text-2xs font-black text-slate-500 uppercase tracking-widest px-5 py-4 hidden lg:table-cell">
+                <th className="text-center text-2xs font-black text-vj-text-muted uppercase tracking-widest px-5 py-4 hidden lg:table-cell">
                   Trạng thái
                 </th>
-                <th className="text-center text-2xs font-black text-slate-500 uppercase tracking-widest px-5 py-4">
+                <th className="text-center text-2xs font-black text-vj-text-muted uppercase tracking-widest px-5 py-4">
                   Thao tác
                 </th>
               </tr>
@@ -265,19 +265,19 @@ export default function AnnouncementsTab({ onToast }: { onToast?: ToastAPI }) {
                   {[1, 2, 3, 4, 5].map((i) => (
                     <tr key={i} className="border-b border-white/5 animate-pulse">
                       <td className="px-5 py-4">
-                        <div className="h-4 w-48 bg-slate-500/10 rounded-full" />
+                        <div className="h-4 w-48 bg-slate-500 rounded-full" />
                       </td>
                       <td className="px-5 py-4 hidden sm:table-cell">
-                        <div className="h-6 w-20 bg-slate-500/10 rounded-full" />
+                        <div className="h-6 w-20 bg-slate-500 rounded-full" />
                       </td>
                       <td className="px-5 py-4 hidden md:table-cell">
-                        <div className="h-6 w-16 bg-slate-500/10 rounded-full" />
+                        <div className="h-6 w-16 bg-slate-500 rounded-full" />
                       </td>
                       <td className="px-5 py-4 hidden lg:table-cell">
-                        <div className="h-6 w-16 bg-slate-500/10 rounded-full mx-auto" />
+                        <div className="h-6 w-16 bg-slate-500 rounded-full mx-auto" />
                       </td>
                       <td className="px-5 py-4">
-                        <div className="h-6 w-16 bg-slate-500/10 rounded mx-auto" />
+                        <div className="h-6 w-16 bg-slate-500 rounded mx-auto" />
                       </td>
                     </tr>
                   ))}
@@ -301,9 +301,9 @@ export default function AnnouncementsTab({ onToast }: { onToast?: ToastAPI }) {
                 <tr>
                   <td colSpan={5} className="px-5 py-12 text-center">
                     <div className="flex flex-col items-center gap-3">
-                      <Icon name="MegaphoneIcon" size={32} className="text-slate-600" />
+                      <Icon name="MegaphoneIcon" size={32} className="text-vj-text-muted" />
                       <p className="font-bold text-white">Chưa có thông báo nào</p>
-                      <p className="text-xs text-slate-500">Tạo thông báo đầu tiên</p>
+                      <p className="text-xs text-vj-text-muted">Tạo thông báo đầu tiên</p>
                     </div>
                   </td>
                 </tr>
@@ -318,7 +318,7 @@ export default function AnnouncementsTab({ onToast }: { onToast?: ToastAPI }) {
                       <td className="px-5 py-3.5">
                         <div>
                           <p className="font-medium text-white">{announcement.title}</p>
-                          <p className="text-xs text-slate-500 mt-0.5 line-clamp-1">
+                          <p className="text-xs text-vj-text-muted mt-0.5 line-clamp-1">
                             {announcement.content}
                           </p>
                         </div>
@@ -327,7 +327,7 @@ export default function AnnouncementsTab({ onToast }: { onToast?: ToastAPI }) {
                         <span className={typeConfig.cls}>{typeConfig.label}</span>
                       </td>
                       <td className="px-5 py-3.5 hidden md:table-cell">
-                        <span className="text-xs text-slate-400">
+                        <span className="text-xs text-vj-text-muted">
                           {ROLE_OPTIONS.find((r) => r.value === announcement.target_role)?.label ||
                             announcement.target_role}
                         </span>
@@ -337,8 +337,8 @@ export default function AnnouncementsTab({ onToast }: { onToast?: ToastAPI }) {
                           onClick={() => handleToggleActive(announcement)}
                           className={`text-xs font-semibold px-2.5 py-1 rounded-full transition-colors ${
                             announcement.is_active
-                              ? 'bg-emerald-500/15 text-emerald-400 hover:bg-emerald-500/25'
-                              : 'bg-slate-500/10 text-slate-400 hover:bg-slate-500/20'
+                              ? 'bg-vj-pay-green text-vj-pay-green hover:bg-vj-pay-green'
+                              : 'bg-slate-500 text-vj-text-muted hover:bg-slate-500'
                           }`}
                         >
                           {announcement.is_active ? 'Đang hiển thị' : 'Đã ẩn'}
@@ -348,7 +348,7 @@ export default function AnnouncementsTab({ onToast }: { onToast?: ToastAPI }) {
                         <div className="flex items-center justify-center gap-1.5">
                           <button
                             onClick={() => openEditModal(announcement)}
-                            className="w-7 h-7 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 rounded-lg flex items-center justify-center transition-colors"
+                            className="w-7 h-7 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 rounded-vj flex items-center justify-center transition-colors"
                             title="Sửa"
                           >
                             <Icon name="PencilIcon" size={14} />
@@ -356,7 +356,7 @@ export default function AnnouncementsTab({ onToast }: { onToast?: ToastAPI }) {
                           <button
                             onClick={() => handleDelete(announcement)}
                             disabled={deletingId === announcement.id}
-                            className="w-7 h-7 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-lg flex items-center justify-center transition-colors disabled:opacity-50"
+                            className="w-7 h-7 bg-red-500/10 hover:bg-vj-surface-rose text-red-400 rounded-vj flex items-center justify-center transition-colors disabled:opacity-50"
                             title="Xoá"
                           >
                             <Icon name="TrashIcon" size={14} />
@@ -453,14 +453,14 @@ function AnnouncementModal({
           <button
             aria-label="Đóng"
             onClick={onClose}
-            className="w-8 h-8 bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white rounded-lg flex items-center justify-center transition-colors"
+            className="w-8 h-8 bg-white/5 hover:bg-white/10 text-vj-text-muted hover:text-white rounded-vj flex items-center justify-center transition-colors"
           >
             <Icon name="XMarkIcon" size={16} />
           </button>
         </div>
         <form onSubmit={onSubmit} className="p-5 space-y-4">
           <div>
-            <label className="block text-2xs font-black text-slate-500 uppercase tracking-widest mb-1">
+            <label className="block text-2xs font-black text-vj-text-muted uppercase tracking-widest mb-1">
               Tiêu đề <span className="text-red-400">*</span>
             </label>
             <input
@@ -468,13 +468,13 @@ function AnnouncementModal({
               value={formData.title}
               onChange={(e) => setFormData((p) => ({ ...p, title: e.target.value }))}
               placeholder="Nhập tiêu đề thông báo"
-              className="w-full px-3 py-2.5 bg-slate-900/60 border border-white/10 rounded-lg text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-red-400 focus:ring-2 focus:ring-red-500/20"
+              className="w-full px-3 py-2.5 bg-slate-900 border border-white/10 rounded-vj text-sm text-white placeholder:text-vj-text-muted focus:outline-none focus:border-red-400 focus:ring-2 focus:ring-red-500/20"
               required
             />
           </div>
 
           <div>
-            <label className="block text-2xs font-black text-slate-500 uppercase tracking-widest mb-1">
+            <label className="block text-2xs font-black text-vj-text-muted uppercase tracking-widest mb-1">
               Nội dung <span className="text-red-400">*</span>
             </label>
             <textarea
@@ -482,14 +482,14 @@ function AnnouncementModal({
               onChange={(e) => setFormData((p) => ({ ...p, content: e.target.value }))}
               placeholder="Nhập nội dung thông báo"
               rows={4}
-              className="w-full px-3 py-2.5 bg-slate-900/60 border border-white/10 rounded-lg text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-red-400 focus:ring-2 focus:ring-red-500/20 resize-none"
+              className="w-full px-3 py-2.5 bg-slate-900 border border-white/10 rounded-vj text-sm text-white placeholder:text-vj-text-muted focus:outline-none focus:border-red-400 focus:ring-2 focus:ring-red-500/20 resize-none"
               required
             />
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-2xs font-black text-slate-500 uppercase tracking-widest mb-1">
+              <label className="block text-2xs font-black text-vj-text-muted uppercase tracking-widest mb-1">
                 Loại thông báo
               </label>
               <select
@@ -500,7 +500,7 @@ function AnnouncementModal({
                     type: e.target.value as Announcement['type'],
                   }))
                 }
-                className="w-full px-3 py-2.5 bg-slate-900/60 border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-red-400 focus:ring-2 focus:ring-red-500/20"
+                className="w-full px-3 py-2.5 bg-slate-900 border border-white/10 rounded-vj text-sm text-white focus:outline-none focus:border-red-400 focus:ring-2 focus:ring-red-500/20"
               >
                 {TYPE_OPTIONS.map((opt) => (
                   <option key={opt.value} value={opt.value}>
@@ -510,13 +510,13 @@ function AnnouncementModal({
               </select>
             </div>
             <div>
-              <label className="block text-2xs font-black text-slate-500 uppercase tracking-widest mb-1">
+              <label className="block text-2xs font-black text-vj-text-muted uppercase tracking-widest mb-1">
                 Mục tiêu
               </label>
               <select
                 value={formData.target_role}
                 onChange={(e) => setFormData((p) => ({ ...p, target_role: e.target.value }))}
-                className="w-full px-3 py-2.5 bg-slate-900/60 border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-red-400 focus:ring-2 focus:ring-red-500/20"
+                className="w-full px-3 py-2.5 bg-slate-900 border border-white/10 rounded-vj text-sm text-white focus:outline-none focus:border-red-400 focus:ring-2 focus:ring-red-500/20"
               >
                 {ROLE_OPTIONS.map((opt) => (
                   <option key={opt.value} value={opt.value}>
@@ -529,25 +529,25 @@ function AnnouncementModal({
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-2xs font-black text-slate-500 uppercase tracking-widest mb-1">
+              <label className="block text-2xs font-black text-vj-text-muted uppercase tracking-widest mb-1">
                 Ngày bắt đầu
               </label>
               <input
                 type="date"
                 value={formData.start_date}
                 onChange={(e) => setFormData((p) => ({ ...p, start_date: e.target.value }))}
-                className="w-full px-3 py-2.5 bg-slate-900/60 border border-white/10 rounded-lg text-sm text-white [color-scheme:dark] focus:outline-none focus:border-red-400 focus:ring-2 focus:ring-red-500/20"
+                className="w-full px-3 py-2.5 bg-slate-900 border border-white/10 rounded-vj text-sm text-white [color-scheme:dark] focus:outline-none focus:border-red-400 focus:ring-2 focus:ring-red-500/20"
               />
             </div>
             <div>
-              <label className="block text-2xs font-black text-slate-500 uppercase tracking-widest mb-1">
+              <label className="block text-2xs font-black text-vj-text-muted uppercase tracking-widest mb-1">
                 Ngày kết thúc
               </label>
               <input
                 type="date"
                 value={formData.end_date}
                 onChange={(e) => setFormData((p) => ({ ...p, end_date: e.target.value }))}
-                className="w-full px-3 py-2.5 bg-slate-900/60 border border-white/10 rounded-lg text-sm text-white [color-scheme:dark] focus:outline-none focus:border-red-400 focus:ring-2 focus:ring-red-500/20"
+                className="w-full px-3 py-2.5 bg-slate-900 border border-white/10 rounded-vj text-sm text-white [color-scheme:dark] focus:outline-none focus:border-red-400 focus:ring-2 focus:ring-red-500/20"
               />
             </div>
           </div>
@@ -558,9 +558,9 @@ function AnnouncementModal({
               id="is_active"
               checked={formData.is_active}
               onChange={(e) => setFormData((p) => ({ ...p, is_active: e.target.checked }))}
-              className="w-4 h-4 text-primary border-white/20 rounded focus:ring-primary bg-slate-900/60"
+              className="w-4 h-4 text-primary border-white/20 rounded focus:ring-primary bg-slate-900"
             />
-            <label htmlFor="is_active" className="text-sm text-slate-300">
+            <label htmlFor="is_active" className="text-sm text-vj-text-muted">
               Hiển thị ngay sau khi tạo
             </label>
           </div>
@@ -571,14 +571,14 @@ function AnnouncementModal({
               type="button"
               onClick={onClose}
               disabled={isSubmitting}
-              className="flex-1 border border-white/10 bg-white/5 text-slate-300 hover:bg-white/10 font-semibold py-2.5 rounded-xl text-sm transition-all disabled:opacity-50"
+              className="flex-1 border border-white/10 bg-white/5 text-vj-text-muted hover:bg-white/10 font-semibold py-2.5 rounded-vj text-sm transition-all disabled:opacity-50"
             >
               Huỷ
             </button>
             <button
               type="submit"
               disabled={isSubmitting || !formData.title || !formData.content}
-              className="flex-1 bg-primary hover:bg-primary-dark text-white font-bold py-2.5 rounded-xl text-sm transition-all disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="flex-1 bg-primary hover:bg-primary-dark text-white font-bold py-2.5 rounded-vj text-sm transition-all disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {isSubmitting ? (
                 <>

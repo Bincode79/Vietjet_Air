@@ -282,11 +282,11 @@ export default function Footer() {
                   href="https://apps.apple.com"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-1.5 bg-black text-white px-2.5 py-1.5 rounded-md hover:bg-gray-800 transition-colors shadow-sm"
+                  className="flex items-center gap-1.5 bg-black text-white px-2.5 py-1.5 rounded-vj hover:bg-gray-800 transition-colors shadow-vj-sm"
                 >
                   <SiApple size={16} />
                   <div className="leading-tight text-left">
-                    <span className="block text-4xs uppercase tracking-wider text-gray-300">
+                    <span className="block text-4xs uppercase tracking-wider text-vj-muted">
                       Available on the
                     </span>
                     <span className="block text-xs2 font-bold">App Store</span>
@@ -296,11 +296,11 @@ export default function Footer() {
                   href="https://play.google.com"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-1.5 bg-black text-white px-2.5 py-1.5 rounded-md hover:bg-gray-800 transition-colors shadow-sm"
+                  className="flex items-center gap-1.5 bg-black text-white px-2.5 py-1.5 rounded-vj hover:bg-gray-800 transition-colors shadow-vj-sm"
                 >
-                  <SiGoogleplay size={14} className="text-emerald-400" />
+                  <SiGoogleplay size={14} className="text-vj-pay-green" />
                   <div className="leading-tight text-left">
-                    <span className="block text-4xs uppercase tracking-wider text-gray-300">
+                    <span className="block text-4xs uppercase tracking-wider text-vj-muted">
                       GET IT ON
                     </span>
                     <span className="block text-xs2 font-bold">Google Play</span>

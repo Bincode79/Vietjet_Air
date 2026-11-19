@@ -44,7 +44,7 @@ const TYPE_CONFIG: Record<
   success: {
     bar: 'bg-accent',
     bg: 'bg-accent-50 border-2 border-accent shadow-xl shadow-amber-200/30',
-    iconBg: 'bg-accent shadow-md shadow-amber-200/30',
+    iconBg: 'bg-accent shadow-vj-md shadow-amber-200/30',
     iconColor: 'text-white',
     titleColor: 'text-vj-ink font-black',
     messageColor: 'text-vj-gray font-medium',
@@ -63,7 +63,7 @@ const TYPE_CONFIG: Record<
   error: {
     bar: 'bg-primary',
     bg: 'bg-primary-50 border-2 border-primary shadow-xl shadow-red-600/15',
-    iconBg: 'bg-primary shadow-md shadow-red-700/30',
+    iconBg: 'bg-primary shadow-vj-md shadow-red-700/30',
     iconColor: 'text-white',
     titleColor: 'text-primary font-black',
     messageColor: 'text-vj-gray font-medium',
@@ -82,7 +82,7 @@ const TYPE_CONFIG: Record<
   warning: {
     bar: 'bg-accent-dark',
     bg: 'bg-accent-100 border-2 border-accent-dark shadow-xl shadow-amber-300/20',
-    iconBg: 'bg-accent-dark text-black shadow-md shadow-amber-300/30',
+    iconBg: 'bg-accent-dark text-black shadow-vj-md shadow-amber-300/30',
     iconColor: 'text-black',
     titleColor: 'text-accent-dark font-black',
     messageColor: 'text-vj-gray font-medium',
@@ -101,7 +101,7 @@ const TYPE_CONFIG: Record<
   info: {
     bar: 'bg-primary-dark',
     bg: 'bg-primary-100 border-2 border-primary-dark shadow-xl shadow-red-600/15',
-    iconBg: 'bg-primary-dark shadow-md shadow-red-600/30',
+    iconBg: 'bg-primary-dark shadow-vj-md shadow-red-600/30',
     iconColor: 'text-white',
     titleColor: 'text-primary-dark font-black',
     messageColor: 'text-vj-gray font-medium',
@@ -120,7 +120,7 @@ const TYPE_CONFIG: Record<
   promo: {
     bar: 'bg-gradient-to-r from-primary via-red-500 to-vjyellow',
     bg: 'bg-gradient-to-br from-accent-50 via-white to-primary-50 border-2 border-accent-dark shadow-xl shadow-amber-200/20',
-    iconBg: 'bg-accent text-black shadow-md shadow-amber-200/30',
+    iconBg: 'bg-accent text-black shadow-vj-md shadow-amber-200/30',
     iconColor: 'text-black',
     titleColor: 'text-vj-ink font-black',
     messageColor: 'text-vj-gray font-medium',
@@ -194,7 +194,7 @@ function ToastNotification({ toast, onDismiss }: ToastProps) {
 
   return (
     <div
-      className={`relative w-[360px] max-w-[calc(100vw-32px)] rounded-xl shadow-vj-toast overflow-hidden cursor-pointer transition-all duration-300 ease-vj ${config.bg}
+      className={`relative w-[360px] max-w-[calc(100vw-32px)] rounded-vj shadow-vj-toast overflow-hidden cursor-pointer transition-all duration-300 ease-vj ${config.bg}
         ${visible && !exiting ? 'opacity-100 translate-x-0 scale-100' : 'opacity-0 translate-x-8 scale-95'}
       `}
       onMouseEnter={() => setPaused(true)}
@@ -208,7 +208,7 @@ function ToastNotification({ toast, onDismiss }: ToastProps) {
       <div className="flex items-start gap-3 px-4 pt-3 pb-4">
         {/* Icon */}
         <div
-          className={`flex-shrink-0 w-8 h-8 rounded-lg ${config.iconBg} ${config.iconColor} flex items-center justify-center mt-0.5`}
+          className={`flex-shrink-0 w-8 h-8 rounded-vj ${config.iconBg} ${config.iconColor} flex items-center justify-center mt-0.5`}
         >
           {toast.icon ?? config.defaultIcon}
         </div>
@@ -233,11 +233,11 @@ function ToastNotification({ toast, onDismiss }: ToastProps) {
                     action.onClick();
                     dismiss();
                   }}
-                  className={`text-xs px-3 py-1.5 rounded-lg transition-all duration-150 active:scale-95 font-['KoHo',sans-serif]
+                  className={`text-xs px-3 py-1.5 rounded-vj transition-all duration-150 active:scale-98 font-['KoHo',sans-serif]
                     ${
                       action.variant === 'ghost'
-                        ? 'text-gray-700 hover:text-black hover:bg-black/5 font-bold'
-                        : 'bg-vjyellow text-gray-950 font-black border border-amber-300 shadow-xs hover:brightness-105'
+                        ? 'text-vj-text-dim hover:text-black hover:bg-black/5 font-bold'
+                        : 'bg-vjyellow text-vj-dark font-black border border-amber-300 shadow-xs hover:brightness-105'
                     }
                   `}
                 >
@@ -254,7 +254,7 @@ function ToastNotification({ toast, onDismiss }: ToastProps) {
             e.stopPropagation();
             dismiss();
           }}
-          className={`flex-shrink-0 w-6 h-6 rounded-md flex items-center justify-center transition-colors duration-150 mt-0.5 ${config.closeBtn}`}
+          className={`flex-shrink-0 w-6 h-6 rounded-vj flex items-center justify-center transition-colors duration-150 mt-0.5 ${config.closeBtn}`}
           aria-label="Đóng thông báo"
         >
           <svg viewBox="0 0 16 16" fill="currentColor" className="w-3.5 h-3.5">

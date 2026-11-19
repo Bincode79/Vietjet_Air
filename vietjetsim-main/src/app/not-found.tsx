@@ -64,7 +64,7 @@ export default function NotFound() {
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <button
             onClick={handleGoBack}
-            className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-bold transition-all hover:opacity-90"
+            className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-vj font-bold transition-all hover:opacity-90"
             style={{
               background:
                 'linear-gradient(20.12deg, rgba(217,26,33,1) 19.6%, rgba(111,0,0,1) 93.86%)',
@@ -79,19 +79,19 @@ export default function NotFound() {
 
           <button
             onClick={handleGoHome}
-            className="inline-flex items-center justify-center gap-2 border px-6 py-3 rounded-xl font-bold transition-all text-primary"
+            className="inline-flex items-center justify-center gap-2 border px-6 py-3 rounded-vj font-bold transition-all text-primary"
             style={{
-              borderColor: '#EC2029',
+              borderColor: 'var(--primary)',
               background: 'transparent',
               fontWeight: 700,
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.background = '#EC2029';
+              e.currentTarget.style.background = 'var(--primary)';
               e.currentTarget.style.color = 'white';
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.background = 'transparent';
-              e.currentTarget.style.color = '#EC2029';
+              e.currentTarget.style.color = 'var(--primary)';
             }}
           >
             <Icon name="HomeIcon" size={16} />

@@ -34,17 +34,17 @@ const CustomTooltip = ({ active, payload }: CustomTooltipProps) => {
 
   return (
     <div
-      className="rounded-xl border border-white/10 p-3 text-xs shadow-xl backdrop-blur-md"
+      className="rounded-vj border border-white/10 p-3 text-xs shadow-xl backdrop-blur-md"
       style={{ background: 'rgba(15, 23, 42, 0.95)' }}
     >
       <div className="font-bold text-white mb-2 pb-1 border-b border-white/10 flex items-center gap-1.5">
         <span className="w-2 h-2 rounded-full bg-primary" />
         Chặng: {item.route}
       </div>
-      <div className="space-y-1.5 text-slate-300">
+      <div className="space-y-1.5 text-vj-text-muted">
         <div className="flex items-center justify-between gap-4">
           <span>Doanh thu:</span>
-          <span className="font-bold text-emerald-400">
+          <span className="font-bold text-vj-pay-green">
             {item.revenue.toLocaleString('vi-VN')}₫
           </span>
         </div>
@@ -80,18 +80,18 @@ export default function TopRoutesBarChart({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
         <div>
           <h3 className="font-bold text-white text-base tracking-tight">{title}</h3>
-          <p className="text-xs text-slate-400 mt-0.5">
+          <p className="text-xs text-vj-text-muted mt-0.5">
             Top 5 đường bay có lượng giao dịch và doanh số cao nhất
           </p>
         </div>
-        <div className="flex items-center p-0.5 rounded-xl bg-slate-900/60 border border-white/10 self-start sm:self-auto">
+        <div className="flex items-center p-0.5 rounded-vj bg-slate-900 border border-white/10 self-start sm:self-auto">
           <button
             type="button"
             onClick={() => setMetric('revenue')}
-            className={`px-2.5 py-1 text-xs font-semibold rounded-lg transition-all ${
+            className={`px-2.5 py-1 text-xs font-semibold rounded-vj transition-all ${
               metric === 'revenue'
-                ? 'bg-primary text-white shadow-sm'
-                : 'text-slate-400 hover:text-white'
+                ? 'bg-primary text-white shadow-vj-sm'
+                : 'text-vj-text-muted hover:text-white'
             }`}
           >
             Doanh thu
@@ -99,10 +99,10 @@ export default function TopRoutesBarChart({
           <button
             type="button"
             onClick={() => setMetric('bookings')}
-            className={`px-2.5 py-1 text-xs font-semibold rounded-lg transition-all ${
+            className={`px-2.5 py-1 text-xs font-semibold rounded-vj transition-all ${
               metric === 'bookings'
-                ? 'bg-primary text-white shadow-sm'
-                : 'text-slate-400 hover:text-white'
+                ? 'bg-primary text-white shadow-vj-sm'
+                : 'text-vj-text-muted hover:text-white'
             }`}
           >
             Lượt đặt
@@ -111,7 +111,7 @@ export default function TopRoutesBarChart({
       </div>
 
       {!hasData ? (
-        <div className="h-[280px] flex flex-col items-center justify-center text-sm text-slate-400">
+        <div className="h-[280px] flex flex-col items-center justify-center text-sm text-vj-text-muted">
           <p>Chưa có dữ liệu chặng bay</p>
         </div>
       ) : (

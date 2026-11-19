@@ -103,7 +103,7 @@ function PaymentDetailModal({ payment, onClose }: { payment: Payment; onClose: (
           <button
             aria-label="Đóng"
             onClick={onClose}
-            className="w-full py-2.5 bg-vj-navy text-white rounded-xl font-semibold text-sm font-[KoHo,sans-serif] hover:bg-vj-navy-light transition-all"
+            className="w-full py-2.5 bg-vj-navy text-white rounded-vj font-semibold text-sm font-[KoHo,sans-serif] hover:bg-vj-navy-light transition-all"
           >
             Đóng
           </button>
@@ -168,7 +168,7 @@ export default function PaymentHistoryTab() {
     return (
       <div className="space-y-3 p-4">
         {[1, 2, 3, 4, 5].map((i) => (
-          <div key={i} className="h-20 bg-[var(--surface-2)] rounded-xl animate-pulse" />
+          <div key={i} className="h-20 bg-[var(--surface-2)] rounded-vj animate-pulse" />
         ))}
       </div>
     );
@@ -189,7 +189,7 @@ export default function PaymentHistoryTab() {
         <button
           onClick={handleExportCSV}
           disabled={payments.length === 0}
-          className="flex items-center gap-2 px-4 py-2 bg-vj-navy text-white rounded-lg text-sm font-semibold font-[KoHo,sans-serif] hover:bg-vj-navy-light transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="flex items-center gap-2 px-4 py-2 bg-vj-navy text-white rounded-vj text-sm font-semibold font-[KoHo,sans-serif] hover:bg-vj-navy-light transition-all active:scale-98 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <Icon name="ArrowDownTrayIcon" size={16} />
           Xuất CSV
@@ -199,7 +199,7 @@ export default function PaymentHistoryTab() {
       {/* Summary */}
       <div className="grid grid-cols-3 gap-4">
         <div className="bg-white rounded-2xl border border-[var(--border)] p-4 text-center shadow-vj-card">
-          <div className="text-2xl font-bold font-[KoHo,sans-serif] text-emerald-500">
+          <div className="text-2xl font-bold font-[KoHo,sans-serif] text-vj-pay-green">
             {payments.filter((p) => p.status === 'completed').length}
           </div>
           <div className="text-xs text-[var(--foreground-muted)] mt-1">Thành công</div>
@@ -240,7 +240,7 @@ export default function PaymentHistoryTab() {
                   className="w-full p-4 flex items-center gap-4 hover:bg-[var(--surface-2)] transition-colors text-left"
                 >
                   <div
-                    className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+                    className="w-10 h-10 rounded-vj flex items-center justify-center flex-shrink-0"
                     style={{ background: `${status.color}15` }}
                   >
                     <Icon name="BanknotesIcon" size={20} style={{ color: status.color }} />

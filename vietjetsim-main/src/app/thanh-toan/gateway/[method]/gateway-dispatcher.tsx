@@ -7,7 +7,9 @@ import QrGatewayContent from '@/features/payments/components/gateway/QrGatewayCo
 import CardGatewayContent from '@/features/payments/components/gateway/CardGatewayContent';
 import NapasGatewayContent from '@/features/payments/components/gateway/NapasGatewayContent';
 import EWalletGatewayContent from '@/features/payments/components/gateway/EWalletGatewayContent';
-import MoviGatewayContent from '@/features/payments/components/gateway/MoviGatewayContent';
+import MoviGatewayContent, {
+  type MoviGatewayApplication,
+} from '@/features/payments/components/gateway/MoviGatewayContent';
 import WalletGatewayContent from '@/features/payments/components/gateway/WalletGatewayContent';
 import { createPayment } from '@/features/payments/services';
 import type { PaymentMethod } from '@/features/payments/types';
@@ -60,7 +62,7 @@ function GatewayMessage({
       {actionHref && actionLabel && (
         <Link
           href={actionHref}
-          className="mt-5 inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-primary hover:bg-primary-dark text-white text-xs font-bold uppercase tracking-wider transition-all"
+          className="mt-5 inline-flex items-center justify-center gap-2 px-5 py-3 rounded-vj bg-primary hover:bg-primary-dark text-white text-xs font-bold uppercase tracking-wider transition-all"
         >
           {actionLabel}
         </Link>
@@ -158,57 +160,78 @@ export default function GatewayDispatcher() {
     [router]
   );
 
-  const handlePaymentSuccess = useCallback(async () => {
-    if (!booking) {
-      setPaymentError('Không tìm thấy thông tin đặt chỗ để ghi nhận thanh toán.');
-      return;
-    }
+  const handlePaymentSuccess = useCallback(
+    async (application?: MoviGatewayApplication) => {
+      if (!booking) {
+        setPaymentError('Không tìm thấy thông tin đặt chỗ để ghi nhận thanh toán.');
+        return;
+      }
 
-    // Cổng QR đã được xác nhận bởi webhook VietQR (VietQrBox chỉ gọi onPaid
-    // sau khi /api/thanh-toan/trang-thà trả về `confirmed`), nên không tạo
-    // thêm một giao dịch ở đây.
-    if (method === 'qr') {
-      goToSuccess(booking.bookingId);
-      return;
-    }
-
-    const paymentMethod = GATEWAY_PAYMENT_METHOD[method];
-    if (!paymentMethod) {
-      setPaymentError('Phương thức thanh toán không hợp lệ.');
-      return;
-    }
-
-    setSubmitting(true);
-    setPaymentError('');
-    try {
-      await createPayment({
-        booking_id: booking.bookingId,
-        method: paymentMethod,
-        amount: booking.total,
-      });
-      goToSuccess(booking.bookingId);
-    } catch (err) {
-      // 409 = đơn đã được thanh toán (lần bấm trước đã commit, hoặc webhook QR
-      // về trước). Đó không phải thất bại: khách phải thấy vé, không phải một
-      // banner đỏ trong khi tiền đã trừ và đơn đã `confirmed`.
-      if ((err as { status?: number } | null)?.status === 409) {
+      // Cổng QR đã được xác nhận bởi webhook VietQR (VietQrBox chỉ gọi onPaid
+      // sau khi /api/thanh-toan/trang-thà trả về `confirmed`), nên không tạo
+      // thêm một giao dịch ở đây.
+      if (method === 'qr') {
         goToSuccess(booking.bookingId);
         return;
       }
-      setPaymentError(
-        getApiErrorMessage(
-          err,
-          'Thanh toán không thành công. Vui lòng thử lại hoặc chọn phương thức khác.'
-        )
-      );
-    } finally {
-      setSubmitting(false);
-    }
-  }, [booking, goToSuccess, method]);
+
+      const paymentMethod = GATEWAY_PAYMENT_METHOD[method];
+      if (!paymentMethod) {
+        setPaymentError('Phương thức thanh toán không hợp lệ.');
+        return;
+      }
+
+      // Cổng MOVI phải có hồ sơ tín dụng — không có hồ sơ thì server từ chối
+      // giao dịch, và đó là điều đúng: một đơn trả góp không có hồ sơ là
+      // một đơn mà bên tín dụng không thể chấm điểm.
+      if (paymentMethod === 'movi' && !application) {
+        setPaymentError('Thiếu thông tin hồ sơ trả góp. Vui lòng nhập lại hồ sơ.');
+        return;
+      }
+
+      setSubmitting(true);
+      setPaymentError('');
+      try {
+        await createPayment({
+          booking_id: booking.bookingId,
+          method: paymentMethod,
+          amount: booking.total,
+          movi:
+            paymentMethod === 'movi' && application
+              ? {
+                  fullName: application.fullName,
+                  birthDate: application.birthDate,
+                  nationalId: application.nationalId,
+                  phone: application.phone,
+                  tenor: application.tenor,
+                }
+              : undefined,
+        });
+        goToSuccess(booking.bookingId);
+      } catch (err) {
+        // 409 = đơn đã được thanh toán (lần bấm trước đã commit, hoặc webhook QR
+        // về trước). Đó không phải thất bại: khách phải thấy vé, không phải một
+        // banner đỏ trong khi tiền đã trừ và đơn đã `confirmed`.
+        if ((err as { status?: number } | null)?.status === 409) {
+          goToSuccess(booking.bookingId);
+          return;
+        }
+        setPaymentError(
+          getApiErrorMessage(
+            err,
+            'Thanh toán không thành công. Vui lòng thử lại hoặc chọn phương thức khác.'
+          )
+        );
+      } finally {
+        setSubmitting(false);
+      }
+    },
+    [booking, goToSuccess, method]
+  );
 
   if (loadState === 'loading') {
     return (
-      <div className="py-16 text-center text-sm text-gray-500">Đang tải thông tin đặt chỗ…</div>
+      <div className="py-16 text-center text-sm text-vj-gray">Đang tải thông tin đặt chỗ…</div>
     );
   }
 
@@ -297,7 +320,7 @@ export default function GatewayDispatcher() {
         )}
 
         {submitting && (
-          <div className="max-w-2xl mx-auto mt-3 px-4 text-center text-xs text-gray-500">
+          <div className="max-w-2xl mx-auto mt-3 px-4 text-center text-xs text-vj-gray">
             Đang ghi nhận thanh toán…
           </div>
         )}

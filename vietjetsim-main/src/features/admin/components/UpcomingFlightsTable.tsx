@@ -11,13 +11,13 @@ interface UpcomingFlightsTableProps {
 }
 
 const FLIGHT_STATUS_MAP: Record<string, { label: string; cls: string }> = {
-  scheduled: { label: 'Đúng giờ', cls: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' },
-  on_time: { label: 'Đúng giờ', cls: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' },
+  scheduled: { label: 'Đúng giờ', cls: 'bg-vj-pay-green text-vj-pay-green border-vj-pay-green' },
+  on_time: { label: 'Đúng giờ', cls: 'bg-vj-pay-green text-vj-pay-green border-vj-pay-green' },
   boarding: { label: 'Đang lên máy bay', cls: 'bg-sky-500/10 text-sky-400 border-sky-500/20' },
   delayed: { label: 'Chậm giờ', cls: 'bg-amber-500/10 text-amber-400 border-amber-500/20' },
-  cancelled: { label: 'Đã huỷ', cls: 'bg-rose-500/10 text-rose-400 border-rose-500/20' },
-  departed: { label: 'Đã cất cánh', cls: 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20' },
-  active: { label: 'Hoạt động', cls: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' },
+  cancelled: { label: 'Đã huỷ', cls: 'bg-vj-red-dark text-vj-red-dark border-vj-red-dark' },
+  departed: { label: 'Đã cất cánh', cls: 'bg-vj-blue text-vj-blue border-vj-blue' },
+  active: { label: 'Hoạt động', cls: 'bg-vj-pay-green text-vj-pay-green border-vj-pay-green' },
 };
 
 function formatDepartTime(isoString: string): string {
@@ -59,14 +59,14 @@ export default function UpcomingFlightsTable({
             <h3 className="font-bold text-white text-base tracking-tight">
               Chuyến bay sắp cất cánh
             </h3>
-            <p className="text-xs text-slate-400 mt-0.5">5 chuyến bay khởi hành tiếp theo</p>
+            <p className="text-xs text-vj-text-muted mt-0.5">5 chuyến bay khởi hành tiếp theo</p>
           </div>
         </div>
         {onViewAll && (
           <button
             type="button"
             onClick={onViewAll}
-            className="text-xs font-bold text-indigo-400 hover:text-indigo-300 flex items-center gap-1.5 transition-all hover:gap-2 px-3 py-1.5 rounded-lg bg-indigo-500/10 border border-indigo-500/20"
+            className="text-xs font-bold text-vj-blue hover:text-vj-blue flex items-center gap-1.5 transition-all hover:gap-2 px-3 py-1.5 rounded-vj bg-vj-blue border border-vj-blue"
           >
             Xem tất cả
             <Icon name="ArrowRightIcon" size={12} />
@@ -78,19 +78,19 @@ export default function UpcomingFlightsTable({
         <table className="w-full">
           <thead>
             <tr className="bg-white/5 border-b border-white/5">
-              <th className="text-left text-2xs font-bold text-slate-400 uppercase tracking-widest px-5 py-3.5">
+              <th className="text-left text-2xs font-bold text-vj-text-muted uppercase tracking-widest px-5 py-3.5">
                 Chuyến bay
               </th>
-              <th className="text-left text-2xs font-bold text-slate-400 uppercase tracking-widest px-5 py-3.5">
+              <th className="text-left text-2xs font-bold text-vj-text-muted uppercase tracking-widest px-5 py-3.5">
                 Tuyến bay
               </th>
-              <th className="text-left text-2xs font-bold text-slate-400 uppercase tracking-widest px-5 py-3.5">
+              <th className="text-left text-2xs font-bold text-vj-text-muted uppercase tracking-widest px-5 py-3.5">
                 Khởi hành
               </th>
-              <th className="text-center text-2xs font-bold text-slate-400 uppercase tracking-widest px-5 py-3.5">
+              <th className="text-center text-2xs font-bold text-vj-text-muted uppercase tracking-widest px-5 py-3.5">
                 Ghế trống
               </th>
-              <th className="text-right text-2xs font-bold text-slate-400 uppercase tracking-widest px-5 py-3.5">
+              <th className="text-right text-2xs font-bold text-vj-text-muted uppercase tracking-widest px-5 py-3.5">
                 Trạng thái
               </th>
             </tr>
@@ -98,7 +98,7 @@ export default function UpcomingFlightsTable({
           <tbody className="divide-y divide-white/5">
             {!hasData ? (
               <tr>
-                <td colSpan={5} className="px-5 py-8 text-center text-sm text-slate-400">
+                <td colSpan={5} className="px-5 py-8 text-center text-sm text-vj-text-muted">
                   Không có chuyến bay sắp cất cánh
                 </td>
               </tr>
@@ -106,15 +106,15 @@ export default function UpcomingFlightsTable({
               data.map((flight) => {
                 const statusMeta = FLIGHT_STATUS_MAP[flight.status.toLowerCase()] || {
                   label: flight.status,
-                  cls: 'bg-slate-500/10 text-slate-400 border-slate-500/20',
+                  cls: 'bg-slate-500 text-vj-text-muted border-vj-border-light',
                 };
 
                 const seatsColor =
                   flight.availableSeats > 20
-                    ? 'text-emerald-400'
+                    ? 'text-vj-pay-green'
                     : flight.availableSeats > 0
                       ? 'text-amber-400'
-                      : 'text-rose-400';
+                      : 'text-vj-red-dark';
 
                 return (
                   <tr
@@ -124,9 +124,9 @@ export default function UpcomingFlightsTable({
                     <td className="px-5 py-3.5 whitespace-nowrap">
                       <div className="flex items-center gap-2">
                         <Icon
-                          name="PaperAirplaneIcon"
+                          name="AirplaneIcon"
                           size={14}
-                          className="text-primary transform -rotate-45"
+                          className="text-primary transform rotate-45"
                         />
                         <span className="font-mono font-bold text-sm text-white">
                           {flight.flightNo}
@@ -134,12 +134,12 @@ export default function UpcomingFlightsTable({
                       </div>
                     </td>
                     <td className="px-5 py-3.5 whitespace-nowrap">
-                      <span className="text-sm font-semibold text-slate-200">
+                      <span className="text-sm font-semibold text-vj-text-muted">
                         {flight.route || '—'}
                       </span>
                     </td>
                     <td className="px-5 py-3.5 whitespace-nowrap">
-                      <span className="text-xs font-medium text-slate-300">
+                      <span className="text-xs font-medium text-vj-text-muted">
                         {formatDepartTime(flight.departTime)}
                       </span>
                     </td>

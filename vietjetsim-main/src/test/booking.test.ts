@@ -106,21 +106,33 @@ describe('Booking Database Module', () => {
         seats: [],
       };
 
-      (sql as any).mockResolvedValueOnce([mockBooking]);
+      // `getBookingById` quét lượt giữ chỗ quá hạn TRƯỚC khi đọc dòng
+      // booking (migration 055) — nên có HAI câu: câu sweep, rồi câu đọc.
+      // Mock theo NỘI DUNG câu, không theo thứ tự lệnh, để test không gãy
+      // mỗi khi sweep được thêm hoặc bỏ.
+      (sql as any).mockImplementation((strings: TemplateStringsArray) => {
+        const text = strings.join(' ');
+        if (text.includes('hold_expires_at')) return Promise.resolve([]);
+        return Promise.resolve([mockBooking]);
+      });
 
       const result = await getBookingById('booking-1');
 
-      expect(sql).toHaveBeenCalledTimes(1);
+      expect(sql).toHaveBeenCalledTimes(2);
       expect(result).toBeDefined();
       expect(result?.id).toBe('booking-1');
     });
 
     it('should return null if booking not found', async () => {
-      (sql as any).mockResolvedValueOnce([]);
+      (sql as any).mockImplementation((strings: TemplateStringsArray) => {
+        const text = strings.join(' ');
+        if (text.includes('hold_expires_at')) return Promise.resolve([]);
+        return Promise.resolve([]);
+      });
 
       const result = await getBookingById('booking-not-found');
 
-      expect(sql).toHaveBeenCalledTimes(1);
+      expect(sql).toHaveBeenCalledTimes(2);
       expect(result).toBeNull();
     });
   });

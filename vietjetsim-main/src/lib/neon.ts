@@ -1332,6 +1332,15 @@ function createMockSql(): SqlClient {
   const mockSeats: MockResult[] = [];
   /** Lịch sử đổi ghế (migration 046) — bảng `booking_seat_changes`. */
   const mockSeatChanges: MockResult[] = [];
+  /**
+   * Hồ sơ tín dụng MOVI (migration 055) — bảng `movi_credit_applications`.
+   *
+   * Không có store này thì hồ sơ MOVI không bao giờ được ghi trong mock
+   * mode, và mọi kiểm tra "hồ sơ đã lưu đúng" sẽ đi qua một đường không
+   * tồn tại — đúng thứ bài học "một bảng không được đo là một bảng không
+   * được canary".
+   */
+  const mockMoviApplications: MockResult[] = [];
 
   /** Sinh id giả cho dòng mock — đủ duy nhất trong phạm vi một phiên test. */
   let mockSeq = 0;
@@ -1448,6 +1457,122 @@ function createMockSql(): SqlClient {
 
   const runBookingQuery = (query: string, values: unknown[]): MockResult[] | null => {
     const q = query.toLowerCase();
+
+    // ── Giữ chỗ MOVI (migration 055) ─────────────────────────────────────────
+    //
+    // PHẢI đứng TRƯỚC nhánh generic `from bookings` bên dưới: một câu
+    // `SELECT … FROM bookings` không có handler riêng sẽ rơi vào đó và trả
+    // về TOÀN BỘ mock bookings. Với câu quét hết hạn, điều đó có nghĩa là
+    // mọi booking trong RAM bị coi là hết hạn và bị hủy — đúng thứ mà
+    // handler này phải chặn.
+    if (q.includes('from bookings') && q.includes('hold_expires_at')) {
+      // Câu quét: `SELECT b.id, b.trip_id, r.id AS return_booking_id …`
+      if (q.includes('hold_expires_at <= now()')) {
+        const now = Date.now();
+        return mockBookings
+          .filter(
+            (b) =>
+              b.status === 'pending' &&
+              b.hold_expires_at &&
+              new Date(String(b.hold_expires_at)).getTime() <= now
+          )
+          .map((b) => {
+            const returnLeg = mockBookings.find(
+              (r) =>
+                r.trip_id &&
+                r.trip_id === b.trip_id &&
+                String(r.leg_role ?? 'outbound') === 'inbound' &&
+                r.id !== b.id
+            );
+            return {
+              id: b.id,
+              trip_id: b.trip_id ?? null,
+              return_booking_id: returnLeg?.id ?? null,
+            };
+          });
+      }
+
+      // Câu đọc một lượt giữ chỗ: `SELECT id, hold_expires_at, hold_method …`
+      if (q.includes('where id =')) {
+        const id = String(values[0] ?? '');
+        const match = mockBookings.find((b) => String(b.id) === id);
+        if (!match) return [];
+        return [
+          {
+            id: match.id,
+            hold_expires_at: match.hold_expires_at ?? null,
+            hold_method: match.hold_method ?? null,
+          },
+        ];
+      }
+    }
+
+    // Đặt / xoá lượt giữ chỗ. Tham số cuối luôn là `booking_id`:
+    //   - đặt:  (expires_at, method, booking_id)
+    //   - xoá:  (booking_id)
+    if (
+      q.includes('update bookings') &&
+      q.includes('hold_expires_at') &&
+      !q.includes('set status =')
+    ) {
+      const bookingId = String(values[values.length - 1] ?? '');
+      const match = mockBookings.find((b) => String(b.id) === bookingId);
+      if (!match) return [];
+
+      if (q.includes('hold_expires_at = null')) {
+        match.hold_expires_at = null;
+        match.hold_method = null;
+        match.updated_at = nowIso();
+        return [];
+      }
+
+      // Chỉ một booking `pending` mới giữ chỗ được.
+      if (match.status !== 'pending') return [];
+      match.hold_expires_at = String(values[0] ?? '');
+      match.hold_method = values[1] ? String(values[1]) : null;
+      match.updated_at = nowIso();
+      return [
+        {
+          id: match.id,
+          hold_expires_at: match.hold_expires_at,
+          hold_method: match.hold_method,
+        },
+      ];
+    }
+
+    // ── Hồ sơ tín dụng MOVI (migration 055) ──────────────────────────────────
+    if (q.includes('insert into movi_credit_applications')) {
+      const bookingId = String(values[0] ?? '');
+      const row: MockResult = {
+        id: mockUuid(),
+        booking_id: bookingId,
+        user_id: values[1] ? String(values[1]) : null,
+        full_name: String(values[2] ?? ''),
+        birth_date: values[3] ? String(values[3]) : null,
+        national_id: String(values[4] ?? ''),
+        phone: String(values[5] ?? ''),
+        tenor_months: Number(values[6] ?? 0) || 0,
+        amount: Number(values[7] ?? 0) || 0,
+        status: 'submitted',
+        created_at: nowIso(),
+        updated_at: nowIso(),
+      };
+      const existing = mockMoviApplications.findIndex((m) => String(m.booking_id) === bookingId);
+      if (existing >= 0) {
+        // `ON CONFLICT (booking_id) DO UPDATE` — một đặt chỗ chỉ có một hồ sơ.
+        row.id = mockMoviApplications[existing].id;
+        row.created_at = mockMoviApplications[existing].created_at;
+        mockMoviApplications[existing] = row;
+        return [row];
+      }
+      mockMoviApplications.push(row);
+      return [row];
+    }
+
+    if (q.includes('from movi_credit_applications')) {
+      const bookingId = String(values[0] ?? '');
+      return mockMoviApplications.filter((m) => String(m.booking_id) === bookingId);
+    }
 
     // ── Tra cứu trip theo PNR: `SELECT b.trip_id FROM bookings b WHERE ...` ──
     if (q.includes('from bookings') && q.includes('select b.trip_id')) {
@@ -1871,17 +1996,94 @@ function createMockSql(): SqlClient {
       return rows;
     }
 
+    // `UPDATE payments SET status = 'refunded'` — hoàn tiền thì dòng giao dịch
+    // phải theo kịp đơn, nếu không bảng giao dịch admin và lịch sử thanh toán
+    // của khách vẫn hiện "đã thanh toán" cho một đơn đã được hoàn tiền.
+    //
+    // Câu SQL thật là:
+    //   UPDATE payments SET status = 'refunded'
+    //   WHERE booking_id IN (
+    //     SELECT id FROM bookings
+    //     WHERE id = $1 OR trip_id = $2::uuid
+    //   ) AND status = 'completed'
+    if (q.includes('update payments') && q.includes("set status = 'refunded'")) {
+      const bookingId = String(values[0] ?? '');
+      const tripId = values[1] ? String(values[1]) : null;
+      const targetIds = mockBookings
+        .filter((b) => String(b.id) === bookingId || (tripId && String(b.trip_id) === tripId))
+        .map((b) => String(b.id));
+      for (const p of mockPayments) {
+        if (targetIds.includes(String(p.booking_id)) && p.status === 'completed') {
+          p.status = 'refunded';
+        }
+      }
+      return [];
+    }
+
+    // `UPDATE movi_credit_applications SET status = …` — đổi trạng thái hồ sơ
+    // tín dụng. Câu SQL thật:
+    //   UPDATE movi_credit_applications
+    //   SET status = '<trạng thái>', updated_at = NOW()
+    //   WHERE booking_id = $1 [AND status = '<trạng thái cũ>']
+    //
+    // Điều kiện `AND status = …` là PHẦN CỦA LUẬT, không phải chi tiết trình
+    // bày: `rejectMoviCreditApplication` chỉ đóng hồ sơ còn ở `submitted`, và
+    // một hồ sơ đã `approved` phải được giữ nguyên (dấu vết tiền trả góp đã
+    // thu). Mock phải tôn trọng điều kiện đó, nếu không thì test sẽ "xanh" vì
+    // mock quá tử tế mà Postgres thì không.
+    if (q.includes('update movi_credit_applications')) {
+      const statusMatch = /set\s+status\s*=\s*'([^']+)'/.exec(q);
+      const newStatus = statusMatch?.[1] ?? 'submitted';
+      const guardMatch = /and\s+status\s*=\s*'([^']+)'/.exec(q);
+      const requiredStatus = guardMatch?.[1] ?? null;
+      const bookingId = String(values[0] ?? '');
+      for (const m of mockMoviApplications) {
+        if (String(m.booking_id) !== bookingId) continue;
+        if (requiredStatus && m.status !== requiredStatus) continue;
+        m.status = newStatus;
+        m.updated_at = nowIso();
+      }
+      return [];
+    }
+
     // `UPDATE bookings SET status = …` — xác nhận đặt vé sau khi thanh toán.
     if (q.includes('update bookings') && q.includes('set status =')) {
       const status = String(values[0] ?? '');
       const bookingId = String(values[5] ?? values[values.length - 1] ?? '');
       const booking = mockBookings.find((b) => String(b.id) === bookingId);
       if (!booking) return [];
+      // Hủy booking thì phải TRẢ GHẾ về kho — không thì một booking bị hủy
+      // vẫn giữ ghế trong RAM và chuyến bay không bao giờ có lại chỗ.
+      const releasesSeats = status === 'cancelled' || status === 'refunded';
+      if (releasesSeats) {
+        if (booking.status === 'cancelled' || booking.status === 'refunded') return [];
+        const seated = mockPassengers.filter(
+          (p) => String(p.booking_id) === bookingId && p.passenger_type !== 'infant'
+        ).length;
+        for (let i = mockSeats.length - 1; i >= 0; i -= 1) {
+          if (String(mockSeats[i].booking_id) === bookingId) mockSeats.splice(i, 1);
+        }
+        const flight = mockFlights.find((f) => String(f.id) === String(booking.flight_id));
+        if (flight && seated > 0) {
+          flight.available = Number(flight.available ?? 0) + seated;
+        }
+      }
       booking.status = status;
-      if (values[1] !== undefined) booking.discount_code_id = values[1];
-      if (values[2] !== undefined) booking.discount_amount = values[2];
-      if (values[3] !== undefined) booking.receipt_image = values[3];
-      if (values[4] !== undefined) booking.transfer_note = values[4];
+      // `discount_code_id` chỉ có trong câu của `createPaymentAndConfirmBooking`
+      // — câu của `updateBookingStatus` không có, nên không được đọc vị trí
+      // tham số một cách cứng nhắc.
+      if (q.includes('discount_code_id =')) {
+        if (values[1] !== undefined) booking.discount_code_id = values[1];
+        if (values[2] !== undefined) booking.discount_amount = values[2];
+        if (values[3] !== undefined) booking.receipt_image = values[3];
+        if (values[4] !== undefined) booking.transfer_note = values[4];
+      }
+      // `hold_expires_at = NULL` xuất hiện trong câu hủy booking và trong câu
+      // thanh toán thành công — cả hai đều phải xoá lượt giữ chỗ.
+      if (q.includes('hold_expires_at = null')) {
+        booking.hold_expires_at = null;
+        booking.hold_method = null;
+      }
       booking.updated_at = nowIso();
       return [booking];
     }
@@ -2065,6 +2267,23 @@ function createMockSql(): SqlClient {
 
   const runFlightAndSeatQuery = (query: string, values: unknown[]): MockResult[] | null => {
     const q = query.toLowerCase();
+
+    // ── `createBooking` là MỘT câu multi-CTE, không phải hai câu ──────────────
+    //
+    // Câu đó vừa đọc `seat_locks`, vừa `UPDATE flights` (trừ ghế), vừa `INSERT
+    // INTO bookings` — tất cả trong một statement. Nhánh `update flights` ở
+    // dưới sẽ nuốt nó: nó đọc `values[values.length - 1]` làm id chuyến bay
+    // (trong khi tham số cuối là JSON phụ dịch vụ), không tìm thấy chuyến bay
+    // nên trả `[]` — và `[]` là truthy, nên dispatcher dừng lại luôn.
+    //
+    // Hệ quả: trong mock mode, `POST /api/dat-ve` KHÔNG BAO GIỜ tạo được đặt
+    // chỗ. Luồng đặt vé "chạy" (HTTP 200) nhưng không sinh ra dữ liệu — và vì
+    // smoke test không đặt vé nên không ai thấy.
+    //
+    // Câu đó thuộc về `runBookingQuery`, nên ở đây phải trả `null` (chưa xử
+    // lý) để dispatcher đi tiếp — KHÔNG trả `[]`, vì `[]` cũng được hiểu là
+    // "đã xử lý" và sẽ chặn luôn `runBookingQuery`.
+    if (q.includes('insert into bookings')) return null;
 
     // ── `UPDATE flights SET …` (admin đổi trạng thái chuyến bay) ────────────
     //

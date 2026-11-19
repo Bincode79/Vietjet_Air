@@ -36,12 +36,12 @@ export default function PaymentGatewayHeader({
     : '/thanh-toan';
 
   return (
-    <div className="bg-white border-b border-gray-200 sticky top-0 z-30 shadow-xs">
+    <div className="bg-white border-b border-vj-border-light sticky top-0 z-30 shadow-xs">
       <div className="max-w-4xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
         {/* Back Link */}
         <Link
           href={backUrl}
-          className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-gray-600 hover:text-primary transition-colors font-koho"
+          className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-vj-text-strong hover:text-primary transition-colors font-koho"
         >
           <span className="text-base leading-none">←</span>
           <span>Đổi phương thức</span>
@@ -49,9 +49,7 @@ export default function PaymentGatewayHeader({
 
         {/* Method & PNR Badge */}
         <div className="flex items-center gap-2">
-          <span className="text-xs sm:text-sm font-bold text-gray-900 font-koho">
-            {methodTitle}
-          </span>
+          <span className="text-xs sm:text-sm font-bold text-vj-text font-koho">{methodTitle}</span>
           {bookingCode && (
             <span className="text-2xs sm:text-xs font-black uppercase px-2 py-0.5 rounded bg-red-50 text-primary border border-red-200 tracking-wider">
               Mã đặt chỗ: {bookingCode}
@@ -63,7 +61,7 @@ export default function PaymentGatewayHeader({
         <div className="flex items-center gap-3">
           {amount !== undefined && amount > 0 && (
             <div className="text-right">
-              <span className="text-3xs text-gray-400 block uppercase font-bold">
+              <span className="text-3xs text-vj-muted block uppercase font-bold">
                 Cần thanh toán
               </span>
               <span className="text-sm sm:text-base font-black text-primary font-koho">
@@ -74,9 +72,9 @@ export default function PaymentGatewayHeader({
 
           {/* Countdown Clock */}
           <div
-            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg border font-mono text-xs sm:text-sm font-bold ${
+            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-vj border font-mono text-xs sm:text-sm font-bold ${
               secondsLeft < 300
-                ? 'bg-red-50 text-red-600 border-red-300 animate-pulse'
+                ? 'bg-red-50 text-vj-red-dark border-red-300 animate-pulse'
                 : 'bg-amber-50 text-amber-800 border-amber-200'
             }`}
             title="Thời gian giữ vé"

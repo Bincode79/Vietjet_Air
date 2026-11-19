@@ -1,4 +1,11 @@
-export { default as Icon } from './AppIcon';
+export {
+  default as Icon,
+  AirplaneIcon,
+  PlaneIcon,
+  FlightIcon,
+  AirplaneTakeoffIcon,
+  AirplaneLandingIcon,
+} from './AppIcon';
 export { default as AppImage } from './AppImage';
 export { default as AppLogo } from './AppLogo';
 export { default as Button } from './Button';

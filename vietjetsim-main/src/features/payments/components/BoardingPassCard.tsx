@@ -380,7 +380,7 @@ export default function BoardingPassCard({
             type="button"
             onClick={handleDownloadPdf}
             data-testid="download-pdf"
-            className="vj-cta inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-xs font-medium uppercase shadow-lg transition-colors"
+            className="vj-cta inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-xs font-medium uppercase shadow-vj-lg transition-colors"
           >
             <MdDownload className="h-4 w-4" />
             Tải vé PDF

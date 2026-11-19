@@ -22,6 +22,12 @@ import { renderTransferNote } from '@/lib/transfer-note';
 import { validateBankTransferInput } from '@/lib/bank-transfer';
 import { computeDiscountAmount } from '@/lib/discount';
 import {
+  buildMoviTransferNote,
+  parseLegacyMoviNote,
+  validateMoviApplication,
+  type MoviApplication,
+} from '@/lib/movi';
+import {
   sendPaymentInstructionEmail,
   sendPaymentFailedEmail,
   sendPaymentPendingReviewEmail,
@@ -171,6 +177,12 @@ export async function POST(request: NextRequest) {
         { status: 409 }
       );
     }
+
+    // ─── MOVI: hồ sơ tín dụng & lượt giữ chỗ 30 phút ─────────────────────────
+    //
+    // Khối kiểm tra hồ sơ MOVI nằm SAU khối kiểm tra số tiền (xem bên dưới):
+    // một request sai số tiền phải được trả lời là "sai số tiền", không phải
+    // "thiếu hồ sơ" — client nào cũng phải nhận đúng lý do từ chối đầu tiên.
 
     // ─── Chặng về: tự suy ra từ trip của chặng đi ────────────────────────────
     //
@@ -467,6 +479,79 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // ─── MOVI: hồ sơ tín dụng & lượt giữ chỗ 30 phút ─────────────────────────
+    //
+    // Hai việc, cùng một chỗ vì cùng liên quan tới một câu hỏi: "khách này
+    // có được thanh toán bằng MOVI không".
+    //
+    //   1. HỒ SƠ. Trước đây server nhận `method: 'movi'` và không kiểm tra
+    //      gì — gọi API trực tiếp với đúng số tiền là xác nhận đơn, bỏ qua
+    //      toàn bộ bước định danh. Giờ server tự kiểm tra: hồ sơ phải có họ
+    //      tên, CCCD/CMND và số điện thoại hợp lệ.
+    //
+    //   2. LƯỢT GIỮ CHỖ. Booking có `hold_expires_at` (migration 055) được đặt
+    //      khi khách chọn MOVI. Quá 30 phút thì booking phải bị hủy — sweep
+    //      chạy trong `getBookingById`, nên tới đây thì `booking.status` đã
+    //      là `cancelled` và ta từ chối bằng thông điệp rõ ràng.
+    let moviApplication: MoviApplication | null = null;
+    let moviTransferNote: string | undefined;
+
+    if (method === 'movi') {
+      if (booking.status === 'cancelled' || booking.status === 'refunded') {
+        return NextResponse.json(
+          {
+            error: 'Reservation expired',
+            message:
+              'Thời gian giữ chỗ đã hết. Mã đặt chỗ đã bị hủy, vui lòng đặt vé lại để tiếp tục.',
+            booking_status: booking.status,
+          },
+          { status: 409 }
+        );
+      }
+
+      // Hồ sơ có cấu trúc (client mới) hoặc `transfer_note` theo định dạng cũ
+      // (client đã cache) — xem `parseLegacyMoviNote`.
+      const structuredInput = body.movi && typeof body.movi === 'object' ? body.movi : null;
+      const legacyInput = structuredInput ? null : parseLegacyMoviNote(transfer_note);
+
+      if (!structuredInput && !legacyInput) {
+        return NextResponse.json(
+          {
+            error: 'Missing MOVI profile',
+            message:
+              'Thiếu thông tin hồ sơ Bay trước trả sau (họ tên, số CMND/CCCD và số điện thoại).',
+          },
+          { status: 400 }
+        );
+      }
+
+      const validated = validateMoviApplication({
+        fullName: structuredInput?.fullName ?? legacyInput?.fullName,
+        birthDate: structuredInput?.birthDate ?? legacyInput?.birthDate,
+        nationalId: structuredInput?.nationalId ?? legacyInput?.nationalId,
+        phone: structuredInput?.phone ?? legacyInput?.phone,
+        tenor: structuredInput?.tenor ?? legacyInput?.tenor,
+      });
+
+      if (!validated.valid) {
+        return NextResponse.json(
+          {
+            error: 'Invalid MOVI profile',
+            message: validated.message,
+            field: validated.field,
+          },
+          { status: 400 }
+        );
+      }
+
+      moviApplication = validated.data;
+      // Client mới nhận một `transfer_note` tóm tắt do server dựng lại (có cả
+      // kỳ hạn và ngày sinh); client cũ giữ nguyên chuỗi nó gửi lên.
+      moviTransferNote = structuredInput
+        ? buildMoviTransferNote(moviApplication)
+        : transfer_note?.trim() || buildMoviTransferNote(moviApplication);
+    }
+
     // Nếu khách hàng đính kèm ảnh biên lai để admin đối chiếu,
     // giao dịch được đưa vào trạng thái 'pending' để admin kiểm tra tài khoản và xác nhận.
     const initialStatus = receipt_image ? 'pending' : 'completed';
@@ -507,7 +592,19 @@ export async function POST(request: NextRequest) {
       discount_amount: validatedDiscountAmount,
       receipt_image,
       transfer_note:
-        transfer_note || (booking.booking_code ? `${booking.booking_code}I98O` : undefined),
+        moviTransferNote ||
+        transfer_note ||
+        (booking.booking_code ? `${booking.booking_code}I98O` : undefined),
+      // Hồ sơ tín dụng MOVI được ghi trong CÙNG transaction với giao dịch.
+      movi: moviApplication
+        ? {
+            full_name: moviApplication.fullName,
+            birth_date: moviApplication.birthDate || null,
+            national_id: moviApplication.nationalId,
+            phone: moviApplication.phone,
+            tenor_months: moviApplication.tenorMonths,
+          }
+        : null,
     }).catch(async (paymentError) => {
       if (loyaltyPointsSpent > 0 && user) {
         try {
@@ -669,6 +766,38 @@ export async function POST(request: NextRequest) {
           created_at: result.payment.created_at,
         },
         booking_status: result.booking.status,
+        // Thông tin chi tiết của đặt chỗ để giao diện hiển thị ngay sau khi
+        // thanh toán thành công: thông tin chặng bay, thông tin vé, thông tin
+        // khách hàng và mã đặt chỗ — tất cả lấy từ dữ liệu đã ghi, không
+        // phải từ state của trình duyệt.
+        booking: {
+          id: result.booking.id,
+          booking_code: result.booking.booking_code ?? booking.booking_code,
+          status: result.booking.status,
+          total_price: Number(result.booking.total_price ?? booking.total_price ?? 0),
+          discount_amount: Number(result.booking.discount_amount ?? 0),
+          flight: {
+            flight_no: booking.flight?.flight_no ?? null,
+            from_code: booking.flight?.from_code ?? null,
+            to_code: booking.flight?.to_code ?? null,
+            depart_time: booking.flight?.depart_time ?? null,
+            arrive_time: booking.flight?.arrive_time ?? null,
+            class: booking.flight?.class ?? null,
+          },
+          passengers: (booking.passengers ?? []).map((p) => ({
+            name: p.name,
+            seat_number: p.seat_number ?? null,
+            dob: p.dob ?? null,
+            phone: p.phone ?? null,
+            email: p.email ?? null,
+          })),
+          seats: (booking.seats ?? []).map((s) => ({
+            seat_number: (s as { seat_number?: string }).seat_number ?? null,
+          })),
+        },
+        // Lượt giữ chỗ đã bị xoá khi thanh toán thành công — client dùng để
+        // dừng đồng hồ đếm ngược.
+        hold: null,
       },
       { status: 201 }
     );

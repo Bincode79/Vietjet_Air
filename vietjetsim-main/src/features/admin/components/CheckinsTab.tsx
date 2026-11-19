@@ -146,10 +146,10 @@ export default function CheckinsTab({ onToast }: { onToast?: ToastAPI }) {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h2 className="text-xl font-black text-white tracking-tight flex items-center gap-2">
-            <Icon name="ClipboardDocumentCheckIcon" size={22} className="text-emerald-400" />
+            <Icon name="ClipboardDocumentCheckIcon" size={22} className="text-vj-pay-green" />
             Quản lý làm thủ tục
           </h2>
-          <p className="text-xs text-slate-400 mt-1">
+          <p className="text-xs text-vj-text-muted mt-1">
             {totalCount.toLocaleString('vi-VN')} lượt check-in · huỷ để mở lại ghế cho khách
           </p>
         </div>
@@ -157,7 +157,7 @@ export default function CheckinsTab({ onToast }: { onToast?: ToastAPI }) {
           type="button"
           onClick={handleExportCsv}
           disabled={rows.length === 0}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold text-white bg-emerald-500/20 border border-emerald-500/30 hover:bg-emerald-500/30 transition-all active:scale-95 disabled:opacity-40"
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-vj text-xs font-bold text-white bg-vj-pay-green border border-vj-pay-green hover:bg-vj-pay-green transition-all active:scale-98 disabled:opacity-40"
         >
           <Icon name="ArrowDownTrayIcon" size={14} />
           Xuất CSV
@@ -165,7 +165,7 @@ export default function CheckinsTab({ onToast }: { onToast?: ToastAPI }) {
         <button
           type="button"
           onClick={() => fetchRows(currentPage, debouncedSearch, filterStatus)}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold text-white bg-indigo-500/20 border border-indigo-500/30 hover:bg-indigo-500/30 transition-all active:scale-95"
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-vj text-xs font-bold text-white bg-vj-blue border border-vj-blue hover:bg-vj-blue transition-all active:scale-98"
         >
           <Icon name="ArrowPathIcon" size={14} className={isLoading ? 'animate-spin' : ''} />
           Làm mới
@@ -178,13 +178,13 @@ export default function CheckinsTab({ onToast }: { onToast?: ToastAPI }) {
           <Icon
             name="MagnifyingGlassIcon"
             size={16}
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500"
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-vj-text-muted"
           />
           <input
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Tìm PNR, tên khách, số hiệu chuyến, mã check-in…"
-            className="w-full pl-9 pr-3 py-2.5 rounded-xl text-sm text-white placeholder:text-slate-500 bg-white/5 border border-white/10 focus:outline-none focus:border-indigo-400"
+            className="w-full pl-9 pr-3 py-2.5 rounded-vj text-sm text-white placeholder:text-vj-text-muted bg-white/5 border border-white/10 focus:outline-none focus:border-vj-blue"
           />
         </div>
         <select
@@ -193,7 +193,7 @@ export default function CheckinsTab({ onToast }: { onToast?: ToastAPI }) {
             setFilterStatus(e.target.value);
             setCurrentPage(1);
           }}
-          className="px-3 py-2.5 rounded-xl text-sm text-white bg-white/5 border border-white/10 focus:outline-none"
+          className="px-3 py-2.5 rounded-vj text-sm text-white bg-white/5 border border-white/10 focus:outline-none"
         >
           <option value="all">Tất cả trạng thái</option>
           <option value="pending">Chờ</option>
@@ -208,7 +208,7 @@ export default function CheckinsTab({ onToast }: { onToast?: ToastAPI }) {
         <div className="overflow-x-auto">
           <table className="w-full text-sm min-w-[900px]">
             <thead>
-              <tr className="text-left text-2xs uppercase tracking-widest text-slate-500 border-b border-white/10">
+              <tr className="text-left text-2xs uppercase tracking-widest text-vj-text-muted border-b border-white/10">
                 <th className="px-4 py-3 font-bold">Khách / PNR</th>
                 <th className="px-4 py-3 font-bold">Chuyến bay</th>
                 <th className="px-4 py-3 font-bold">Ghế</th>
@@ -221,13 +221,13 @@ export default function CheckinsTab({ onToast }: { onToast?: ToastAPI }) {
             <tbody>
               {isLoading ? (
                 <tr>
-                  <td colSpan={7} className="px-4 py-10 text-center text-slate-500">
+                  <td colSpan={7} className="px-4 py-10 text-center text-vj-text-muted">
                     Đang tải…
                   </td>
                 </tr>
               ) : rows.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="px-4 py-10 text-center text-slate-500">
+                  <td colSpan={7} className="px-4 py-10 text-center text-vj-text-muted">
                     Chưa có lượt check-in nào.
                   </td>
                 </tr>
@@ -238,21 +238,21 @@ export default function CheckinsTab({ onToast }: { onToast?: ToastAPI }) {
                     <tr key={r.id} className="border-b border-white/5 hover:bg-white/[0.03]">
                       <td className="px-4 py-3">
                         <div className="font-bold text-white">{r.passenger_name}</div>
-                        <div className="text-2xs text-slate-500 font-mono">
+                        <div className="text-2xs text-vj-text-muted font-mono">
                           {r.booking_code || r.booking_id.slice(0, 8)}
                         </div>
                       </td>
                       <td className="px-4 py-3">
                         <div className="font-bold text-sky-300 font-mono">{r.flight_no}</div>
-                        <div className="text-2xs text-slate-500">
+                        <div className="text-2xs text-vj-text-muted">
                           {r.from_code} → {r.to_code} · {formatDateTime(r.depart_time)}
                         </div>
                       </td>
                       <td className="px-4 py-3 font-mono font-bold text-white">{r.seat_number}</td>
-                      <td className="px-4 py-3 font-mono text-2xs text-slate-300">
+                      <td className="px-4 py-3 font-mono text-2xs text-vj-text-muted">
                         {r.check_in_number}
                       </td>
-                      <td className="px-4 py-3 text-xs text-slate-300">
+                      <td className="px-4 py-3 text-xs text-vj-text-muted">
                         {formatDateTime(r.check_in_time)}
                       </td>
                       <td className="px-4 py-3">
@@ -263,7 +263,7 @@ export default function CheckinsTab({ onToast }: { onToast?: ToastAPI }) {
                           <button
                             type="button"
                             onClick={() => setDetail(r)}
-                            className="px-3 py-1.5 rounded-lg text-2xs font-bold text-indigo-300 bg-indigo-500/15 border border-indigo-500/30 hover:bg-indigo-500/25"
+                            className="px-3 py-1.5 rounded-vj text-2xs font-bold text-vj-blue bg-vj-blue border border-vj-blue hover:bg-vj-blue"
                           >
                             Chi tiết
                           </button>
@@ -272,7 +272,7 @@ export default function CheckinsTab({ onToast }: { onToast?: ToastAPI }) {
                               type="button"
                               disabled={cancellingId === r.id}
                               onClick={() => handleCancel(r)}
-                              className="px-3 py-1.5 rounded-lg text-2xs font-bold text-rose-300 bg-rose-500/15 border border-rose-500/30 hover:bg-rose-500/25 disabled:opacity-50"
+                              className="px-3 py-1.5 rounded-vj text-2xs font-bold text-vj-red-dark bg-vj-red-dark border border-vj-red-dark hover:bg-vj-red-dark disabled:opacity-50"
                             >
                               {cancellingId === r.id ? 'Đang huỷ…' : 'Huỷ'}
                             </button>
@@ -317,7 +317,7 @@ export default function CheckinsTab({ onToast }: { onToast?: ToastAPI }) {
                 ['Giờ check-in', formatDateTime(detail.check_in_time)],
               ].map(([k, v]) => (
                 <div key={k} className="flex justify-between gap-4">
-                  <dt className="text-slate-500">{k}</dt>
+                  <dt className="text-vj-text-muted">{k}</dt>
                   <dd className="text-white font-semibold text-right font-mono text-xs">{v}</dd>
                 </div>
               ))}
@@ -326,7 +326,7 @@ export default function CheckinsTab({ onToast }: { onToast?: ToastAPI }) {
               <button
                 type="button"
                 onClick={() => setDetail(null)}
-                className="px-4 py-2 rounded-xl text-xs font-bold text-slate-300 bg-white/5 border border-white/10 hover:bg-white/10"
+                className="px-4 py-2 rounded-vj text-xs font-bold text-vj-text-muted bg-white/5 border border-white/10 hover:bg-white/10"
               >
                 Đóng
               </button>
@@ -335,7 +335,7 @@ export default function CheckinsTab({ onToast }: { onToast?: ToastAPI }) {
                   type="button"
                   disabled={cancellingId === detail.id}
                   onClick={() => handleCancel(detail)}
-                  className="px-4 py-2 rounded-xl text-xs font-bold text-white bg-rose-600 hover:bg-rose-500 disabled:opacity-50"
+                  className="px-4 py-2 rounded-vj text-xs font-bold text-white bg-vj-red-dark hover:bg-vj-red-dark disabled:opacity-50"
                 >
                   Huỷ check-in
                 </button>

@@ -236,7 +236,7 @@ export default function SeatSelectionDrawer({
       {/* Drawer content */}
       <div className="relative w-full max-w-lg bg-white h-full shadow-2xl flex flex-col z-10 animate-slideInRight">
         {/* Header with Vietjet curve top-right (Screenshot 9) */}
-        <div className="relative bg-primary-dark text-white px-4 py-3 flex items-center justify-between shadow-md overflow-hidden">
+        <div className="relative bg-primary-dark text-white px-4 py-3 flex items-center justify-between shadow-vj-md overflow-hidden">
           <div className="w-8 shrink-0" />
           <h2 className="font-jambono font-medium text-base2 text-white text-center">
             CHỌN CHỖ NGỒI YÊU THÍCH
@@ -244,7 +244,7 @@ export default function SeatSelectionDrawer({
           <div className="relative z-10">
             <button
               onClick={onClose}
-              className="text-gray-900 bg-white/90 hover:bg-white p-1 rounded-full transition-colors flex items-center justify-center h-7 w-7"
+              className="text-vj-text bg-white/90 hover:bg-white p-1 rounded-full transition-colors flex items-center justify-center h-7 w-7"
               aria-label="Đóng"
             >
               <RiCloseLine size={20} />
@@ -264,14 +264,14 @@ export default function SeatSelectionDrawer({
         </div>
 
         {/* Legs tabs */}
-        <div className="flex border-b border-gray-200 bg-white">
+        <div className="flex border-b border-vj-border-light bg-white">
           <button
             type="button"
             onClick={() => setActiveLeg('outbound')}
             className={`flex-1 py-2.5 text-center text-xs font-bold transition-all border-b-2 ${
               activeLeg === 'outbound'
                 ? 'border-primary-dark text-primary-dark'
-                : 'border-transparent text-gray-500 hover:text-gray-800'
+                : 'border-transparent text-vj-gray hover:text-vj-text-strong'
             }`}
           >
             Chuyến đi
@@ -283,7 +283,7 @@ export default function SeatSelectionDrawer({
               className={`flex-1 py-2.5 text-center text-xs font-bold transition-all border-b-2 ${
                 activeLeg === 'inbound'
                   ? 'border-primary-dark text-primary-dark'
-                  : 'border-transparent text-gray-500 hover:text-gray-800'
+                  : 'border-transparent text-vj-gray hover:text-vj-text-strong'
               }`}
             >
               Chuyến về
@@ -292,13 +292,13 @@ export default function SeatSelectionDrawer({
         </div>
 
         {/* Passenger Card matching Screenshot 9 */}
-        <div className="p-4 bg-gray-50 border-b border-gray-200">
-          <div className="max-w-xs mx-auto overflow-hidden rounded-vj border border-red-200 shadow-sm bg-white text-center">
+        <div className="p-4 bg-vj-surface-2 border-b border-vj-border-light">
+          <div className="max-w-xs mx-auto overflow-hidden rounded-vj border border-red-200 shadow-vj-sm bg-white text-center">
             <div className="bg-primary-dark py-2 px-4 text-white">
               <div className="text-3xs uppercase tracking-wider text-white/80">Người lớn</div>
               <div className="text-sm font-black uppercase tracking-tight">{passengerName}</div>
             </div>
-            <div className="py-2.5 px-4 text-sm font-bold text-gray-900 font-koho">
+            <div className="py-2.5 px-4 text-sm font-bold text-vj-text font-koho">
               {activeLeg === 'outbound'
                 ? `${flight.from} - ${flight.to}`
                 : `${returnFlight?.from || flight.to} - ${returnFlight?.to || flight.from}`}
@@ -310,7 +310,7 @@ export default function SeatSelectionDrawer({
         <div className="flex-1 overflow-y-auto px-4 py-3 bg-slate-50">
           {/* Banner */}
           <div className="bg-gradient-to-r from-red-50 to-amber-50 rounded-vj p-3 mb-3 border border-red-100 flex items-center gap-3">
-            <div className="relative w-14 h-14 shrink-0 rounded-full overflow-hidden bg-white shadow-sm border border-red-200">
+            <div className="relative w-14 h-14 shrink-0 rounded-full overflow-hidden bg-white shadow-vj-sm border border-red-200">
               <Image
                 src="/images/hero/vj-flight-attendant.png"
                 alt="Tiếp viên Vietjet"
@@ -336,14 +336,14 @@ export default function SeatSelectionDrawer({
 
           {/* SSE Live indicator */}
           <div className="flex items-center gap-1.5 mb-3">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-            <span className="text-3xs font-medium text-emerald-700">
+            <span className="w-1.5 h-1.5 rounded-full bg-vj-pay-green animate-pulse" />
+            <span className="text-3xs font-medium text-vj-pay-green">
               Cập nhật chỗ ngồi thời gian thực
             </span>
           </div>
 
           {/* Seat Legend — nhãn 14px/500, swatch 24×24 bo 2px (đo 13/11/2026) */}
-          <div className="bg-white rounded-vj p-3 border border-gray-200 shadow-sm mb-4">
+          <div className="bg-white rounded-vj p-3 border border-vj-border-light shadow-vj-sm mb-4">
             <div className="grid grid-cols-2 gap-y-2 gap-x-3 text-sm font-medium text-vj-text">
               <div className="flex items-center gap-2">
                 <span className="w-6 h-6 rounded border-2 border-amber-300 bg-amber-100/70 shrink-0" />
@@ -372,7 +372,7 @@ export default function SeatSelectionDrawer({
                 <span>Đã có người</span>
               </div>
               <div className="flex items-center gap-2">
-                <span className="w-6 h-6 rounded border-2 border-gray-400 bg-gray-300 text-gray-500 flex items-center justify-center text-3xs font-bold shrink-0">
+                <span className="w-6 h-6 rounded border-2 border-gray-400 bg-vj-surface-3 text-vj-gray flex items-center justify-center text-3xs font-bold shrink-0">
                   🔒
                 </span>
                 <span>Đang giữ</span>
@@ -381,13 +381,13 @@ export default function SeatSelectionDrawer({
           </div>
 
           {/* Cabin Doors Notice */}
-          <div className="flex justify-between text-2xs text-gray-500 font-bold uppercase mb-2 px-1">
+          <div className="flex justify-between text-2xs text-vj-gray font-bold uppercase mb-2 px-1">
             <span>Cửa lên tàu bay ↗</span>
             <span>Cửa lên tàu bay ↖</span>
           </div>
 
           {/* Seat Grid */}
-          <div className="bg-white rounded-vj p-3 border border-gray-200 shadow-inner">
+          <div className="bg-white rounded-vj p-3 border border-vj-border-light shadow-inner">
             {/* Header letters — 14px/500 #6D6E71 (đo 13/11/2026) */}
             <div className="flex items-center justify-between text-sm font-medium text-vj-currency-gray mb-2 px-1">
               <div className="flex gap-2">
@@ -397,7 +397,7 @@ export default function SeatSelectionDrawer({
                   </span>
                 ))}
               </div>
-              <span className="w-6 text-center text-gray-300">|</span>
+              <span className="w-6 text-center text-vj-muted">|</span>
               <div className="flex gap-2">
                 {COLS_RIGHT.map((col) => (
                   <span key={col} className="w-7 text-center">
@@ -428,7 +428,7 @@ export default function SeatSelectionDrawer({
                           const isSelected = currentSeats.includes(seatId);
 
                           let bgColor =
-                            'bg-vj-surface-fare text-vj-text border border-[var(--vj-field-line)] hover:bg-gray-100'; // standard
+                            'bg-vj-surface-fare text-vj-text border border-[var(--vj-field-line)] hover:bg-vj-pill'; // standard
                           if (row <= 2)
                             bgColor =
                               'bg-amber-100/70 text-amber-900 border border-amber-300 hover:bg-amber-200';
@@ -444,7 +444,7 @@ export default function SeatSelectionDrawer({
                             bgColor =
                               'bg-primary text-white border border-primary ring-2 ring-primary/40';
                           if (isOccupied) bgColor = 'bg-vj-sold-out text-white cursor-not-allowed';
-                          if (isLocked) bgColor = 'bg-gray-300 text-gray-500 cursor-not-allowed';
+                          if (isLocked) bgColor = 'bg-vj-surface-3 text-vj-gray cursor-not-allowed';
 
                           return (
                             <button
@@ -463,7 +463,7 @@ export default function SeatSelectionDrawer({
                       </div>
 
                       {/* Row number in aisle */}
-                      <span className="w-6 text-center text-xs2 font-black text-gray-400">
+                      <span className="w-6 text-center text-xs2 font-black text-vj-muted">
                         {row}
                       </span>
 
@@ -478,7 +478,7 @@ export default function SeatSelectionDrawer({
                           // Bảng màu ghế theo số đo site thật (13/11/2026) —
                           // giống hệt cột trái để lưới ghế nhìn là một khối.
                           let bgColor =
-                            'bg-vj-surface-fare text-vj-text border border-[var(--vj-field-line)] hover:bg-gray-100'; // standard
+                            'bg-vj-surface-fare text-vj-text border border-[var(--vj-field-line)] hover:bg-vj-pill'; // standard
                           if (row <= 2)
                             bgColor =
                               'bg-amber-100/70 text-amber-900 border border-amber-300 hover:bg-amber-200';
@@ -494,7 +494,7 @@ export default function SeatSelectionDrawer({
                             bgColor =
                               'bg-primary text-white border border-primary ring-2 ring-primary/40';
                           if (isOccupied) bgColor = 'bg-vj-sold-out text-white cursor-not-allowed';
-                          if (isLocked) bgColor = 'bg-gray-300 text-gray-500 cursor-not-allowed';
+                          if (isLocked) bgColor = 'bg-vj-surface-3 text-vj-gray cursor-not-allowed';
 
                           return (
                             <button
@@ -522,7 +522,7 @@ export default function SeatSelectionDrawer({
         {/* Sticky Drawer Footer — "Tổng tiền" 20px/600 trắng, giá 22px/700
             JambonoMedium trắng (đo 13/11/2026). Danh sách ghế đã chọn là dòng
             phụ 13px/500 nên không cạnh tranh với nhãn tổng. */}
-        <div className="bg-primary-dark text-white p-3 flex items-center justify-between shadow-lg">
+        <div className="bg-primary-dark text-white p-3 flex items-center justify-between shadow-vj-lg">
           <div>
             <span className="text-2xl3 font-semibold text-white block">Tổng tiền</span>
             <span className="text-sm2 font-medium text-white/85 block mt-0.5">

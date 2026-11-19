@@ -17,7 +17,7 @@ const TrophyIcon = ({ className, style }: { className?: string; style?: React.CS
 
 export default function AwardsSection() {
   return (
-    <section className="bg-gray-50 border-y border-gray-200 py-8">
+    <section className="bg-vj-surface-2 border-y border-vj-border-light py-8">
       <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-6">
           <p className="text-xs font-bold uppercase tracking-[0.15em] text-vj-muted">
@@ -28,7 +28,7 @@ export default function AwardsSection() {
           {AWARDS?.map((award, i) => (
             <div key={i} className="flex flex-col items-center text-center gap-2">
               <div
-                className="w-14 h-14 rounded-full flex items-center justify-center shadow-sm"
+                className="w-14 h-14 rounded-full flex items-center justify-center shadow-vj-sm"
                 style={{
                   background: 'linear-gradient(135deg, #FFF9C4 0%, #FFF176 100%)',
                   border: '1.5px solid #FFDD00',

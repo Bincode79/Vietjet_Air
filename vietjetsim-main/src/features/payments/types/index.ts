@@ -23,6 +23,20 @@ export interface CreatePaymentInput {
   receipt_image?: string;
   /** SkyPoint points to redeem for Cash + Points hybrid payment */
   points_to_redeem?: number;
+  /**
+   * Hồ sơ tín dụng "Bay trước trả sau" (MOVI).
+   *
+   * Gửi có cấu trúc thay vì nhét vào `transfer_note`: hồ sơ này được lưu
+   * vào `movi_credit_applications` (migration 055) để bên tín dụng đọc được
+   * CCCD, ngày sinh, số điện thoại và kỳ hạn — không phải một chuỗi tự do.
+   */
+  movi?: {
+    fullName: string;
+    birthDate: string;
+    nationalId: string;
+    phone: string;
+    tenor: number;
+  };
 }
 
 export interface Pagination {

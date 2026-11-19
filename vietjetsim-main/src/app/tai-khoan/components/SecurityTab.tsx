@@ -123,12 +123,12 @@ function TwoFASetupModal({ onClose, onSuccess }: { onClose: () => void; onSucces
 
               {/* QR Code placeholder */}
               <div className="flex justify-center my-4">
-                <div className="w-48 h-48 bg-[var(--surface-2)] rounded-xl flex items-center justify-center border-2 border-dashed border-[var(--border)]">
+                <div className="w-48 h-48 bg-[var(--surface-2)] rounded-vj flex items-center justify-center border-2 border-dashed border-[var(--border)]">
                   {uri ? (
                     <img
                       src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(uri)}`}
                       alt="2FA QR Code"
-                      className="w-44 h-44 rounded-lg"
+                      className="w-44 h-44 rounded-vj"
                     />
                   ) : (
                     <Icon name="QrCodeIcon" size={48} className="text-[var(--foreground-subtle)]" />
@@ -136,7 +136,7 @@ function TwoFASetupModal({ onClose, onSuccess }: { onClose: () => void; onSucces
                 </div>
               </div>
 
-              <div className="bg-[var(--surface-2)] rounded-xl p-4 text-left">
+              <div className="bg-[var(--surface-2)] rounded-vj p-4 text-left">
                 <p className="text-xs text-[var(--foreground-muted)] font-semibold mb-1 font-[Be_Vietnam_Pro,sans-serif]">
                   Hoặc nhập mã thủ công:
                 </p>
@@ -149,7 +149,7 @@ function TwoFASetupModal({ onClose, onSuccess }: { onClose: () => void; onSucces
                 <button
                   onClick={initSetup}
                   disabled={loading}
-                  className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-[var(--primary)] text-white rounded-xl font-semibold font-[KoHo,sans-serif] hover:bg-primary-dark transition-all active:scale-95 disabled:opacity-50"
+                  className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-[var(--primary)] text-white rounded-vj font-semibold font-[KoHo,sans-serif] hover:bg-primary-dark transition-all active:scale-98 disabled:opacity-50"
                 >
                   {loading ? (
                     <Icon name="ArrowPathIcon" size={18} className="animate-spin" />
@@ -160,7 +160,7 @@ function TwoFASetupModal({ onClose, onSuccess }: { onClose: () => void; onSucces
                 <button
                   aria-label="Đóng"
                   onClick={onClose}
-                  className="px-6 py-3 bg-[var(--surface-2)] text-[var(--foreground-muted)] rounded-xl font-semibold font-[KoHo,sans-serif] hover:bg-[var(--surface-3)] transition-all"
+                  className="px-6 py-3 bg-[var(--surface-2)] text-[var(--foreground-muted)] rounded-vj font-semibold font-[KoHo,sans-serif] hover:bg-[var(--surface-3)] transition-all"
                 >
                   Hủy
                 </button>
@@ -170,8 +170,8 @@ function TwoFASetupModal({ onClose, onSuccess }: { onClose: () => void; onSucces
 
           {step === 'verify' && (
             <div className="space-y-4 text-center">
-              <div className="w-20 h-20 bg-emerald-500/10 rounded-full flex items-center justify-center mx-auto">
-                <Icon name="ShieldCheckIcon" size={36} className="text-emerald-500" />
+              <div className="w-20 h-20 bg-vj-pay-green rounded-full flex items-center justify-center mx-auto">
+                <Icon name="ShieldCheckIcon" size={36} className="text-vj-pay-green" />
               </div>
               <h4 className="text-base font-bold font-[KoHo,sans-serif] text-[var(--vj-navy)]">
                 Nhập mã xác thực
@@ -184,7 +184,7 @@ function TwoFASetupModal({ onClose, onSuccess }: { onClose: () => void; onSucces
                 type="text"
                 value={token}
                 onChange={(e) => setToken(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                className="w-full text-center text-3xl tracking-[0.5em] px-4 py-4 bg-[var(--surface-2)] border border-[var(--border)] rounded-xl focus:outline-none focus:ring-2 focus:ring-[rgb(var(--primary-rgb))]/20 focus:border-[var(--primary)] font-[KoHo,sans-serif]"
+                className="w-full text-center text-3xl tracking-[0.5em] px-4 py-4 bg-[var(--surface-2)] border border-[var(--border)] rounded-vj focus:outline-none focus:ring-2 focus:ring-[rgb(var(--primary-rgb))]/20 focus:border-[var(--primary)] font-[KoHo,sans-serif]"
                 placeholder="000000"
                 maxLength={6}
               />
@@ -193,7 +193,7 @@ function TwoFASetupModal({ onClose, onSuccess }: { onClose: () => void; onSucces
                 <button
                   onClick={handleVerify}
                   disabled={loading || token.length !== 6}
-                  className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-[var(--primary)] text-white rounded-xl font-semibold font-[KoHo,sans-serif] hover:bg-primary-dark transition-all active:scale-95 disabled:opacity-50"
+                  className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-[var(--primary)] text-white rounded-vj font-semibold font-[KoHo,sans-serif] hover:bg-primary-dark transition-all active:scale-98 disabled:opacity-50"
                 >
                   {loading ? (
                     <Icon name="ArrowPathIcon" size={18} className="animate-spin" />
@@ -204,7 +204,7 @@ function TwoFASetupModal({ onClose, onSuccess }: { onClose: () => void; onSucces
                 <button
                   aria-label="Đóng"
                   onClick={onClose}
-                  className="px-6 py-3 bg-[var(--surface-2)] text-[var(--foreground-muted)] rounded-xl font-semibold font-[KoHo,sans-serif] hover:bg-[var(--surface-3)] transition-all"
+                  className="px-6 py-3 bg-[var(--surface-2)] text-[var(--foreground-muted)] rounded-vj font-semibold font-[KoHo,sans-serif] hover:bg-[var(--surface-3)] transition-all"
                 >
                   Hủy
                 </button>
@@ -214,8 +214,8 @@ function TwoFASetupModal({ onClose, onSuccess }: { onClose: () => void; onSucces
 
           {step === 'done' && (
             <div className="space-y-4 text-center">
-              <div className="w-20 h-20 bg-emerald-500/10 rounded-full flex items-center justify-center mx-auto">
-                <Icon name="CheckCircleIcon" size={36} className="text-emerald-500" />
+              <div className="w-20 h-20 bg-vj-pay-green rounded-full flex items-center justify-center mx-auto">
+                <Icon name="CheckCircleIcon" size={36} className="text-vj-pay-green" />
               </div>
               <h4 className="text-base font-bold font-[KoHo,sans-serif] text-[var(--vj-navy)]">
                 Mã dự phòng
@@ -229,7 +229,7 @@ function TwoFASetupModal({ onClose, onSuccess }: { onClose: () => void; onSucces
                 {backupCodes.map((code, i) => (
                   <div
                     key={i}
-                    className="bg-[var(--surface-2)] rounded-lg px-3 py-2 text-center font-mono text-sm font-bold text-[var(--vj-navy)] font-[Be_Vietnam_Pro,sans-serif]"
+                    className="bg-[var(--surface-2)] rounded-vj px-3 py-2 text-center font-mono text-sm font-bold text-[var(--vj-navy)] font-[Be_Vietnam_Pro,sans-serif]"
                   >
                     {code}
                   </div>
@@ -239,7 +239,7 @@ function TwoFASetupModal({ onClose, onSuccess }: { onClose: () => void; onSucces
               <div className="flex gap-3 pt-2">
                 <button
                   onClick={handleFinish}
-                  className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-emerald-500 text-white rounded-xl font-semibold font-[KoHo,sans-serif] hover:bg-emerald-600 transition-all active:scale-95"
+                  className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-vj-pay-green text-white rounded-vj font-semibold font-[KoHo,sans-serif] hover:bg-vj-pay-green transition-all active:scale-98"
                 >
                   <Icon name="CheckIcon" size={18} />
                   Hoàn tất
@@ -389,14 +389,14 @@ export default function SecurityTab() {
                 <>
                   <button
                     onClick={() => setShow2FASetup(true)}
-                    className="px-4 py-2 bg-[var(--surface-2)] text-[var(--foreground-muted)] rounded-lg text-sm font-semibold font-[KoHo,sans-serif] hover:bg-[var(--surface-3)] transition-all"
+                    className="px-4 py-2 bg-[var(--surface-2)] text-[var(--foreground-muted)] rounded-vj text-sm font-semibold font-[KoHo,sans-serif] hover:bg-[var(--surface-3)] transition-all"
                   >
                     Cập nhật
                   </button>
                   <button
                     onClick={handleDisable2FA}
                     disabled={actionLoading === 'disable2fa'}
-                    className="px-4 py-2 bg-red-50/10 text-red-600 rounded-lg text-sm font-semibold font-[KoHo,sans-serif] hover:bg-red-100 transition-all disabled:opacity-50"
+                    className="px-4 py-2 bg-red-50/10 text-vj-red-dark rounded-vj text-sm font-semibold font-[KoHo,sans-serif] hover:bg-vj-surface-rose transition-all disabled:opacity-50"
                   >
                     Tắt 2FA
                   </button>
@@ -404,7 +404,7 @@ export default function SecurityTab() {
               ) : (
                 <button
                   onClick={() => setShow2FASetup(true)}
-                  className="px-5 py-2 bg-[var(--primary)] text-white rounded-lg text-sm font-semibold font-[KoHo,sans-serif] hover:bg-primary-dark transition-all active:scale-95 shadow-sm"
+                  className="px-5 py-2 bg-[var(--primary)] text-white rounded-vj text-sm font-semibold font-[KoHo,sans-serif] hover:bg-primary-dark transition-all active:scale-98 shadow-vj-sm"
                 >
                   Kích hoạt
                 </button>
@@ -425,7 +425,7 @@ export default function SecurityTab() {
             <button
               onClick={handleLogoutAll}
               disabled={actionLoading === 'all'}
-              className="text-xs text-red-500 hover:text-red-600 font-semibold font-[Be_Vietnam_Pro,sans-serif] disabled:opacity-50"
+              className="text-xs text-vj-red hover:text-vj-red-dark font-semibold font-[Be_Vietnam_Pro,sans-serif] disabled:opacity-50"
             >
               {actionLoading === 'all' ? 'Đang xử lý...' : 'Đăng xuất tất cả'}
             </button>
@@ -439,7 +439,7 @@ export default function SecurityTab() {
           ) : (
             sessions.map((session) => (
               <div key={session.id} className="p-4 flex items-center gap-4">
-                <div className="w-10 h-10 bg-[var(--surface-2)] rounded-xl flex items-center justify-center flex-shrink-0">
+                <div className="w-10 h-10 bg-[var(--surface-2)] rounded-vj flex items-center justify-center flex-shrink-0">
                   <Icon
                     name={
                       session.device_type === 'Mobile'
@@ -459,7 +459,7 @@ export default function SecurityTab() {
                         `${session.browser || 'Trình duyệt'} trên ${session.os || 'thiết bị'}`}
                     </span>
                     {session.is_current && (
-                      <span className="px-2 py-0.5 bg-emerald-500/10 text-emerald-500 rounded-full text-xs font-semibold font-[Be_Vietnam_Pro,sans-serif]">
+                      <span className="px-2 py-0.5 bg-vj-pay-green text-vj-pay-green rounded-full text-xs font-semibold font-[Be_Vietnam_Pro,sans-serif]">
                         Hiện tại
                       </span>
                     )}
@@ -473,7 +473,7 @@ export default function SecurityTab() {
                   <button
                     onClick={() => handleLogoutSession(session.id)}
                     disabled={actionLoading === session.id}
-                    className="text-xs text-red-500 hover:text-red-600 font-semibold font-[Be_Vietnam_Pro,sans-serif] disabled:opacity-50"
+                    className="text-xs text-vj-red hover:text-vj-red-dark font-semibold font-[Be_Vietnam_Pro,sans-serif] disabled:opacity-50"
                   >
                     {actionLoading === session.id ? '...' : 'Đăng xuất'}
                   </button>
@@ -501,14 +501,14 @@ export default function SecurityTab() {
             history.map((item) => (
               <div key={item.id} className="p-4 flex items-center gap-4">
                 <div
-                  className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${
-                    item.success ? 'bg-emerald-500/10' : 'bg-red-500/10'
+                  className={`w-8 h-8 rounded-vj flex items-center justify-center flex-shrink-0 ${
+                    item.success ? 'bg-vj-pay-green' : 'bg-red-500/10'
                   }`}
                 >
                   <Icon
                     name={item.success ? 'CheckCircleIcon' : 'XCircleIcon'}
                     size={16}
-                    className={item.success ? 'text-emerald-500' : 'text-red-500'}
+                    className={item.success ? 'text-vj-pay-green' : 'text-vj-red'}
                   />
                 </div>
                 <div className="flex-1 min-w-0">

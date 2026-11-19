@@ -41,7 +41,7 @@ export default function InsuranceDrawer({
       {/* Drawer content */}
       <div className="relative w-full max-w-lg bg-white h-full shadow-2xl flex flex-col z-10 animate-slideInRight">
         {/* Header - Red bar matching Screenshot 1 */}
-        <div className="bg-primary-dark text-white px-4 py-3 flex items-center justify-between shadow-md">
+        <div className="bg-primary-dark text-white px-4 py-3 flex items-center justify-between shadow-vj-md">
           <h2 className="text-sm sm:text-base font-black uppercase tracking-wider">
             BẢO HIỂM DU LỊCH VIETJET TRAVEL SAFE
           </h2>
@@ -55,9 +55,9 @@ export default function InsuranceDrawer({
         </div>
 
         {/* Scrollable body */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-4 text-xs text-gray-700 leading-relaxed">
+        <div className="flex-1 overflow-y-auto p-4 space-y-4 text-xs text-vj-text-dim leading-relaxed">
           {/* Banner */}
-          <div className="rounded-vj overflow-hidden bg-gradient-to-r from-emerald-600 via-teal-500 to-cyan-600 text-white p-4 shadow-sm relative flex items-center min-h-[90px]">
+          <div className="rounded-vj overflow-hidden bg-gradient-to-r from-emerald-600 via-teal-500 to-cyan-600 text-white p-4 shadow-vj-sm relative flex items-center min-h-[90px]">
             <div className="relative z-10 max-w-[70%]">
               <h3 className="text-base font-black italic mb-1 text-white">Bảo hiểm du lịch,</h3>
               <p className="text-xs font-bold text-amber-200">
@@ -74,7 +74,7 @@ export default function InsuranceDrawer({
               Đơn vị cung cấp dịch vụ bảo hiểm:{' '}
               <span className="text-primary-dark font-black italic">BaoViet Insurance</span>
             </p>
-            <p className="mt-2 text-gray-800 font-bold">
+            <p className="mt-2 text-vj-text-strong font-bold">
               Thật yên tâm và thoải mái với chương trình bảo hiểm du lịch toàn diện cho chuyến đi:
             </p>
           </div>
@@ -104,7 +104,7 @@ export default function InsuranceDrawer({
             </li>
           </ul>
 
-          <div className="text-xs2 text-gray-600 space-y-2 pt-2 border-t border-gray-100">
+          <div className="text-xs2 text-vj-text-strong space-y-2 pt-2 border-t border-vj-border-light">
             <p>
               Bằng việc chọn Đồng ý mua Bảo hiểm du lịch, Quý khách đã đọc, hiểu, đồng ý với các
               điều kiện, điều khoản của Quy tắc Bảo hiểm và ủy quyền cho Vietjet cung cấp dữ liệu cá
@@ -130,15 +130,15 @@ export default function InsuranceDrawer({
               (19001886) trước khi thực hiện chuyến bay để được hỗ trợ. Giấy chứng nhận bảo hiểm
               không thể được cấp sau chuyến bay.
             </p>
-            <p className="font-bold text-gray-800">
+            <p className="font-bold text-vj-text-strong">
               Cùng trải nghiệm dịch vụ bảo hiểm du lịch toàn diện với quyền lợi bảo hiểm hấp dẫn,
               đáp ứng nhu cầu đa dạng
             </p>
           </div>
 
           {/* Radio choices matching Screenshot 1 */}
-          <div className="space-y-2.5 pt-3 border-t border-gray-200">
-            <label className="flex items-center gap-3 cursor-pointer p-2.5 rounded-vj border border-gray-200 hover:bg-gray-50 transition-colors">
+          <div className="space-y-2.5 pt-3 border-t border-vj-border-light">
+            <label className="flex items-center gap-3 cursor-pointer p-2.5 rounded-vj border border-vj-border-light hover:bg-vj-surface-2 transition-colors">
               <input
                 type="radio"
                 name="insurance_choice"
@@ -146,13 +146,13 @@ export default function InsuranceDrawer({
                 onChange={() => setSelectedOption(true)}
                 className="w-4 h-4 text-primary-dark focus:ring-primary-dark accent-primary-dark"
               />
-              <span className="font-bold text-gray-900">
+              <span className="font-bold text-vj-text">
                 Đồng ý mua Bảo hiểm du lịch ({TRAVEL_SAFE_INSURANCE_PRICE.toLocaleString('vi-VN')}{' '}
                 VND)
               </span>
             </label>
 
-            <label className="flex items-center gap-3 cursor-pointer p-2.5 rounded-vj border border-gray-200 hover:bg-gray-50 transition-colors">
+            <label className="flex items-center gap-3 cursor-pointer p-2.5 rounded-vj border border-vj-border-light hover:bg-vj-surface-2 transition-colors">
               <input
                 type="radio"
                 name="insurance_choice"
@@ -160,7 +160,7 @@ export default function InsuranceDrawer({
                 onChange={() => setSelectedOption(false)}
                 className="w-4 h-4 text-primary-dark focus:ring-primary-dark accent-primary-dark"
               />
-              <span className="font-bold text-gray-700">Không, cảm ơn</span>
+              <span className="font-bold text-vj-text-dim">Không, cảm ơn</span>
             </label>
           </div>
 
@@ -171,7 +171,7 @@ export default function InsuranceDrawer({
         </div>
 
         {/* Footer Red Bar matching Screenshot 1 */}
-        <div className="bg-primary-dark text-white p-3 flex items-center justify-between shadow-lg">
+        <div className="bg-primary-dark text-white p-3 flex items-center justify-between shadow-vj-lg">
           <div className="flex items-center gap-2 max-w-[65%]">
             <div className="w-9 h-9 rounded-vj bg-white/20 flex items-center justify-center shrink-0">
               <RiShieldCheckLine size={20} className="text-white" />
@@ -188,7 +188,7 @@ export default function InsuranceDrawer({
           <button
             type="button"
             onClick={handleConfirm}
-            className="bg-vjyellow hover:bg-accent-light text-gray-900 font-black px-6 py-2 rounded-vj text-sm shadow transition-all active:scale-95"
+            className="bg-vjyellow hover:bg-accent-light text-vj-text font-black px-6 py-2 rounded-vj text-sm shadow transition-all active:scale-98"
           >
             Xác nhận
           </button>

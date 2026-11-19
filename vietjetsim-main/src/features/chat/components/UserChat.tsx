@@ -661,7 +661,7 @@ export default function UserChat() {
             ? { left: launcherPos.x, top: launcherPos.y, right: 'auto', bottom: 'auto' }
             : undefined
         }
-        className={`fixed z-50 items-end touch-manipulation ${
+        className={`fixed z-[70] items-end touch-manipulation ${
           isDragging ? 'cursor-grabbing' : 'cursor-grab'
         } ${
           launcherPos
@@ -670,7 +670,7 @@ export default function UserChat() {
               : 'flex'
             : isOpen
               ? 'bottom-[calc(96px+env(safe-area-inset-bottom))] right-3 hidden sm:flex sm:bottom-4 sm:right-4'
-              : 'bottom-[calc(96px+env(safe-area-inset-bottom))] right-3 flex transition-transform duration-200 hover:-translate-y-0.5 active:scale-95 sm:bottom-4 sm:right-4'
+              : 'bottom-[calc(96px+env(safe-area-inset-bottom))] right-3 flex transition-transform duration-200 hover:-translate-y-0.5 active:scale-98 sm:bottom-4 sm:right-4'
         }`}
       >
         {isOpen ? (
@@ -679,7 +679,7 @@ export default function UserChat() {
           </span>
         ) : (
           <span className="flex items-end gap-2">
-            <span className="mb-7 hidden sm:inline-block whitespace-nowrap rounded-lg bg-white px-3.5 py-2 text-base2 font-bold text-[var(--foreground)] shadow-vj-elev-md ring-1 ring-black/5">
+            <span className="mb-7 hidden sm:inline-block whitespace-nowrap rounded-vj bg-white px-3.5 py-2 text-base2 font-bold text-[var(--foreground)] shadow-vj-elev-md ring-1 ring-black/5">
               Xin chào!
             </span>
             <img
@@ -705,12 +705,12 @@ export default function UserChat() {
               setIsOpen(true);
               setLatestAdminMessagePreview(null);
             }}
-            className="absolute bottom-full right-0 mb-3 w-64 p-3 bg-white border border-red-200 rounded-2xl shadow-xl animate-fadeIn cursor-pointer hover:border-red-400 transition-all text-left z-50"
+            className="absolute bottom-full right-0 mb-3 w-64 p-3 bg-white border border-red-200 rounded-2xl shadow-xl animate-fadeIn cursor-pointer hover:border-red-400 transition-all text-left z-[70]"
           >
-            <div className="flex items-center justify-between pb-1 mb-1 border-b border-gray-100">
+            <div className="flex items-center justify-between pb-1 mb-1 border-b border-vj-border-light">
               <div className="flex items-center gap-1.5">
                 <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                <span className="text-3xs font-bold text-red-600 uppercase">
+                <span className="text-3xs font-bold text-vj-red-dark uppercase">
                   Tin nhắn từ Tổng đài
                 </span>
               </div>
@@ -720,15 +720,15 @@ export default function UserChat() {
                   e.stopPropagation();
                   setLatestAdminMessagePreview(null);
                 }}
-                className="text-gray-400 hover:text-gray-600 text-xs px-1"
+                className="text-vj-muted hover:text-vj-text-strong text-xs px-1"
               >
                 ✕
               </button>
             </div>
-            <p className="text-xs text-gray-800 line-clamp-2 leading-relaxed">
+            <p className="text-xs text-vj-text-strong line-clamp-2 leading-relaxed">
               {latestAdminMessagePreview}
             </p>
-            <span className="text-3xs text-red-600 font-bold mt-1 inline-block hover:underline">
+            <span className="text-3xs text-vj-red-dark font-bold mt-1 inline-block hover:underline">
               Bấm để trả lời →
             </span>
           </div>
@@ -737,16 +737,16 @@ export default function UserChat() {
 
       {/* Chat Window */}
       {isOpen && (
-        <div className="fixed inset-x-0 bottom-0 z-50 flex h-[min(600px,calc(100dvh-64px))] pb-[env(safe-area-inset-bottom)] flex-col overflow-hidden rounded-t-vj-hero border border-gray-200 bg-white shadow-2xl sm:inset-x-auto sm:bottom-24 sm:right-6 sm:h-[620px] sm:w-[400px] sm:rounded-vj-hero sm:pb-0">
+        <div className="fixed inset-x-0 bottom-0 z-[70] flex h-[min(600px,calc(100dvh-64px))] pb-[env(safe-area-inset-bottom)] flex-col overflow-hidden rounded-t-vj-hero border border-vj-border-light bg-white shadow-2xl sm:inset-x-auto sm:bottom-24 sm:right-6 sm:h-[620px] sm:w-[400px] sm:rounded-vj-hero sm:pb-0">
           {/* Header chuẩn Trợ lý ảo Amy */}
-          <div className="relative flex flex-shrink-0 items-center justify-between border-b border-gray-100 bg-white px-4 py-3 shadow-xs">
+          <div className="relative flex flex-shrink-0 items-center justify-between border-b border-vj-border-light bg-white px-4 py-3 shadow-xs">
             <div className="flex items-center gap-2.5">
-              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-red-600 text-white shadow-sm ring-1 ring-red-700">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-vj-red-dark text-white shadow-vj-sm ring-1 ring-red-700">
                 <span className="font-black text-2xs italic tracking-tighter">vietjet</span>
               </div>
               <div>
                 <div className="flex items-center gap-1.5">
-                  <h3 className="font-bold text-red-600 font-koho text-sm sm:text-base leading-tight">
+                  <h3 className="font-bold text-vj-red-dark font-koho text-sm sm:text-base leading-tight">
                     Vietjet Air 24/7
                   </h3>
                   <span
@@ -754,7 +754,7 @@ export default function UserChat() {
                     title={operatorOnline ? 'Online' : 'Offline'}
                   />
                 </div>
-                <div className="text-3xs text-gray-400 leading-tight">Tổng đài Vietjet Air</div>
+                <div className="text-3xs text-vj-muted leading-tight">Tổng đài Vietjet Air</div>
               </div>
             </div>
 
@@ -764,7 +764,7 @@ export default function UserChat() {
                   type="button"
                   onClick={handleStartCall}
                   disabled={isCallConnecting}
-                  className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-green-50 hover:bg-green-100 text-green-700 border border-green-200 text-xs font-bold transition-all shadow-2xs touch-manipulation active:scale-95"
+                  className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-green-50 hover:bg-green-100 text-green-700 border border-green-200 text-xs font-bold transition-all shadow-2xs touch-manipulation active:scale-98"
                   title="Gọi thoại trực tiếp với tổng đài viên Vietjet 24/7"
                 >
                   <Icon name="PhoneIcon" size={13} className="text-green-600" />
@@ -774,7 +774,7 @@ export default function UserChat() {
 
               <button
                 onClick={() => setIsOpen(false)}
-                className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors font-black text-lg touch-manipulation"
+                className="flex h-8 w-8 items-center justify-center rounded-vj text-vj-text-dim hover:bg-vj-pill hover:text-vj-text transition-colors font-black text-lg touch-manipulation"
                 aria-label="Đóng chat hỗ trợ"
                 title="Thu nhỏ"
               >
@@ -795,75 +795,75 @@ export default function UserChat() {
                 <form
                   onSubmit={handleStartGuestChat}
                   noValidate
-                  className="bg-white rounded-2xl border border-red-100 p-4 shadow-sm space-y-3"
+                  className="bg-white rounded-2xl border border-red-100 p-4 shadow-vj-sm space-y-3"
                 >
-                  <div className="flex items-center justify-between border-b border-gray-100 pb-2">
-                    <span className="text-xs font-bold text-red-600 font-koho uppercase tracking-wider">
+                  <div className="flex items-center justify-between border-b border-vj-border-light pb-2">
+                    <span className="text-xs font-bold text-vj-red-dark font-koho uppercase tracking-wider">
                       Thông tin khách hàng
                     </span>
                   </div>
 
                   <div className="space-y-2.5 text-xs">
                     <div>
-                      <label className="block text-2xs font-bold text-gray-700 mb-1">
-                        Họ &amp; Tên : <span className="text-red-600">*</span>
+                      <label className="block text-2xs font-bold text-vj-text-dim mb-1">
+                        Họ &amp; Tên : <span className="text-vj-red-dark">*</span>
                       </label>
                       <input
                         type="text"
                         value={guestName}
                         onChange={(e) => setGuestName(e.target.value)}
                         placeholder="Nguyễn Văn A"
-                        className="vj-guest-field w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-1.5 text-xs text-gray-900 focus:outline-none focus:border-red-500 focus:bg-white transition-all"
+                        className="vj-guest-field w-full bg-vj-surface-2 border border-vj-border-light rounded-vj px-3 py-1.5 text-xs text-vj-text focus:outline-none focus:border-red-500 focus:bg-white transition-all"
                         required
                       />
                     </div>
                     <div>
-                      <label className="block text-2xs font-bold text-gray-700 mb-1">
-                        Số điện thoại : <span className="text-red-600">*</span>
+                      <label className="block text-2xs font-bold text-vj-text-dim mb-1">
+                        Số điện thoại : <span className="text-vj-red-dark">*</span>
                       </label>
                       <input
                         type="tel"
                         value={guestPhone}
                         onChange={(e) => setGuestPhone(e.target.value.replace(/[^0-9]/g, ''))}
                         placeholder="0912345678"
-                        className="vj-guest-field w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-1.5 text-xs text-gray-900 focus:outline-none focus:border-red-500 focus:bg-white transition-all"
+                        className="vj-guest-field w-full bg-vj-surface-2 border border-vj-border-light rounded-vj px-3 py-1.5 text-xs text-vj-text focus:outline-none focus:border-red-500 focus:bg-white transition-all"
                         required
                       />
                     </div>
                     <div>
-                      <label className="block text-2xs font-bold text-gray-700 mb-1">
-                        Số CCCD : <span className="text-red-600">*</span>
+                      <label className="block text-2xs font-bold text-vj-text-dim mb-1">
+                        Số CCCD : <span className="text-vj-red-dark">*</span>
                       </label>
                       <input
                         type="text"
                         value={guestIdNumber}
                         onChange={(e) => setGuestIdNumber(e.target.value)}
                         placeholder="001201012345"
-                        className="vj-guest-field w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-1.5 text-xs text-gray-900 focus:outline-none focus:border-red-500 focus:bg-white transition-all"
+                        className="vj-guest-field w-full bg-vj-surface-2 border border-vj-border-light rounded-vj px-3 py-1.5 text-xs text-vj-text focus:outline-none focus:border-red-500 focus:bg-white transition-all"
                         required
                       />
                     </div>
 
                     {guestError && (
-                      <p className="text-2xs text-red-600 font-medium">{guestError}</p>
+                      <p className="text-2xs text-vj-red-dark font-medium">{guestError}</p>
                     )}
 
                     <button
                       type="submit"
                       disabled={isStartingGuest}
-                      className="w-full bg-red-600 hover:bg-red-700 disabled:opacity-50 text-white font-bold text-xs py-2 rounded-lg shadow-sm transition-colors mt-1"
+                      className="w-full bg-vj-red-dark hover:bg-red-700 disabled:opacity-50 text-white font-bold text-xs py-2 rounded-vj shadow-vj-sm transition-colors mt-1"
                     >
                       {isStartingGuest ? 'Đang kết nối...' : 'Bắt đầu trò chuyện'}
                     </button>
                   </div>
 
-                  <div className="pt-2 border-t border-gray-100 text-center space-y-1">
-                    <p className="text-3xs text-gray-500">
+                  <div className="pt-2 border-t border-vj-border-light text-center space-y-1">
+                    <p className="text-3xs text-vj-gray">
                       Đăng nhập để trò chuyện cùng tổng đài viên và xem lại lịch sử hỗ trợ của bạn.
                     </p>
                     <Link
                       href="/dang-nhap?redirect=/trang-chu"
-                      className="text-2xs font-bold text-red-600 hover:underline inline-block"
+                      className="text-2xs font-bold text-vj-red-dark hover:underline inline-block"
                     >
                       Đăng nhập để trò chuyện
                     </Link>
@@ -874,23 +874,23 @@ export default function UserChat() {
               <div className="space-y-3 pt-1">
                 {/* Thẻ thông tin khách hàng nếu có */}
                 {(guestName || user) && (
-                  <div className="bg-white rounded-xl border border-red-100 p-3 shadow-xs space-y-1 text-2xs text-gray-700">
-                    <div className="font-bold text-red-600 uppercase text-3xs">
+                  <div className="bg-white rounded-vj border border-red-100 p-3 shadow-xs space-y-1 text-2xs text-vj-text-dim">
+                    <div className="font-bold text-vj-red-dark uppercase text-3xs">
                       Thông tin đã ghi nhận:
                     </div>
                     <div>
                       Họ &amp; Tên :{' '}
-                      <strong className="text-gray-900">{guestName || user?.fullName}</strong>
+                      <strong className="text-vj-text">{guestName || user?.fullName}</strong>
                     </div>
                     {(guestPhone || user?.phone) && (
                       <div>
                         Số điện thoại :{' '}
-                        <strong className="text-gray-900">{guestPhone || user?.phone}</strong>
+                        <strong className="text-vj-text">{guestPhone || user?.phone}</strong>
                       </div>
                     )}
                     {guestIdNumber && (
                       <div>
-                        Số CCCD : <strong className="text-gray-900">{guestIdNumber}</strong>
+                        Số CCCD : <strong className="text-vj-text">{guestIdNumber}</strong>
                       </div>
                     )}
                   </div>
@@ -898,7 +898,7 @@ export default function UserChat() {
 
                 {/* Lời chào 2 */}
                 <div className="flex items-start">
-                  <div className="bg-gray-100 rounded-2xl rounded-tl-sm p-3 text-xs text-gray-800 leading-relaxed shadow-xs max-w-[85%]">
+                  <div className="bg-vj-pill rounded-2xl rounded-tl-sm p-3 text-xs text-vj-text-strong leading-relaxed shadow-xs max-w-[85%]">
                     Is there anything else I can help you with?
                   </div>
                 </div>
@@ -917,7 +917,7 @@ export default function UserChat() {
                       key={label}
                       type="button"
                       onClick={() => handleSend(label)}
-                      className="rounded-full border border-red-200 bg-white px-3.5 py-1.5 text-2xs font-medium text-red-600 shadow-xs hover:bg-red-50 hover:border-red-300 transition-colors text-right"
+                      className="rounded-full border border-red-200 bg-white px-3.5 py-1.5 text-2xs font-medium text-vj-red-dark shadow-xs hover:bg-vj-surface-rose hover:border-red-300 transition-colors text-right"
                     >
                       {label}
                     </button>
@@ -925,9 +925,9 @@ export default function UserChat() {
                 </div>
 
                 {/* Rate the service quality card */}
-                <div className="bg-gray-100/80 rounded-2xl p-3.5 border border-gray-200/60 space-y-1.5 shadow-xs">
-                  <h4 className="font-bold text-xs text-gray-900">Rate the service quality</h4>
-                  <p className="text-2xs text-gray-600 leading-relaxed">
+                <div className="bg-vj-pill/80 rounded-2xl p-3.5 border border-vj-border-light/60 space-y-1.5 shadow-xs">
+                  <h4 className="font-bold text-xs text-vj-text">Rate the service quality</h4>
+                  <p className="text-2xs text-vj-text-strong leading-relaxed">
                     With the desire to provide the best service experience for our customers, please
                     help Amy by rating the quality of the support service. Your feedback is
                     extremely valuable to Amy.
@@ -935,7 +935,7 @@ export default function UserChat() {
                   <button
                     type="button"
                     onClick={() => handleSend('Đánh giá dịch vụ 5 sao')}
-                    className="text-2xs font-bold text-red-600 hover:underline pt-1 block"
+                    className="text-2xs font-bold text-vj-red-dark hover:underline pt-1 block"
                   >
                     Send feedback to Amy
                   </button>
@@ -960,7 +960,7 @@ export default function UserChat() {
                         <Icon
                           name={isMissed ? 'PhoneXMarkIcon' : 'PhoneIcon'}
                           size={13}
-                          className={isMissed ? 'text-red-500' : 'text-green-600'}
+                          className={isMissed ? 'text-vj-red' : 'text-green-600'}
                         />
                         <span>{msg.content}</span>
                       </div>
@@ -971,7 +971,7 @@ export default function UserChat() {
                 return (
                   <div key={msg.id} className={`flex ${isUser ? 'justify-end' : 'justify-start'}`}>
                     {!isUser && (
-                      <div className="relative w-7 h-7 bg-red-600 rounded-full flex items-center justify-center mr-2 flex-shrink-0 mt-1 text-white text-3xs font-black italic">
+                      <div className="relative w-7 h-7 bg-vj-red-dark rounded-full flex items-center justify-center mr-2 flex-shrink-0 mt-1 text-white text-3xs font-black italic">
                         vj
                       </div>
                     )}
@@ -981,8 +981,8 @@ export default function UserChat() {
                       <div
                         className={`px-3.5 py-2.5 rounded-2xl text-xs sm:text-sm leading-relaxed select-text whitespace-pre-wrap touch-manipulation ${
                           isUser
-                            ? 'bg-red-600 text-white rounded-br-sm'
-                            : 'bg-gray-100 text-gray-900 border border-gray-200/80 rounded-bl-sm shadow-xs'
+                            ? 'bg-vj-red-dark text-white rounded-br-sm'
+                            : 'bg-vj-pill text-vj-text border border-vj-border-light/80 rounded-bl-sm shadow-xs'
                         }`}
                       >
                         {msg.content}
@@ -990,13 +990,13 @@ export default function UserChat() {
                       <div
                         className={`flex items-center gap-1 px-1 ${isUser ? 'flex-row-reverse' : 'flex-row'}`}
                       >
-                        <span className="text-3xs text-gray-400">{formatTime(msg.created_at)}</span>
+                        <span className="text-3xs text-vj-muted">{formatTime(msg.created_at)}</span>
                         {isUser && (
                           <span title={msg.read_at ? 'Đã xem' : 'Đã gửi'}>
                             {msg.read_at ? (
                               <Icon name="CheckCircleIcon" size={12} className="text-blue-500" />
                             ) : (
-                              <Icon name="CheckIcon" size={12} className="text-gray-400" />
+                              <Icon name="CheckIcon" size={12} className="text-vj-muted" />
                             )}
                           </span>
                         )}
@@ -1010,10 +1010,10 @@ export default function UserChat() {
             {/* Admin typing indicator */}
             {adminTyping && (
               <div className="flex justify-start">
-                <div className="w-7 h-7 bg-red-600 rounded-full flex items-center justify-center mr-2 flex-shrink-0 mt-1 text-white text-3xs font-black italic">
+                <div className="w-7 h-7 bg-vj-red-dark rounded-full flex items-center justify-center mr-2 flex-shrink-0 mt-1 text-white text-3xs font-black italic">
                   vj
                 </div>
-                <div className="bg-gray-100 border border-gray-200 rounded-2xl rounded-bl-sm shadow-xs px-3.5 py-2.5 flex items-center gap-1">
+                <div className="bg-vj-pill border border-vj-border-light rounded-2xl rounded-bl-sm shadow-xs px-3.5 py-2.5 flex items-center gap-1">
                   <span
                     className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce"
                     style={{ animationDelay: '0ms' }}
@@ -1035,7 +1035,7 @@ export default function UserChat() {
 
           {/* Composer — khi đã đăng nhập hoặc khách đã bấm Bắt đầu trò chuyện */}
           {(!isGuest || isGuestChatStarted) && (
-            <div className="relative px-3 pt-2 pb-2 bg-white border-t border-gray-100 flex-shrink-0">
+            <div className="relative px-3 pt-2 pb-2 bg-white border-t border-vj-border-light flex-shrink-0">
               {/* Quick AI Policy Suggestions */}
               <div className="flex items-center gap-1.5 overflow-x-auto pb-1.5 mb-1 no-scrollbar no-scrollbar">
                 {[
@@ -1060,16 +1060,16 @@ export default function UserChat() {
                       setInputText(item.q);
                       inputRef.current?.focus();
                     }}
-                    className="whitespace-nowrap px-2.5 py-0.5 rounded-full text-3xs font-semibold bg-gray-100 hover:bg-red-50 text-gray-700 hover:text-primary border border-gray-200 transition-colors flex-shrink-0"
+                    className="whitespace-nowrap px-2.5 py-0.5 rounded-full text-3xs font-semibold bg-vj-pill hover:bg-vj-surface-rose text-vj-text-dim hover:text-primary border border-vj-border-light transition-colors flex-shrink-0"
                   >
                     {item.label}
                   </button>
                 ))}
               </div>
-              <div className="flex items-center gap-2 bg-gray-100 rounded-full px-3 py-1.5 border border-gray-200 focus-within:border-red-400 focus-within:bg-white transition-all shadow-xs">
+              <div className="flex items-center gap-2 bg-vj-pill rounded-full px-3 py-1.5 border border-vj-border-light focus-within:border-red-400 focus-within:bg-white transition-all shadow-xs">
                 <button
                   type="button"
-                  className="text-gray-500 hover:text-gray-700 px-1 py-0.5"
+                  className="text-vj-gray hover:text-vj-text-dim px-1 py-0.5"
                   title="Menu"
                 >
                   <span className="text-xs font-bold leading-none select-none">☰</span>
@@ -1083,12 +1083,12 @@ export default function UserChat() {
                   onChange={handleInputChange}
                   onKeyDown={handleKeyDown}
                   placeholder="Nhập tin nhắn..."
-                  className="flex-1 bg-transparent text-xs text-gray-900 placeholder-gray-400 outline-none min-w-0 py-1"
+                  className="flex-1 bg-transparent text-xs text-vj-text placeholder-gray-400 outline-none min-w-0 py-1"
                   disabled={sending}
                 />
                 <button
                   type="button"
-                  className="text-gray-400 hover:text-gray-600 p-1"
+                  className="text-vj-muted hover:text-vj-text-strong p-1"
                   title="Đính kèm"
                 >
                   <Icon name="PaperClipIcon" size={16} />
@@ -1096,7 +1096,7 @@ export default function UserChat() {
                 <button
                   onClick={() => handleSend()}
                   disabled={!inputText.trim() || sending}
-                  className="text-red-600 disabled:text-gray-300 p-1 hover:scale-105 transition-transform"
+                  className="text-vj-red-dark disabled:text-vj-muted p-1 hover:scale-105 transition-transform"
                   title="Gửi"
                 >
                   {sending ? (
@@ -1108,9 +1108,9 @@ export default function UserChat() {
               </div>
 
               {/* Footer text & Vietjet swoosh */}
-              <div className="mt-1 flex items-center justify-center text-3xs text-gray-400 gap-1 select-none">
+              <div className="mt-1 flex items-center justify-center text-3xs text-vj-muted gap-1 select-none">
                 <span>Vietjet Air</span>
-                <span className="font-bold text-red-600">VinBigdata</span>
+                <span className="font-bold text-vj-red-dark">VinBigdata</span>
               </div>
             </div>
           )}

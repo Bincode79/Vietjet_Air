@@ -43,7 +43,7 @@ export default function PageHero({
         {showHomeLink && (
           <Link
             href="/trang-chu"
-            className="mt-7 inline-flex min-h-11 items-center gap-2 rounded-vj bg-[var(--background)] px-5 text-sm font-bold text-[var(--primary)] shadow-lg hover:-translate-y-0.5"
+            className="mt-7 inline-flex min-h-11 items-center gap-2 rounded-vj bg-[var(--background)] px-5 text-sm font-bold text-[var(--primary)] shadow-vj-lg hover:-translate-y-0.5"
           >
             <Icon name="ArrowLeftIcon" size={18} />
             Quay lại trang chủ

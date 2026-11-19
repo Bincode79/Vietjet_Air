@@ -29,17 +29,15 @@ export default function GlobalError({
         <h1 className="text-3xl font-bold text-[var(--vj-navy)] font-koho">Đã xảy ra lỗi</h1>
 
         {/* Description */}
-        <p className="text-gray-600 text-base leading-relaxed font-heading-sm">
+        <p className="text-vj-text-strong text-base leading-relaxed font-heading-sm">
           Rất tiếc, đã có sự cố xảy ra khi xử lý yêu cầu của bạn. Vui lòng thử lại hoặc quay về
           trang chủ.
         </p>
 
         {/* Error Code */}
         {error.digest && (
-          <div className="bg-gray-50 rounded-lg p-3 border border-gray-200">
-            <p className="text-xs text-gray-500 font-mono font-heading-sm">
-              Mã lỗi: {error.digest}
-            </p>
+          <div className="bg-vj-surface-2 rounded-vj p-3 border border-vj-border-light">
+            <p className="text-xs text-vj-gray font-mono font-heading-sm">Mã lỗi: {error.digest}</p>
           </div>
         )}
 
@@ -47,7 +45,7 @@ export default function GlobalError({
         <div className="flex flex-col sm:flex-row gap-3 justify-center pt-2">
           <button
             onClick={reset}
-            className="inline-flex items-center justify-center gap-2 bg-[var(--primary)] hover:bg-primary-dark text-white font-semibold px-6 py-3 rounded-lg transition-colors duration-200 shadow-md hover:shadow-lg active:scale-95 font-koho"
+            className="inline-flex items-center justify-center gap-2 bg-[var(--primary)] hover:bg-primary-dark text-white font-semibold px-6 py-3 rounded-vj transition-colors duration-200 shadow-vj-md hover:shadow-vj-lg active:scale-98 font-koho"
           >
             <Icon name="ArrowPathIcon" variant="outline" size={20} />
             Thử lại
@@ -55,7 +53,7 @@ export default function GlobalError({
 
           <Link
             href="/"
-            className="inline-flex items-center justify-center gap-2 bg-[var(--vj-navy)] hover:bg-vj-navy-deep text-white font-semibold px-6 py-3 rounded-lg transition-colors duration-200 shadow-md hover:shadow-lg active:scale-95 font-koho"
+            className="inline-flex items-center justify-center gap-2 bg-[var(--vj-navy)] hover:bg-vj-navy-deep text-white font-semibold px-6 py-3 rounded-vj transition-colors duration-200 shadow-vj-md hover:shadow-vj-lg active:scale-98 font-koho"
           >
             <Icon name="HomeIcon" variant="outline" size={20} />
             Về trang chủ

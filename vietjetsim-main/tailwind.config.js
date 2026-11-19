@@ -259,6 +259,8 @@ module.exports = {
           dark: '#242424',
           border: '#ececec',
           'surface-alt': '#fafafa',
+          'surface-2': '#f1f2f4',
+          'surface-3': '#e7e8eb',
           // Gradient endpoints used by the header menu bar and CTA buttons.
           'red-grad-from': '#D91A21',
           'red-grad-to': '#6F0000',

@@ -43,7 +43,7 @@ interface ToolResult {
 
 const CATEGORY_ICONS: Record<string, string> = {
   booking: 'TicketIcon',
-  flight: 'PaperAirplaneIcon',
+  flight: 'AirplaneIcon',
   user: 'UsersIcon',
   chat: 'ChatBubbleLeftRightIcon',
   refund: 'BanknotesIcon',
@@ -184,7 +184,7 @@ export default function SstkTab({ onToast }: { onToast?: ToastAPI }) {
       <div className="flex items-center justify-center h-64">
         <div className="flex flex-col items-center gap-3">
           <div className="w-10 h-10 border-4 border-red-200 border-t-red-600 rounded-full animate-spin" />
-          <p className="text-sm text-gray-500 font-koho">Đang tải SSTK...</p>
+          <p className="text-sm text-vj-gray font-koho">Đang tải SSTK...</p>
         </div>
       </div>
     );
@@ -193,11 +193,11 @@ export default function SstkTab({ onToast }: { onToast?: ToastAPI }) {
   if (error && tools.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center h-64 gap-3">
-        <Icon name="ExclamationTriangleIcon" size={40} className="text-gray-400" />
-        <p className="text-gray-500 font-koho">{error}</p>
+        <Icon name="ExclamationTriangleIcon" size={40} className="text-vj-muted" />
+        <p className="text-vj-gray font-koho">{error}</p>
         <button
           onClick={fetchTools}
-          className="px-4 py-2 rounded-lg text-white text-sm font-semibold bg-primary-solid"
+          className="px-4 py-2 rounded-vj text-white text-sm font-semibold bg-primary-solid"
         >
           Thử lại
         </button>
@@ -220,11 +220,13 @@ export default function SstkTab({ onToast }: { onToast?: ToastAPI }) {
         </div>
 
         {/* View toggle */}
-        <div className="flex rounded-lg overflow-hidden border border-gray-200">
+        <div className="flex rounded-vj overflow-hidden border border-vj-border-light">
           <button
             onClick={() => setActiveView('tools')}
             className={`px-4 py-2 text-sm font-semibold transition-all ${
-              activeView === 'tools' ? 'text-white' : 'bg-white text-gray-600 hover:bg-gray-50'
+              activeView === 'tools'
+                ? 'text-white'
+                : 'bg-white text-vj-text-strong hover:bg-vj-surface-2'
             }`}
             style={{
               background: activeView === 'tools' ? '#EC2029' : undefined,
@@ -237,7 +239,9 @@ export default function SstkTab({ onToast }: { onToast?: ToastAPI }) {
           <button
             onClick={() => setActiveView('logs')}
             className={`px-4 py-2 text-sm font-semibold transition-all ${
-              activeView === 'logs' ? 'text-white' : 'bg-white text-gray-600 hover:bg-gray-50'
+              activeView === 'logs'
+                ? 'text-white'
+                : 'bg-white text-vj-text-strong hover:bg-vj-surface-2'
             }`}
             style={{
               background: activeView === 'logs' ? '#EC2029' : undefined,
@@ -253,7 +257,7 @@ export default function SstkTab({ onToast }: { onToast?: ToastAPI }) {
       {/* Last execution result banner */}
       {lastResult && (
         <div
-          className={`rounded-xl p-4 flex items-start gap-3 ${
+          className={`rounded-vj p-4 flex items-start gap-3 ${
             lastResult.success ? 'bg-green-50 border' : 'bg-red-50 border'
           }`}
           style={{ borderColor: lastResult.success ? '#86EFAC' : '#FCA5A5' }}
@@ -261,7 +265,7 @@ export default function SstkTab({ onToast }: { onToast?: ToastAPI }) {
           <Icon
             name={lastResult.success ? 'CheckCircleIcon' : 'XCircleIcon'}
             size={20}
-            className={lastResult.success ? 'text-green-600' : 'text-red-600'}
+            className={lastResult.success ? 'text-green-600' : 'text-vj-red-dark'}
             style={{ flexShrink: 0, marginTop: 1 }}
           />
           <div className="flex-1 min-w-0">
@@ -278,7 +282,10 @@ export default function SstkTab({ onToast }: { onToast?: ToastAPI }) {
               {new Date(lastResult.executedAt).toLocaleString('vi-VN')}
             </div>
           </div>
-          <button onClick={() => setLastResult(null)} className="text-gray-400 hover:text-gray-600">
+          <button
+            onClick={() => setLastResult(null)}
+            className="text-vj-muted hover:text-vj-text-strong"
+          >
             <Icon name="XMarkIcon" size={16} />
           </button>
         </div>
@@ -293,8 +300,8 @@ export default function SstkTab({ onToast }: { onToast?: ToastAPI }) {
               onClick={() => setActiveCategory('all')}
               className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all ${
                 activeCategory === 'all'
-                  ? 'text-white shadow-sm'
-                  : 'bg-white text-gray-600 hover:bg-gray-50 border border-gray-200'
+                  ? 'text-white shadow-vj-sm'
+                  : 'bg-white text-vj-text-strong hover:bg-vj-surface-2 border border-vj-border-light'
               }`}
               style={{
                 background: activeCategory === 'all' ? '#EC2029' : undefined,
@@ -308,8 +315,8 @@ export default function SstkTab({ onToast }: { onToast?: ToastAPI }) {
                 onClick={() => setActiveCategory(cat)}
                 className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all capitalize ${
                   activeCategory === cat
-                    ? 'text-white shadow-sm'
-                    : 'bg-white text-gray-600 hover:bg-gray-50 border border-gray-200'
+                    ? 'text-white shadow-vj-sm'
+                    : 'bg-white text-vj-text-strong hover:bg-vj-surface-2 border border-vj-border-light'
                 }`}
                 style={{
                   background:
@@ -323,7 +330,7 @@ export default function SstkTab({ onToast }: { onToast?: ToastAPI }) {
 
           {/* Tools grid */}
           {filteredTools.length === 0 ? (
-            <div className="text-center py-12 text-gray-400">
+            <div className="text-center py-12 text-vj-muted">
               <Icon name="MagnifyingGlassIcon" size={32} className="mx-auto mb-2 opacity-50" />
               <p className="font-koho">Không có công cụ nào trong danh mục này</p>
             </div>
@@ -337,12 +344,12 @@ export default function SstkTab({ onToast }: { onToast?: ToastAPI }) {
                 return (
                   <div
                     key={tool.key}
-                    className="group bg-white rounded-xl border border-gray-200 p-4 hover:shadow-md transition-all duration-200 hover:border-red-200"
+                    className="group bg-white rounded-vj border border-vj-border-light p-4 hover:shadow-vj-md transition-all duration-200 hover:border-red-200"
                   >
                     {/* Card header */}
                     <div className="flex items-start gap-3">
                       <div
-                        className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
+                        className="w-10 h-10 rounded-vj flex items-center justify-center flex-shrink-0"
                         style={{ background: catStyle.bg, border: `1px solid ${catStyle.border}` }}
                       >
                         <Icon
@@ -378,7 +385,7 @@ export default function SstkTab({ onToast }: { onToast?: ToastAPI }) {
                             setCustomParams({});
                           }}
                           disabled={isRunning}
-                          className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-white text-xs font-semibold disabled:opacity-50 transition-all hover:shadow-sm"
+                          className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-vj text-white text-xs font-semibold disabled:opacity-50 transition-all hover:shadow-vj-sm"
                           style={{ background: isRunning ? '#9CA3AF' : '#EC2029' }}
                         >
                           {isRunning ? (
@@ -396,7 +403,7 @@ export default function SstkTab({ onToast }: { onToast?: ToastAPI }) {
                         <button
                           onClick={() => executeTool(tool.key)}
                           disabled={isRunning}
-                          className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-white text-xs font-semibold disabled:opacity-50 transition-all hover:shadow-sm"
+                          className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-vj text-white text-xs font-semibold disabled:opacity-50 transition-all hover:shadow-vj-sm"
                           style={{ background: isRunning ? '#9CA3AF' : '#EC2029' }}
                         >
                           {isRunning ? (
@@ -414,7 +421,7 @@ export default function SstkTab({ onToast }: { onToast?: ToastAPI }) {
 
                       {/* Quick info */}
                       <button
-                        className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
+                        className="w-8 h-8 rounded-vj flex items-center justify-center text-vj-muted hover:text-vj-text-strong hover:bg-vj-pill transition-colors"
                         title={`Tool key: ${tool.key}`}
                       >
                         <Icon name="InformationCircleIcon" size={16} />
@@ -430,19 +437,19 @@ export default function SstkTab({ onToast }: { onToast?: ToastAPI }) {
 
       {/* ─── LOGS VIEW ───────────────────────────────────────────────────── */}
       {activeView === 'logs' && (
-        <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-          <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between">
+        <div className="bg-white rounded-vj border border-vj-border-light overflow-hidden">
+          <div className="px-4 py-3 border-b border-vj-border-light flex items-center justify-between">
             <h3 className="font-bold text-sm font-heading-sm">Lịch sử thực thi công cụ</h3>
             <button
               onClick={fetchLogs}
-              className="text-xs font-semibold px-3 py-1.5 rounded-lg hover:bg-gray-100 transition-colors font-koho"
+              className="text-xs font-semibold px-3 py-1.5 rounded-vj hover:bg-vj-pill transition-colors font-koho"
             >
               <Icon name="ArrowPathIcon" size={13} className="inline mr-1" /> Làm mới
             </button>
           </div>
 
           {logs.length === 0 ? (
-            <div className="text-center py-12 text-gray-400">
+            <div className="text-center py-12 text-vj-muted">
               <Icon name="ClockIcon" size={32} className="mx-auto mb-2 opacity-50" />
               <p className="text-sm font-koho">Chưa có lịch sử thực thi</p>
               <p className="text-xs mt-1">Chạy một công cụ để xem log tại đây</p>
@@ -452,7 +459,7 @@ export default function SstkTab({ onToast }: { onToast?: ToastAPI }) {
               {logs.map((log) => {
                 const badge = STATUS_BADGE[log.status];
                 return (
-                  <div key={log.id} className="px-4 py-3 hover:bg-gray-50 transition-colors">
+                  <div key={log.id} className="px-4 py-3 hover:bg-vj-surface-2 transition-colors">
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 flex-wrap">
@@ -464,7 +471,7 @@ export default function SstkTab({ onToast }: { onToast?: ToastAPI }) {
                           </span>
                         </div>
                         <p className="text-xs mt-1 truncate text-vj-gray">{log.result_summary}</p>
-                        <div className="flex items-center gap-3 mt-1.5 text-xs2 text-gray-400">
+                        <div className="flex items-center gap-3 mt-1.5 text-xs2 text-vj-muted">
                           <span className="flex items-center gap-1">
                             <Icon name="UserIcon" size={11} /> {log.executed_by.slice(0, 8)}...
                           </span>
@@ -493,7 +500,7 @@ export default function SstkTab({ onToast }: { onToast?: ToastAPI }) {
           >
             {/* Modal header */}
             <div
-              className="px-5 py-4 border-b border-gray-100"
+              className="px-5 py-4 border-b border-vj-border-light"
               style={{ background: 'linear-gradient(135deg, #EC2029 0%, #D91A21 100%)' }}
             >
               <h3 className="text-white font-bold text-base font-heading-sm">Cấu hình tham số</h3>
@@ -516,14 +523,14 @@ export default function SstkTab({ onToast }: { onToast?: ToastAPI }) {
                       setCustomParams((prev) => ({ ...prev, [field.key]: e.target.value }))
                     }
                     placeholder={field.placeholder}
-                    className="w-full px-3 py-2.5 rounded-lg border border-gray-200 text-sm focus:outline-none focus:border-red-400 focus:ring-2 focus:ring-red-100 transition-all font-koho"
+                    className="w-full px-3 py-2.5 rounded-vj border border-vj-border-light text-sm focus:outline-none focus:border-red-400 focus:ring-2 focus:ring-red-100 transition-all font-koho"
                   />
                 </div>
               ))}
 
               {/* Warning note */}
               <div
-                className="rounded-lg p-3 flex items-start gap-2"
+                className="rounded-vj p-3 flex items-start gap-2"
                 style={{ background: '#FFFBEB', border: '1px solid #FDE68A' }}
               >
                 <Icon
@@ -539,17 +546,17 @@ export default function SstkTab({ onToast }: { onToast?: ToastAPI }) {
             </div>
 
             {/* Modal footer */}
-            <div className="px-5 py-4 border-t border-gray-100 flex items-center justify-end gap-2.5">
+            <div className="px-5 py-4 border-t border-vj-border-light flex items-center justify-end gap-2.5">
               <button
                 onClick={() => setShowParamsModal(null)}
-                className="px-4 py-2 rounded-lg text-sm font-semibold border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors font-koho"
+                className="px-4 py-2 rounded-vj text-sm font-semibold border border-vj-border-light text-vj-text-strong hover:bg-vj-surface-2 transition-colors font-koho"
               >
                 Huỷ
               </button>
               <button
                 onClick={() => showParamsModal && executeTool(showParamsModal, customParams)}
                 disabled={executingKey !== null}
-                className="px-4 py-2 rounded-lg text-white text-sm font-semibold flex items-center gap-1.5 disabled:opacity-50 transition-all bg-primary-solid"
+                className="px-4 py-2 rounded-vj text-white text-sm font-semibold flex items-center gap-1.5 disabled:opacity-50 transition-all bg-primary-solid"
               >
                 {executingKey ? (
                   <>

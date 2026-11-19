@@ -54,12 +54,12 @@ const CustomTooltip = ({
   if (active && payload && payload.length) {
     return (
       <div
-        className="rounded-xl border border-white/10 p-3 text-xs"
+        className="rounded-vj border border-white/10 p-3 text-xs"
         style={{ background: '#0f172a' }}
       >
         <div className="font-bold text-white mb-1">{label}</div>
         {payload.map((p, i) => (
-          <div key={i} className="text-slate-400">
+          <div key={i} className="text-vj-text-muted">
             {p.name}:{' '}
             <span className="font-bold text-white">
               {typeof p.value === 'number' && p.value > 10000 ? formatCurrency(p.value) : p.value}
@@ -73,7 +73,9 @@ const CustomTooltip = ({
 };
 
 const EmptyChart = ({ message }: { message: string }) => (
-  <div className="h-[220px] flex items-center justify-center text-sm text-slate-500">{message}</div>
+  <div className="h-[220px] flex items-center justify-center text-sm text-vj-text-muted">
+    {message}
+  </div>
 );
 
 const AXIS_TICK = { fontSize: 11, fill: '#64748b' };
@@ -112,16 +114,16 @@ export default function RevenueTab() {
       <div className="space-y-5">
         <div className="flex items-center justify-between">
           <div>
-            <div className="h-8 w-64 bg-slate-500/10 rounded animate-pulse mb-2" />
-            <div className="h-4 w-96 bg-slate-500/10 rounded animate-pulse" />
+            <div className="h-8 w-64 bg-slate-500 rounded animate-pulse mb-2" />
+            <div className="h-4 w-96 bg-slate-500 rounded animate-pulse" />
           </div>
-          <div className="h-10 w-48 bg-slate-500/10 rounded-xl animate-pulse" />
+          <div className="h-10 w-48 bg-slate-500 rounded-vj animate-pulse" />
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           {[1, 2, 3].map((i) => (
             <div key={i} className={ADMIN_CARD_CLASS} style={ADMIN_CARD_STYLE}>
-              <div className="h-4 w-24 bg-slate-500/10 rounded mb-3 animate-pulse" />
-              <div className="h-8 w-32 bg-slate-500/10 rounded animate-pulse" />
+              <div className="h-4 w-24 bg-slate-500 rounded mb-3 animate-pulse" />
+              <div className="h-8 w-32 bg-slate-500 rounded animate-pulse" />
             </div>
           ))}
         </div>
@@ -143,10 +145,10 @@ export default function RevenueTab() {
         >
           <Icon name="ExclamationTriangleIcon" size={32} className="text-primary mx-auto mb-3" />
           <h3 className="font-bold text-white mb-1">Lỗi tải dữ liệu</h3>
-          <p className="text-sm text-slate-400 mb-5">{error}</p>
+          <p className="text-sm text-vj-text-muted mb-5">{error}</p>
           <button
             onClick={() => void load()}
-            className={`${ADMIN_ACTION_BTN} text-sm font-semibold text-white bg-indigo-500/20 border border-indigo-500/30 hover:bg-indigo-500/30 mx-auto`}
+            className={`${ADMIN_ACTION_BTN} text-sm font-semibold text-white bg-vj-blue border border-vj-blue hover:bg-vj-blue mx-auto`}
           >
             <Icon name="ArrowPathIcon" size={16} />
             Thử lại
@@ -177,7 +179,7 @@ export default function RevenueTab() {
         title="Thống kê doanh thu"
         subtitle={`Cập nhật lần cuối: ${updatedAt ?? '—'}`}
         actions={
-          <div className="flex rounded-xl p-1 gap-1 border border-white/10 bg-slate-900/60">
+          <div className="flex rounded-vj p-1 gap-1 border border-white/10 bg-slate-900">
             {[
               ['1m', '1 tháng'],
               ['3m', '3 tháng'],
@@ -186,8 +188,8 @@ export default function RevenueTab() {
               <button
                 key={val}
                 onClick={() => setPeriod(val as '6m' | '3m' | '1m')}
-                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-                  period === val ? 'bg-primary text-white' : 'text-slate-400 hover:text-white'
+                className={`px-3 py-1.5 rounded-vj text-xs font-semibold transition-all ${
+                  period === val ? 'bg-primary text-white' : 'text-vj-text-muted hover:text-white'
                 }`}
               >
                 {label}
@@ -201,13 +203,13 @@ export default function RevenueTab() {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <AdminStatCard
           icon="CurrencyDollarIcon"
-          iconClassName="text-emerald-400"
+          iconClassName="text-vj-pay-green"
           value={formatCurrency(analytics.revenue.totalRevenue)}
           label={`Tổng doanh thu · ${analytics.revenue.completedBookings} vé hoàn thành`}
         />
         <AdminStatCard
           icon="TicketIcon"
-          iconClassName="text-rose-400"
+          iconClassName="text-vj-red-dark"
           value={analytics.revenue.totalBookings.toLocaleString('vi-VN')}
           label={`Tổng vé đã bán · ${analytics.revenue.pendingBookings} chờ thanh toán`}
         />
@@ -299,7 +301,7 @@ export default function RevenueTab() {
                   }}
                 />
                 <Legend
-                  formatter={(val) => <span className="text-xs text-slate-400">{val}</span>}
+                  formatter={(val) => <span className="text-xs text-vj-text-muted">{val}</span>}
                 />
               </PieChart>
             </ResponsiveContainer>
@@ -319,16 +321,16 @@ export default function RevenueTab() {
           <table className="w-full">
             <thead>
               <tr className="border-b border-white/5">
-                <th className="text-left text-2xs font-black text-slate-500 uppercase tracking-widest px-5 py-4">
+                <th className="text-left text-2xs font-black text-vj-text-muted uppercase tracking-widest px-5 py-4">
                   Đường bay
                 </th>
-                <th className="text-right text-2xs font-black text-slate-500 uppercase tracking-widest px-5 py-4">
+                <th className="text-right text-2xs font-black text-vj-text-muted uppercase tracking-widest px-5 py-4">
                   Doanh thu
                 </th>
-                <th className="text-right text-2xs font-black text-slate-500 uppercase tracking-widest px-5 py-4">
+                <th className="text-right text-2xs font-black text-vj-text-muted uppercase tracking-widest px-5 py-4">
                   Vé bán
                 </th>
-                <th className="text-left text-2xs font-black text-slate-500 uppercase tracking-widest px-5 py-4 hidden sm:table-cell">
+                <th className="text-left text-2xs font-black text-vj-text-muted uppercase tracking-widest px-5 py-4 hidden sm:table-cell">
                   Tỷ trọng
                 </th>
               </tr>
@@ -336,7 +338,7 @@ export default function RevenueTab() {
             <tbody>
               {analytics.routes.length === 0 ? (
                 <tr>
-                  <td colSpan={4} className="px-5 py-10 text-center text-sm text-slate-500">
+                  <td colSpan={4} className="px-5 py-10 text-center text-sm text-vj-text-muted">
                     Chưa có dữ liệu đường bay.
                   </td>
                 </tr>
@@ -364,19 +366,21 @@ export default function RevenueTab() {
                         </span>
                       </td>
                       <td className="px-5 py-3.5 text-right">
-                        <span className="text-sm text-slate-400">
+                        <span className="text-sm text-vj-text-muted">
                           {route.tickets.toLocaleString('vi-VN')}
                         </span>
                       </td>
                       <td className="px-5 py-3.5 hidden sm:table-cell">
                         <div className="flex items-center gap-2">
-                          <div className="flex-1 h-1.5 bg-slate-500/10 rounded-full overflow-hidden">
+                          <div className="flex-1 h-1.5 bg-slate-500 rounded-full overflow-hidden">
                             <div
                               className="h-full rounded-full transition-all"
                               style={{ width: `${pct}%`, backgroundColor: color }}
                             />
                           </div>
-                          <span className="text-xs text-slate-500 w-8 tabular-nums">{pct}%</span>
+                          <span className="text-xs text-vj-text-muted w-8 tabular-nums">
+                            {pct}%
+                          </span>
                         </div>
                       </td>
                     </tr>

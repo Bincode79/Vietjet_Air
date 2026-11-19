@@ -129,7 +129,7 @@ export default function SubpageHeader({
                 <HiOutlineChevronDown aria-hidden="true" className="ml-1 text-xs" />
               </button>
               {langOpen && (
-                <div className="absolute right-0 top-[calc(100%+8px)] w-36 overflow-hidden rounded-xl border border-gray-200 bg-white py-1 shadow-lg text-gray-800">
+                <div className="absolute right-0 top-[calc(100%+8px)] w-36 overflow-hidden rounded-vj border border-vj-border-light bg-white py-1 shadow-vj-lg text-vj-text-strong">
                   {['Tiếng Việt', 'English'].map((lang) => (
                     <button
                       key={lang}
@@ -141,7 +141,7 @@ export default function SubpageHeader({
                       className={`flex w-full items-center justify-between px-3 py-2 text-left text-xs font-semibold ${
                         currentLang === lang
                           ? 'bg-red-50 font-bold text-vjred'
-                          : 'text-gray-700 hover:bg-gray-50'
+                          : 'text-vj-text-dim hover:bg-vj-surface-2'
                       }`}
                     >
                       <span>{lang}</span>
@@ -171,19 +171,19 @@ export default function SubpageHeader({
                   <HiOutlineChevronDown aria-hidden="true" className="text-xs" />
                 </button>
                 {accountOpen && (
-                  <div className="absolute right-0 top-[calc(100%+8px)] w-60 overflow-hidden rounded-xl border border-gray-200 bg-white py-1.5 shadow-vj-header">
-                    <div className="border-b border-gray-100 bg-gray-50/50 px-4 py-2.5">
-                      <p className="truncate text-xs font-bold text-gray-900">
+                  <div className="absolute right-0 top-[calc(100%+8px)] w-60 overflow-hidden rounded-vj border border-vj-border-light bg-white py-1.5 shadow-vj-header">
+                    <div className="border-b border-vj-border-light bg-vj-surface-2/50 px-4 py-2.5">
+                      <p className="truncate text-xs font-bold text-vj-text">
                         {(user.fullName || user.email)?.replace(/\s*\(CCCD:.*?\)/gi, '')}
                       </p>
-                      <p className="truncate text-xs2 text-gray-500">{user.email}</p>
+                      <p className="truncate text-xs2 text-vj-gray">{user.email}</p>
                     </div>
                     {ACCOUNT_LINKS.map(([label, href]) => (
                       <Link
                         key={href}
                         href={href}
                         onClick={() => setAccountOpen(false)}
-                        className="block px-4 py-2 text-xs font-semibold text-gray-700 transition hover:bg-red-50 hover:text-vjred"
+                        className="block px-4 py-2 text-xs font-semibold text-vj-text-dim transition hover:bg-vj-surface-rose hover:text-vjred"
                       >
                         {label}
                       </Link>
@@ -194,7 +194,7 @@ export default function SubpageHeader({
                         setAccountOpen(false);
                         void signOut();
                       }}
-                      className="block w-full border-t border-gray-100 px-4 py-2 text-left text-xs font-semibold text-gray-700 transition hover:bg-red-50 hover:text-vjred"
+                      className="block w-full border-t border-vj-border-light px-4 py-2 text-left text-xs font-semibold text-vj-text-dim transition hover:bg-vj-surface-rose hover:text-vjred"
                     >
                       Đăng xuất
                     </button>

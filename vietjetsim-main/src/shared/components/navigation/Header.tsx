@@ -74,7 +74,7 @@ const OTHER_SERVICES_ITEMS = [
   },
   {
     title: 'Bay trước, thanh toán sau',
-    desc: 'Sẵn sàng bay vui, vé để Vietjet lo. Cùng tận hưởng sản phẩm mua vé máy bay trả góp với thời hạn cho vay đến 6 tháng và không cần chứng minh thu nhập.',
+    desc: 'Sẵn sàng bay vui, vé để Vietjet lo. Cùng tận hưởng sản phẩm mua vé máy bay trả góp với thời hạn cho vay đến 3 tháng và không cần chứng minh thu nhập.',
     href: '/dich-vu#tra-gop',
     isHot: true,
   },
@@ -366,7 +366,7 @@ export default function Header({
                   </button>
 
                   {langMenuOpen && (
-                    <div className="absolute right-0 top-[calc(100%+8px)] z-50 w-36 overflow-hidden rounded-xl border border-gray-200 bg-white py-1 text-gray-800 shadow-lg">
+                    <div className="absolute right-0 top-[calc(100%+8px)] z-50 w-36 overflow-hidden rounded-vj border border-vj-border-light bg-white py-1 text-vj-text-strong shadow-vj-lg">
                       {['Tiếng Việt', 'English'].map((lang) => (
                         <button
                           key={lang}
@@ -378,7 +378,7 @@ export default function Header({
                           className={`flex w-full items-center justify-between px-3 py-2 text-left text-xs font-semibold ${
                             currentLang === lang
                               ? 'bg-red-50 font-bold text-vjred'
-                              : 'text-gray-700'
+                              : 'text-vj-text-dim'
                           }`}
                         >
                           <span>{lang}</span>
@@ -404,7 +404,7 @@ export default function Header({
 
         {/* Mobile Header for compactMode (< lg) matching Screenshot 3 & 4 */}
         {compactMode && (
-          <div className="flex lg:hidden h-14 items-center justify-between px-4 bg-primary-dark text-white shadow-md">
+          <div className="flex lg:hidden h-14 items-center justify-between px-4 bg-primary-dark text-white shadow-vj-md">
             {hideMobileLogo ? (
               <div className="w-8 shrink-0" aria-hidden="true" />
             ) : (
@@ -515,7 +515,7 @@ export default function Header({
                       </button>
 
                       {langMenuOpen && (
-                        <div className="absolute right-0 top-[calc(100%+8px)] w-36 overflow-hidden rounded-xl border border-gray-200 bg-white py-1 shadow-lg text-gray-800">
+                        <div className="absolute right-0 top-[calc(100%+8px)] w-36 overflow-hidden rounded-vj border border-vj-border-light bg-white py-1 shadow-vj-lg text-vj-text-strong">
                           {['Tiếng Việt', 'English'].map((lang) => (
                             <button
                               key={lang}
@@ -527,7 +527,7 @@ export default function Header({
                               className={`flex w-full items-center justify-between px-3 py-2 text-left text-xs font-semibold ${
                                 currentLang === lang
                                   ? 'bg-red-50 font-bold text-vjred'
-                                  : 'text-gray-700 hover:bg-gray-50'
+                                  : 'text-vj-text-dim hover:bg-vj-surface-2'
                               }`}
                             >
                               <span>{lang}</span>
@@ -591,13 +591,13 @@ export default function Header({
                     {/* Mega Menu Dropdown */}
                     {megaMenu && (
                       <div
-                        className="absolute right-0 top-full mt-1.5 w-[640px] rounded-2xl bg-white p-5 shadow-vj-popover border border-gray-100 z-50 text-gray-800 animate-fadeIn"
+                        className="absolute right-0 top-full mt-1.5 w-[640px] rounded-2xl bg-white p-5 shadow-vj-popover border border-vj-border-light z-50 text-vj-text-strong animate-fadeIn"
                         onMouseEnter={() => {}}
                       >
                         <div className="grid grid-cols-2 gap-5 divide-x divide-gray-100">
                           {/* Cột 1: Hành lý, suất ăn & dịch vụ bổ trợ */}
                           <div className="pr-3">
-                            <h4 className="text-xs font-black uppercase tracking-wider text-primary-dark pb-2 mb-2 border-b border-gray-100 font-koho">
+                            <h4 className="text-xs font-black uppercase tracking-wider text-primary-dark pb-2 mb-2 border-b border-vj-border-light font-koho">
                               Hành lý, suất ăn &amp; dịch vụ bổ trợ
                             </h4>
                             <div className="space-y-1.5">
@@ -606,19 +606,19 @@ export default function Header({
                                   key={item.title}
                                   href={item.href}
                                   onClick={() => setMegaMenu(null)}
-                                  className="group block rounded-xl p-2 transition-all hover:bg-red-50/70 border border-transparent hover:border-red-100"
+                                  className="group block rounded-vj p-2 transition-all hover:bg-vj-surface-rose border border-transparent hover:border-red-100"
                                 >
                                   <div className="flex items-center gap-1.5 mb-0.5">
-                                    <span className="text-xs font-bold text-gray-900 group-hover:text-vjred transition-colors leading-tight">
+                                    <span className="text-xs font-bold text-vj-text group-hover:text-vjred transition-colors leading-tight">
                                       {item.title}
                                     </span>
                                     {item.isHot && (
-                                      <span className="text-3xs bg-red-600 text-white font-black px-1.5 py-0.2 rounded uppercase shrink-0 italic">
+                                      <span className="text-3xs bg-vj-red-dark text-white font-black px-1.5 py-0.2 rounded uppercase shrink-0 italic">
                                         HOT
                                       </span>
                                     )}
                                   </div>
-                                  <p className="text-xs2 text-gray-500 line-clamp-2 leading-snug">
+                                  <p className="text-xs2 text-vj-gray line-clamp-2 leading-snug">
                                     {item.desc}
                                   </p>
                                 </Link>
@@ -628,7 +628,7 @@ export default function Header({
 
                           {/* Cột 2: Dịch vụ khác */}
                           <div className="pl-4">
-                            <h4 className="text-xs font-black uppercase tracking-wider text-primary-dark pb-2 mb-2 border-b border-gray-100 font-koho">
+                            <h4 className="text-xs font-black uppercase tracking-wider text-primary-dark pb-2 mb-2 border-b border-vj-border-light font-koho">
                               Dịch vụ khác
                             </h4>
                             <div className="space-y-1.5">
@@ -637,19 +637,19 @@ export default function Header({
                                   key={item.title}
                                   href={item.href}
                                   onClick={() => setMegaMenu(null)}
-                                  className="group block rounded-xl p-2 transition-all hover:bg-red-50/70 border border-transparent hover:border-red-100"
+                                  className="group block rounded-vj p-2 transition-all hover:bg-vj-surface-rose border border-transparent hover:border-red-100"
                                 >
                                   <div className="flex items-center gap-1.5 mb-0.5">
-                                    <span className="text-xs font-bold text-gray-900 group-hover:text-vjred transition-colors leading-tight">
+                                    <span className="text-xs font-bold text-vj-text group-hover:text-vjred transition-colors leading-tight">
                                       {item.title}
                                     </span>
                                     {item.isHot && (
-                                      <span className="text-3xs bg-red-600 text-white font-black px-1.5 py-0.2 rounded uppercase shrink-0 italic">
+                                      <span className="text-3xs bg-vj-red-dark text-white font-black px-1.5 py-0.2 rounded uppercase shrink-0 italic">
                                         HOT
                                       </span>
                                     )}
                                   </div>
-                                  <p className="text-xs2 text-gray-500 line-clamp-2 leading-snug">
+                                  <p className="text-xs2 text-vj-gray line-clamp-2 leading-snug">
                                     {item.desc}
                                   </p>
                                 </Link>
@@ -693,7 +693,7 @@ export default function Header({
         {compactMode && (
           <div
             className={`transition-colors ${
-              lightChrome ? 'bg-transparent' : 'border-b border-gray-100 bg-white'
+              lightChrome ? 'bg-transparent' : 'border-b border-vj-border-light bg-white'
             }`}
           >
             <div
@@ -721,13 +721,15 @@ export default function Header({
               <div
                 className={`hidden lg:flex items-center font-medium ${
                   compactMode ? 'gap-5 text-xs' : 'gap-6 text-sm'
-                } ${lightChrome ? 'text-white' : 'text-gray-700'}`}
+                } ${lightChrome ? 'text-white' : 'text-vj-text-dim'}`}
               >
                 {/* 🎧 Hỗ trợ */}
                 <a
                   href="tel:19001166"
                   className={`flex items-center gap-1.5 font-medium transition ${
-                    lightChrome ? 'text-white hover:text-vjgold' : 'text-gray-700 hover:text-vjred'
+                    lightChrome
+                      ? 'text-white hover:text-vjgold'
+                      : 'text-vj-text-dim hover:text-vjred'
                   }`}
                 >
                   <RiHeadphoneLine
@@ -745,7 +747,7 @@ export default function Header({
 
                 <span
                   className={`w-px ${compactMode ? 'h-3.5' : 'h-4'} ${
-                    lightChrome ? 'bg-white/30' : 'bg-gray-200'
+                    lightChrome ? 'bg-white/30' : 'bg-vj-surface-3'
                   }`}
                   aria-hidden="true"
                 />
@@ -757,10 +759,10 @@ export default function Header({
                       type="button"
                       onClick={() => setAccountMenuOpen((open) => !open)}
                       aria-expanded={accountMenuOpen}
-                      className={`flex items-center gap-1.5 rounded-lg border px-3 py-1.5 font-bold transition ${
+                      className={`flex items-center gap-1.5 rounded-vj border px-3 py-1.5 font-bold transition ${
                         lightChrome
                           ? 'border-white/30 bg-black/20 text-white hover:bg-black/30'
-                          : 'border-gray-200 bg-gray-50 text-gray-800 hover:bg-gray-100'
+                          : 'border-vj-border-light bg-vj-surface-2 text-vj-text-strong hover:bg-vj-pill'
                       }`}
                     >
                       <HiOutlineUserCircle
@@ -770,23 +772,23 @@ export default function Header({
                       <span className="max-w-[120px] truncate">
                         {(user.fullName || user.email)?.replace(/\s*\(CCCD:.*?\)/gi, '')}
                       </span>
-                      <HiOutlineChevronDown className="text-xs text-gray-400" />
+                      <HiOutlineChevronDown className="text-xs text-vj-muted" />
                     </button>
 
                     {accountMenuOpen && (
-                      <div className="absolute right-0 top-[calc(100%+8px)] w-60 overflow-hidden rounded-xl border border-gray-200 bg-white py-1.5 shadow-vj-header">
-                        <div className="border-b border-gray-100 px-4 py-2.5 bg-gray-50/50">
-                          <p className="truncate text-xs font-bold text-gray-900">
+                      <div className="absolute right-0 top-[calc(100%+8px)] w-60 overflow-hidden rounded-vj border border-vj-border-light bg-white py-1.5 shadow-vj-header">
+                        <div className="border-b border-vj-border-light px-4 py-2.5 bg-vj-surface-2/50">
+                          <p className="truncate text-xs font-bold text-vj-text">
                             {(user.fullName || user.email)?.replace(/\s*\(CCCD:.*?\)/gi, '')}
                           </p>
-                          <p className="truncate text-xs2 text-gray-500">{user.email}</p>
+                          <p className="truncate text-xs2 text-vj-gray">{user.email}</p>
                         </div>
                         {accountLinks.map(([label, href]) => (
                           <Link
                             key={href}
                             href={href}
                             onClick={() => setAccountMenuOpen(false)}
-                            className="block px-4 py-2 text-xs font-semibold text-gray-700 transition hover:bg-red-50 hover:text-vjred"
+                            className="block px-4 py-2 text-xs font-semibold text-vj-text-dim transition hover:bg-vj-surface-rose hover:text-vjred"
                           >
                             {label}
                           </Link>
@@ -794,7 +796,7 @@ export default function Header({
                         <button
                           type="button"
                           onClick={() => void signOut()}
-                          className="flex w-full items-center gap-2 border-t border-gray-100 px-4 py-2.5 text-left text-xs font-bold text-vjred transition hover:bg-red-50"
+                          className="flex w-full items-center gap-2 border-t border-vj-border-light px-4 py-2.5 text-left text-xs font-bold text-vjred transition hover:bg-vj-surface-rose"
                         >
                           <HiOutlineLogout aria-hidden="true" />
                           Đăng xuất
@@ -808,8 +810,8 @@ export default function Header({
                       compactMode ? 'text-xs px-2.5 py-1' : 'text-base px-3.5 py-1.5'
                     } rounded-full border transition-all ${
                       lightChrome
-                        ? 'border-white/35 bg-black/25 hover:bg-black/35 text-white backdrop-blur-sm shadow-sm'
-                        : 'border-gray-200 bg-gray-100 hover:bg-gray-200/80 text-gray-800 shadow-sm'
+                        ? 'border-white/35 bg-black/25 hover:bg-black/35 text-white backdrop-blur-sm shadow-vj-sm'
+                        : 'border-vj-border-light bg-vj-pill hover:bg-vj-surface-3/80 text-vj-text-strong shadow-vj-sm'
                     }`}
                   >
                     <HiOutlineUserCircle
@@ -827,7 +829,7 @@ export default function Header({
                     >
                       Đăng ký
                     </button>
-                    <span className={lightChrome ? 'text-white/40' : 'text-gray-400'}>|</span>
+                    <span className={lightChrome ? 'text-white/40' : 'text-vj-muted'}>|</span>
                     <button
                       type="button"
                       onClick={() => openLogin()}
@@ -841,7 +843,7 @@ export default function Header({
                 )}
 
                 <span
-                  className={`h-3.5 w-px ${lightChrome ? 'bg-white/30' : 'bg-gray-200'}`}
+                  className={`h-3.5 w-px ${lightChrome ? 'bg-white/30' : 'bg-vj-surface-3'}`}
                   aria-hidden="true"
                 />
 
@@ -854,7 +856,7 @@ export default function Header({
                     className={`flex items-center gap-1 rounded-full px-2 py-0.5 font-bold transition text-xs ${
                       lightChrome
                         ? 'border border-white/50 bg-black/10 backdrop-blur-sm text-white hover:border-white'
-                        : 'border border-gray-200 bg-gray-50 text-gray-700 hover:text-vjred'
+                        : 'border border-vj-border-light bg-vj-surface-2 text-vj-text-dim hover:text-vjred'
                     }`}
                   >
                     <HiOutlineGlobeAlt aria-hidden="true" className="text-sm" />
@@ -863,7 +865,7 @@ export default function Header({
                   </button>
 
                   {langMenuOpen && (
-                    <div className="absolute right-0 top-[calc(100%+8px)] w-36 overflow-hidden rounded-xl border border-gray-200 bg-white py-1 shadow-lg text-gray-800">
+                    <div className="absolute right-0 top-[calc(100%+8px)] w-36 overflow-hidden rounded-vj border border-vj-border-light bg-white py-1 shadow-vj-lg text-vj-text-strong">
                       {['Tiếng Việt', 'English'].map((lang) => (
                         <button
                           key={lang}
@@ -875,7 +877,7 @@ export default function Header({
                           className={`flex w-full items-center justify-between px-3 py-2 text-left text-xs font-semibold ${
                             currentLang === lang
                               ? 'bg-red-50 font-bold text-vjred'
-                              : 'text-gray-700 hover:bg-gray-50'
+                              : 'text-vj-text-dim hover:bg-vj-surface-2'
                           }`}
                         >
                           <span>{lang}</span>
@@ -895,7 +897,7 @@ export default function Header({
                   className={`flex items-center gap-1 px-1.5 py-1 ${
                     lightChrome
                       ? 'text-white hover:text-vjyellow'
-                      : 'text-gray-700 hover:text-vjred'
+                      : 'text-vj-text-dim hover:text-vjred'
                   }`}
                 >
                   <RiHeadphoneLine className="text-base" />
@@ -905,7 +907,7 @@ export default function Header({
                 {user ? (
                   <span
                     className={`max-w-[75px] truncate text-3xs sm:text-xs font-bold ${
-                      lightChrome ? 'text-white' : 'text-gray-800'
+                      lightChrome ? 'text-white' : 'text-vj-text-strong'
                     }`}
                   >
                     {(user.fullName || user.email)?.replace(/\s*\(CCCD:.*?\)/gi, '')}
@@ -915,7 +917,7 @@ export default function Header({
                     className={`flex items-center gap-1 text-3xs sm:text-xs font-bold px-2.5 py-1 rounded-full border transition-all ${
                       lightChrome
                         ? 'border-white/35 bg-black/25 text-white backdrop-blur-sm'
-                        : 'border-gray-200 bg-gray-100 text-gray-800'
+                        : 'border-vj-border-light bg-vj-pill text-vj-text-strong'
                     }`}
                   >
                     <button
@@ -925,7 +927,7 @@ export default function Header({
                     >
                       Đăng ký
                     </button>
-                    <span className={lightChrome ? 'text-white/40' : 'text-gray-400'}>|</span>
+                    <span className={lightChrome ? 'text-white/40' : 'text-vj-muted'}>|</span>
                     <button
                       type="button"
                       onClick={() => openLogin()}
@@ -943,7 +945,7 @@ export default function Header({
                   className={`flex items-center gap-0.5 rounded px-1.5 py-0.5 text-3xs sm:text-xs font-bold border ${
                     lightChrome
                       ? 'border-white/50 bg-black/10 text-white'
-                      : 'border-gray-200 bg-gray-50 text-gray-700'
+                      : 'border-vj-border-light bg-vj-surface-2 text-vj-text-dim'
                   }`}
                 >
                   <span>VI</span>
@@ -956,7 +958,7 @@ export default function Header({
                   onClick={() => setMobileMenuOpen(true)}
                   aria-label="Mở menu"
                   className={`flex h-8 w-8 items-center justify-center ${
-                    lightChrome ? 'text-white' : 'text-gray-700'
+                    lightChrome ? 'text-white' : 'text-vj-text-dim'
                   }`}
                 >
                   <HiOutlineMenu className="text-2xl" />
@@ -1041,13 +1043,13 @@ export default function Header({
                 {/* Mega Menu Dropdown */}
                 {megaMenu && (
                   <div
-                    className="absolute right-0 top-full mt-1.5 w-[640px] rounded-2xl bg-white p-5 shadow-vj-popover border border-gray-100 z-50 text-gray-800 animate-fadeIn"
+                    className="absolute right-0 top-full mt-1.5 w-[640px] rounded-2xl bg-white p-5 shadow-vj-popover border border-vj-border-light z-50 text-vj-text-strong animate-fadeIn"
                     onMouseEnter={() => {}}
                   >
                     <div className="grid grid-cols-2 gap-5 divide-x divide-gray-100">
                       {/* Cột 1: Hành lý, suất ăn & dịch vụ bổ trợ */}
                       <div className="pr-3">
-                        <h4 className="text-xs font-black uppercase tracking-wider text-primary-dark pb-2 mb-2 border-b border-gray-100 font-koho">
+                        <h4 className="text-xs font-black uppercase tracking-wider text-primary-dark pb-2 mb-2 border-b border-vj-border-light font-koho">
                           Hành lý, suất ăn &amp; dịch vụ bổ trợ
                         </h4>
                         <div className="space-y-1.5">
@@ -1056,19 +1058,19 @@ export default function Header({
                               key={item.title}
                               href={item.href}
                               onClick={() => setMegaMenu(null)}
-                              className="group block rounded-xl p-2 transition-all hover:bg-red-50/70 border border-transparent hover:border-red-100"
+                              className="group block rounded-vj p-2 transition-all hover:bg-vj-surface-rose border border-transparent hover:border-red-100"
                             >
                               <div className="flex items-center gap-1.5 mb-0.5">
-                                <span className="text-xs font-bold text-gray-900 group-hover:text-vjred transition-colors leading-tight">
+                                <span className="text-xs font-bold text-vj-text group-hover:text-vjred transition-colors leading-tight">
                                   {item.title}
                                 </span>
                                 {item.isHot && (
-                                  <span className="text-3xs bg-red-600 text-white font-black px-1.5 py-0.2 rounded uppercase shrink-0 italic">
+                                  <span className="text-3xs bg-vj-red-dark text-white font-black px-1.5 py-0.2 rounded uppercase shrink-0 italic">
                                     HOT
                                   </span>
                                 )}
                               </div>
-                              <p className="text-xs2 text-gray-500 line-clamp-2 leading-snug">
+                              <p className="text-xs2 text-vj-gray line-clamp-2 leading-snug">
                                 {item.desc}
                               </p>
                             </Link>
@@ -1078,7 +1080,7 @@ export default function Header({
 
                       {/* Cột 2: Dịch vụ khác */}
                       <div className="pl-4">
-                        <h4 className="text-xs font-black uppercase tracking-wider text-primary-dark pb-2 mb-2 border-b border-gray-100 font-koho">
+                        <h4 className="text-xs font-black uppercase tracking-wider text-primary-dark pb-2 mb-2 border-b border-vj-border-light font-koho">
                           Dịch vụ khác
                         </h4>
                         <div className="space-y-1.5">
@@ -1087,19 +1089,19 @@ export default function Header({
                               key={item.title}
                               href={item.href}
                               onClick={() => setMegaMenu(null)}
-                              className="group block rounded-xl p-2 transition-all hover:bg-red-50/70 border border-transparent hover:border-red-100"
+                              className="group block rounded-vj p-2 transition-all hover:bg-vj-surface-rose border border-transparent hover:border-red-100"
                             >
                               <div className="flex items-center gap-1.5 mb-0.5">
-                                <span className="text-xs font-bold text-gray-900 group-hover:text-vjred transition-colors leading-tight">
+                                <span className="text-xs font-bold text-vj-text group-hover:text-vjred transition-colors leading-tight">
                                   {item.title}
                                 </span>
                                 {item.isHot && (
-                                  <span className="text-3xs bg-red-600 text-white font-black px-1.5 py-0.2 rounded uppercase shrink-0 italic">
+                                  <span className="text-3xs bg-vj-red-dark text-white font-black px-1.5 py-0.2 rounded uppercase shrink-0 italic">
                                     HOT
                                   </span>
                                 )}
                               </div>
-                              <p className="text-xs2 text-gray-500 line-clamp-2 leading-snug">
+                              <p className="text-xs2 text-vj-gray line-clamp-2 leading-snug">
                                 {item.desc}
                               </p>
                             </Link>

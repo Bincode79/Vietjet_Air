@@ -3,7 +3,7 @@ import { verifyAuthRequest } from '@/lib/auth';
 import { isAdminRole } from '@/lib/rbac';
 import { getBookingByCodeOrId } from '@/lib/db';
 import { rateLimit } from '@/lib/rate-limit';
-import { isGuestBookingOwner } from '@/lib/guest-booking';
+import { isGuestBookingOwner, setGuestBookingCookie } from '@/lib/guest-booking';
 
 function maskEmail(email: string | null | undefined): string | null {
   if (!email || !email.includes('@')) return null;
@@ -75,7 +75,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     const primaryContactName = (booking.passengers && booking.passengers[0]?.name) || null;
 
     if (!canViewFullBooking) {
-      return NextResponse.json({
+      const response = NextResponse.json({
         booking: {
           ...booking,
           contact_name: primaryContactName,
@@ -107,15 +107,23 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
             : null,
         },
       });
+      if (!user && (lookedUpByPnr || isGuestBookingOwner(request, booking.id))) {
+        setGuestBookingCookie(response, request, booking.id);
+      }
+      return response;
     }
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       booking: {
         ...booking,
         contact_name: primaryContactName,
         contact_email_masked: contactEmailMasked,
       },
     });
+    if (!user && (lookedUpByPnr || isGuestBookingOwner(request, booking.id))) {
+      setGuestBookingCookie(response, request, booking.id);
+    }
+    return response;
   } catch (error) {
     console.error('Error fetching booking:', error);
     return NextResponse.json({ error: 'Failed to fetch booking' }, { status: 500 });

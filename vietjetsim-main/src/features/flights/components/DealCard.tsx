@@ -35,13 +35,13 @@ const DealCard: React.FC<DealCardProps> = ({ deal }) => {
     <Link
       key={deal.route}
       href={`/tim-ve?from=${deal.from}&to=${deal.to}`}
-      className="group rounded-md relative overflow-hidden cursor-pointer"
+      className="group rounded-vj relative overflow-hidden cursor-pointer"
     >
       <div
         ref={cardRef}
-        className="bg-white rounded-vj shadow-md hover:shadow-lg transition-shadow duration-200"
+        className="bg-white rounded-vj shadow-vj-md hover:shadow-vj-lg transition-shadow duration-200"
       >
-        <div ref={imgRef} className="overflow-hidden rounded-t-vj bg-gray-200 relative h-48">
+        <div ref={imgRef} className="overflow-hidden rounded-t-vj bg-vj-surface-3 relative h-48">
           <AppImage
             src={deal.image}
             alt={deal.alt}
@@ -50,13 +50,13 @@ const DealCard: React.FC<DealCardProps> = ({ deal }) => {
         </div>
         <div className="p-4 sm:p-5">
           <div className="flex items-center justify-between mb-1">
-            <MdCalendarToday className="w-4 h-4 text-gray-400" />
-            <span className="text-xs text-gray-500">{deal.date}</span>
+            <MdCalendarToday className="w-4 h-4 text-vj-muted" />
+            <span className="text-xs text-vj-gray">{deal.date}</span>
           </div>
           <h3 className="text-base font-semibold mb-1">{deal.route}</h3>
           <div className="flex items-center justify-between">
             <span className="text-lg font-semibold text-vj-text">{formatNumber(deal.price)}đ</span>
-            <span className="text-sm text-gray-400 line-through">
+            <span className="text-sm text-vj-muted line-through">
               {formatNumber(deal.original)}đ
             </span>
           </div>

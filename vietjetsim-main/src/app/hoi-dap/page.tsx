@@ -72,7 +72,7 @@ export default function FAQPage() {
                 className={`px-4 py-2 rounded-full text-sm font-semibold transition-all duration-300 ${
                   activeCategory === cat
                     ? 'bg-[var(--primary)] text-white shadow-vj-btn'
-                    : 'bg-white text-[var(--foreground)] hover:bg-red-50 hover:text-[var(--primary)] border border-gray-200'
+                    : 'bg-white text-[var(--foreground)] hover:bg-vj-surface-rose hover:text-[var(--primary)] border border-vj-border-light'
                 }`}
               >
                 {cat}
@@ -86,7 +86,7 @@ export default function FAQPage() {
               filteredFAQs.map((faq) => (
                 <div
                   key={faq.id}
-                  className="bg-white rounded-vj shadow-vj-sm overflow-hidden border border-gray-100 transition-all duration-300 hover:shadow-vj-md"
+                  className="bg-white rounded-vj shadow-vj-sm overflow-hidden border border-vj-border-light transition-all duration-300 hover:shadow-vj-md"
                 >
                   <button
                     onClick={() => toggleAccordion(faq.id)}
@@ -117,7 +117,7 @@ export default function FAQPage() {
                       openId === faq.id ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
                     }`}
                   >
-                    <div className="px-5 pb-5 pt-0 border-t border-gray-100">
+                    <div className="px-5 pb-5 pt-0 border-t border-vj-border-light">
                       <p className="text-[var(--foreground)] leading-relaxed pt-4 pl-11">
                         {faq.answer}
                       </p>

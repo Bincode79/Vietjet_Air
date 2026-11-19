@@ -277,7 +277,7 @@ export function ErrorFallback({
           </h3>
           <p className="text-sm text-vj-text-dim mt-1 max-w-xs mx-auto">{displaySubtitle}</p>
           {error?.message && (
-            <p className="text-xs text-vj-text-faint mt-2 font-mono bg-white/60 px-3 py-1.5 rounded-lg inline-block max-w-xs truncate">
+            <p className="text-xs text-vj-text-faint mt-2 font-mono bg-white/60 px-3 py-1.5 rounded-vj inline-block max-w-xs truncate">
               {error.message}
             </p>
           )}
@@ -286,7 +286,7 @@ export function ErrorFallback({
           {onRetry && (
             <button
               onClick={onRetry}
-              className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white transition-all duration-200 hover:opacity-90 active:scale-95 shadow-sm"
+              className="flex items-center gap-2 px-5 py-2.5 rounded-vj text-sm font-semibold text-white transition-all duration-200 hover:opacity-90 active:scale-98 shadow-vj-sm"
               style={{ background: cfg.accentColor }}
             >
               <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4" aria-hidden="true">
@@ -302,7 +302,7 @@ export function ErrorFallback({
           {onGoHome && (
             <button
               onClick={onGoHome}
-              className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-[var(--vj-navy)] bg-white border border-vj-border transition-all duration-200 hover:bg-[var(--vj-sky)] active:scale-95 shadow-sm"
+              className="flex items-center gap-2 px-5 py-2.5 rounded-vj text-sm font-semibold text-[var(--vj-navy)] bg-white border border-vj-border transition-all duration-200 hover:bg-[var(--vj-sky)] active:scale-98 shadow-vj-sm"
             >
               <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4" aria-hidden="true">
                 <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
@@ -341,7 +341,7 @@ export function ErrorFallback({
 
         {/* Error detail (dev-friendly, subtle) */}
         {error?.message && (
-          <div className="mb-6 bg-white/70 border border-vj-border rounded-xl px-4 py-3 text-left">
+          <div className="mb-6 bg-white/70 border border-vj-border rounded-vj px-4 py-3 text-left">
             <p className="text-xs font-semibold text-vj-text-faint uppercase tracking-wide mb-1">
               Chi tiết lỗi
             </p>
@@ -354,7 +354,7 @@ export function ErrorFallback({
           {onRetry && (
             <button
               onClick={onRetry}
-              className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm font-bold text-white transition-all duration-200 hover:opacity-90 active:scale-95 shadow-md"
+              className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 rounded-vj text-sm font-bold text-white transition-all duration-200 hover:opacity-90 active:scale-98 shadow-vj-md"
               style={{ background: cfg.accentColor }}
             >
               <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4" aria-hidden="true">
@@ -370,7 +370,7 @@ export function ErrorFallback({
           {onGoHome && (
             <button
               onClick={onGoHome}
-              className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm font-bold text-[var(--vj-navy)] bg-white border border-vj-border transition-all duration-200 hover:bg-[var(--vj-sky)] active:scale-95 shadow-sm"
+              className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 rounded-vj text-sm font-bold text-[var(--vj-navy)] bg-white border border-vj-border transition-all duration-200 hover:bg-[var(--vj-sky)] active:scale-98 shadow-vj-sm"
             >
               <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4" aria-hidden="true">
                 <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
