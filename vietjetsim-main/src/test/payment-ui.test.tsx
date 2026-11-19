@@ -198,4 +198,3 @@ describe('PaymentClient Component UI & Interaction', () => {
     );
   });
 });
-

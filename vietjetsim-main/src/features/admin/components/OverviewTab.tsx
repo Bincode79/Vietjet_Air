@@ -84,7 +84,6 @@ export default function OverviewTab({ onNavigate }: Props) {
         })
       : null;
 
-
   return (
     <div className="space-y-6">
       {/* Header */}

@@ -1,5 +1,5 @@
 // Vietjet Air Database Layer
-import { sql } from '@/lib/neon';
+import { sql, type SqlClient } from '@/lib/neon';
 export { sql };
 import { generateSkyjoyMemberId } from '@/lib/skyjoy';
 import type { Permission } from '@/lib/rbac';
@@ -1919,7 +1919,7 @@ export async function createPaymentAndConfirmBooking(payment: {
   }
 
   try {
-    await sql.transaction((tx: any) => {
+    await sql.transaction((tx: SqlClient) => {
       // Vé đã bán thì không còn giữ chỗ nữa — lượt giữ chỗ của MOVI chỉ có
       // nghĩa khi booking vẫn `pending`. Một giao dịch `pending` (khách gửi
       // biên lai để đối soát) thì VẪN giữ chỗ, vì booking còn `pending`.
@@ -2099,7 +2099,7 @@ export async function confirmVietQrPayment(input: {
   const transferNote =
     input.transferNote?.trim() || (booking.booking_code ? `VJ ${booking.booking_code}` : null);
 
-  const batch = (await sql.transaction((tx: any) => [
+  const batch = (await sql.transaction((tx: SqlClient) => [
     tx`
       UPDATE bookings
       SET status = 'confirmed', updated_at = NOW()

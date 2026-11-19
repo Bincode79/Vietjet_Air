@@ -77,7 +77,6 @@ function generateUserStats(): UserStats {
   };
 }
 
-
 // Mock data generators
 function generateFlights() {
   return [
@@ -501,12 +500,33 @@ function RecentAlertsCard() {
   );
 }
 
+interface RevenueTooltipProps {
+  active?: boolean;
+  payload?: Array<{ payload?: RevenuePoint }>;
+  label?: string;
+}
+
+const RevenueTooltip = ({ active, payload, label }: RevenueTooltipProps) => {
+  if (active && payload && payload.length) {
+    const data = payload[0].payload;
+    if (!data) return null;
+    return (
+      <div className="p-3 bg-white border border-gray-200 rounded-lg shadow-lg">
+        <p className="text-sm font-bold text-gray-900">{label}</p>
+        <p className="text-sm text-gray-600">Doanh thu: {data.revenue.toLocaleString()} VND</p>
+        <p className="text-sm text-gray-600">Đơn đặt: {data.bookings}</p>
+      </div>
+    );
+  }
+  return null;
+};
+
 // Overview Dashboard Content
 function OverviewDashboard({
   flightStats,
   revenueStats,
-  userStats,
-  bookingStats,
+  userStats: _userStats,
+  bookingStats: _bookingStats,
 }: {
   flightStats: FlightStats;
   revenueStats: RevenueStats;
@@ -589,23 +609,7 @@ function OverviewDashboard({
                 <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
                 <XAxis dataKey="name" stroke="#9ca3af" fontSize={12} />
                 <YAxis stroke="#9ca3af" tickFormatter={(v) => `${v / 1e6}M`} fontSize={12} />
-                <Tooltip
-                  content={({ active, payload, label }: any) => {
-                    if (active && payload && payload.length) {
-                      const data = payload[0].payload as RevenuePoint;
-                      return (
-                        <div className="p-3 bg-white border border-gray-200 rounded-lg shadow-lg">
-                          <p className="text-sm font-bold text-gray-900">{label}</p>
-                          <p className="text-sm text-gray-600">
-                            Doanh thu: {data.revenue.toLocaleString()} VND
-                          </p>
-                          <p className="text-sm text-gray-600">Đơn đặt: {data.bookings}</p>
-                        </div>
-                      );
-                    }
-                    return null;
-                  }}
-                />
+                <Tooltip content={<RevenueTooltip />} />
                 <Line
                   type="monotone"
                   dataKey="revenue"
@@ -641,24 +645,7 @@ function OverviewDashboard({
                     <Cell key={entry.name} fill={entry.color} />
                   ))}
                 </Pie>
-                <Tooltip
-                  content={({ active, payload, label: _label }: any) => {
-                    if (active && payload && payload.length) {
-                      const data = payload[0].payload as CabinClass;
-                      const total = cabinData.reduce((sum, d) => sum + d.value, 0);
-                      const percent = ((data.value / total) * 100).toFixed(1);
-                      return (
-                        <div className="p-3 bg-white border border-gray-200 rounded-lg shadow-lg">
-                          <p className="text-sm font-bold text-gray-900">{data.name}</p>
-                          <p className="text-sm text-gray-600">
-                            {data.value}% ({percent}%)
-                          </p>
-                        </div>
-                      );
-                    }
-                    return null;
-                  }}
-                />
+                <Tooltip />
               </PieChart>
             </ResponsiveContainer>
           </div>

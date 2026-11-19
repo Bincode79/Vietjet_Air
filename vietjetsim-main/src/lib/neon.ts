@@ -2644,7 +2644,7 @@ function createMockSql(): SqlClient {
     return null;
   };
 
-  const mockTag: any = async <T = SqlRow>(
+  const mockTag = async <T = SqlRow>(
     strings: TemplateStringsArray,
     ...values: unknown[]
   ): Promise<T[]> => {
@@ -2745,5 +2745,5 @@ function createMockSql(): SqlClient {
       __unsafeSql: query,
       __unsafeParams: params ?? [],
     }),
-  });
+  }) as unknown as SqlClient;
 }

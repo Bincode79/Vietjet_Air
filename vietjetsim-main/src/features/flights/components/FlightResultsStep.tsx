@@ -434,8 +434,8 @@ export default function FlightResultsStep({
   search,
   onDateChange,
   leg = 'outbound',
-  isRoundTrip = false,
-  hideRouteCard = false,
+  isRoundTrip: _isRoundTrip = false,
+  hideRouteCard: _hideRouteCard = false,
   // `pax` / `child` / `infant` vẫn nằm trong `FlightResultsStepProps` (hợp đồng
   // public của component) nhưng KHÔNG còn được dùng ở đây: thanh "Tổng tiền"
   // dính đáy do `FlightBookingResultsWrapper` render, và nó đã tự tính tổng từ

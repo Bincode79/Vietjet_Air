@@ -35,16 +35,11 @@
         "step": 7,
         "name": 7,
         "status": "OK"
-      },
-      {
-        "step": 8,
-        "name": 8,
-        "status": "OK"
       }
     ],
     "errors": [],
-    "bookingId": "62522ac5-6e70-4bc6-b5e8-51417adcfa2c",
-    "totalAmount": "1.980.000",
+    "bookingId": "37925bde-5ca8-4f1b-8c7e-4116d8a1539f",
+    "totalAmount": null,
     "passed": true
   },
   "mobile": {
@@ -83,21 +78,16 @@
         "step": 7,
         "name": 7,
         "status": "OK"
-      },
-      {
-        "step": 8,
-        "name": 8,
-        "status": "OK"
       }
     ],
     "errors": [],
-    "bookingId": "0565c1d3-d746-40b1-b28e-0dd6f59a1c6e",
-    "totalAmount": "3.143.162",
+    "bookingId": "0198c650-278d-4273-9e36-f1a4ccf9cdb7",
+    "totalAmount": null,
     "passed": true
   },
   "overall": {
     "passed": true,
-    "desktopBookingId": "62522ac5-6e70-4bc6-b5e8-51417adcfa2c",
-    "mobileBookingId": "0565c1d3-d746-40b1-b28e-0dd6f59a1c6e"
+    "desktopBookingId": "37925bde-5ca8-4f1b-8c7e-4116d8a1539f",
+    "mobileBookingId": "0198c650-278d-4273-9e36-f1a4ccf9cdb7"
   }
 }
