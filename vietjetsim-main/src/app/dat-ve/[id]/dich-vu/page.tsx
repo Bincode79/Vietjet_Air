@@ -2,18 +2,11 @@
 
 import React, { useEffect, useState, useMemo } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import Link from 'next/link';
 import { Header, Footer } from '@/shared/components/navigation';
-import { Icon } from '@/shared/components/ui';
 import { apiRequest } from '@/shared/services';
 import { useToast } from '@/hooks/useToast';
 import { ToastContainer } from '@/shared/components/feedback';
-import {
-  ANCILLARY_OPTIONS,
-  BAGGAGE_PACKAGES,
-  MEAL_OPTIONS,
-  getAncillaryPrice,
-} from '@/features/bookings/pricing';
+import { BAGGAGE_PACKAGES, MEAL_OPTIONS, getAncillaryPrice } from '@/features/bookings/pricing';
 
 interface Passenger {
   id: string;
@@ -42,16 +35,6 @@ interface BookingDetail {
   hold_expires_at?: string;
   createdAt: string;
   passengers: Passenger[];
-}
-
-// Seat definitions
-interface SeatDef {
-  id: string;
-  row: number;
-  col: string;
-  type: 'skyboss' | 'front' | 'legroom' | 'standard';
-  price: number;
-  isOccupied: boolean;
 }
 
 const OCCUPIED_SEATS = new Set([
@@ -86,6 +69,11 @@ export default function AncillaryServicesPage() {
   const [booking, setBooking] = useState<BookingDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  // Tổng phí dịch vụ pending do SERVER trả về (GET/POST dich-vu).
+  const [pendingAmount, setPendingAmount] = useState<number>(0);
+  // Chỉ gửi seat/package_id khi user thực sự đổi — tránh ghi đè lựa chọn cũ.
+  const [seatDirty, setSeatDirty] = useState<boolean>(false);
+  const [baggageDirty, setBaggageDirty] = useState<boolean>(false);
 
   // Selected services state — giá đọc từ pricing.ts (không hardcode)
   const [selectedSeat, setSelectedSeat] = useState<string>('15-A');
@@ -93,7 +81,7 @@ export default function AncillaryServicesPage() {
   const [selectedBaggage, setSelectedBaggage] = useState<string>(BAGGAGE_PACKAGES[0].label);
   const [baggagePrice, setBaggagePrice] = useState<number>(BAGGAGE_PACKAGES[0].price);
   const [hasInsurance, setHasInsurance] = useState<boolean>(true);
-  const [insurancePrice, setInsurancePrice] = useState<number>(getAncillaryPrice('insurance'));
+  const insurancePrice = getAncillaryPrice('insurance');
   const [selectedMeal, setSelectedMeal] = useState<string>('');
   const [mealPrice, setMealPrice] = useState<number>(0);
   const [selectedTaxi, setSelectedTaxi] = useState<boolean>(false);
@@ -120,32 +108,88 @@ export default function AncillaryServicesPage() {
       if (!id) return;
       try {
         setLoading(true);
-        const data = await apiRequest<any>(`/api/dat-ve/${encodeURIComponent(id)}`);
-        const b = data.booking || data;
+        const data = await apiRequest<{ booking?: Record<string, unknown> }>(
+          `/api/dat-ve/${encodeURIComponent(id)}`
+        );
+        const b = (data.booking ?? data) as Record<string, unknown>;
+        const flight = (b.flight ?? {}) as Record<string, unknown>;
+        const rawPassengers = Array.isArray(b.passengers) ? b.passengers : [];
+        const toDate = (v: unknown) => {
+          const d = v ? new Date(String(v)) : null;
+          return d && !Number.isNaN(d.getTime()) ? d : null;
+        };
+        const departAt = toDate(flight.depart_time);
+        const arriveAt = toDate(flight.arrive_time);
+        const fmtDate = (d: Date | null) =>
+          d
+            ? `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`
+            : '';
+        const fmtTime = (d: Date | null) =>
+          d
+            ? `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`
+            : '';
         setBooking({
-          id: b.id || id,
-          bookingCode: b.booking_code || b.bookingCode || id,
-          pnr: b.booking_code || b.pnr || id,
-          from: b.origin || b.from || 'SGN',
-          to: b.destination || b.to || 'HAN',
-          fromCity: b.origin_city || b.fromCity || 'Tp. Hồ Chí Minh',
-          toCity: b.destination_city || b.toCity || 'Hà Nội',
-          flightNo: b.flight_number || b.flightNo || 'VJ134',
-          date: b.departure_date || b.date || '2026-11-30',
-          departTime: b.departure_time || b.departTime || '05:00',
-          arriveTime: b.arrival_time || b.arriveTime || '07:10',
-          flightType: b.flight_type || b.flightType || 'one_way',
-          ticketClass: b.ticket_class || b.ticketClass || 'Eco',
-          totalPrice: Number(b.total_amount || b.totalPrice || 2623581),
-          status: b.status || 'pending_hold',
-          hold_expires_at: b.hold_expires_at,
-          createdAt: b.created_at || new Date().toISOString(),
-          passengers: b.passengers || [
-            { id: 'p1', name: 'LONG KA', type: 'adult', seat: '15-A', baggage: '20kg' },
-          ],
+          id: String(b.id ?? id),
+          bookingCode: String(b.booking_code ?? id),
+          pnr: String(b.booking_code ?? id),
+          from: String(flight.from_code ?? ''),
+          to: String(flight.to_code ?? ''),
+          fromCity: String(flight.from_code ?? ''),
+          toCity: String(flight.to_code ?? ''),
+          flightNo: String(flight.flight_no ?? ''),
+          date: fmtDate(departAt),
+          departTime: fmtTime(departAt),
+          arriveTime: fmtTime(arriveAt),
+          flightType: b.trip_id ? 'round_trip' : 'one_way',
+          ticketClass: String(flight.class ?? 'economy'),
+          totalPrice: Number(b.total_price ?? 0),
+          status: String(b.status ?? 'pending'),
+          hold_expires_at: b.hold_expires_at ? String(b.hold_expires_at) : undefined,
+          createdAt: String(b.created_at ?? ''),
+          passengers: rawPassengers.map((p) => {
+            const pax = p as Record<string, unknown>;
+            return {
+              id: String(pax.id ?? ''),
+              name: String(pax.name ?? ''),
+              type: 'adult',
+              seat: pax.seat_number ? String(pax.seat_number) : undefined,
+              baggage: undefined,
+            };
+          }),
         });
-      } catch (err: any) {
-        setError(err.message || 'Không thể tải thông tin đặt vé.');
+
+        // Nạp trạng thái dịch vụ server đang giữ để form phản ánh đúng DB.
+        try {
+          const svc = await apiRequest<{
+            ancillaries?: { option_id: string; status?: string }[];
+            baggage?: { package_id: string; status: string }[];
+            pendingAmount?: number;
+          }>(`/api/dat-ve/${encodeURIComponent(id)}/dich-vu`);
+          const ids = new Set(
+            (svc.ancillaries ?? []).filter((a) => a.status !== 'cancelled').map((a) => a.option_id)
+          );
+          setHasInsurance(ids.has('insurance'));
+          setSelectedTaxi(ids.has('taxi'));
+          setTaxiPrice(ids.has('taxi') ? getAncillaryPrice('taxi') : 0);
+          if (ids.has('meal')) {
+            setSelectedMeal('Suất ăn');
+            setMealPrice(getAncillaryPrice('meal'));
+          }
+          const pkg =
+            (svc.baggage ?? []).find((item) => item.status === 'pending') ?? (svc.baggage ?? [])[0];
+          const matched = pkg ? BAGGAGE_PACKAGES.find((p) => p.id === pkg.package_id) : undefined;
+          if (matched) {
+            setSelectedBaggage(matched.label);
+            setBaggagePrice(matched.price);
+            setPendingBaggage(matched.label);
+            setPendingBaggagePrice(matched.price);
+          }
+          setPendingAmount(Number(svc.pendingAmount ?? 0));
+        } catch {
+          // GET dịch vụ lỗi không chặn trang — user vẫn chọn được dịch vụ mới.
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Không thể tải thông tin đặt vé.');
       } finally {
         setLoading(false);
       }
@@ -156,33 +200,18 @@ export default function AncillaryServicesPage() {
   const bookingCode = booking?.bookingCode || id;
   const isPaid = booking?.status === 'confirmed' || booking?.status === 'completed';
 
-  // Base fare breakdown matching Image #6
-  const baseTripPrice = 2579581;
-  const farePrice = 1738800;
-  const taxPrice = 581581;
-  const defaultServiceFee = 259200;
-  const convenienceFee = 54000;
-
-  // Additional services total
-  const ancillaryTotal = useMemo(() => {
-    let sum = 0;
-    if (hasInsurance) sum += insurancePrice;
-    if (seatPrice > 40000) sum += seatPrice - 40000;
-    if (baggagePrice > 200000) sum += baggagePrice - 200000;
-    if (mealPrice > 0) sum += mealPrice;
-    if (selectedTaxi && taxiPrice > 0) sum += taxiPrice;
-    return sum;
-  }, [hasInsurance, insurancePrice, seatPrice, baggagePrice, mealPrice, selectedTaxi, taxiPrice]);
-
+  // Tổng phải trả = tiền vé (nếu chưa trả) + dịch vụ pending do SERVER tính.
+  // Không tự cộng giá phía client — pendingAmount đến từ GET/POST dich-vu.
   const grandTotal = useMemo(() => {
-    return (
-      baseTripPrice +
-      (hasInsurance ? insurancePrice : 0) +
-      (seatPrice > 40000 ? seatPrice - 40000 : 0) +
-      (baggagePrice > 200000 ? baggagePrice - 200000 : 0) +
-      mealPrice
-    );
-  }, [baseTripPrice, hasInsurance, insurancePrice, seatPrice, baggagePrice, mealPrice]);
+    const fare = isPaid ? 0 : (booking?.totalPrice ?? 0);
+    return fare + pendingAmount;
+  }, [isPaid, booking?.totalPrice, pendingAmount]);
+
+  const holdRemainingMinutes = (): number | null => {
+    if (!booking?.hold_expires_at) return null;
+    const diff = new Date(booking.hold_expires_at).getTime() - Date.now();
+    return diff > 0 ? Math.ceil(diff / 60000) : 0;
+  };
 
   const formatHoldExpireDate = (isoStr?: string) => {
     if (!isoStr) {
@@ -257,29 +286,33 @@ export default function AncillaryServicesPage() {
     taxi?: boolean;
   }) => {
     try {
-      const seatVal = overrides?.seat ?? pendingSeat ?? selectedSeat;
-      const baggageVal = overrides?.baggagePkg ?? pendingBaggage ?? selectedBaggage;
       const insuranceVal = overrides?.insurance !== undefined ? overrides.insurance : hasInsurance;
       const mealVal = overrides?.meal ?? pendingMeal ?? selectedMeal;
       const taxiVal = overrides?.taxi !== undefined ? overrides.taxi : selectedTaxi;
 
-      let pkgId = BAGGAGE_PACKAGES[0].id;
-      const matchedPkg = BAGGAGE_PACKAGES.find((p) => baggageVal.includes(p.label));
-      if (matchedPkg) pkgId = matchedPkg.id;
+      const services: Record<string, unknown> = {
+        passenger_id: booking?.passengers?.[0]?.id,
+        insurance: insuranceVal,
+        // meal: chuỗi rỗng = khách bỏ chọn → gửi null để route gỡ khỏi DB.
+        meal: mealVal ? mealVal : null,
+        taxi: taxiVal,
+      };
+      // Chỉ gửi seat/package_id khi user thực sự đổi — tránh ghi đè lựa chọn cũ.
+      if (seatDirty || overrides?.seat) {
+        const seatVal = overrides?.seat ?? pendingSeat ?? selectedSeat;
+        services.seat_number = String(seatVal).replace('-', '');
+      }
+      if (baggageDirty || overrides?.baggagePkg) {
+        const baggageVal = overrides?.baggagePkg ?? pendingBaggage ?? selectedBaggage;
+        const matchedPkg = BAGGAGE_PACKAGES.find((p) => baggageVal.includes(p.label));
+        if (matchedPkg) services.package_id = matchedPkg.id;
+      }
 
-      await apiRequest(`/api/dat-ve/${encodeURIComponent(id)}/dich-vu`, {
-        method: 'POST',
-        body: {
-          services: {
-            passenger_id: booking?.passengers?.[0]?.id,
-            seat_number: seatVal.replace('-', ''),
-            package_id: pkgId,
-            insurance: insuranceVal,
-            meal: mealVal,
-            taxi: taxiVal,
-          },
-        },
-      });
+      const res = await apiRequest<{ pendingAmount?: number }>(
+        `/api/dat-ve/${encodeURIComponent(id)}/dich-vu`,
+        { method: 'POST', body: { services } }
+      );
+      if (typeof res?.pendingAmount === 'number') setPendingAmount(res.pendingAmount);
     } catch (e) {
       console.warn('Could not sync services to backend:', e);
     }
@@ -288,6 +321,7 @@ export default function AncillaryServicesPage() {
   const handleConfirmSeat = async () => {
     setSelectedSeat(pendingSeat);
     setSeatPrice(pendingSeatPrice);
+    setSeatDirty(true);
     setShowSeatModal(false);
     toast.success(
       `Đã chọn chỗ ngồi ${pendingSeat} (${pendingSeatPrice.toLocaleString('vi-VN')} VND)!`
@@ -298,6 +332,7 @@ export default function AncillaryServicesPage() {
   const handleConfirmBaggage = async () => {
     setSelectedBaggage(pendingBaggage);
     setBaggagePrice(pendingBaggagePrice);
+    setBaggageDirty(true);
     setShowBaggageModal(false);
     toast.success(
       `Đã cập nhật gói hành lý: ${pendingBaggage} (${pendingBaggagePrice.toLocaleString('vi-VN')} VND)!`
@@ -315,7 +350,13 @@ export default function AncillaryServicesPage() {
 
   const handleContinue = async () => {
     await syncServicesToBackend();
-    router.push(`/thanh-toan?bookingId=${bookingCode}&source=manage`);
+    if (pendingAmount > 0) {
+      router.push(`/dat-ve/${encodeURIComponent(bookingCode)}/dich-vu/thanh-toan`);
+    } else if (!isPaid) {
+      router.push(`/thanh-toan?bookingId=${bookingCode}&source=manage`);
+    } else {
+      router.push(`/dat-ve/${bookingCode}`);
+    }
   };
 
   if (loading) {
@@ -326,6 +367,27 @@ export default function AncillaryServicesPage() {
           <div className="text-center">
             <div className="w-12 h-12 border-4 border-red-200 border-t-red-600 rounded-full animate-spin mx-auto mb-3" />
             <p className="text-gray-700 font-bold text-sm font-koho">Đang tải dịch vụ bổ sung...</p>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex flex-col bg-gray-50">
+        <Header />
+        <main className="flex-1 flex items-center justify-center p-4">
+          <div className="bg-white rounded-vj shadow-lg p-8 max-w-md text-center space-y-4">
+            <p className="text-vj-red-dark font-bold">{error}</p>
+            <button
+              type="button"
+              onClick={() => router.push('/tim-kiem-chuyen-bay')}
+              className="px-6 py-2 rounded-full bg-vj-yellow text-vj-text font-bold text-xs"
+            >
+              Quay lại tìm chuyến
+            </button>
           </div>
         </main>
         <Footer />
@@ -358,6 +420,7 @@ export default function AncillaryServicesPage() {
             </span>
             <span className="text-vj-red-dark text-3xs font-medium ml-1">
               trước {formatHoldExpireDate(booking?.hold_expires_at)} (Theo giờ địa phương)
+              {holdRemainingMinutes() !== null && ` — còn ${holdRemainingMinutes()} phút giữ chỗ`}
             </span>
           </div>
         </div>
@@ -635,7 +698,7 @@ export default function AncillaryServicesPage() {
                   </button>
                   {showPaxSidebar && (
                     <div className="mt-2 text-2xs text-gray-600 space-y-1">
-                      <div>👤 Người lớn: {booking?.passengers?.[0]?.name || 'LONG KA'}</div>
+                      <div>👤 Người lớn: {booking?.passengers?.[0]?.name || '—'}</div>
                       <div>Chỗ ngồi: {selectedSeat}</div>
                       <div>Hành lý: {selectedBaggage}</div>
                     </div>
@@ -647,15 +710,15 @@ export default function AncillaryServicesPage() {
                   <div className="flex items-center justify-between font-bold text-vj-text">
                     <span className="text-2xs">Chuyến đi</span>
                     <span className="text-2xs font-black">
-                      {baseTripPrice.toLocaleString('vi-VN')} VND ✏️
+                      {(booking?.totalPrice ?? 0).toLocaleString('vi-VN')} VND
                     </span>
                   </div>
                   <div className="text-3xs text-gray-600">
                     {booking?.fromCity} ({booking?.from}) ➔ {booking?.toCity} ({booking?.to})
                   </div>
                   <div className="text-3xs text-gray-500">
-                    T2, 30/11/2026 | {booking?.departTime} - {booking?.arriveTime} |{' '}
-                    {booking?.flightNo} | Eco
+                    {booking?.date} | {booking?.departTime} - {booking?.arriveTime} |{' '}
+                    {booking?.flightNo} | {booking?.ticketClass}
                   </div>
                 </div>
 
@@ -663,52 +726,46 @@ export default function AncillaryServicesPage() {
                 <div className="border-b border-gray-100 pb-2.5">
                   <div className="flex items-center justify-between text-2xs font-bold text-gray-700">
                     <span>Giá vé</span>
-                    <span>{farePrice.toLocaleString('vi-VN')} VND ▾</span>
+                    <span>{(booking?.totalPrice ?? 0).toLocaleString('vi-VN')} VND</span>
                   </div>
                 </div>
 
-                {/* Thuế, phí */}
-                <div className="border-b border-gray-100 pb-2.5">
-                  <div className="flex items-center justify-between text-2xs font-bold text-gray-700">
-                    <span>Thuế, phí</span>
-                    <span>{taxPrice.toLocaleString('vi-VN')} VND ▾</span>
-                  </div>
-                </div>
-
-                {/* Dịch vụ */}
-                <div className="border-b border-gray-100 pb-2.5">
-                  <div className="flex items-center justify-between text-2xs font-bold text-gray-700">
-                    <span>Dịch vụ</span>
-                    <span>{defaultServiceFee.toLocaleString('vi-VN')} VND ▾</span>
-                  </div>
-                </div>
-
-                {/* Dịch vụ bổ sung */}
+                {/* Dịch vụ bổ sung — tổng pending do SERVER tính */}
                 <div className="border-b border-gray-100 pb-2.5 space-y-1">
                   <div className="flex items-center justify-between text-2xs font-bold text-vj-red-dark">
                     <span>Dịch vụ bổ sung</span>
-                    <span>{insurancePrice.toLocaleString('vi-VN')} VND</span>
+                    <span>{pendingAmount.toLocaleString('vi-VN')} VND</span>
                   </div>
-                  <div className="text-3xs text-gray-600 flex justify-between">
-                    <span>Bảo hiểm du lịch Vietjet Travel Safe</span>
-                    <span>{insurancePrice.toLocaleString('vi-VN')} VND</span>
-                  </div>
-                  <div className="text-3xs text-gray-500 flex justify-between">
-                    <span>BaoViet Insurance</span>
-                    <span>44.000</span>
-                  </div>
-                  <div className="text-3xs text-gray-500 flex justify-between">
-                    <span>Thuế VAT</span>
-                    <span>0</span>
-                  </div>
-                </div>
-
-                {/* Phí tiện ích */}
-                <div className="border-b border-gray-100 pb-2.5">
-                  <div className="flex items-center justify-between text-2xs font-bold text-gray-700">
-                    <span>Phí tiện ích</span>
-                    <span>{convenienceFee.toLocaleString('vi-VN')} VND</span>
-                  </div>
+                  {hasInsurance && (
+                    <div className="text-3xs text-gray-600 flex justify-between">
+                      <span>Bảo hiểm du lịch Vietjet Travel Safe</span>
+                      <span>{insurancePrice.toLocaleString('vi-VN')} VND</span>
+                    </div>
+                  )}
+                  {seatPrice > 0 && (
+                    <div className="text-3xs text-gray-600 flex justify-between">
+                      <span>Ghế ngồi {selectedSeat}</span>
+                      <span>{seatPrice.toLocaleString('vi-VN')} VND</span>
+                    </div>
+                  )}
+                  {baggagePrice > 0 && (
+                    <div className="text-3xs text-gray-600 flex justify-between">
+                      <span>Hành lý {selectedBaggage}</span>
+                      <span>{baggagePrice.toLocaleString('vi-VN')} VND</span>
+                    </div>
+                  )}
+                  {mealPrice > 0 && (
+                    <div className="text-3xs text-gray-600 flex justify-between">
+                      <span>Suất ăn {selectedMeal}</span>
+                      <span>{mealPrice.toLocaleString('vi-VN')} VND</span>
+                    </div>
+                  )}
+                  {selectedTaxi && taxiPrice > 0 && (
+                    <div className="text-3xs text-gray-600 flex justify-between">
+                      <span>Taxi sân bay</span>
+                      <span>{taxiPrice.toLocaleString('vi-VN')} VND</span>
+                    </div>
+                  )}
                 </div>
 
                 {/* Total Red Box */}
@@ -782,7 +839,7 @@ export default function AncillaryServicesPage() {
                 <div className="font-bold text-vj-text-strong flex items-center gap-1.5">
                   <span>👤 Hành khách:</span>
                   <span className="text-vj-red-dark font-black">
-                    {booking?.passengers?.[0]?.name || 'LONG KA'}
+                    {booking?.passengers?.[0]?.name || '—'}
                   </span>
                 </div>
                 <div className="flex items-center gap-1.5 text-2xs font-bold text-gray-700">

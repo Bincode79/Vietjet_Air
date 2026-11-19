@@ -5766,6 +5766,10 @@ export interface BookingAncillaryRecord {
   option_id: string;
   unit_price: number;
   quantity: number;
+  /** 'pending' = mua sau khi đặt vé, chờ thanh toán; 'paid' = đã thu tiền. */
+  status: 'pending' | 'paid' | 'cancelled';
+  /** payment_id của giao dịch đã thu (migration 056); NULL với dòng đi kèm vé. */
+  payment_id: string | null;
   created_at: string;
 }
 
@@ -5775,22 +5779,39 @@ export async function upsertBookingAncillary(
   unitPrice: number,
   quantity = 1
 ): Promise<BookingAncillaryRecord> {
+  // Route dịch vụ chỉ được ghi dòng 'pending' (migration 056): dòng 'paid' đi
+  // kèm tiền vé hoặc đã thu qua dich-vu/thanh-toan — ghi đè nó sẽ hoặc thu
+  // tiền hai lần, hoặc xoá dấu vết giao dịch đã thu.
   const rows = await sql`
-    INSERT INTO booking_ancillaries (booking_id, option_id, unit_price, quantity)
-    VALUES (${bookingId}, ${optionId}, ${unitPrice}, ${quantity})
+    INSERT INTO booking_ancillaries (booking_id, option_id, unit_price, quantity, status)
+    VALUES (${bookingId}, ${optionId}, ${unitPrice}, ${quantity}, 'pending')
     ON CONFLICT (booking_id, option_id) DO UPDATE
       SET unit_price = EXCLUDED.unit_price,
           quantity = EXCLUDED.quantity
-    RETURNING id, booking_id, option_id, unit_price, quantity, created_at
+      WHERE booking_ancillaries.status = 'pending'
+    RETURNING id, booking_id, option_id, unit_price, quantity, status, payment_id, created_at
   `;
-  const row = asFirstRow<{
+  let row = asFirstRow<{
     id: string;
     booking_id: string;
     option_id: string;
     unit_price: string | number;
     quantity: number;
+    status: 'pending' | 'paid' | 'cancelled';
+    payment_id: string | null;
     created_at: string;
-  }>(rows)!;
+  }>(rows);
+  if (!row) {
+    // Xung đột với dòng 'paid'/'cancelled': không được sửa — trả về dòng hiện
+    // có để caller vẫn có object hợp lệ thay vì nhận undefined.
+    const existing = await sql`
+      SELECT id, booking_id, option_id, unit_price, quantity, status, payment_id, created_at
+      FROM booking_ancillaries
+      WHERE booking_id = ${bookingId} AND option_id = ${optionId}
+    `;
+    row = asFirstRow<typeof row>(existing);
+  }
+  if (!row) throw new Error('ANCILLARY_UPSERT_FAILED');
   return { ...row, unit_price: parseFloat(String(row.unit_price)) };
 }
 
@@ -5800,7 +5821,7 @@ export async function removeBookingAncillary(
 ): Promise<boolean> {
   const rows = await sql`
     DELETE FROM booking_ancillaries
-    WHERE booking_id = ${bookingId} AND option_id = ${optionId}
+    WHERE booking_id = ${bookingId} AND option_id = ${optionId} AND status = 'pending'
     RETURNING id
   `;
   return Array.isArray(rows) && rows.length > 0;
@@ -5808,7 +5829,7 @@ export async function removeBookingAncillary(
 
 export async function getBookingAncillaries(bookingId: string): Promise<BookingAncillaryRecord[]> {
   const rows = await sql`
-    SELECT id, booking_id, option_id, unit_price, quantity, created_at
+    SELECT id, booking_id, option_id, unit_price, quantity, status, payment_id, created_at
     FROM booking_ancillaries
     WHERE booking_id = ${bookingId}
   `;
@@ -5818,6 +5839,8 @@ export async function getBookingAncillaries(bookingId: string): Promise<BookingA
     option_id: string;
     unit_price: string | number;
     quantity: number;
+    status: 'pending' | 'paid' | 'cancelled';
+    payment_id: string | null;
     created_at: string;
   }>(rows).map((r) => ({ ...r, unit_price: parseFloat(String(r.unit_price)) }));
 }
@@ -5840,29 +5863,73 @@ export const updateBookingTotalAmount = updateBookingTotalPrice;
 
 export const markBaggagePaid = markBookingBaggagePaid;
 
+/**
+ * Đánh dấu các dịch vụ bổ sung (bảo hiểm/ăn/xe…) của một đặt chỗ đã thanh
+ * toán — idempotent giống `markBookingBaggagePaid`: chỉ lật dòng 'pending',
+ * chạy lần hai trả về 0 và không cộng tiền lại.
+ */
+export async function markBookingAncillariesPaid(
+  bookingId: string,
+  paymentId?: string | null
+): Promise<number> {
+  const rows = await sql`
+    UPDATE booking_ancillaries
+    SET status = 'paid', payment_id = ${paymentId ?? null}
+    WHERE booking_id = ${bookingId} AND status = 'pending'
+    RETURNING id
+  `;
+  return asRows<{ id: string }>(rows).length;
+}
+
 export async function getPendingAncillaryAmount(bookingId: string): Promise<number> {
   const rows = await sql`
     SELECT COALESCE(SUM(unit_price * quantity), 0) AS pending_amount
     FROM booking_ancillaries
-    WHERE booking_id = ${bookingId}
+    WHERE booking_id = ${bookingId} AND status = 'pending'
   `;
   const row = asFirstRow<{ pending_amount: string | number }>(rows);
   return row ? parseFloat(String(row.pending_amount)) : 0;
 }
 
+/**
+ * Tính lại `bookings.total_price` sau khi dịch vụ bổ sung đổi trạng thái.
+ *
+ * `total_price` = phần giá vé (không tách được thành cột riêng — nó đã gồm
+ * thuế, phí sân bay, ghế và dịch vụ đi kèm lúc đặt) + các khoản dịch vụ
+ * mua SAU đặt vé đã thu tiền. "Đã thu" được nhận diện bằng:
+ *   - `booking_baggage.status = 'paid'` — bảng này chỉ chứa hàng mua thêm;
+ *   - `booking_ancillaries.status = 'paid' AND payment_id IS NOT NULL` —
+ *     dòng 'paid' nhưng `payment_id` NULL là dịch vụ đi kèm lúc đặt vé,
+ *     tiền đã nằm trong giá vé, không được trừ ra khỏi phần giá vé.
+ *
+ * Phần giá vé được suy ngược: `total_price − paidServices`. Nhờ đó recalc
+ * hội tụ đúng kể cả khi `addBookingExtraCharge` đã cộng trước đó — nó sửa
+ * được trôi số liệu thay vì cộng dồn thêm một lần nữa.
+ */
 export async function recalcBookingTotal(bookingId: string): Promise<number> {
   const booking = await getBookingById(bookingId);
   if (!booking) return 0;
 
-  const passengers = booking.passengers || [];
-  const paxCount = passengers.length || 1;
-  const flight = booking.flight_id ? await getFlightById(booking.flight_id) : null;
-  const baseFare = flight ? Number(flight.price || flight.economy_price || 0) * paxCount : 0;
+  const serviceRows = await sql`
+    SELECT COALESCE(SUM(unit_price * quantity), 0) AS paid_services
+    FROM (
+      SELECT unit_price, quantity
+      FROM booking_baggage
+      WHERE booking_id = ${bookingId} AND status = 'paid'
+      UNION ALL
+      SELECT unit_price, quantity
+      FROM booking_ancillaries
+      WHERE booking_id = ${bookingId} AND status = 'paid' AND payment_id IS NOT NULL
+    ) svc
+  `;
+  const paidServices = parseFloat(
+    String(asFirstRow<{ paid_services: string | number }>(serviceRows)?.paid_services ?? 0)
+  );
 
-  const pendingBaggage = await getPendingBaggageAmount(bookingId);
-  const pendingAncillaries = await getPendingAncillaryAmount(bookingId);
-
-  const newTotal = baseFare + pendingBaggage + pendingAncillaries;
-  await updateBookingTotalPrice(bookingId, newTotal);
+  const fareBase = Math.max(0, Number(booking.total_price ?? 0) - paidServices);
+  const newTotal = fareBase + paidServices;
+  if (newTotal !== Number(booking.total_price ?? 0)) {
+    await updateBookingTotalPrice(bookingId, newTotal);
+  }
   return newTotal;
 }

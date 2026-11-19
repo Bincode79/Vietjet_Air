@@ -2169,6 +2169,9 @@ function createMockSql(): SqlClient {
     }
 
     // ── Dịch vụ bổ sung sau đặt vé (`booking_ancillaries`) ────────────────────
+    // Migration 056: route dịch vụ chỉ ghi dòng 'pending'; dòng 'paid' (đi kèm
+    // vé hoặc đã thu) không bị upsert đụng tới — `ON CONFLICT ... WHERE
+    // status = 'pending'` làm RETURNING rỗng và db.ts fallback sang SELECT.
     if (q.includes('insert into booking_ancillaries')) {
       const bookingId = String(values[0] ?? '');
       const optionId = String(values[1] ?? '');
@@ -2179,8 +2182,13 @@ function createMockSql(): SqlClient {
         (a) => a.booking_id === bookingId && a.option_id === optionId
       );
       if (existing) {
-        existing.unit_price = unitPrice;
-        existing.quantity = quantity;
+        // Mirror `WHERE booking_ancillaries.status = 'pending'`: dòng đã
+        // 'paid'/'cancelled' không bị sửa — mock trả chính dòng đó để
+        // db.ts nhận được object như nhánh fallback SELECT.
+        if (existing.status === 'pending') {
+          existing.unit_price = unitPrice;
+          existing.quantity = quantity;
+        }
         return [existing];
       }
       const row: MockResult = {
@@ -2189,17 +2197,38 @@ function createMockSql(): SqlClient {
         option_id: optionId,
         unit_price: unitPrice,
         quantity,
+        status: 'pending',
+        payment_id: null,
         created_at: nowIso(),
       };
       mockBookingAncillaries.push(row);
       return [row];
     }
 
+    // `UPDATE booking_ancillaries SET status='paid', payment_id=? ...`
+    // (markBookingAncillariesPaid) — idempotent: chỉ lật dòng 'pending'.
+    if (q.includes('update booking_ancillaries')) {
+      const paymentId = values[0] ?? null;
+      const bookingId = String(values[1] ?? '');
+      const marked = mockBookingAncillaries.filter(
+        (a) => a.booking_id === bookingId && a.status === 'pending'
+      );
+      for (const a of marked) {
+        a.status = 'paid';
+        a.payment_id = paymentId;
+      }
+      return marked.map((a) => ({ id: a.id }));
+    }
+
     if (q.includes('delete from booking_ancillaries')) {
       const bookingId = String(values[0] ?? '');
       const optionId = String(values[1] ?? '');
       const idx = mockBookingAncillaries.findIndex(
-        (a) => a.booking_id === bookingId && a.option_id === optionId
+        (a) =>
+          a.booking_id === bookingId &&
+          a.option_id === optionId &&
+          // `AND status = 'pending'` trong SQL thật — dòng đã thu không bị gỡ.
+          a.status === 'pending'
       );
       if (idx >= 0) {
         const removed = mockBookingAncillaries.splice(idx, 1);
@@ -2211,8 +2240,19 @@ function createMockSql(): SqlClient {
     if (q.includes('from booking_ancillaries')) {
       const bookingId = String(values[0] ?? '');
       const matches = mockBookingAncillaries.filter((a) => a.booking_id === bookingId);
+      // `recalcBookingTotal`: UNION booking_baggage + booking_ancillaries đã
+      // thu — mock không có store booking_baggage nên phần đó đóng góp 0.
+      if (q.includes('paid_services')) {
+        const total = matches
+          .filter((a) => a.status === 'paid' && a.payment_id != null)
+          .reduce((sum, item) => sum + Number(item.unit_price) * Number(item.quantity), 0);
+        return [{ paid_services: total }];
+      }
       if (q.includes('sum(unit_price * quantity)') || q.includes('pending_amount')) {
-        const total = matches.reduce(
+        const pending = q.includes("status = 'pending'")
+          ? matches.filter((a) => a.status === 'pending')
+          : matches;
+        const total = pending.reduce(
           (sum, item) => sum + Number(item.unit_price) * Number(item.quantity),
           0
         );

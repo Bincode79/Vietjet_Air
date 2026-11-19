@@ -48,10 +48,12 @@ describe('endpoint thanh toán hành lý bổ sung', () => {
     expect(source).toMatch(/addBookingExtraCharge\(booking\.id, amount\)/);
   });
 
-  it('chỉ cộng tiền khi thực sự có gói hành lý chuyển sang `paid`', () => {
-    // `markBookingBaggagePaid` idempotent: lần gọi thứ hai trả 0 ⇒ không cộng
-    // tiền lần nữa.
-    expect(source).toMatch(/if \(markedCount > 0\) \{/);
+  it('chỉ cộng tiền khi thực sự có dòng nào chuyển sang `paid`', () => {
+    // `markBookingBaggagePaid`/`markBookingAncillariesPaid` đều idempotent:
+    // lần gọi thứ hai trả 0 ⇒ không cộng tiền lần nữa. Điều kiện cộng tiền
+    // phải tính CẢ HAI loại — chỉ đếm hành lý sẽ bỏ sót khoản thuần dịch vụ.
+    expect(source).toMatch(/markBookingAncillariesPaid\(booking\.id, payment\.id\)/);
+    expect(source).toMatch(/if \(markedBaggage \+ markedAncillaries > 0\) \{/);
   });
 });
 

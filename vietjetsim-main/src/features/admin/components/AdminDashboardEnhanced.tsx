@@ -264,7 +264,6 @@ function generateBookingStatusData(): BookingStatusPoint[] {
   ];
 }
 
-
 export default function AdminDashboardEnhanced() {
   const { user } = useAuth();
 
@@ -613,9 +612,7 @@ function OverviewDashboard({
                           <p className="text-sm text-gray-600">
                             Doanh thu: {data.revenue.toLocaleString()} VND
                           </p>
-                          <p className="text-sm text-gray-600">
-                            Đơn đặt: {data.bookings}
-                          </p>
+                          <p className="text-sm text-gray-600">Đơn đặt: {data.bookings}</p>
                         </div>
                       );
                     }

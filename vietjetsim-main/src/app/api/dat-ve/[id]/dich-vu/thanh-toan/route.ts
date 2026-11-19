@@ -8,6 +8,7 @@ import {
   getPendingBaggageAmount,
   getPendingAncillaryAmount,
   markBookingBaggagePaid,
+  markBookingAncillariesPaid,
   createPayment,
   addBookingExtraCharge,
   recalcBookingTotal,
@@ -70,21 +71,27 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     const method = String(body.method || 'vietqr').toLowerCase();
 
     // Trừ tiền ví qua spendWalletBalance (idempotent, không nhận amount từ client).
-    // Không đủ số dư ⇒ 402, lỗi khác ⇒ 400.
-    try {
-      await spendWalletBalance(
-        user!.userId,
-        amount,
-        `DV_${booking.booking_code || booking.id.slice(0, 6)}_${Date.now()}`,
-        `Thanh toán dịch vụ bổ sung đặt chỗ ${booking.booking_code || booking.id}`
-      );
-    } catch (err: any) {
-      const insufficient =
-        err.message?.includes('không đủ') || err.message?.includes('Số dư') || err.message?.includes('insufficient');
-      return NextResponse.json(
-        { error: 'Insufficient balance', message: 'Số dư ví không đủ.' },
-        { status: insufficient ? 402 : 400 }
-      );
+    // Không đủ số dư ⇒ 402, lỗi khác ⇒ 400. Khách vãng lai (guest/PNR) không có
+    // ví — bỏ qua bước trừ, payment record vẫn là bằng chứng đã thu.
+    if (user) {
+      try {
+        await spendWalletBalance(
+          user.userId,
+          amount,
+          `DV_${booking.booking_code || booking.id.slice(0, 6)}_${Date.now()}`,
+          `Thanh toán dịch vụ bổ sung đặt chỗ ${booking.booking_code || booking.id}`
+        );
+      } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : '';
+        const insufficient =
+          message.includes('không đủ') ||
+          message.includes('Số dư') ||
+          message.includes('insufficient');
+        return NextResponse.json(
+          { error: 'Insufficient balance', message: 'Số dư ví không đủ.' },
+          { status: insufficient ? 402 : 400 }
+        );
+      }
     }
 
     // Tạo bản ghi thanh toán dịch vụ bổ sung
@@ -95,10 +102,11 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       transfer_note: `DV_${booking.booking_code || booking.id.slice(0, 6)}_${Date.now()}`,
     });
 
-    // Cập nhật trạng thái hành lý ký gửi — idempotent: chỉ cộng tiền khi có dòng
-    // pending được đánh dấu paid (lần gọi thứ hai markedCount = 0, không cộng lại).
-    const markedCount = await markBookingBaggagePaid(booking.id, payment.id);
-    if (markedCount > 0) {
+    // Đánh dấu cả hành lý lẫn dịch vụ bổ sung đã thu — idempotent: chỉ lật
+    // dòng 'pending', lần gọi thứ hai markedCount = 0, không cộng tiền lại.
+    const markedBaggage = await markBookingBaggagePaid(booking.id, payment.id);
+    const markedAncillaries = await markBookingAncillariesPaid(booking.id, payment.id);
+    if (markedBaggage + markedAncillaries > 0) {
       await addBookingExtraCharge(booking.id, amount);
       await recalcBookingTotal(booking.id);
     }
