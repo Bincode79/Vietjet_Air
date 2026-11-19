@@ -5757,3 +5757,74 @@ export async function upsertPageLayout(params: {
 
   return asFirstRow<PageLayoutRecord>(rows)!;
 }
+
+// ─── Booking Ancillaries & Total Management ────────────────────────────────────
+
+export interface BookingAncillaryRecord {
+  id: string;
+  booking_id: string;
+  option_id: string;
+  unit_price: number;
+  quantity: number;
+  created_at: string;
+}
+
+export async function upsertBookingAncillary(
+  bookingId: string,
+  optionId: string,
+  unitPrice: number,
+  quantity = 1
+): Promise<BookingAncillaryRecord> {
+  const rows = await sql`
+    INSERT INTO booking_ancillaries (booking_id, option_id, unit_price, quantity)
+    VALUES (${bookingId}, ${optionId}, ${unitPrice}, ${quantity})
+    ON CONFLICT (booking_id, option_id) DO UPDATE
+      SET unit_price = EXCLUDED.unit_price,
+          quantity = EXCLUDED.quantity
+    RETURNING id, booking_id, option_id, unit_price, quantity, created_at
+  `;
+  const row = asFirstRow<{
+    id: string;
+    booking_id: string;
+    option_id: string;
+    unit_price: string | number;
+    quantity: number;
+    created_at: string;
+  }>(rows)!;
+  return { ...row, unit_price: parseFloat(String(row.unit_price)) };
+}
+
+export async function removeBookingAncillary(bookingId: string, optionId: string): Promise<boolean> {
+  const rows = await sql`
+    DELETE FROM booking_ancillaries
+    WHERE booking_id = ${bookingId} AND option_id = ${optionId}
+    RETURNING id
+  `;
+  return Array.isArray(rows) && rows.length > 0;
+}
+
+export async function getBookingAncillaries(bookingId: string): Promise<BookingAncillaryRecord[]> {
+  const rows = await sql`
+    SELECT id, booking_id, option_id, unit_price, quantity, created_at
+    FROM booking_ancillaries
+    WHERE booking_id = ${bookingId}
+  `;
+  return asRows<{
+    id: string;
+    booking_id: string;
+    option_id: string;
+    unit_price: string | number;
+    quantity: number;
+    created_at: string;
+  }>(rows).map((r) => ({ ...r, unit_price: parseFloat(String(r.unit_price)) }));
+}
+
+export async function updateBookingTotalAmount(bookingId: string, newTotal: number): Promise<boolean> {
+  const rows = await sql`
+    UPDATE bookings
+    SET total_amount = ${newTotal}, updated_at = NOW()
+    WHERE id = ${bookingId}
+    RETURNING id
+  `;
+  return Array.isArray(rows) && rows.length > 0;
+}

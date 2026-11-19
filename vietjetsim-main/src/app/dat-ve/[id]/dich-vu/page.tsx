@@ -243,36 +243,82 @@ export default function AncillaryServicesPage() {
     setPendingSeatPrice(seat.price);
   };
 
-  const handleConfirmSeat = () => {
+  const syncServicesToBackend = async (overrides?: {
+    seat?: string;
+    baggagePkg?: string;
+    insurance?: boolean;
+    meal?: string;
+    taxi?: boolean;
+  }) => {
+    try {
+      const seatVal = overrides?.seat ?? pendingSeat ?? selectedSeat;
+      const baggageVal = overrides?.baggagePkg ?? pendingBaggage ?? selectedBaggage;
+      const insuranceVal = overrides?.insurance !== undefined ? overrides.insurance : hasInsurance;
+      const mealVal = overrides?.meal ?? pendingMeal ?? selectedMeal;
+      const taxiVal = overrides?.taxi !== undefined ? overrides.taxi : selectedTaxi;
+
+      let pkgId = 'pkg-20';
+      if (baggageVal.includes('30kg')) pkgId = 'pkg-30';
+      else if (baggageVal.includes('40kg')) pkgId = 'pkg-40';
+      else if (baggageVal.includes('quá khổ 20')) pkgId = 'oversized-20';
+      else if (baggageVal.includes('quá khổ 30')) pkgId = 'oversized-30';
+
+      await apiRequest(`/api/dat-ve/${encodeURIComponent(id)}/dich-vu`, {
+        method: 'POST',
+        body: {
+          services: {
+            passenger_id: booking?.passengers?.[0]?.id,
+            seat_number: seatVal.replace('-', ''),
+            package_id: pkgId,
+            insurance: insuranceVal,
+            meal: mealVal,
+            taxi: taxiVal,
+          },
+        },
+      });
+    } catch (e) {
+      console.warn('Could not sync services to backend:', e);
+    }
+  };
+
+  const handleConfirmSeat = async () => {
     setSelectedSeat(pendingSeat);
     setSeatPrice(pendingSeatPrice);
     setShowSeatModal(false);
     toast.success(
       `Đã chọn chỗ ngồi ${pendingSeat} (${pendingSeatPrice.toLocaleString('vi-VN')} VND)!`
     );
+    await syncServicesToBackend({ seat: pendingSeat });
   };
 
-  const handleConfirmBaggage = () => {
+  const handleConfirmBaggage = async () => {
     setSelectedBaggage(pendingBaggage);
     setBaggagePrice(pendingBaggagePrice);
     setShowBaggageModal(false);
     toast.success(
       `Đã cập nhật gói hành lý: ${pendingBaggage} (${pendingBaggagePrice.toLocaleString('vi-VN')} VND)!`
     );
+    await syncServicesToBackend({ baggagePkg: pendingBaggage });
   };
 
-  const handleConfirmMeal = () => {
+  const handleConfirmMeal = async () => {
     setSelectedMeal(pendingMeal);
     setMealPrice(pendingMealPrice);
     setShowMealModal(false);
     toast.success(`Đã chọn suất ăn: ${pendingMeal}!`);
+    await syncServicesToBackend({ meal: pendingMeal });
+  };
+
+  const handleContinue = async () => {
+    await syncServicesToBackend();
+    router.push(`/thanh-toan?bookingId=${bookingCode}&source=manage`);
   };
 
   if (loading) {
     return (
-      <div className="relative min-h-screen bg-[#F6F7F9] flex flex-col font-sans">
+      <div className="relative min-h-screen bg-vj-surface-cool flex flex-col font-sans">
         <Header />
-        <main className="flex-1 flex items-center justify-center p-8">
+        <main id="main-content" className="flex-1 flex items-center justify-center p-8">
           <div className="text-center">
             <div className="w-12 h-12 border-4 border-red-200 border-t-red-600 rounded-full animate-spin mx-auto mb-3" />
             <p className="text-gray-700 font-bold text-sm font-koho">Đang tải dịch vụ bổ sung...</p>
@@ -284,29 +330,29 @@ export default function AncillaryServicesPage() {
   }
 
   return (
-    <div className="relative min-h-screen bg-[#F5F7FA] flex flex-col font-koho text-gray-800">
+    <div className="relative min-h-screen bg-vj-surface-2 flex flex-col font-koho text-vj-text-strong">
       <Header />
       <ToastContainer toasts={toast.toasts} onDismiss={toast.dismiss} position="top-right" />
 
       {/* 1. Yellow PNR Subheader Bar matching Image #6 */}
-      <div className="w-full bg-[#FFD700] text-gray-900 border-b border-amber-300 py-2.5 px-3 sm:px-6 shadow-xs sticky top-[74px] z-20">
+      <div className="w-full bg-vj-yellow text-vj-text border-b border-vj-yellow py-2.5 px-3 sm:px-6 shadow-xs sticky top-[74px] z-20">
         <div className="max-w-5xl mx-auto flex flex-wrap items-center justify-between gap-y-1 text-2xs sm:text-xs">
           <div className="flex items-center gap-1.5 font-bold">
             <span>Mã đặt chỗ :</span>
-            <span className="text-red-600 font-black text-xs sm:text-sm">{bookingCode}</span>
+            <span className="text-vj-red-dark font-black text-xs sm:text-sm">{bookingCode}</span>
           </div>
           <div className="flex items-center gap-1.5 font-bold">
             <span>Trạng thái thanh toán :</span>
-            <span className={`font-black ${isPaid ? 'text-vj-pay-green' : 'text-red-600'}`}>
+            <span className={`font-black ${isPaid ? 'text-vj-pay-green' : 'text-vj-red-dark'}`}>
               {isPaid ? 'Đã thanh toán' : 'Chưa thanh toán'}
             </span>
           </div>
           <div className="flex items-center gap-1 text-right font-bold">
             <span>Yêu cầu thanh toán :</span>
-            <span className="text-red-600 font-black">
+            <span className="text-vj-red-dark font-black">
               {grandTotal.toLocaleString('vi-VN')} VND
             </span>
-            <span className="text-red-600 text-3xs font-medium ml-1">
+            <span className="text-vj-red-dark text-3xs font-medium ml-1">
               trước {formatHoldExpireDate(booking?.hold_expires_at)} (Theo giờ địa phương)
             </span>
           </div>
@@ -314,10 +360,10 @@ export default function AncillaryServicesPage() {
       </div>
 
       {/* Main Content Area */}
-      <main className="flex-1 max-w-5xl mx-auto w-full px-4 sm:px-6 py-6 pb-28">
+      <main id="main-content" className="flex-1 max-w-5xl mx-auto w-full px-4 sm:px-6 py-6 pb-28">
         {/* Title & Warning Notice matching Image #6 */}
         <div className="mb-4">
-          <h1 className="text-lg sm:text-xl font-black text-gray-900 mb-1">Mua dịch vụ bổ sung</h1>
+          <h1 className="text-lg sm:text-xl font-black text-vj-text mb-1">Mua dịch vụ bổ sung</h1>
           <p className="text-2xs sm:text-xs text-red-500 font-medium">
             QUAN TRỌNG: Khi thay đổi một số dịch vụ đã mua trước đó, số dư sẽ không được hoàn lại!
           </p>
@@ -341,7 +387,7 @@ export default function AncillaryServicesPage() {
                   <span className="text-xl">💺</span>
                 </div>
                 <div>
-                  <h3 className="font-black text-sm text-gray-900 group-hover:text-red-600 transition-colors">
+                  <h3 className="font-black text-sm text-vj-text group-hover:text-vj-red-dark transition-colors">
                     Chọn chỗ ngồi yêu thích
                   </h3>
                   <p className="text-3xs text-gray-500">Hãy chọn chỗ ngồi yêu thích của bạn</p>
@@ -356,7 +402,7 @@ export default function AncillaryServicesPage() {
                 </div>
               </div>
               <div className="flex items-center gap-3">
-                <span className="text-xs font-black text-gray-900">
+                <span className="text-xs font-black text-vj-text">
                   {seatPrice.toLocaleString('vi-VN')} VND
                 </span>
                 <span className="text-gray-400 font-bold text-sm">›</span>
@@ -377,7 +423,7 @@ export default function AncillaryServicesPage() {
                   <span className="text-xl">🧳</span>
                 </div>
                 <div>
-                  <h3 className="font-black text-sm text-gray-900 group-hover:text-red-600 transition-colors">
+                  <h3 className="font-black text-sm text-vj-text group-hover:text-vj-red-dark transition-colors">
                     Chọn hành lý/Dịch vụ nối chuyến
                   </h3>
                   <p className="text-3xs text-gray-500">Hãy lựa chọn gói hành lý phù hợp</p>
@@ -392,7 +438,7 @@ export default function AncillaryServicesPage() {
                 </div>
               </div>
               <div className="flex items-center gap-3">
-                <span className="text-xs font-black text-gray-900">
+                <span className="text-xs font-black text-vj-text">
                   {baggagePrice.toLocaleString('vi-VN')} VND
                 </span>
                 <span className="text-gray-400 font-bold text-sm">›</span>
@@ -413,7 +459,7 @@ export default function AncillaryServicesPage() {
                   <span className="text-xl">🍱</span>
                 </div>
                 <div>
-                  <h3 className="font-black text-sm text-gray-900 group-hover:text-red-600 transition-colors">
+                  <h3 className="font-black text-sm text-vj-text group-hover:text-vj-red-dark transition-colors">
                     Chọn suất ăn
                   </h3>
                   <p className="text-2xs text-gray-500 font-semibold">{selectedMeal}</p>
@@ -421,7 +467,7 @@ export default function AncillaryServicesPage() {
               </div>
               <div className="flex items-center gap-3">
                 {mealPrice > 0 && (
-                  <span className="text-xs font-black text-gray-900">
+                  <span className="text-xs font-black text-vj-text">
                     {mealPrice.toLocaleString('vi-VN')} VND
                   </span>
                 )}
@@ -443,11 +489,11 @@ export default function AncillaryServicesPage() {
               className="bg-white rounded-2xl border border-gray-200 p-4 flex items-center justify-between shadow-2xs hover:border-amber-400 hover:shadow-xs transition-all cursor-pointer group"
             >
               <div className="flex items-center gap-3.5">
-                <div className="w-11 h-11 rounded-xl bg-yellow-400 text-gray-900 flex items-center justify-center shrink-0 shadow-2xs">
+                <div className="w-11 h-11 rounded-xl bg-yellow-400 text-vj-text flex items-center justify-center shrink-0 shadow-2xs">
                   <span className="text-xl">🚕</span>
                 </div>
                 <div>
-                  <h3 className="font-black text-sm text-gray-900 group-hover:text-red-600 transition-colors">
+                  <h3 className="font-black text-sm text-vj-text group-hover:text-vj-red-dark transition-colors">
                     Dịch vụ Taxi
                   </h3>
                   <p className="text-3xs text-gray-500">Đưa đón sân bay tiện lợi, an toàn</p>
@@ -455,7 +501,7 @@ export default function AncillaryServicesPage() {
               </div>
               <div className="flex items-center gap-3">
                 <span
-                  className={`text-xs font-black ${selectedTaxi ? 'text-red-600' : 'text-gray-400'}`}
+                  className={`text-xs font-black ${selectedTaxi ? 'text-vj-red-dark' : 'text-gray-400'}`}
                 >
                   {selectedTaxi ? '150.000 VND' : 'Chưa chọn'}
                 </span>
@@ -479,7 +525,7 @@ export default function AncillaryServicesPage() {
                 </div>
                 <div>
                   <div className="flex items-center justify-between">
-                    <h3 className="font-black text-sm text-gray-900 group-hover:text-red-600 transition-colors">
+                    <h3 className="font-black text-sm text-vj-text group-hover:text-vj-red-dark transition-colors">
                       Bảo hiểm du lịch Vietjet Travel Safe
                     </h3>
                   </div>
@@ -494,7 +540,7 @@ export default function AncillaryServicesPage() {
               </div>
               <div className="flex items-center gap-3 shrink-0 ml-3">
                 <span
-                  className={`text-xs font-black ${hasInsurance ? 'text-red-600' : 'text-gray-400'}`}
+                  className={`text-xs font-black ${hasInsurance ? 'text-vj-red-dark' : 'text-gray-400'}`}
                 >
                   {hasInsurance ? `${insurancePrice.toLocaleString('vi-VN')} VND` : 'Chưa chọn'}
                 </span>
@@ -509,7 +555,7 @@ export default function AncillaryServicesPage() {
               }
               className="bg-white rounded-2xl border border-gray-200 p-4 flex items-center justify-between shadow-2xs hover:border-amber-400 hover:shadow-xs transition-all cursor-pointer group relative overflow-hidden"
             >
-              <span className="absolute top-1 right-8 bg-red-500 text-white text-[9px] font-black px-1.5 py-0.2 rounded-full uppercase">
+              <span className="absolute top-1 right-8 bg-vj-red text-white text-3xs font-black px-1.5 py-0.2 rounded-full uppercase">
                 New
               </span>
               <div className="flex items-center gap-3.5">
@@ -517,7 +563,7 @@ export default function AncillaryServicesPage() {
                   <span className="text-xl">🧍</span>
                 </div>
                 <div>
-                  <h3 className="font-black text-sm text-gray-900 group-hover:text-red-600 transition-colors">
+                  <h3 className="font-black text-sm text-vj-text group-hover:text-vj-red-dark transition-colors">
                     Dịch vụ theo hành khách
                   </h3>
                   <p className="text-3xs text-gray-500">Hãy chọn dịch vụ</p>
@@ -537,15 +583,15 @@ export default function AncillaryServicesPage() {
               }
               className="bg-white rounded-2xl border border-gray-200 p-4 flex items-center justify-between shadow-2xs hover:border-amber-400 hover:shadow-xs transition-all cursor-pointer group relative overflow-hidden"
             >
-              <span className="absolute top-1 right-8 bg-red-500 text-white text-[9px] font-black px-1.5 py-0.2 rounded-full uppercase">
+              <span className="absolute top-1 right-8 bg-vj-red text-white text-3xs font-black px-1.5 py-0.2 rounded-full uppercase">
                 New
               </span>
               <div className="flex items-center gap-3.5">
-                <div className="w-11 h-11 rounded-xl bg-amber-400 text-gray-900 flex items-center justify-center shrink-0 shadow-2xs">
+                <div className="w-11 h-11 rounded-xl bg-amber-400 text-vj-text flex items-center justify-center shrink-0 shadow-2xs">
                   <span className="text-xl">🐾</span>
                 </div>
                 <div>
-                  <h3 className="font-black text-sm text-gray-900 group-hover:text-red-600 transition-colors">
+                  <h3 className="font-black text-sm text-vj-text group-hover:text-vj-red-dark transition-colors">
                     Mang theo thú cưng
                   </h3>
                   <p className="text-3xs text-gray-500">
@@ -563,20 +609,20 @@ export default function AncillaryServicesPage() {
           <div className="lg:col-span-1 space-y-3 text-xs">
             <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-2xs">
               {/* Header Box Red */}
-              <div className="bg-[#ED1B24] text-white p-3 flex items-center justify-between font-black text-xs">
+              <div className="bg-vj-red-dark text-white p-3 flex items-center justify-between font-black text-xs">
                 <span>THÔNG TIN ĐẶT CHỖ</span>
                 <span className="text-3xs font-medium bg-white/20 px-2 py-0.5 rounded cursor-pointer hover:bg-white/30">
                   Chi Tiết
                 </span>
               </div>
 
-              <div className="p-3.5 space-y-3 font-koho text-xs text-gray-800">
+              <div className="p-3.5 space-y-3 font-koho text-xs text-vj-text-strong">
                 {/* Accordion 1: Thông tin hành khách */}
                 <div className="border-b border-gray-100 pb-2.5">
                   <button
                     type="button"
                     onClick={() => setShowPaxSidebar(!showPaxSidebar)}
-                    className="w-full flex items-center justify-between font-bold text-gray-700 hover:text-red-600 text-left cursor-pointer"
+                    className="w-full flex items-center justify-between font-bold text-gray-700 hover:text-vj-red-dark text-left cursor-pointer"
                   >
                     <span>Thông tin hành khách</span>
                     <span className="text-3xs text-gray-400 font-mono">
@@ -594,7 +640,7 @@ export default function AncillaryServicesPage() {
 
                 {/* Trip Route Card */}
                 <div className="border-b border-gray-100 pb-2.5 space-y-1">
-                  <div className="flex items-center justify-between font-bold text-gray-900">
+                  <div className="flex items-center justify-between font-bold text-vj-text">
                     <span className="text-2xs">Chuyến đi</span>
                     <span className="text-2xs font-black">
                       {baseTripPrice.toLocaleString('vi-VN')} VND ✏️
@@ -635,7 +681,7 @@ export default function AncillaryServicesPage() {
 
                 {/* Dịch vụ bổ sung */}
                 <div className="border-b border-gray-100 pb-2.5 space-y-1">
-                  <div className="flex items-center justify-between text-2xs font-bold text-red-600">
+                  <div className="flex items-center justify-between text-2xs font-bold text-vj-red-dark">
                     <span>Dịch vụ bổ sung</span>
                     <span>{insurancePrice.toLocaleString('vi-VN')} VND</span>
                   </div>
@@ -662,7 +708,7 @@ export default function AncillaryServicesPage() {
                 </div>
 
                 {/* Total Red Box */}
-                <div className="bg-[#ED1B24] text-white p-2.5 rounded-lg flex items-center justify-between font-black text-xs">
+                <div className="bg-vj-red-dark text-white p-2.5 rounded-vj flex items-center justify-between font-black text-xs">
                   <span>Tổng tiền</span>
                   <span className="text-sm">{grandTotal.toLocaleString('vi-VN')} VND</span>
                 </div>
@@ -678,14 +724,14 @@ export default function AncillaryServicesPage() {
           <button
             type="button"
             onClick={() => router.push(`/dat-ve/${bookingCode}`)}
-            className="px-8 py-2.5 rounded-full border border-gray-300 bg-white hover:bg-gray-50 text-gray-800 font-bold text-xs shadow-2xs transition-all active:scale-98 cursor-pointer"
+            className="px-8 py-2.5 rounded-full border border-gray-300 bg-white hover:bg-gray-50 text-vj-text-strong font-bold text-xs shadow-2xs transition-all active:scale-98 cursor-pointer"
           >
             Quay lại
           </button>
 
           <div className="hidden sm:flex items-center gap-1.5 font-koho font-bold text-xs">
             <span>Tổng tiền</span>
-            <span className="text-red-600 font-black text-sm">
+            <span className="text-vj-red-dark font-black text-sm">
               {grandTotal.toLocaleString('vi-VN')} VND
             </span>
             <span className="text-3xs text-gray-500 cursor-pointer ml-1">Chi tiết ▾</span>
@@ -693,8 +739,8 @@ export default function AncillaryServicesPage() {
 
           <button
             type="button"
-            onClick={() => router.push(`/thanh-toan?bookingId=${bookingCode}&source=manage`)}
-            className="px-10 py-2.5 rounded-full bg-[#FFD700] hover:bg-amber-400 text-gray-900 font-black text-xs shadow-2xs transition-all active:scale-98 cursor-pointer"
+            onClick={handleContinue}
+            className="px-10 py-2.5 rounded-full bg-vj-yellow hover:bg-vj-amber text-vj-text font-black text-xs shadow-2xs transition-all active:scale-98 cursor-pointer"
           >
             Đi tiếp
           </button>
@@ -706,7 +752,7 @@ export default function AncillaryServicesPage() {
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 animate-in fade-in">
           <div className="bg-white rounded-3xl max-w-2xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden border border-gray-100">
             {/* Modal Header */}
-            <div className="p-4 sm:p-5 bg-gradient-to-r from-red-600 to-[#ED1B24] text-white flex items-center justify-between">
+            <div className="p-4 sm:p-5 bg-gradient-to-r from-vj-red-dark to-vj-red-dark text-white flex items-center justify-between">
               <div>
                 <h2 className="text-base sm:text-lg font-black flex items-center gap-2">
                   <span>✈️</span>
@@ -729,9 +775,9 @@ export default function AncillaryServicesPage() {
             {/* Passenger Selection Strip & Seat Legend */}
             <div className="bg-gray-50 p-3.5 border-b border-gray-200 text-xs">
               <div className="flex flex-wrap items-center justify-between gap-2 mb-2 pb-2 border-b border-gray-200">
-                <div className="font-bold text-gray-800 flex items-center gap-1.5">
+                <div className="font-bold text-vj-text-strong flex items-center gap-1.5">
                   <span>👤 Hành khách:</span>
-                  <span className="text-red-600 font-black">
+                  <span className="text-vj-red-dark font-black">
                     {booking?.passengers?.[0]?.name || 'LONG KA'}
                   </span>
                 </div>
@@ -740,7 +786,7 @@ export default function AncillaryServicesPage() {
                   <span className="px-2 py-0.5 bg-red-600 text-white rounded font-mono font-black">
                     {pendingSeat}
                   </span>
-                  <span className="text-red-600">
+                  <span className="text-vj-red-dark">
                     ({pendingSeatPrice.toLocaleString('vi-VN')} VND)
                   </span>
                 </div>
@@ -765,13 +811,13 @@ export default function AncillaryServicesPage() {
                   <span>Tiêu chuẩn (40k)</span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <div className="w-4 h-4 rounded bg-red-600 text-white font-bold text-[9px] flex items-center justify-center">
+                  <div className="w-4 h-4 rounded bg-red-600 text-white font-bold text-3xs flex items-center justify-center">
                     ✓
                   </div>
                   <span>Đang chọn</span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <div className="w-4 h-4 rounded bg-gray-400 text-white font-bold text-[9px] flex items-center justify-center">
+                  <div className="w-4 h-4 rounded bg-vj-border-light text-white font-bold text-3xs flex items-center justify-center">
                     ✕
                   </div>
                   <span>Đã có người</span>
@@ -805,7 +851,7 @@ export default function AncillaryServicesPage() {
                     <div key={row.row} className="relative">
                       {/* Emergency exit label */}
                       {(row.row === 11 || row.row === 12) && (
-                        <div className="text-center text-[9px] font-black text-purple-700 bg-purple-50 py-0.5 rounded mb-1">
+                        <div className="text-center text-3xs font-black text-vj-purple bg-vj-surface-rose py-0.5 rounded mb-1">
                           ⚠ CỬA THOÁT HIỂM - CHỖ ĐỂ CHÂN RỘNG
                         </div>
                       )}
@@ -820,18 +866,18 @@ export default function AncillaryServicesPage() {
                               type="button"
                               disabled={seat.isOccupied}
                               onClick={() => handleSeatClick(seat)}
-                              className={`h-8 rounded-lg flex items-center justify-center text-2xs font-bold transition-all ${
+                              className={`h-8 rounded-vj flex items-center justify-center text-2xs font-bold transition-all ${
                                 seat.isOccupied
-                                  ? 'bg-gray-400 text-white cursor-not-allowed opacity-50'
+                                  ? 'bg-vj-border-light text-white cursor-not-allowed opacity-50'
                                   : isSelected
                                     ? 'bg-red-600 text-white ring-2 ring-red-400 shadow-xs scale-105'
                                     : seat.type === 'skyboss'
-                                      ? 'bg-amber-100 hover:bg-amber-200 text-amber-900 border border-amber-300'
+                                      ? 'bg-amber-100 hover:bg-amber-200 text-amber-900 border border-vj-yellow'
                                       : seat.type === 'legroom'
                                         ? 'bg-purple-100 hover:bg-purple-200 text-purple-900 border border-purple-300'
                                         : seat.type === 'front'
                                           ? 'bg-vj-pay-green hover:bg-vj-pay-green text-vj-pay-green border border-vj-pay-green'
-                                          : 'bg-gray-100 hover:bg-gray-200 text-gray-800 border border-gray-200'
+                                          : 'bg-gray-100 hover:bg-gray-200 text-vj-text-strong border border-gray-200'
                               }`}
                               title={`Ghế ${seat.id} - ${seat.price.toLocaleString('vi-VN')} VND`}
                             >
@@ -855,18 +901,18 @@ export default function AncillaryServicesPage() {
                               type="button"
                               disabled={seat.isOccupied}
                               onClick={() => handleSeatClick(seat)}
-                              className={`h-8 rounded-lg flex items-center justify-center text-2xs font-bold transition-all ${
+                              className={`h-8 rounded-vj flex items-center justify-center text-2xs font-bold transition-all ${
                                 seat.isOccupied
-                                  ? 'bg-gray-400 text-white cursor-not-allowed opacity-50'
+                                  ? 'bg-vj-border-light text-white cursor-not-allowed opacity-50'
                                   : isSelected
                                     ? 'bg-red-600 text-white ring-2 ring-red-400 shadow-xs scale-105'
                                     : seat.type === 'skyboss'
-                                      ? 'bg-amber-100 hover:bg-amber-200 text-amber-900 border border-amber-300'
+                                      ? 'bg-amber-100 hover:bg-amber-200 text-amber-900 border border-vj-yellow'
                                       : seat.type === 'legroom'
                                         ? 'bg-purple-100 hover:bg-purple-200 text-purple-900 border border-purple-300'
                                         : seat.type === 'front'
                                           ? 'bg-vj-pay-green hover:bg-vj-pay-green text-vj-pay-green border border-vj-pay-green'
-                                          : 'bg-gray-100 hover:bg-gray-200 text-gray-800 border border-gray-200'
+                                          : 'bg-gray-100 hover:bg-gray-200 text-vj-text-strong border border-gray-200'
                               }`}
                               title={`Ghế ${seat.id} - ${seat.price.toLocaleString('vi-VN')} VND`}
                             >
@@ -885,7 +931,7 @@ export default function AncillaryServicesPage() {
             <div className="p-4 bg-white border-t border-gray-200 flex items-center justify-between">
               <div>
                 <span className="text-2xs text-gray-500 block">Ghế đã chọn:</span>
-                <span className="text-sm font-black text-red-600">{pendingSeat}</span>
+                <span className="text-sm font-black text-vj-red-dark">{pendingSeat}</span>
                 <span className="text-xs text-gray-700 ml-1">
                   ({pendingSeatPrice.toLocaleString('vi-VN')} VND)
                 </span>
@@ -901,7 +947,7 @@ export default function AncillaryServicesPage() {
                 <button
                   type="button"
                   onClick={handleConfirmSeat}
-                  className="px-6 py-2 rounded-full bg-[#FFD700] hover:bg-amber-400 text-gray-900 font-black text-xs shadow-2xs transition-all active:scale-98 cursor-pointer"
+                  className="px-6 py-2 rounded-full bg-vj-yellow hover:bg-vj-amber text-vj-text font-black text-xs shadow-2xs transition-all active:scale-98 cursor-pointer"
                 >
                   Xác nhận chọn ghế
                 </button>
@@ -915,7 +961,7 @@ export default function AncillaryServicesPage() {
       {showBaggageModal && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 animate-in fade-in">
           <div className="bg-white rounded-3xl max-w-md w-full shadow-2xl overflow-hidden border border-gray-100">
-            <div className="p-4 bg-[#ED1B24] text-white flex items-center justify-between">
+            <div className="p-4 bg-vj-red-dark text-white flex items-center justify-between">
               <h2 className="text-base font-black flex items-center gap-2">
                 <span>🧳</span>
                 <span>Chọn gói hành lý ký gửi</span>
@@ -943,16 +989,16 @@ export default function AncillaryServicesPage() {
                   }}
                   className={`p-3.5 rounded-xl border flex items-center justify-between cursor-pointer transition-all ${
                     pendingBaggage === pkg.name
-                      ? 'border-red-600 bg-red-50/50 shadow-2xs'
-                      : 'border-gray-200 hover:border-amber-300'
+                      ? 'border-vj-red-dark bg-red-50/50 shadow-2xs'
+                      : 'border-gray-200 hover:border-vj-yellow'
                   }`}
                 >
                   <div>
-                    <div className="font-black text-sm text-gray-900">{pkg.name}</div>
+                    <div className="font-black text-sm text-vj-text">{pkg.name}</div>
                     <div className="text-3xs text-gray-500">{pkg.desc}</div>
                   </div>
                   <div className="text-right">
-                    <div className="font-black text-xs text-red-600">
+                    <div className="font-black text-xs text-vj-red-dark">
                       {pkg.price.toLocaleString('vi-VN')} VND
                     </div>
                     <div className="text-2xs">{pendingBaggage === pkg.name ? '✓' : ''}</div>
@@ -971,7 +1017,7 @@ export default function AncillaryServicesPage() {
               <button
                 type="button"
                 onClick={handleConfirmBaggage}
-                className="px-6 py-2 rounded-full bg-[#FFD700] hover:bg-amber-400 text-gray-900 font-black text-xs shadow-2xs"
+                className="px-6 py-2 rounded-full bg-vj-yellow hover:bg-vj-amber text-vj-text font-black text-xs shadow-2xs"
               >
                 Xác nhận
               </button>
@@ -984,7 +1030,7 @@ export default function AncillaryServicesPage() {
       {showMealModal && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 animate-in fade-in">
           <div className="bg-white rounded-3xl max-w-md w-full shadow-2xl overflow-hidden border border-gray-100">
-            <div className="p-4 bg-[#ED1B24] text-white flex items-center justify-between">
+            <div className="p-4 bg-vj-red-dark text-white flex items-center justify-between">
               <h2 className="text-base font-black flex items-center gap-2">
                 <span>🍱</span>
                 <span>Thực đơn nóng sốt jet café</span>
@@ -1021,16 +1067,16 @@ export default function AncillaryServicesPage() {
                   }}
                   className={`p-3.5 rounded-xl border flex items-center justify-between cursor-pointer transition-all ${
                     pendingMeal === meal.name
-                      ? 'border-red-600 bg-red-50/50 shadow-2xs'
-                      : 'border-gray-200 hover:border-amber-300'
+                      ? 'border-vj-red-dark bg-red-50/50 shadow-2xs'
+                      : 'border-gray-200 hover:border-vj-yellow'
                   }`}
                 >
                   <div>
-                    <div className="font-black text-sm text-gray-900">{meal.name}</div>
+                    <div className="font-black text-sm text-vj-text">{meal.name}</div>
                     <div className="text-3xs text-gray-500">{meal.desc}</div>
                   </div>
                   <div className="text-right">
-                    <div className="font-black text-xs text-red-600">
+                    <div className="font-black text-xs text-vj-red-dark">
                       {meal.price.toLocaleString('vi-VN')} VND
                     </div>
                     <div className="text-2xs">{pendingMeal === meal.name ? '✓' : ''}</div>
@@ -1049,7 +1095,7 @@ export default function AncillaryServicesPage() {
               <button
                 type="button"
                 onClick={handleConfirmMeal}
-                className="px-6 py-2 rounded-full bg-[#FFD700] hover:bg-amber-400 text-gray-900 font-black text-xs shadow-2xs"
+                className="px-6 py-2 rounded-full bg-vj-yellow hover:bg-vj-amber text-vj-text font-black text-xs shadow-2xs"
               >
                 Xác nhận món
               </button>

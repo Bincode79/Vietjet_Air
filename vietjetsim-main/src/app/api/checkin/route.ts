@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyAuthRequest } from '@/lib/auth';
 import { isAdminRole } from '@/lib/roles';
+import { isGuestBookingOwner } from '@/lib/guest-booking';
 import {
   getBookingById,
   getFlightById,
@@ -203,7 +204,7 @@ export async function POST(request: NextRequest) {
     }
 
     const { user, error: authError, response: authResponse } = await verifyAuthRequest(request);
-    if (authError || !user) return authResponse!;
+    if (authError === 'CSRF validation failed') return authResponse!;
 
     const body = await request.json();
 
@@ -227,7 +228,19 @@ export async function POST(request: NextRequest) {
         { status: 404 }
       );
     }
-    if (!isAdminRole(user.role) && booking.user_id !== user.userId) {
+
+    const isOwner = user && (isAdminRole(user.role) || booking.user_id === user.userId);
+    const isGuest = isGuestBookingOwner(request, booking.id);
+    const bodyPnr = String(body.bookingCode ?? '').trim().toUpperCase();
+    const isPnrMatch = bodyPnr && booking.booking_code?.toUpperCase() === bodyPnr;
+
+    if (!isOwner && !isGuest && !isPnrMatch) {
+      if (!user) {
+        return authResponse ?? NextResponse.json(
+          { error: 'Unauthorized', message: 'Vui lòng đăng nhập hoặc dùng mã đặt chỗ để check-in.' },
+          { status: 401 }
+        );
+      }
       return NextResponse.json(
         { error: 'Forbidden', message: 'Không có quyền truy cập' },
         { status: 403 }

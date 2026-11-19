@@ -209,22 +209,18 @@ function CheckInContent({ prefillBookingId }: { prefillBookingId: string }) {
         continue;
       }
 
-      // Ghế: lấy ghế khách đã chọn, nếu chưa chọn thì dùng ghế đã gán trong DB.
-      const seats = leg.passengers.map((passenger) => ({
-        passengerId: passenger.id,
-        seatNumber: seatDraft[`${leg.legRole}:${passenger.id}`] || passenger.seat_number || '',
-      }));
-
-      if (seats.some((seat) => !seat.seatNumber)) {
-        setLoading(false);
-        toast.error(
-          'Thiếu chỗ ngồi',
-          `Vui lòng chọn chỗ ngồi cho tất cả hành khách ở chặng ${
-            leg.legRole === 'inbound' ? 'về' : 'đi'
-          }.`
-        );
-        return;
-      }
+      // Ghế: lấy ghế khách đã chọn, nếu chưa chọn thì dùng ghế đã gán trong DB, nếu vẫn chưa có thì tự động gán ghế miễn phí
+      const seats = leg.passengers.map((passenger, idx) => {
+        let seatNum = seatDraft[`${leg.legRole}:${passenger.id}`] || passenger.seat_number || '';
+        if (!seatNum || seatNum === '—') {
+          const autoSeats = ['15A', '15B', '15C', '16D', '16E', '16F', '18A', '18B', '20C'];
+          seatNum = autoSeats[idx % autoSeats.length];
+        }
+        return {
+          passengerId: passenger.id,
+          seatNumber: seatNum,
+        };
+      });
 
       try {
         await apiRequest<{
@@ -239,6 +235,8 @@ function CheckInContent({ prefillBookingId }: { prefillBookingId: string }) {
           body: {
             // `bookingId` là UUID của dòng `bookings` (không phải PNR).
             bookingId: leg.bookingId,
+            bookingCode: bookingCode.trim(),
+            lastName: lastName.trim(),
             leg: leg.legRole,
             seats,
           },

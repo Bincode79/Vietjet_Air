@@ -6,6 +6,10 @@ import {
   addBookingBaggage,
   getBookingBaggage,
   getPendingBaggageAmount,
+  upsertBookingAncillary,
+  removeBookingAncillary,
+  getBookingAncillaries,
+  setPassengerSeatNumber,
 } from '@/lib/db';
 import { BAGGAGE_PACKAGES, OVERSIZED_BAGGAGE } from '@/features/bookings/pricing';
 import { rateLimit } from '@/lib/rate-limit';
@@ -20,7 +24,7 @@ import { isGuestBookingOwner } from '@/lib/guest-booking';
 const BAGGAGE_CATALOG = [...BAGGAGE_PACKAGES, ...OVERSIZED_BAGGAGE];
 
 /**
- * Mua thêm hành lý ký gửi sau khi đã hoàn tất đặt vé.
+ * Mua thêm hành lý ký gửi sau khi đã hoàn tất đặt vé hoặc cập nhật dịch vụ khi giữ chỗ.
  *
  * Giá luôn do SERVER tính lại từ `pricing.ts`: client chỉ gửi `package_id`.
  * Nếu tin giá của client, một request đã sửa giá sẽ bán hành lý với giá 1₫.
@@ -52,6 +56,61 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       );
     }
 
+    const body = await request.json();
+
+    // Hỗ trợ cập nhật tổng hợp các dịch vụ bổ sung từ trang /dat-ve/[id]/dich-vu
+    if (body.services) {
+      const s = body.services;
+      const passengerId = String(s.passenger_id ?? booking.passengers?.[0]?.id ?? '').trim();
+      const newSeat = s.seat_number ? String(s.seat_number).trim().toUpperCase() : null;
+      if (newSeat && passengerId) {
+        await setPassengerSeatNumber(passengerId, newSeat, booking.id);
+      }
+
+      if (s.package_id) {
+        const pkg = BAGGAGE_CATALOG.find((item) => item.id === String(s.package_id).trim());
+        if (pkg) {
+          const unitPrice = pkg.price;
+          await addBookingBaggage({
+            bookingId: booking.id,
+            packageId: pkg.id,
+            weightKg: pkg.weight,
+            unitPrice,
+            quantity: 1,
+            status: 'pending',
+          });
+        }
+      }
+
+      if (typeof s.insurance === 'boolean') {
+        if (s.insurance) {
+          await upsertBookingAncillary(booking.id, 'insurance', 44000, 1);
+        } else {
+          await removeBookingAncillary(booking.id, 'insurance');
+        }
+      }
+
+      if (s.meal) {
+        await upsertBookingAncillary(booking.id, 'meal', 85000, 1);
+      }
+
+      if (s.taxi) {
+        await upsertBookingAncillary(booking.id, 'taxi', 150000, 1);
+      }
+
+      const ancillaries = await getBookingAncillaries(booking.id);
+      const baggage = await getBookingBaggage(booking.id);
+      const pendingAmount = await getPendingBaggageAmount(booking.id);
+
+      return NextResponse.json({
+        success: true,
+        message: 'Đã cập nhật dịch vụ bổ sung thành công.',
+        ancillaries,
+        baggage,
+        pendingAmount,
+      });
+    }
+
     // Chỉ đặt vé đã thanh toán mới mua thêm được: hành lý ký gửi đi kèm vé.
     if (booking.status !== 'confirmed' && booking.status !== 'completed') {
       return NextResponse.json(
@@ -63,7 +122,6 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       );
     }
 
-    const body = await request.json();
     const packageId = String(body.package_id ?? '').trim();
     const quantity = Math.max(1, Math.min(5, Number(body.quantity ?? 1) || 1));
 
@@ -120,8 +178,9 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 
     const baggage = await getBookingBaggage(booking.id);
     const pendingAmount = await getPendingBaggageAmount(booking.id);
+    const ancillaries = await getBookingAncillaries(booking.id);
 
-    return NextResponse.json({ baggage, pendingAmount });
+    return NextResponse.json({ baggage, pendingAmount, ancillaries });
   } catch (error) {
     console.error('Error fetching baggage:', error);
     return NextResponse.json({ error: 'Failed to fetch baggage' }, { status: 500 });
