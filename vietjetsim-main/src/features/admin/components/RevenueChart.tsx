@@ -66,7 +66,7 @@ const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
           const isRevenue = item.dataKey === 'revenue';
           return (
             <div key={index} className="flex items-center justify-between gap-4">
-              <span className="flex items-center gap-1.5 text-vj-text-muted">
+              <span className="flex items-center gap-1.5 text-vj-admin-muted">
                 <span
                   className="w-2.5 h-2.5 rounded-full inline-block"
                   style={{ backgroundColor: item.color }}
@@ -106,14 +106,14 @@ export default function RevenueChart({
       <div className="flex items-center justify-between mb-4">
         <div>
           <h3 className="font-bold text-white text-base tracking-tight">{title}</h3>
-          <p className="text-xs text-vj-text-muted mt-0.5">
+          <p className="text-xs text-vj-admin-muted mt-0.5">
             Biểu đồ kết hợp doanh thu (VND) và số lượng vé bán
           </p>
         </div>
       </div>
 
       {!hasData ? (
-        <div className="h-[280px] flex flex-col items-center justify-center text-sm text-vj-text-muted">
+        <div className="h-[280px] flex flex-col items-center justify-center text-sm text-vj-admin-muted">
           <p>Chưa có dữ liệu doanh thu</p>
         </div>
       ) : (
@@ -152,7 +152,7 @@ export default function RevenueChart({
                 align="right"
                 wrapperStyle={{ paddingBottom: 10, fontSize: 12 }}
                 formatter={(value: string) => (
-                  <span className="text-vj-text-muted font-medium">{value}</span>
+                  <span className="text-vj-admin-muted font-medium">{value}</span>
                 )}
               />
               <Bar

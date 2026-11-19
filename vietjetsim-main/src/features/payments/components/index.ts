@@ -8,4 +8,5 @@ export { default as PaymentModal } from './PaymentModal';
 export { default as ReservationCountdown } from './ReservationCountdown';
 export { default as BookingTicketCard } from './BookingTicketCard';
 export { default as VirtualCreditCard } from './VirtualCreditCard';
+export { default as GatewayQrPage } from './GatewayQrPage';
 export * from './PaymentMethodLogos';

@@ -31,7 +31,7 @@ import {
   type AdminSystemConfigRow,
 } from '@/features/admin';
 import { getApiErrorMessage } from '@/shared/services';
-import { SYSTEM_CONFIG_SCHEMA, type SystemConfigKey } from '@/lib/system-config';
+import { SYSTEM_CONFIG_SCHEMA, type SystemConfigKey } from '@/lib/system-config-schema';
 import {
   PERMISSION_CATEGORIES,
   PERMISSION_LABELS,
@@ -526,7 +526,7 @@ export default function AdminRBACPanel({ onToast }: { onToast?: ToastAPI }) {
                         <span
                           className={`ml-auto text-2xs font-bold px-1.5 py-0.5 rounded ${
                             log.status === 'success'
-                              ? 'bg-vj-pay-green text-vj-pay-green'
+                              ? 'bg-vj-pay-green text-vj-pay-green-text'
                               : log.status === 'denied'
                                 ? 'bg-red-50 text-red-700'
                                 : 'bg-amber-50 text-amber-700'
@@ -751,7 +751,7 @@ export default function AdminRBACPanel({ onToast }: { onToast?: ToastAPI }) {
                           </span>
                         ))}
                       {selected!.permissions.size > 12 && (
-                        <span className="text-3xs px-1.5 py-0.5 rounded bg-red-50 text-vj-red-dark font-bold">
+                        <span className="text-3xs px-1.5 py-0.5 rounded bg-red-50 text-red-400 font-bold">
                           +{selected!.permissions.size - 12} nữa
                         </span>
                       )}

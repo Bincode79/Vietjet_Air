@@ -19,7 +19,7 @@ export const ADMIN_CARD_STYLE: React.CSSProperties = {
 };
 
 export const ADMIN_SUBTITLE_CLASS =
-  'text-xs font-bold text-vj-text-muted uppercase tracking-widest mt-1 opacity-70';
+  'text-xs font-bold text-vj-admin-muted uppercase tracking-widest mt-1 opacity-70';
 
 export const ADMIN_ACTION_BTN =
   'flex items-center gap-2 text-2xs font-black uppercase tracking-wider px-4 py-2 rounded-vj transition-all hover:translate-y-[-1px] active:scale-98';
@@ -34,7 +34,7 @@ interface AdminTabHeaderProps {
 
 export function AdminTabHeader({
   icon,
-  iconClassName = 'text-vj-blue',
+  iconClassName = 'text-vj-bank-blue-text',
   title,
   subtitle,
   actions,
@@ -62,7 +62,7 @@ interface AdminStatCardProps {
 
 export function AdminStatCard({
   icon,
-  iconClassName = 'text-vj-blue',
+  iconClassName = 'text-vj-bank-blue-text',
   value,
   label,
 }: AdminStatCardProps) {
@@ -77,7 +77,7 @@ export function AdminStatCard({
         </div>
       </div>
       <div className="text-2xl font-black text-white tracking-tight tabular-nums">{value}</div>
-      <div className="text-xs font-bold text-vj-text-muted uppercase tracking-widest mt-1 opacity-70">
+      <div className="text-xs font-bold text-vj-admin-muted uppercase tracking-widest mt-1 opacity-70">
         {label}
       </div>
     </div>

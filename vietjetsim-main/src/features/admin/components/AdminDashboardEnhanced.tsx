@@ -491,7 +491,7 @@ function RecentAlertsCard() {
             />
             <div className="flex-1">
               <p className="text-sm font-medium text-gray-700">{alert.text}</p>
-              <p className="text-2xs text-vj-text-muted">{alert.time}</p>
+              <p className="text-2xs text-vj-admin-muted">{alert.time}</p>
             </div>
           </div>
         ))}
@@ -883,7 +883,7 @@ function RecentNotificationsCard() {
             />
             <div className="flex-1">
               <p className="text-sm font-medium text-gray-700">{n.text}</p>
-              <p className="text-2xs text-vj-text-muted">{n.time}</p>
+              <p className="text-2xs text-vj-admin-muted">{n.time}</p>
             </div>
           </div>
         ))}

@@ -59,7 +59,7 @@ const CustomTooltip = ({
       >
         <div className="font-bold text-white mb-1">{label}</div>
         {payload.map((p, i) => (
-          <div key={i} className="text-vj-text-muted">
+          <div key={i} className="text-vj-admin-muted">
             {p.name}:{' '}
             <span className="font-bold text-white">
               {typeof p.value === 'number' && p.value > 10000 ? formatCurrency(p.value) : p.value}
@@ -73,7 +73,7 @@ const CustomTooltip = ({
 };
 
 const EmptyChart = ({ message }: { message: string }) => (
-  <div className="h-[220px] flex items-center justify-center text-sm text-vj-text-muted">
+  <div className="h-[220px] flex items-center justify-center text-sm text-vj-admin-muted">
     {message}
   </div>
 );
@@ -145,7 +145,7 @@ export default function RevenueTab() {
         >
           <Icon name="ExclamationTriangleIcon" size={32} className="text-primary mx-auto mb-3" />
           <h3 className="font-bold text-white mb-1">Lỗi tải dữ liệu</h3>
-          <p className="text-sm text-vj-text-muted mb-5">{error}</p>
+          <p className="text-sm text-vj-admin-muted mb-5">{error}</p>
           <button
             onClick={() => void load()}
             className={`${ADMIN_ACTION_BTN} text-sm font-semibold text-white bg-vj-blue border border-vj-blue hover:bg-vj-blue mx-auto`}
@@ -189,7 +189,7 @@ export default function RevenueTab() {
                 key={val}
                 onClick={() => setPeriod(val as '6m' | '3m' | '1m')}
                 className={`px-3 py-1.5 rounded-vj text-xs font-semibold transition-all ${
-                  period === val ? 'bg-primary text-white' : 'text-vj-text-muted hover:text-white'
+                  period === val ? 'bg-primary text-white' : 'text-vj-admin-muted hover:text-white'
                 }`}
               >
                 {label}
@@ -203,13 +203,13 @@ export default function RevenueTab() {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <AdminStatCard
           icon="CurrencyDollarIcon"
-          iconClassName="text-vj-pay-green"
+          iconClassName="text-vj-pay-green-text"
           value={formatCurrency(analytics.revenue.totalRevenue)}
           label={`Tổng doanh thu · ${analytics.revenue.completedBookings} vé hoàn thành`}
         />
         <AdminStatCard
           icon="TicketIcon"
-          iconClassName="text-vj-red-dark"
+          iconClassName="text-red-400"
           value={analytics.revenue.totalBookings.toLocaleString('vi-VN')}
           label={`Tổng vé đã bán · ${analytics.revenue.pendingBookings} chờ thanh toán`}
         />
@@ -301,7 +301,7 @@ export default function RevenueTab() {
                   }}
                 />
                 <Legend
-                  formatter={(val) => <span className="text-xs text-vj-text-muted">{val}</span>}
+                  formatter={(val) => <span className="text-xs text-vj-admin-muted">{val}</span>}
                 />
               </PieChart>
             </ResponsiveContainer>
@@ -321,16 +321,16 @@ export default function RevenueTab() {
           <table className="w-full">
             <thead>
               <tr className="border-b border-white/5">
-                <th className="text-left text-2xs font-black text-vj-text-muted uppercase tracking-widest px-5 py-4">
+                <th className="text-left text-2xs font-black text-vj-admin-muted uppercase tracking-widest px-5 py-4">
                   Đường bay
                 </th>
-                <th className="text-right text-2xs font-black text-vj-text-muted uppercase tracking-widest px-5 py-4">
+                <th className="text-right text-2xs font-black text-vj-admin-muted uppercase tracking-widest px-5 py-4">
                   Doanh thu
                 </th>
-                <th className="text-right text-2xs font-black text-vj-text-muted uppercase tracking-widest px-5 py-4">
+                <th className="text-right text-2xs font-black text-vj-admin-muted uppercase tracking-widest px-5 py-4">
                   Vé bán
                 </th>
-                <th className="text-left text-2xs font-black text-vj-text-muted uppercase tracking-widest px-5 py-4 hidden sm:table-cell">
+                <th className="text-left text-2xs font-black text-vj-admin-muted uppercase tracking-widest px-5 py-4 hidden sm:table-cell">
                   Tỷ trọng
                 </th>
               </tr>
@@ -338,7 +338,7 @@ export default function RevenueTab() {
             <tbody>
               {analytics.routes.length === 0 ? (
                 <tr>
-                  <td colSpan={4} className="px-5 py-10 text-center text-sm text-vj-text-muted">
+                  <td colSpan={4} className="px-5 py-10 text-center text-sm text-vj-admin-muted">
                     Chưa có dữ liệu đường bay.
                   </td>
                 </tr>
@@ -366,7 +366,7 @@ export default function RevenueTab() {
                         </span>
                       </td>
                       <td className="px-5 py-3.5 text-right">
-                        <span className="text-sm text-vj-text-muted">
+                        <span className="text-sm text-vj-admin-muted">
                           {route.tickets.toLocaleString('vi-VN')}
                         </span>
                       </td>
@@ -378,7 +378,7 @@ export default function RevenueTab() {
                               style={{ width: `${pct}%`, backgroundColor: color }}
                             />
                           </div>
-                          <span className="text-xs text-vj-text-muted w-8 tabular-nums">
+                          <span className="text-xs text-vj-admin-muted w-8 tabular-nums">
                             {pct}%
                           </span>
                         </div>

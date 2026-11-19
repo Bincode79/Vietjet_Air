@@ -105,12 +105,12 @@ export default function UserMenuDropdown({ onNavigate }: UserMenuDropdownProps) 
           <div className="text-xs font-semibold text-white leading-tight">
             {profile?.fullName || user?.email?.split('@')[0] || 'Hệ Thống'}
           </div>
-          <div className="text-2xs text-vj-blue leading-tight">{roleLabel}</div>
+          <div className="text-2xs text-vj-bank-blue-text leading-tight">{roleLabel}</div>
         </div>
         <Icon
           name="ChevronUpDownIcon"
           size={14}
-          className={`text-vj-text-muted transition-transform hidden sm:block ${isOpen ? 'rotate-180' : ''}`}
+          className={`text-vj-admin-muted transition-transform hidden sm:block ${isOpen ? 'rotate-180' : ''}`}
         />
       </button>
 
@@ -157,7 +157,7 @@ export default function UserMenuDropdown({ onNavigate }: UserMenuDropdownProps) 
                 <p className="text-sm font-bold text-white truncate">
                   {profile?.fullName || 'Hệ Thống'}
                 </p>
-                <p className="text-xs text-vj-text-muted truncate">{user?.email}</p>
+                <p className="text-xs text-vj-admin-muted truncate">{user?.email}</p>
                 <div className="flex items-center gap-1.5 mt-1">
                   <span
                     className="text-2xs font-semibold px-2 py-0.5 rounded-full"
@@ -169,7 +169,7 @@ export default function UserMenuDropdown({ onNavigate }: UserMenuDropdownProps) 
                     {roleLabel}
                   </span>
                   <span className="w-1.5 h-1.5 rounded-full bg-vj-pay-green"></span>
-                  <span className="text-2xs text-vj-pay-green">Trực tuyến</span>
+                  <span className="text-2xs text-vj-pay-green-text">Trực tuyến</span>
                 </div>
               </div>
             </div>
@@ -187,13 +187,13 @@ export default function UserMenuDropdown({ onNavigate }: UserMenuDropdownProps) 
                   className="w-8 h-8 rounded-vj flex items-center justify-center"
                   style={{ background: 'rgba(99, 102, 241, 0.15)' }}
                 >
-                  <Icon name={item.icon} size={16} className="text-vj-blue" />
+                  <Icon name={item.icon} size={16} className="text-vj-bank-blue-text" />
                 </div>
                 <div className="flex-1">
                   <p className="text-sm font-medium text-white">{item.label}</p>
-                  <p className="text-xs2 text-vj-text-muted">{item.description}</p>
+                  <p className="text-xs2 text-vj-admin-muted">{item.description}</p>
                 </div>
-                <Icon name="ChevronRightIcon" size={14} className="text-vj-text-muted" />
+                <Icon name="ChevronRightIcon" size={14} className="text-vj-admin-muted" />
               </button>
             ))}
           </div>
@@ -208,11 +208,11 @@ export default function UserMenuDropdown({ onNavigate }: UserMenuDropdownProps) 
                 className="w-8 h-8 rounded-vj flex items-center justify-center"
                 style={{ background: 'rgba(148, 163, 184, 0.1)' }}
               >
-                <Icon name="ArrowLeftOnRectangleIcon" size={16} className="text-vj-text-muted" />
+                <Icon name="ArrowLeftOnRectangleIcon" size={16} className="text-vj-admin-muted" />
               </div>
               <div className="flex-1">
-                <p className="text-sm font-medium text-vj-text-muted">Về trang chủ</p>
-                <p className="text-xs2 text-vj-text-muted"> Quay lại website</p>
+                <p className="text-sm font-medium text-vj-admin-muted">Về trang chủ</p>
+                <p className="text-xs2 text-vj-admin-muted"> Quay lại website</p>
               </div>
             </Link>
           </div>

@@ -400,7 +400,7 @@ export default function MyFlightsPage() {
                   <>
                     {/* Giao diện Mobile khớp 100% Ảnh mẫu tham chiếu */}
                     <div className="xl:hidden w-full max-w-[540px] mx-auto pt-2 pb-28 sm:pb-24">
-                      <p className="mb-4 font-koho text-base font-medium leading-[24px] text-[var(--vj-text)]">
+                      <p className="mb-4 w-full font-koho text-base font-medium leading-[24px] text-white [text-shadow:0_1px_4px_rgba(0,0,0,0.55)]">
                         Bạn muốn xem chuyến bay đã đặt, đổi lịch trình bay hay mua thêm dịch vụ hành
                         lý, chỗ ngồi, suất ăn..., vui lòng điền thông tin bên dưới:
                       </p>

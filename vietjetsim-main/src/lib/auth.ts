@@ -4,6 +4,7 @@ import { createHash, randomUUID } from 'crypto';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { validateCsrfOrReject } from '@/lib/csrf';
+import { isSecureRequest } from './cookie-options';
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -88,9 +89,18 @@ const BCRYPT_SALT_ROUNDS = 12;
 const ACCESS_TOKEN_COOKIE = 'access_token';
 const REFRESH_TOKEN_COOKIE = 'refresh_token';
 
+export function getAuthCookieOptions(request?: Request) {
+  return {
+    httpOnly: true,
+    secure: isSecureRequest(request),
+    sameSite: 'lax' as const,
+    path: '/',
+  };
+}
+
 const COOKIE_OPTIONS = {
   httpOnly: true,
-  secure: process.env.NODE_ENV === 'production',
+  secure: isSecureRequest(),
   sameSite: 'lax' as const,
   path: '/',
 };
@@ -212,26 +222,32 @@ export function generateTokenFamily(): string {
 // ─── API Route Cookie Helpers (Response-based) ──────────────────────────────
 // Use these in API routes to set cookies on the response object
 
-export function setAuthCookiesOnResponse(response: NextResponse, tokens: AuthTokens): void {
+export function setAuthCookiesOnResponse(
+  response: NextResponse,
+  tokens: AuthTokens,
+  request?: Request
+): void {
+  const options = getAuthCookieOptions(request);
   response.cookies.set(ACCESS_TOKEN_COOKIE, tokens.accessToken, {
-    ...COOKIE_OPTIONS,
+    ...options,
     maxAge: 15 * 60, // 15 minutes
   });
 
   response.cookies.set(REFRESH_TOKEN_COOKIE, tokens.refreshToken, {
-    ...COOKIE_OPTIONS,
+    ...options,
     maxAge: 7 * 24 * 60 * 60, // 7 days
   });
 }
 
-export function clearAuthCookiesOnResponse(response: NextResponse): void {
+export function clearAuthCookiesOnResponse(response: NextResponse, request?: Request): void {
+  const options = getAuthCookieOptions(request);
   response.cookies.set(ACCESS_TOKEN_COOKIE, '', {
-    ...COOKIE_OPTIONS,
+    ...options,
     maxAge: 0,
   });
 
   response.cookies.set(REFRESH_TOKEN_COOKIE, '', {
-    ...COOKIE_OPTIONS,
+    ...options,
     maxAge: 0,
   });
 }

@@ -15,6 +15,7 @@ import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { randomBytes } from 'crypto';
 import { CSRF_COOKIE_NAME, CSRF_HEADER_NAME } from './csrf-client';
+import { isSecureRequest } from './cookie-options';
 
 // ─── Constants ──────────────────────────────────────────────────────────────
 
@@ -23,10 +24,20 @@ const CSRF_COOKIE_MAX_AGE = 60 * 60 * 24; // 24 hours
 
 // ─── Cookie Options ─────────────────────────────────────────────────────────
 
-const CSRF_COOKIE_OPTIONS = {
-  httpOnly: false, // Must be readable by JavaScript for the double-submit pattern
-  secure: process.env.NODE_ENV === 'production',
-  sameSite: 'strict' as const, // Strict to prevent cross-site requests
+export function getCsrfCookieOptions(request?: Request) {
+  return {
+    httpOnly: false,
+    secure: isSecureRequest(request),
+    sameSite: 'lax' as const,
+    path: '/',
+    maxAge: CSRF_COOKIE_MAX_AGE,
+  };
+}
+
+export const CSRF_COOKIE_OPTIONS = {
+  httpOnly: false,
+  secure: isSecureRequest(),
+  sameSite: 'lax' as const,
   path: '/',
   maxAge: CSRF_COOKIE_MAX_AGE,
 };
@@ -80,9 +91,13 @@ export async function getCsrfTokenFromRequest(request: Request): Promise<string 
  * mutation guarded by {@link validateCsrfOrReject} fails with 403. Returns the
  * token that was written so callers can reuse it.
  */
-export function setCsrfCookieOnResponse(response: NextResponse, token?: string): string {
+export function setCsrfCookieOnResponse(
+  response: NextResponse,
+  token?: string,
+  request?: Request
+): string {
   const value = token ?? generateCsrfToken();
-  response.cookies.set(CSRF_COOKIE_NAME, value, CSRF_COOKIE_OPTIONS);
+  response.cookies.set(CSRF_COOKIE_NAME, value, getCsrfCookieOptions(request));
   return value;
 }
 
@@ -181,11 +196,11 @@ function timingSafeEqual(a: string, b: string): boolean {
  * Create a response with CSRF token set in cookie
  * Call this on GET requests to public forms/pages
  */
-export function createCsrfResponse(json?: unknown): NextResponse {
+export function createCsrfResponse(json?: unknown, request?: Request): NextResponse {
   const token = generateCsrfToken();
   const response = json ? NextResponse.json(json) : new NextResponse(null, { status: 204 });
 
-  response.cookies.set(CSRF_COOKIE_NAME, token, CSRF_COOKIE_OPTIONS);
+  response.cookies.set(CSRF_COOKIE_NAME, token, getCsrfCookieOptions(request));
   return response;
 }
 

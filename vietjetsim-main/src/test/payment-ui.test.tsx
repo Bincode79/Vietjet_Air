@@ -150,7 +150,7 @@ describe('PaymentClient Component UI & Interaction', () => {
     expect(screen.getAllByText(/Trả góp Movi/i).length).toBeGreaterThan(0);
   });
 
-  it('switches to Credit Card method and navigates to its dedicated gateway page', async () => {
+  it('switches to Credit Card method and shows dedicated card gateway page', async () => {
     sessionStorage.setItem('vjsim_booking', JSON.stringify(mockBooking));
 
     render(<PaymentClient />);
@@ -162,19 +162,20 @@ describe('PaymentClient Component UI & Interaction', () => {
       { timeout: 3000 }
     );
 
-    // Chọn phương thức thẻ — form chi tiết nằm ở trang cổng riêng
     const cardBtns = screen.getAllByText(/Thẻ tín dụng \/ ghi nợ quốc tế/i);
     fireEvent.click(cardBtns[0]);
 
     const cta = await screen.findAllByText(/Tiếp tục thanh toán/i);
     fireEvent.click(cta[0]);
 
-    expect(mockPush).toHaveBeenCalledWith(
-      expect.stringContaining('/thanh-toan/gateway/card?bookingId=VJ8899')
-    );
+    // Trang cổng thẻ được hiển thị thay vì trang QR chung
+    await waitFor(() => {
+      expect(screen.getByText(/CỔNG THANH TOÁN THẺ QUỐC TẾ/i)).toBeDefined();
+    });
+    expect(screen.getAllByText(/3D SECURE/i).length).toBeGreaterThan(0);
   });
 
-  it('switches to Pay Later (MOVI) method and navigates to its dedicated gateway page', async () => {
+  it('switches to Pay Later (MOVI) method and shows dedicated MOVI gateway page', async () => {
     sessionStorage.setItem('vjsim_booking', JSON.stringify(mockBooking));
 
     render(<PaymentClient />);
@@ -193,8 +194,10 @@ describe('PaymentClient Component UI & Interaction', () => {
     const cta = await screen.findAllByText(/Tiếp tục thanh toán/i);
     fireEvent.click(cta[0]);
 
-    expect(mockPush).toHaveBeenCalledWith(
-      expect.stringContaining('/thanh-toan/gateway/movi?bookingId=VJ8899')
-    );
+    // Trang cổng MOVI (hồ sơ tín dụng) được hiển thị thay vì trang QR chung
+    await waitFor(() => {
+      expect(screen.getByText(/CỔNG BAY TRƯỚC TRẢ SAU/i)).toBeDefined();
+    });
+    expect(screen.getAllByText(/MOVI/i).length).toBeGreaterThan(0);
   });
 });

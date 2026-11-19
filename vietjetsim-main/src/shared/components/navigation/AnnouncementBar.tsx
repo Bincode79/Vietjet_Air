@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { HiOutlineX } from 'react-icons/hi';
 import { RiArrowLeftSLine, RiArrowRightSLine, RiNotification3Line } from 'react-icons/ri';
 import { apiRequest } from '@/shared/services';
@@ -52,17 +52,35 @@ export default function AnnouncementBar() {
   const [index, setIndex] = useState(0);
   const [dismissed, setDismissed] = useState(false);
 
+  const barRef = useRef<HTMLDivElement>(null);
+
   /**
    * Chiều cao thanh thông báo được công bố ra ngoài qua biến CSS để lớp phủ
    * header của trang chủ neo ĐÚNG dưới thanh này — kể cả khi người dùng đóng
    * thanh (khi đó biến = 0px và header dịch lên đúng bằng phần đã đóng).
+   *
+   * KHÔNG gán cứng 35/50px: ở tablet (768–1023px) nội dung badge + text có thể
+   * cao hơn `min-height`, khiến header tuyệt đối phủ lên phần đáy của thanh và
+   * cắt logo trắng. Đo trực tiếp chiều cao render (ResizeObserver) và công bố
+   * đúng px — hoạt động ở mọi viewport và khi nội dung đổi/wrap.
    */
   useEffect(() => {
     const root = document.documentElement;
     const visible = !dismissed && messages.length > 0;
-    root.style.setProperty('--vj-announce-h', visible ? '35px' : '0px');
-    root.style.setProperty('--vj-announce-h-lg', visible ? '50px' : '0px');
+    const setVars = (px: number) => {
+      root.style.setProperty('--vj-announce-h', `${px}px`);
+      root.style.setProperty('--vj-announce-h-lg', `${px}px`);
+    };
+    if (!visible || !barRef.current) {
+      setVars(0);
+      return undefined;
+    }
+    const el = barRef.current;
+    setVars(el.offsetHeight);
+    const observer = new ResizeObserver(() => setVars(el.offsetHeight));
+    observer.observe(el);
     return () => {
+      observer.disconnect();
       root.style.removeProperty('--vj-announce-h');
       root.style.removeProperty('--vj-announce-h-lg');
     };
@@ -106,6 +124,7 @@ export default function AnnouncementBar() {
 
   return (
     <div
+      ref={barRef}
       role="region"
       aria-label="Thông báo"
       // Site thật: cao 50px trên desktop / 35px trên mobile, nền #FDFDFD,

@@ -6,6 +6,7 @@
 
 import { NextResponse } from 'next/server';
 import { CSRF_COOKIE_NAME, generateCsrfToken, getCsrfTokenFromRequest } from '@/lib/csrf';
+import { isSecureRequest } from '@/lib/cookie-options';
 
 const CSRF_COOKIE_MAX_AGE = 60 * 60 * 24; // 24 hours
 
@@ -26,8 +27,8 @@ export async function GET(request: Request) {
 
   response.cookies.set(CSRF_COOKIE_NAME, token, {
     httpOnly: false,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'strict',
+    secure: isSecureRequest(request),
+    sameSite: 'lax',
     path: '/',
     maxAge: CSRF_COOKIE_MAX_AGE,
   });

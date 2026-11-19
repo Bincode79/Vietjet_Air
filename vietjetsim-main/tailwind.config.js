@@ -222,6 +222,9 @@ module.exports = {
           text: '#333333',
           gray: '#6C6C6C',
           muted: '#939393',
+          // Chữ phụ trên nền tối của dashboard admin — #939393 chìm vào nền
+          // navy nên mọi nhãn KPI / header bảng gần như không đọc được.
+          'admin-muted': '#A8B4CC',
           // ─── Token luồng đặt vé (đo 13/11/2026 từ DOM sống) ───
           // Nền ô hạng vé #F8F8F8, nền thanh mục panel #F1F1F1, chữ
           // "Hết chỗ" #939598, mã tiền tệ #6D6E71, viền header trang con
@@ -286,6 +289,9 @@ module.exports = {
           'bank-blue': '#005BAA',
           'bank-blue-dark': '#004B8D',
           'pay-green': '#38B000',
+          // Biến thể chữ/badge trên nền navy: cùng hue, đọ sáng để đạt AA.
+          'pay-green-text': '#6FE84A',
+          'bank-blue-text': '#7FB0FF',
           'pay-green-light': '#44BD04',
           'pay-green-dark': '#2B9300',
           'pay-green-hover': '#329E00',

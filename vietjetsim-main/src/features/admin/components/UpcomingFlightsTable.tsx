@@ -11,13 +11,13 @@ interface UpcomingFlightsTableProps {
 }
 
 const FLIGHT_STATUS_MAP: Record<string, { label: string; cls: string }> = {
-  scheduled: { label: 'Đúng giờ', cls: 'bg-vj-pay-green text-vj-pay-green border-vj-pay-green' },
-  on_time: { label: 'Đúng giờ', cls: 'bg-vj-pay-green text-vj-pay-green border-vj-pay-green' },
+  scheduled: { label: 'Đúng giờ', cls: 'bg-emerald-400/10 text-vj-pay-green-text border-emerald-400/30' },
+  on_time: { label: 'Đúng giờ', cls: 'bg-emerald-400/10 text-vj-pay-green-text border-emerald-400/30' },
   boarding: { label: 'Đang lên máy bay', cls: 'bg-sky-500/10 text-sky-400 border-sky-500/20' },
   delayed: { label: 'Chậm giờ', cls: 'bg-amber-500/10 text-amber-400 border-amber-500/20' },
-  cancelled: { label: 'Đã huỷ', cls: 'bg-vj-red-dark text-vj-red-dark border-vj-red-dark' },
-  departed: { label: 'Đã cất cánh', cls: 'bg-vj-blue text-vj-blue border-vj-blue' },
-  active: { label: 'Hoạt động', cls: 'bg-vj-pay-green text-vj-pay-green border-vj-pay-green' },
+  cancelled: { label: 'Đã huỷ', cls: 'bg-red-400/10 text-red-400 border-red-400/30' },
+  departed: { label: 'Đã cất cánh', cls: 'bg-sky-400/10 text-vj-bank-blue-text border-sky-400/30' },
+  active: { label: 'Hoạt động', cls: 'bg-emerald-400/10 text-vj-pay-green-text border-emerald-400/30' },
 };
 
 function formatDepartTime(isoString: string): string {
@@ -59,14 +59,14 @@ export default function UpcomingFlightsTable({
             <h3 className="font-bold text-white text-base tracking-tight">
               Chuyến bay sắp cất cánh
             </h3>
-            <p className="text-xs text-vj-text-muted mt-0.5">5 chuyến bay khởi hành tiếp theo</p>
+            <p className="text-xs text-vj-admin-muted mt-0.5">5 chuyến bay khởi hành tiếp theo</p>
           </div>
         </div>
         {onViewAll && (
           <button
             type="button"
             onClick={onViewAll}
-            className="text-xs font-bold text-vj-blue hover:text-vj-blue flex items-center gap-1.5 transition-all hover:gap-2 px-3 py-1.5 rounded-vj bg-vj-blue border border-vj-blue"
+            className="text-xs font-bold text-vj-bank-blue-text hover:text-vj-bank-blue-text flex items-center gap-1.5 transition-all hover:gap-2 px-3 py-1.5 rounded-vj bg-vj-blue border border-vj-blue"
           >
             Xem tất cả
             <Icon name="ArrowRightIcon" size={12} />
@@ -78,19 +78,19 @@ export default function UpcomingFlightsTable({
         <table className="w-full">
           <thead>
             <tr className="bg-white/5 border-b border-white/5">
-              <th className="text-left text-2xs font-bold text-vj-text-muted uppercase tracking-widest px-5 py-3.5">
+              <th className="text-left text-2xs font-bold text-vj-admin-muted uppercase tracking-widest px-5 py-3.5">
                 Chuyến bay
               </th>
-              <th className="text-left text-2xs font-bold text-vj-text-muted uppercase tracking-widest px-5 py-3.5">
+              <th className="text-left text-2xs font-bold text-vj-admin-muted uppercase tracking-widest px-5 py-3.5">
                 Tuyến bay
               </th>
-              <th className="text-left text-2xs font-bold text-vj-text-muted uppercase tracking-widest px-5 py-3.5">
+              <th className="text-left text-2xs font-bold text-vj-admin-muted uppercase tracking-widest px-5 py-3.5">
                 Khởi hành
               </th>
-              <th className="text-center text-2xs font-bold text-vj-text-muted uppercase tracking-widest px-5 py-3.5">
+              <th className="text-center text-2xs font-bold text-vj-admin-muted uppercase tracking-widest px-5 py-3.5">
                 Ghế trống
               </th>
-              <th className="text-right text-2xs font-bold text-vj-text-muted uppercase tracking-widest px-5 py-3.5">
+              <th className="text-right text-2xs font-bold text-vj-admin-muted uppercase tracking-widest px-5 py-3.5">
                 Trạng thái
               </th>
             </tr>
@@ -98,7 +98,7 @@ export default function UpcomingFlightsTable({
           <tbody className="divide-y divide-white/5">
             {!hasData ? (
               <tr>
-                <td colSpan={5} className="px-5 py-8 text-center text-sm text-vj-text-muted">
+                <td colSpan={5} className="px-5 py-8 text-center text-sm text-vj-admin-muted">
                   Không có chuyến bay sắp cất cánh
                 </td>
               </tr>
@@ -106,15 +106,15 @@ export default function UpcomingFlightsTable({
               data.map((flight) => {
                 const statusMeta = FLIGHT_STATUS_MAP[flight.status.toLowerCase()] || {
                   label: flight.status,
-                  cls: 'bg-slate-500 text-vj-text-muted border-vj-border-light',
+                  cls: 'bg-slate-500 text-vj-admin-muted border-vj-border-light',
                 };
 
                 const seatsColor =
                   flight.availableSeats > 20
-                    ? 'text-vj-pay-green'
+                    ? 'text-vj-pay-green-text'
                     : flight.availableSeats > 0
                       ? 'text-amber-400'
-                      : 'text-vj-red-dark';
+                      : 'text-red-400';
 
                 return (
                   <tr
@@ -134,12 +134,12 @@ export default function UpcomingFlightsTable({
                       </div>
                     </td>
                     <td className="px-5 py-3.5 whitespace-nowrap">
-                      <span className="text-sm font-semibold text-vj-text-muted">
+                      <span className="text-sm font-semibold text-vj-admin-muted">
                         {flight.route || '—'}
                       </span>
                     </td>
                     <td className="px-5 py-3.5 whitespace-nowrap">
-                      <span className="text-xs font-medium text-vj-text-muted">
+                      <span className="text-xs font-medium text-vj-admin-muted">
                         {formatDepartTime(flight.departTime)}
                       </span>
                     </td>

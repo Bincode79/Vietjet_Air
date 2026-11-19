@@ -12,6 +12,7 @@ import { rateLimit, RATE_LIMITS } from '@/lib/rate-limit';
 import type { JWTPayload } from '@/lib/auth';
 import { isAdminRole as sharedIsAdminRole } from '@/lib/roles';
 import { isPublicApiRoute, isPublicRoute } from '@/lib/route-access';
+import { isSecureRequest } from '@/lib/cookie-options';
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
@@ -290,8 +291,8 @@ export async function proxy(request: NextRequest) {
     const token = Array.from(bytes, (b) => b.toString(16).padStart(2, '0')).join('');
     response.cookies.set(CSRF_COOKIE_NAME, token, {
       httpOnly: false,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      secure: isSecureRequest(request),
+      sameSite: 'lax',
       path: '/',
       maxAge: 60 * 60 * 24,
     });
@@ -302,8 +303,8 @@ export async function proxy(request: NextRequest) {
   // Cookie này là credential chứng minh "tôi là phiên đang giữ ghế này".
   // Trước đây client tự sinh `session_id` trong `sessionStorage` và gửi lên
   // — tức là tự khai quyền sở hữu, không có bằng chứng nào. Giờ server cấp
-  // giá trị, `httpOnly` nên JavaScript không đọc được, và `sameSite: strict`
-  // nên một trang khác không thể khiến trình duyệt gửi nó đi.
+  // giá trị, `httpOnly` nên JavaScript không đọc được, và `sameSite: lax`
+  // nên trình duyệt tự gửi khi thao tác.
   //
   // Cấp cho MỌI request (kể cả API), vì khách chọn ghế có thể bắt đầu từ
   // một trang tĩnh rồi mới điền hành khách — và người đã có cookie thì giữ
@@ -314,8 +315,8 @@ export async function proxy(request: NextRequest) {
     const session = Array.from(bytes, (b) => b.toString(16).padStart(2, '0')).join('');
     response.cookies.set(SEAT_SESSION_COOKIE, session, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      secure: isSecureRequest(request),
+      sameSite: 'lax',
       path: '/',
       maxAge: SEAT_SESSION_MAX_AGE,
     });

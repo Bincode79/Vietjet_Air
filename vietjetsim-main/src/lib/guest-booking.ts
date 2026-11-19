@@ -22,6 +22,7 @@
  * passenger's name by `/api/checkin`.
  */
 import { type NextRequest, NextResponse } from 'next/server';
+import { isSecureRequest } from './cookie-options';
 
 export const GUEST_BOOKING_COOKIE = 'vj_guest_bookings';
 
@@ -76,7 +77,7 @@ export function setGuestBookingCookie(
   const next = [...existing, bookingId].slice(-MAX_TRACKED_BOOKINGS);
   response.cookies.set(GUEST_BOOKING_COOKIE, JSON.stringify(next), {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
+    secure: isSecureRequest(request),
     sameSite: 'lax',
     path: '/',
     maxAge: 60 * 60 * 24 * 30,

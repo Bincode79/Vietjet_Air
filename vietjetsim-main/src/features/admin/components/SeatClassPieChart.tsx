@@ -53,7 +53,7 @@ const CustomTooltip = ({ active, payload }: CustomTooltipProps) => {
         <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: color }} />
         <span>{item.name || item.class}</span>
       </div>
-      <div className="space-y-1 text-vj-text-muted">
+      <div className="space-y-1 text-vj-admin-muted">
         <div>
           Số lượng:{' '}
           <span className="font-bold text-white">{item.count.toLocaleString('vi-VN')}</span>
@@ -86,14 +86,14 @@ export default function SeatClassPieChart({
       <div className="flex items-center justify-between mb-4">
         <div>
           <h3 className="font-bold text-white text-base tracking-tight">{title}</h3>
-          <p className="text-xs text-vj-text-muted mt-0.5">
+          <p className="text-xs text-vj-admin-muted mt-0.5">
             Tỷ lệ theo từng hạng vé Eco, Deluxe, SkyBoss, Business
           </p>
         </div>
       </div>
 
       {!hasData ? (
-        <div className="h-[280px] flex flex-col items-center justify-center text-sm text-vj-text-muted">
+        <div className="h-[280px] flex flex-col items-center justify-center text-sm text-vj-admin-muted">
           <p>Chưa có dữ liệu phân bổ hạng vé</p>
         </div>
       ) : (
@@ -109,7 +109,7 @@ export default function SeatClassPieChart({
                 formatter={(value: string) => {
                   const item = data.find((d) => (d.name || d.class) === value);
                   return (
-                    <span className="text-vj-text-muted text-xs font-medium ml-1 mr-3">
+                    <span className="text-vj-admin-muted text-xs font-medium ml-1 mr-3">
                       {value} {item ? `(${item.percent}%)` : ''}
                     </span>
                   );

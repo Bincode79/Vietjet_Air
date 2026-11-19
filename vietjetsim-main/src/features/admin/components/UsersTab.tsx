@@ -406,12 +406,12 @@ export default function UsersTab({ onToast }: { onToast?: ToastAPI }) {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
         <div>
           <h2 className="text-2xl font-black text-white tracking-tight flex items-center gap-3">
-            <div className="w-12 h-12 rounded-2xl bg-vj-blue flex items-center justify-center text-vj-blue border border-vj-blue shadow-vj-lg shadow-vj-sm">
+            <div className="w-12 h-12 rounded-2xl bg-vj-blue flex items-center justify-center text-vj-bank-blue-text border border-vj-blue shadow-vj-lg shadow-vj-sm">
               <Icon name="UsersIcon" size={24} />
             </div>
             <div>
               Quản lý người dùng
-              <p className="text-2xs font-black text-vj-text-muted uppercase tracking-[0.2em] mt-1 opacity-70">
+              <p className="text-2xs font-black text-vj-admin-muted uppercase tracking-[0.2em] mt-1 opacity-70">
                 Tổng số {users.length} tài khoản trong hệ thống
               </p>
             </div>
@@ -447,7 +447,7 @@ export default function UsersTab({ onToast }: { onToast?: ToastAPI }) {
           <Icon
             name="MagnifyingGlassIcon"
             size={20}
-            className="absolute left-5 top-1/2 -translate-y-1/2 text-vj-text-muted group-focus-within:text-vj-blue transition-colors"
+            className="absolute left-5 top-1/2 -translate-y-1/2 text-vj-admin-muted group-focus-within:text-vj-bank-blue-text transition-colors"
           />
           <input
             type="text"
@@ -467,26 +467,26 @@ export default function UsersTab({ onToast }: { onToast?: ToastAPI }) {
               type="date"
               value={joinDateFrom}
               onChange={(e) => setJoinDateFrom(e.target.value)}
-              className="w-full pl-10 pr-3 py-2.5 bg-transparent border-none rounded-vj text-xs2 font-black text-vj-text-muted focus:ring-0 uppercase tracking-wider"
+              className="w-full pl-10 pr-3 py-2.5 bg-transparent border-none rounded-vj text-xs2 font-black text-vj-admin-muted focus:ring-0 uppercase tracking-wider"
             />
             <Icon
               name="CalendarDaysIcon"
               size={16}
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-vj-text-muted"
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-vj-admin-muted"
             />
           </div>
-          <Icon name="ArrowRightIcon" size={12} className="text-vj-text-muted" />
+          <Icon name="ArrowRightIcon" size={12} className="text-vj-admin-muted" />
           <div className="relative flex-1">
             <input
               type="date"
               value={joinDateTo}
               onChange={(e) => setJoinDateTo(e.target.value)}
-              className="w-full pl-10 pr-3 py-2.5 bg-transparent border-none rounded-vj text-xs2 font-black text-vj-text-muted focus:ring-0 uppercase tracking-wider"
+              className="w-full pl-10 pr-3 py-2.5 bg-transparent border-none rounded-vj text-xs2 font-black text-vj-admin-muted focus:ring-0 uppercase tracking-wider"
             />
             <Icon
               name="CalendarDaysIcon"
               size={16}
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-vj-text-muted"
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-vj-admin-muted"
             />
           </div>
         </div>
@@ -495,7 +495,7 @@ export default function UsersTab({ onToast }: { onToast?: ToastAPI }) {
           {(activeFilterCount > 0 || searchQuery) && (
             <button
               onClick={clearAllFilters}
-              className="flex items-center gap-2 px-6 py-3 bg-vj-red-dark hover:bg-vj-red-dark text-vj-red-dark text-2xs font-black uppercase tracking-widest rounded-2xl border border-vj-red-dark transition-all group"
+              className="flex items-center gap-2 px-6 py-3 bg-vj-red-dark hover:bg-vj-red-dark text-red-400 text-2xs font-black uppercase tracking-widest rounded-2xl border border-vj-red-dark transition-all group"
             >
               <Icon
                 name="XMarkIcon"
@@ -514,7 +514,7 @@ export default function UsersTab({ onToast }: { onToast?: ToastAPI }) {
             <button
               key={tab.value}
               onClick={() => setFilterRole(tab.value)}
-              className={`px-5 py-2.5 rounded-vj text-2xs font-black uppercase tracking-widest transition-all ${filterRole === tab.value ? 'bg-vj-blue text-white shadow-vj-lg' : 'text-vj-text-muted hover:text-vj-text-muted'}`}
+              className={`px-5 py-2.5 rounded-vj text-2xs font-black uppercase tracking-widest transition-all ${filterRole === tab.value ? 'bg-vj-blue text-white shadow-vj-lg' : 'text-vj-admin-muted hover:text-vj-admin-muted'}`}
             >
               {tab.label}
             </button>
@@ -525,7 +525,7 @@ export default function UsersTab({ onToast }: { onToast?: ToastAPI }) {
             <button
               key={tab.value}
               onClick={() => setFilterStatus(tab.value)}
-              className={`px-5 py-2.5 rounded-vj text-2xs font-black uppercase tracking-widest transition-all ${filterStatus === tab.value ? 'bg-white text-vj-text-muted shadow-vj-lg' : 'text-vj-text-muted hover:text-vj-text-muted'}`}
+              className={`px-5 py-2.5 rounded-vj text-2xs font-black uppercase tracking-widest transition-all ${filterStatus === tab.value ? 'bg-white text-vj-admin-muted shadow-vj-lg' : 'text-vj-admin-muted hover:text-vj-admin-muted'}`}
             >
               {tab.label}
             </button>
@@ -548,40 +548,40 @@ export default function UsersTab({ onToast }: { onToast?: ToastAPI }) {
             <thead>
               <tr className="bg-white/5 border-b border-white/5">
                 <th
-                  className="text-left text-2xs font-black text-vj-text-muted uppercase tracking-widest px-6 py-5 cursor-pointer hover:text-white transition-colors select-none whitespace-nowrap"
+                  className="text-left text-2xs font-black text-vj-admin-muted uppercase tracking-widest px-6 py-5 cursor-pointer hover:text-white transition-colors select-none whitespace-nowrap"
                   onClick={() => handleSort('name')}
                 >
                   Người dùng
                   <SortIcon col="name" />
                 </th>
-                <th className="text-left text-2xs font-black text-vj-text-muted uppercase tracking-widest px-6 py-5 hidden sm:table-cell">
+                <th className="text-left text-2xs font-black text-vj-admin-muted uppercase tracking-widest px-6 py-5 hidden sm:table-cell">
                   Liên hệ
                 </th>
-                <th className="text-center text-2xs font-black text-vj-text-muted uppercase tracking-widest px-6 py-5">
+                <th className="text-center text-2xs font-black text-vj-admin-muted uppercase tracking-widest px-6 py-5">
                   Vai trò
                 </th>
                 <th
-                  className="text-right text-2xs font-black text-vj-text-muted uppercase tracking-widest px-6 py-5 hidden md:table-cell cursor-pointer hover:text-white transition-colors select-none whitespace-nowrap"
+                  className="text-right text-2xs font-black text-vj-admin-muted uppercase tracking-widest px-6 py-5 hidden md:table-cell cursor-pointer hover:text-white transition-colors select-none whitespace-nowrap"
                   onClick={() => handleSort('bookings')}
                 >
                   Đặt vé
                   <SortIcon col="bookings" />
                 </th>
                 <th
-                  className="text-right text-2xs font-black text-vj-text-muted uppercase tracking-widest px-6 py-5 hidden lg:table-cell cursor-pointer hover:text-white transition-colors select-none whitespace-nowrap"
+                  className="text-right text-2xs font-black text-vj-admin-muted uppercase tracking-widest px-6 py-5 hidden lg:table-cell cursor-pointer hover:text-white transition-colors select-none whitespace-nowrap"
                   onClick={() => handleSort('spent')}
                 >
                   Chi tiêu
                   <SortIcon col="spent" />
                 </th>
                 <th
-                  className="text-center text-2xs font-black text-vj-text-muted uppercase tracking-widest px-6 py-5 cursor-pointer hover:text-white transition-colors select-none whitespace-nowrap"
+                  className="text-center text-2xs font-black text-vj-admin-muted uppercase tracking-widest px-6 py-5 cursor-pointer hover:text-white transition-colors select-none whitespace-nowrap"
                   onClick={() => handleSort('status')}
                 >
                   Trạng thái
                   <SortIcon col="status" />
                 </th>
-                <th className="text-center text-2xs font-black text-vj-text-muted uppercase tracking-widest px-6 py-5">
+                <th className="text-center text-2xs font-black text-vj-admin-muted uppercase tracking-widest px-6 py-5">
                   Thao tác
                 </th>
               </tr>
@@ -722,20 +722,20 @@ export default function UsersTab({ onToast }: { onToast?: ToastAPI }) {
                           {user.name.charAt(0)}
                         </div>
                         <div>
-                          <div className="font-bold text-vj-text-muted text-sm group-hover:text-white transition-colors">
+                          <div className="font-bold text-vj-admin-muted text-sm group-hover:text-white transition-colors">
                             {user.name}
                           </div>
-                          <div className="text-2xs font-black text-vj-text-muted uppercase tracking-widest mt-0.5">
+                          <div className="text-2xs font-black text-vj-admin-muted uppercase tracking-widest mt-0.5">
                             {user.joinDate}
                           </div>
                         </div>
                       </div>
                     </td>
                     <td className="px-6 py-5 hidden sm:table-cell">
-                      <div className="text-sm font-semibold text-vj-text-muted group-hover:text-vj-text-muted transition-colors">
+                      <div className="text-sm font-semibold text-vj-admin-muted group-hover:text-vj-admin-muted transition-colors">
                         {user.email}
                       </div>
-                      <div className="text-2xs font-bold text-vj-text-muted mt-0.5">
+                      <div className="text-2xs font-bold text-vj-admin-muted mt-0.5">
                         {user.phone}
                       </div>
                     </td>
@@ -743,8 +743,8 @@ export default function UsersTab({ onToast }: { onToast?: ToastAPI }) {
                       <span
                         className={`text-2xs font-black px-2.5 py-1 rounded-vj uppercase tracking-wider ${
                           user.role === 'admin'
-                            ? 'bg-vj-blue text-vj-blue border border-vj-blue'
-                            : 'bg-slate-500 text-vj-text-muted border border-vj-border-light'
+                            ? 'bg-sky-400/10 text-vj-bank-blue-text border border-sky-400/30'
+                            : 'bg-slate-500 text-vj-admin-muted border border-vj-border-light'
                         }`}
                       >
                         {user.role === 'admin' ? 'Hệ Thống' : 'User'}
@@ -766,8 +766,8 @@ export default function UsersTab({ onToast }: { onToast?: ToastAPI }) {
                         disabled={user.role === 'admin' || togglingId === user.id}
                         className={`text-2xs font-black px-3 py-1 rounded-vj transition-all disabled:opacity-30 disabled:cursor-not-allowed uppercase tracking-wider ${
                           user.status === 'active'
-                            ? 'bg-vj-pay-green text-vj-pay-green border border-vj-pay-green hover:bg-vj-pay-green'
-                            : 'bg-vj-red-dark text-vj-red-dark border border-vj-red-dark hover:bg-vj-red-dark'
+                            ? 'bg-emerald-400/10 text-vj-pay-green-text border border-emerald-400/30 hover:bg-vj-pay-green'
+                            : 'bg-red-400/10 text-red-400 border border-red-400/30 hover:bg-vj-red-dark'
                         }`}
                       >
                         {togglingId === user.id ? (
@@ -788,7 +788,7 @@ export default function UsersTab({ onToast }: { onToast?: ToastAPI }) {
                             togglingId === user.id ||
                             switchingRoleId === user.id
                           }
-                          className="w-9 h-9 bg-slate-800 hover:bg-vj-blue text-vj-text-muted hover:text-vj-blue border border-white/5 rounded-vj flex items-center justify-center transition-all disabled:opacity-20 active:scale-90"
+                          className="w-9 h-9 bg-slate-800 hover:bg-vj-blue text-vj-admin-muted hover:text-vj-bank-blue-text border border-white/5 rounded-vj flex items-center justify-center transition-all disabled:opacity-20 active:scale-90"
                           title="Chỉnh sửa"
                         >
                           <Icon name="PencilIcon" size={14} />
@@ -802,8 +802,8 @@ export default function UsersTab({ onToast }: { onToast?: ToastAPI }) {
                           }
                           className={`w-9 h-9 border border-white/5 rounded-vj flex items-center justify-center transition-all disabled:opacity-20 active:scale-90 ${
                             user.role === 'admin'
-                              ? 'bg-slate-800 hover:bg-amber-500/20 text-vj-text-muted hover:text-amber-400'
-                              : 'bg-slate-800 hover:bg-vj-blue text-vj-text-muted hover:text-vj-blue'
+                              ? 'bg-slate-800 hover:bg-amber-500/20 text-vj-admin-muted hover:text-amber-400'
+                              : 'bg-slate-800 hover:bg-vj-blue text-vj-admin-muted hover:text-vj-bank-blue-text'
                           }`}
                           title={user.role === 'admin' ? 'Hạ cấp về User' : 'Nâng cấp lên Hệ Thống'}
                         >
@@ -824,7 +824,7 @@ export default function UsersTab({ onToast }: { onToast?: ToastAPI }) {
                             togglingId === user.id ||
                             switchingRoleId === user.id
                           }
-                          className="w-9 h-9 bg-slate-800 hover:bg-vj-red-dark text-vj-text-muted hover:text-vj-red-dark border border-white/5 rounded-vj flex items-center justify-center transition-all disabled:opacity-10 active:scale-90"
+                          className="w-9 h-9 bg-slate-800 hover:bg-vj-red-dark text-vj-admin-muted hover:text-red-400 border border-white/5 rounded-vj flex items-center justify-center transition-all disabled:opacity-10 active:scale-90"
                           title="Xoá"
                         >
                           {deletingId === user.id ? (
@@ -844,13 +844,13 @@ export default function UsersTab({ onToast }: { onToast?: ToastAPI }) {
         {sorted.length > 0 && (
           <div className="px-6 py-5 border-t border-white/5 bg-white/5 flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-4">
-              <span className="text-2xs font-black text-vj-text-muted uppercase tracking-widest">
+              <span className="text-2xs font-black text-vj-admin-muted uppercase tracking-widest">
                 {sorted.length > pageSize
                   ? `Hiển thị ${(safePage - 1) * pageSize + 1}–${Math.min(safePage * pageSize, sorted.length)} / ${sorted.length} người dùng`
                   : `${sorted.length} / ${users.length} người dùng`}
               </span>
               <div className="flex items-center gap-2">
-                <span className="text-2xs font-black text-vj-text-muted uppercase tracking-widest">
+                <span className="text-2xs font-black text-vj-admin-muted uppercase tracking-widest">
                   Hiển thị:
                 </span>
                 <select
@@ -859,7 +859,7 @@ export default function UsersTab({ onToast }: { onToast?: ToastAPI }) {
                     setPageSize(Number(e.target.value));
                     setCurrentPage(1);
                   }}
-                  className="text-2xs font-black border border-white/10 rounded-vj px-2 py-1 bg-slate-800 text-vj-text-muted focus:outline-none focus:border-vj-blue cursor-pointer uppercase tracking-wider transition-all"
+                  className="text-2xs font-black border border-white/10 rounded-vj px-2 py-1 bg-slate-800 text-vj-admin-muted focus:outline-none focus:border-vj-blue cursor-pointer uppercase tracking-wider transition-all"
                 >
                   <option value={10}>10</option>
                   <option value={25}>25</option>
@@ -901,7 +901,7 @@ export default function UsersTab({ onToast }: { onToast?: ToastAPI }) {
               </div>
               <button
                 onClick={() => setSelectedUser(null)}
-                className="absolute top-6 right-6 w-10 h-10 bg-slate-900 hover:bg-slate-900 text-vj-text-muted hover:text-white rounded-2xl flex items-center justify-center transition-all backdrop-blur-md border border-white/5"
+                className="absolute top-6 right-6 w-10 h-10 bg-slate-900 hover:bg-slate-900 text-vj-admin-muted hover:text-white rounded-2xl flex items-center justify-center transition-all backdrop-blur-md border border-white/5"
               >
                 <Icon name="XMarkIcon" size={20} />
               </button>
@@ -915,15 +915,15 @@ export default function UsersTab({ onToast }: { onToast?: ToastAPI }) {
                       {selectedUser.name}
                     </h3>
                     <span
-                      className={`text-2xs font-black px-2.5 py-1 rounded-vj uppercase tracking-wider ${selectedUser.role === 'admin' ? 'bg-vj-blue text-vj-blue border border-vj-blue' : 'bg-slate-500 text-vj-text-muted border border-vj-border-light'}`}
+                      className={`text-2xs font-black px-2.5 py-1 rounded-vj uppercase tracking-wider ${selectedUser.role === 'admin' ? 'bg-sky-400/10 text-vj-bank-blue-text border border-sky-400/30' : 'bg-slate-500 text-vj-admin-muted border border-vj-border-light'}`}
                     >
                       {selectedUser.role}
                     </span>
                   </div>
-                  <p className="text-sm font-bold text-vj-text-muted">{selectedUser.email}</p>
-                  <p className="text-xs text-vj-text-muted font-medium">
+                  <p className="text-sm font-bold text-vj-admin-muted">{selectedUser.email}</p>
+                  <p className="text-xs text-vj-admin-muted font-medium">
                     Thành viên từ:{' '}
-                    <span className="text-vj-text-muted font-bold">{selectedUser.joinDate}</span>
+                    <span className="text-vj-admin-muted font-bold">{selectedUser.joinDate}</span>
                   </p>
                 </div>
 
@@ -933,7 +933,7 @@ export default function UsersTab({ onToast }: { onToast?: ToastAPI }) {
                       e.stopPropagation();
                       toggleStatus(e, selectedUser.id);
                     }}
-                    className={`px-4 py-2 rounded-vj text-xs font-black uppercase tracking-widest transition-all ${selectedUser.status === 'active' ? 'bg-vj-red-dark text-vj-red-dark border border-vj-red-dark hover:bg-vj-red-dark' : 'bg-vj-pay-green text-vj-pay-green border border-vj-pay-green hover:bg-vj-pay-green'}`}
+                    className={`px-4 py-2 rounded-vj text-xs font-black uppercase tracking-widest transition-all ${selectedUser.status === 'active' ? 'bg-red-400/10 text-red-400 border border-red-400/30 hover:bg-vj-red-dark' : 'bg-emerald-400/10 text-vj-pay-green-text border border-emerald-400/30 hover:bg-vj-pay-green'}`}
                   >
                     {selectedUser.status === 'active' ? 'Khoá tài khoản' : 'Mở khoá'}
                   </button>
@@ -995,7 +995,7 @@ export default function UsersTab({ onToast }: { onToast?: ToastAPI }) {
                           setIsResettingPw(false);
                         }
                       }}
-                      className="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-vj-text-muted rounded-vj text-xs font-black uppercase tracking-widest transition-all disabled:opacity-40"
+                      className="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-vj-admin-muted rounded-vj text-xs font-black uppercase tracking-widest transition-all disabled:opacity-40"
                     >
                       {isResettingPw ? 'Đang lưu...' : 'Xác nhận'}
                     </button>
@@ -1005,13 +1005,13 @@ export default function UsersTab({ onToast }: { onToast?: ToastAPI }) {
 
               {/* Lịch sử đặt vé */}
               <div className="mt-8">
-                <label className="text-2xs font-black text-vj-text-muted uppercase tracking-[0.2em] mb-4 block">
+                <label className="text-2xs font-black text-vj-admin-muted uppercase tracking-[0.2em] mb-4 block">
                   Lịch sử đặt vé ({userBookings.length})
                 </label>
                 {isLoadingUserBookings ? (
-                  <p className="text-xs text-vj-text-muted font-medium">Đang tải lịch sử...</p>
+                  <p className="text-xs text-vj-admin-muted font-medium">Đang tải lịch sử...</p>
                 ) : userBookings.length === 0 ? (
-                  <p className="text-xs text-vj-text-muted font-medium">
+                  <p className="text-xs text-vj-admin-muted font-medium">
                     Người dùng chưa có đặt vé nào.
                   </p>
                 ) : (
@@ -1025,16 +1025,16 @@ export default function UsersTab({ onToast }: { onToast?: ToastAPI }) {
                           <p className="text-xs font-black text-white font-mono truncate">
                             {b.booking_code || b.id}
                           </p>
-                          <p className="text-2xs text-vj-text-muted font-bold truncate">
+                          <p className="text-2xs text-vj-admin-muted font-bold truncate">
                             {b.flight_no} · {b.from_code}→{b.to_code} ·{' '}
                             {b.depart_time ? new Date(b.depart_time).toLocaleString('vi-VN') : '—'}
                           </p>
                         </div>
                         <div className="text-right shrink-0">
-                          <p className="text-xs font-black text-vj-pay-green">
+                          <p className="text-xs font-black text-vj-pay-green-text">
                             {Number(b.total_price || 0).toLocaleString('vi-VN')}₫
                           </p>
-                          <p className="text-2xs text-vj-text-muted font-bold uppercase">
+                          <p className="text-2xs text-vj-admin-muted font-bold uppercase">
                             {b.status}
                           </p>
                         </div>
@@ -1067,7 +1067,7 @@ export default function UsersTab({ onToast }: { onToast?: ToastAPI }) {
                     <div className="text-lg font-black text-white tracking-tighter">
                       {stat.value}
                     </div>
-                    <div className="text-2xs font-bold text-vj-text-muted uppercase tracking-wider">
+                    <div className="text-2xs font-bold text-vj-admin-muted uppercase tracking-wider">
                       {stat.label}
                     </div>
                   </div>
@@ -1077,48 +1077,48 @@ export default function UsersTab({ onToast }: { onToast?: ToastAPI }) {
               {/* Advanced info */}
               <div className="mt-10 grid grid-cols-1 md:grid-cols-2 gap-8">
                 <section>
-                  <label className="text-2xs font-black text-vj-text-muted uppercase tracking-[0.2em] mb-4 block">
+                  <label className="text-2xs font-black text-vj-admin-muted uppercase tracking-[0.2em] mb-4 block">
                     Liên hệ chi tiết
                   </label>
                   <div className="space-y-4">
                     <div className="flex items-center gap-4 bg-white/5 border border-white/5 p-3 rounded-2xl">
-                      <div className="w-10 h-10 bg-slate-800 rounded-vj flex items-center justify-center text-vj-text-muted">
+                      <div className="w-10 h-10 bg-slate-800 rounded-vj flex items-center justify-center text-vj-admin-muted">
                         <Icon name="PhoneIcon" size={18} />
                       </div>
                       <div>
-                        <p className="text-2xs font-black text-vj-text-muted uppercase tracking-widest">
+                        <p className="text-2xs font-black text-vj-admin-muted uppercase tracking-widest">
                           Số điện thoại
                         </p>
-                        <p className="text-sm font-bold text-vj-text-muted">{selectedUser.phone}</p>
+                        <p className="text-sm font-bold text-vj-admin-muted">{selectedUser.phone}</p>
                       </div>
                     </div>
                     <div className="flex items-center gap-4 bg-white/5 border border-white/5 p-3 rounded-2xl">
-                      <div className="w-10 h-10 bg-slate-800 rounded-vj flex items-center justify-center text-vj-text-muted">
+                      <div className="w-10 h-10 bg-slate-800 rounded-vj flex items-center justify-center text-vj-admin-muted">
                         <Icon name="GlobeAltIcon" size={18} />
                       </div>
                       <div>
-                        <p className="text-2xs font-black text-vj-text-muted uppercase tracking-widest">
+                        <p className="text-2xs font-black text-vj-admin-muted uppercase tracking-widest">
                           Quốc tịch
                         </p>
-                        <p className="text-sm font-bold text-vj-text-muted">Việt Nam</p>
+                        <p className="text-sm font-bold text-vj-admin-muted">Việt Nam</p>
                       </div>
                     </div>
                   </div>
                 </section>
 
                 <section>
-                  <label className="text-2xs font-black text-vj-text-muted uppercase tracking-[0.2em] mb-4 block">
+                  <label className="text-2xs font-black text-vj-admin-muted uppercase tracking-[0.2em] mb-4 block">
                     Ghi chú vận hành
                   </label>
                   <textarea
-                    className="w-full bg-white/5 border border-white/5 rounded-2xl p-4 text-xs text-vj-text-muted placeholder-slate-600 focus:outline-none focus:border-vj-blue min-h-[110px] resize-none"
+                    className="w-full bg-white/5 border border-white/5 rounded-2xl p-4 text-xs text-vj-admin-muted placeholder-slate-600 focus:outline-none focus:border-vj-blue min-h-[110px] resize-none"
                     placeholder="Nhập ghi chú cho người dùng này (chỉ hệ thống thấy)..."
                     value={notesDraft}
                     onChange={(e) => setNotesDraft(e.target.value)}
                     maxLength={2000}
                   />
                   <div className="flex items-center justify-between mt-3">
-                    <p className="text-2xs text-vj-text-muted">
+                    <p className="text-2xs text-vj-admin-muted">
                       {notesDraft.trim() === (selectedUser.operatorNotes ?? '')
                         ? 'Chưa có thay đổi.'
                         : 'Chưa lưu — bấm "Lưu ghi chú".'}
@@ -1129,7 +1129,7 @@ export default function UsersTab({ onToast }: { onToast?: ToastAPI }) {
                       disabled={
                         isSavingNotes || notesDraft.trim() === (selectedUser.operatorNotes ?? '')
                       }
-                      className="text-2xs font-black uppercase tracking-widest px-4 py-2 rounded-vj bg-vj-blue text-vj-blue border border-vj-blue hover:bg-vj-blue disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                      className="text-2xs font-black uppercase tracking-widest px-4 py-2 rounded-vj bg-sky-400/10 text-vj-bank-blue-text border border-sky-400/30 hover:bg-vj-blue disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                     >
                       {isSavingNotes ? 'Đang lưu...' : 'Lưu ghi chú'}
                     </button>

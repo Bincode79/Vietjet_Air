@@ -94,7 +94,7 @@ export default function AnalyticsTab() {
         >
           <Icon name="ExclamationTriangleIcon" size={32} className="text-primary mx-auto mb-3" />
           <h3 className="font-bold text-white mb-1">Không thể tải dữ liệu thống kê</h3>
-          <p className="text-sm text-vj-text-muted mb-5">{error}</p>
+          <p className="text-sm text-vj-admin-muted mb-5">{error}</p>
           <button
             onClick={fetchStats}
             className={`${ADMIN_ACTION_BTN} text-sm font-semibold text-white bg-vj-blue border border-vj-blue hover:bg-vj-blue mx-auto`}
@@ -135,7 +135,7 @@ export default function AnalyticsTab() {
         />
         <AdminStatCard
           icon="TicketIcon"
-          iconClassName="text-vj-red-dark"
+          iconClassName="text-red-400"
           value={stats.totalBookings.toLocaleString('vi-VN')}
           label="Tổng đặt vé"
         />
@@ -147,7 +147,7 @@ export default function AnalyticsTab() {
         />
         <AdminStatCard
           icon="BanknotesIcon"
-          iconClassName="text-vj-pay-green"
+          iconClassName="text-vj-pay-green-text"
           value={formatCurrency(stats.totalRevenue)}
           label="Tổng doanh thu"
         />
@@ -164,7 +164,7 @@ export default function AnalyticsTab() {
           </div>
           <div>
             <h3 className="font-bold text-white mb-1">Thông tin</h3>
-            <p className="text-sm text-vj-text-muted">
+            <p className="text-sm text-vj-admin-muted">
               Tính năng phân tích Neo4j Graph và đề xuất thông minh đang được phát triển. Hiện tại
               chỉ hiển thị thống kê cơ bản từ hệ thống.
             </p>

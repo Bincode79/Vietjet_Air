@@ -41,10 +41,10 @@ const CustomTooltip = ({ active, payload }: CustomTooltipProps) => {
         <span className="w-2 h-2 rounded-full bg-primary" />
         Chặng: {item.route}
       </div>
-      <div className="space-y-1.5 text-vj-text-muted">
+      <div className="space-y-1.5 text-vj-admin-muted">
         <div className="flex items-center justify-between gap-4">
           <span>Doanh thu:</span>
-          <span className="font-bold text-vj-pay-green">
+          <span className="font-bold text-vj-pay-green-text">
             {item.revenue.toLocaleString('vi-VN')}₫
           </span>
         </div>
@@ -80,7 +80,7 @@ export default function TopRoutesBarChart({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
         <div>
           <h3 className="font-bold text-white text-base tracking-tight">{title}</h3>
-          <p className="text-xs text-vj-text-muted mt-0.5">
+          <p className="text-xs text-vj-admin-muted mt-0.5">
             Top 5 đường bay có lượng giao dịch và doanh số cao nhất
           </p>
         </div>
@@ -91,7 +91,7 @@ export default function TopRoutesBarChart({
             className={`px-2.5 py-1 text-xs font-semibold rounded-vj transition-all ${
               metric === 'revenue'
                 ? 'bg-primary text-white shadow-vj-sm'
-                : 'text-vj-text-muted hover:text-white'
+                : 'text-vj-admin-muted hover:text-white'
             }`}
           >
             Doanh thu
@@ -102,7 +102,7 @@ export default function TopRoutesBarChart({
             className={`px-2.5 py-1 text-xs font-semibold rounded-vj transition-all ${
               metric === 'bookings'
                 ? 'bg-primary text-white shadow-vj-sm'
-                : 'text-vj-text-muted hover:text-white'
+                : 'text-vj-admin-muted hover:text-white'
             }`}
           >
             Lượt đặt
@@ -111,7 +111,7 @@ export default function TopRoutesBarChart({
       </div>
 
       {!hasData ? (
-        <div className="h-[280px] flex flex-col items-center justify-center text-sm text-vj-text-muted">
+        <div className="h-[280px] flex flex-col items-center justify-center text-sm text-vj-admin-muted">
           <p>Chưa có dữ liệu chặng bay</p>
         </div>
       ) : (

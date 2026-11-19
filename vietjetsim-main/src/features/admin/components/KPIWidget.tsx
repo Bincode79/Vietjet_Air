@@ -33,9 +33,9 @@ export function KPIWidget({
     >
       <div className="flex items-center justify-between">
         <div className="space-y-1">
-          <p className="text-xs font-bold text-vj-text-muted uppercase tracking-wider">{title}</p>
+          <p className="text-xs font-bold text-vj-admin-muted uppercase tracking-wider">{title}</p>
           <p className="text-2xl font-black font-koho text-white tracking-tight">{value}</p>
-          {subValue && <p className="text-xs text-vj-text-muted">{subValue}</p>}
+          {subValue && <p className="text-xs text-vj-admin-muted">{subValue}</p>}
         </div>
         <div
           className={`w-12 h-12 rounded-vj bg-white/5 border border-white/10 flex items-center justify-center transition-transform group-hover:scale-110 ${colorClass}`}
@@ -48,14 +48,14 @@ export function KPIWidget({
           <span
             className={`inline-flex items-center px-1.5 py-0.5 rounded text-2xs font-bold ${
               trend === 'up' || (trend === undefined && isPositive)
-                ? 'bg-vj-pay-green text-vj-pay-green border border-vj-pay-green'
-                : 'bg-vj-red-dark text-vj-red-dark border border-vj-red-dark'
+                ? 'bg-emerald-400/10 text-vj-pay-green-text border border-emerald-400/30'
+                : 'bg-red-400/10 text-red-400 border border-red-400/30'
             }`}
           >
             {isPositive ? '↑ +' : '↓ '}
             {Math.abs(change)}%
           </span>
-          <span className="text-vj-text-muted text-xs2">so với hôm qua</span>
+          <span className="text-vj-admin-muted text-xs2">so với hôm qua</span>
         </div>
       )}
     </div>

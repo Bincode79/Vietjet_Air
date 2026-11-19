@@ -265,7 +265,7 @@ export default function SstkTab({ onToast }: { onToast?: ToastAPI }) {
           <Icon
             name={lastResult.success ? 'CheckCircleIcon' : 'XCircleIcon'}
             size={20}
-            className={lastResult.success ? 'text-green-600' : 'text-vj-red-dark'}
+            className={lastResult.success ? 'text-green-600' : 'text-red-400'}
             style={{ flexShrink: 0, marginTop: 1 }}
           />
           <div className="flex-1 min-w-0">

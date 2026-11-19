@@ -368,7 +368,7 @@ export default function AdminDashboardClient() {
       <div key={category} className="space-y-1">
         {!sidebarCollapsed && (
           <div className="px-4 pt-4 pb-1">
-            <span className="text-2xs font-bold text-vj-text-muted uppercase tracking-widest opacity-60">
+            <span className="text-2xs font-bold text-vj-admin-muted uppercase tracking-widest opacity-60">
               {NAV_CATEGORIES.find((c) => c.id === category)?.label || category}
             </span>
           </div>
@@ -380,7 +380,7 @@ export default function AdminDashboardClient() {
             className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-vj text-sm font-semibold transition-all relative group overflow-hidden ${
               activeTab === item.id
                 ? 'text-white shadow-vj-lg shadow-vj-sm'
-                : 'text-vj-text-muted hover:text-white hover:bg-white/5'
+                : 'text-vj-admin-muted hover:text-white hover:bg-white/5'
             } ${sidebarCollapsed ? 'justify-center' : ''}`}
             style={{
               background: activeTab === item.id ? 'var(--primary)' : 'transparent',
@@ -473,7 +473,7 @@ export default function AdminDashboardClient() {
               >
                 Vietjet Air
               </span>
-              <div className="text-2xs text-vj-blue font-medium tracking-wider uppercase">
+              <div className="text-2xs text-vj-bank-blue-text font-medium tracking-wider uppercase">
                 Bảng Quản Trị
               </div>
             </div>
@@ -511,7 +511,7 @@ export default function AdminDashboardClient() {
                 <div className="text-xs font-bold text-white truncate max-w-[140px] tracking-tight">
                   {profile?.fullName || user?.email?.split('@')[0] || 'Hệ Thống'}
                 </div>
-                <div className="text-2xs text-vj-blue font-bold flex items-center gap-1.5 mt-0.5">
+                <div className="text-2xs text-vj-bank-blue-text font-bold flex items-center gap-1.5 mt-0.5">
                   <span className="w-1.5 h-1.5 rounded-full bg-vj-pay-green shadow-glow-emerald animate-pulse"></span>
                   {roleLabel}
                 </div>
@@ -529,7 +529,7 @@ export default function AdminDashboardClient() {
             onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
             className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-vj text-sm font-medium transition-all ${
               sidebarCollapsed ? 'justify-center' : ''
-            } text-vj-text-muted hover:text-white hover:bg-slate-800`}
+            } text-vj-admin-muted hover:text-white hover:bg-slate-800`}
             title={sidebarCollapsed ? 'Mở rộng' : 'Thu gọn'}
           >
             <Icon name={sidebarCollapsed ? 'ChevronRightIcon' : 'ChevronLeftIcon'} size={16} />
@@ -539,7 +539,7 @@ export default function AdminDashboardClient() {
             href="/trang-chu"
             className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-vj text-sm font-medium transition-all ${
               sidebarCollapsed ? 'justify-center' : ''
-            } text-vj-text-muted hover:text-white hover:bg-slate-800`}
+            } text-vj-admin-muted hover:text-white hover:bg-slate-800`}
             title={sidebarCollapsed ? 'Về trang chủ' : undefined}
           >
             <Icon name="ArrowLeftOnRectangleIcon" size={16} />
@@ -583,7 +583,7 @@ export default function AdminDashboardClient() {
                 </div>
                 <div>
                   <div className="text-white font-bold text-sm">Vietjet Air</div>
-                  <div className="text-2xs text-vj-blue font-medium tracking-wider uppercase">
+                  <div className="text-2xs text-vj-bank-blue-text font-medium tracking-wider uppercase">
                     Bảng Quản Trị
                   </div>
                 </div>
@@ -592,7 +592,7 @@ export default function AdminDashboardClient() {
                 onClick={() => setDrawerOpen(false)}
                 className="w-8 h-8 flex items-center justify-center rounded-vj hover:bg-slate-700 transition-colors"
               >
-                <Icon name="XMarkIcon" size={18} className="text-vj-text-muted" />
+                <Icon name="XMarkIcon" size={18} className="text-vj-admin-muted" />
               </button>
             </div>
 
@@ -623,7 +623,7 @@ export default function AdminDashboardClient() {
                   <div className="text-xs font-semibold text-white truncate max-w-[140px]">
                     {profile?.fullName || user?.email?.split('@')[0] || 'Hệ Thống'}
                   </div>
-                  <div className="text-xs2 text-vj-blue flex items-center gap-1">
+                  <div className="text-xs2 text-vj-bank-blue-text flex items-center gap-1">
                     <span className="w-1.5 h-1.5 rounded-full bg-vj-pay-green"></span>
                     {roleLabel}
                   </div>
@@ -638,7 +638,7 @@ export default function AdminDashboardClient() {
             <div className="px-3 py-4 border-t border-vj-border-light">
               <Link
                 href="/trang-chu"
-                className="flex items-center gap-3 px-4 py-3 rounded-vj text-sm font-semibold transition-all text-vj-text-muted hover:text-white hover:bg-slate-800"
+                className="flex items-center gap-3 px-4 py-3 rounded-vj text-sm font-semibold transition-all text-vj-admin-muted hover:text-white hover:bg-slate-800"
               >
                 <Icon name="ArrowLeftOnRectangleIcon" size={18} />
                 Về trang chủ
@@ -664,11 +664,11 @@ export default function AdminDashboardClient() {
               className="lg:hidden w-10 h-10 flex items-center justify-center rounded-vj transition-colors"
               style={{ background: 'rgba(148, 163, 184, 0.1)' }}
             >
-              <Icon name="Bars3Icon" size={20} className="text-vj-text-muted" />
+              <Icon name="Bars3Icon" size={20} className="text-vj-admin-muted" />
             </button>
             <div className="flex flex-col justify-center gap-1">
               <BreadcrumbNav items={breadcrumbItems} />
-              <p className="text-xs hidden sm:block text-vj-text-muted">
+              <p className="text-xs hidden sm:block text-vj-admin-muted">
                 {formattedDate} - {formattedTime}
               </p>
             </div>
@@ -687,7 +687,7 @@ export default function AdminDashboardClient() {
               <Icon
                 name="MagnifyingGlassIcon"
                 size={18}
-                className="text-vj-text-muted group-hover:text-white transition-colors"
+                className="text-vj-admin-muted group-hover:text-white transition-colors"
               />
             </button>
 

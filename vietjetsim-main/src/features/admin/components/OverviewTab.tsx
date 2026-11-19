@@ -93,16 +93,16 @@ export default function OverviewTab({ onNavigate }: Props) {
             <span className="w-3 h-3 rounded-full bg-primary animate-pulse" />
             Bảng điều khiển tổng quan
           </h2>
-          <p className="text-xs text-vj-text-muted mt-1">
+          <p className="text-xs text-vj-admin-muted mt-1">
             Theo dõi thời gian thực các chỉ số kinh doanh, chuyến bay và đặt chỗ Vietjet
           </p>
         </div>
 
         <div className="flex items-center gap-3">
           {formattedLastUpdated && (
-            <span className="text-xs text-vj-text-muted hidden sm:inline-block">
+            <span className="text-xs text-vj-admin-muted hidden sm:inline-block">
               Cập nhật lúc:{' '}
-              <span className="font-mono text-vj-text-muted font-semibold">
+              <span className="font-mono text-vj-admin-muted font-semibold">
                 {formattedLastUpdated}
               </span>
             </span>
@@ -142,12 +142,12 @@ export default function OverviewTab({ onNavigate }: Props) {
           }}
         >
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-vj bg-vj-red-dark text-vj-red-dark">
+            <div className="p-2 rounded-vj bg-vj-red-dark text-red-400">
               <Icon name="ExclamationTriangleIcon" size={24} />
             </div>
             <div>
-              <h4 className="text-sm font-bold text-vj-red-dark">Không thể tải dữ liệu mới nhất</h4>
-              <p className="text-xs text-vj-red-dark mt-0.5">{error}</p>
+              <h4 className="text-sm font-bold text-red-400">Không thể tải dữ liệu mới nhất</h4>
+              <p className="text-xs text-red-400 mt-0.5">{error}</p>
             </div>
           </div>
           <button
@@ -244,8 +244,8 @@ export default function OverviewTab({ onNavigate }: Props) {
               title="Doanh thu hôm nay"
               value={formatCurrency(data?.kpi?.revenueToday ?? 0)}
               change={data?.kpi?.revenueTodayChange}
-              icon={<Icon name="CurrencyDollarIcon" size={24} className="text-vj-pay-green" />}
-              colorClass="text-vj-pay-green"
+              icon={<Icon name="CurrencyDollarIcon" size={24} className="text-vj-pay-green-text" />}
+              colorClass="text-vj-pay-green-text"
             />
             <KPIWidget
               title="Người dùng hoạt động"

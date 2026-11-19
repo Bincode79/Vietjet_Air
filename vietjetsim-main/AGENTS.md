@@ -1354,6 +1354,14 @@ no database and no flag, every API answers 500 and 42 of 68 captures get flagged
 reads as a UI regression when it is only a missing database. The script exports the flag;
 it is the only place that should. Never set it on a server.
 
+**The gate also exports `EDITOR_PROJECT_ROOT`.** The standalone server does
+`process.chdir(.next-uicheck/standalone)`, so `/api/editor/files` (rooted at
+`process.cwd()`) could not see `src/app/trang-chu/page.tsx` — `/editor` opened its default
+file, got 404, and the gate flagged all three editor screens. `run-ui-check.sh` points
+`EDITOR_PROJECT_ROOT` at the app root for the duration of the gate; production VPS/Docker
+leaves it unset and the editor stays fail-closed there (a runtime container does not ship
+the source tree).
+
 **The production server needs its own build directory, and a running `next dev` is using
 `.next` — so build a second copy instead of stopping the dev server.** `next.config.mjs`
 reads `DIST_DIR`, so the whole gate can run beside a live dev server on another port:

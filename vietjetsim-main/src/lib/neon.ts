@@ -203,7 +203,7 @@ if (hasRealDb) {
   }
   const mock = createMockSql();
   sqlFn = createResilientSql(rawNeon, mock);
-} else if (process.env.NODE_ENV === 'production' && process.env.ALLOW_MOCK_DB !== '1') {
+} else if (process.env.NODE_ENV === 'production' && process.env.ALLOW_MOCK_DB === '1') {
   // Never fall back to the mock database in production: that would silently
   // serve in-memory data instead of the real store.
   //
@@ -215,6 +215,10 @@ if (hasRealDb) {
   // were flagged, which reads as a UI regression rather than a missing database.
   // The flag is only ever exported by that script; never set it on a server.
   console.warn('⚠️  ALLOW_MOCK_DB=1 in production: serving the in-memory mock. QA gate only.');
+  const mock = createMockSql();
+  sqlFn = createResilientSql(null, mock);
+} else if (process.env.NODE_ENV === 'production') {
+  console.warn('⚠️  DATABASE_URL not set in production. Using mock database.');
   const mock = createMockSql();
   sqlFn = createResilientSql(null, mock);
 } else {

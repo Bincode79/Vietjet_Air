@@ -6,7 +6,7 @@ import {
   SYSTEM_CONFIG_SCHEMA,
   getSystemConfigBounds,
   type SystemConfigKey,
-} from '@/lib/system-config';
+} from '@/lib/system-config-schema';
 import { getApiErrorMessage } from '@/shared/services';
 import { AdminTabHeader, ADMIN_CARD_STYLE, ADMIN_ACTION_BTN } from './AdminSection';
 
@@ -212,7 +212,7 @@ export default function SystemSettingsTab({ onToast }: { onToast?: ToastAPI }) {
         <div className="rounded-2xl border p-12 text-center" style={ADMIN_CARD_STYLE}>
           <Icon name="ExclamationTriangleIcon" size={48} className="text-red-400 mx-auto mb-4" />
           <p className="font-bold text-white">Không thể tải cài đặt</p>
-          <p className="text-sm text-vj-text-muted mt-2">Vui lòng thử lại sau</p>
+          <p className="text-sm text-vj-admin-muted mt-2">Vui lòng thử lại sau</p>
         </div>
       </div>
     );
@@ -231,7 +231,7 @@ export default function SystemSettingsTab({ onToast }: { onToast?: ToastAPI }) {
               <button
                 onClick={handleReset}
                 disabled={isSaving}
-                className={`${ADMIN_ACTION_BTN} text-vj-text-muted border border-white/10 bg-white/5 hover:bg-white/10 disabled:opacity-50`}
+                className={`${ADMIN_ACTION_BTN} text-vj-admin-muted border border-white/10 bg-white/5 hover:bg-white/10 disabled:opacity-50`}
               >
                 <Icon name="ArrowPathIcon" size={14} />
                 Đặt lại
@@ -266,7 +266,7 @@ export default function SystemSettingsTab({ onToast }: { onToast?: ToastAPI }) {
             className={`flex items-center gap-2 px-4 py-2 rounded-vj text-sm font-semibold transition-all whitespace-nowrap ${
               activeCategory === cat.id
                 ? 'bg-primary/15 text-primary'
-                : 'text-vj-text-muted hover:bg-white/5 hover:text-white'
+                : 'text-vj-admin-muted hover:bg-white/5 hover:text-white'
             }`}
           >
             <Icon name={cat.icon} size={18} />
@@ -324,7 +324,7 @@ export default function SystemSettingsTab({ onToast }: { onToast?: ToastAPI }) {
                           </span>
                         )}
                     </div>
-                    <p className="text-xs text-vj-text-muted mt-1 max-w-xl">
+                    <p className="text-xs text-vj-admin-muted mt-1 max-w-xl">
                       {setting.description}
                     </p>
                   </div>
@@ -348,7 +348,7 @@ export default function SystemSettingsTab({ onToast }: { onToast?: ToastAPI }) {
                             }`}
                           />
                         </button>
-                        <span className="ml-3 text-xs font-semibold text-vj-text-muted">
+                        <span className="ml-3 text-xs font-semibold text-vj-admin-muted">
                           {value === true ? 'Đang bật' : 'Đang tắt'}
                         </span>
                       </div>
@@ -369,7 +369,7 @@ export default function SystemSettingsTab({ onToast }: { onToast?: ToastAPI }) {
                         type={setting.type === 'number' ? 'number' : 'text'}
                         value={String(value)}
                         onChange={(e) => handleSettingChange(setting.key, e.target.value)}
-                        className="w-full px-4 py-2.5 bg-slate-900 border border-white/10 rounded-vj text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all placeholder:text-vj-text-muted"
+                        className="w-full px-4 py-2.5 bg-slate-900 border border-white/10 rounded-vj text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all placeholder:text-vj-admin-muted"
                         min={getSystemConfigBounds(setting.key as SystemConfigKey).min ?? 0}
                         max={getSystemConfigBounds(setting.key as SystemConfigKey).max}
                         placeholder={setting.label}
@@ -395,7 +395,7 @@ export default function SystemSettingsTab({ onToast }: { onToast?: ToastAPI }) {
         />
         <div>
           <p className="text-sm font-semibold text-white">Lưu ý khi thay đổi cài đặt</p>
-          <ul className="text-xs text-vj-text-muted mt-1 space-y-1">
+          <ul className="text-xs text-vj-admin-muted mt-1 space-y-1">
             <li>- Cài đặt có hiệu lực ngay với các request tiếp theo</li>
             <li>- Các thay đổi sẽ được ghi lại trong nhật ký hệ thống</li>
           </ul>

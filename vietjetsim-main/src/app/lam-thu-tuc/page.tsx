@@ -324,7 +324,7 @@ function CheckInContent({ prefillBookingId }: { prefillBookingId: string }) {
                 (đo: không tồn tại `nav[aria-label="Dịch vụ tra cứu"]`) — nên
                 dải pill đã bị bỏ khỏi trang này. */}
               {step === 'search' && (
-                <div className="vj-lookup-card mt-4 grid w-full grid-cols-1 overflow-hidden lg:grid-cols-[410px_649px] lg:gap-10.25 lg:px-25">
+                <div className="vj-lookup-card mt-4 grid w-full grid-cols-1 overflow-hidden lg:grid-cols-[410px_minmax(0,1fr)] lg:gap-8 lg:px-8 xl:gap-10 xl:px-10">
                   {/* Cột trái: CHECK-IN form.
                       Site thật: cột trái `x=170` rộng `410`; ô nhập `x=190` rộng
                       `370`; nút "Tìm kiếm" `x=312` và "Đăng nhập" `x=307` đều
@@ -444,9 +444,9 @@ function CheckInContent({ prefillBookingId }: { prefillBookingId: string }) {
                       </p>
                     </div>
 
-                    {/* Khung hướng dẫn — khối 3 cột viền vàng nổi bật */}
+                    {/* Khung hướng dẫn — khối 3 cột viền vàng nổi bật. Ở lg cột phải hẹp hơn container, 3 cột nội dung gây chật nên chuyển sang stack dọc cho tới xl. */}
                     <div className="overflow-hidden rounded-vj border-2 border-vjyellow bg-white shadow-vj-sm">
-                      <div className="grid grid-cols-1 divide-y-2 divide-vjyellow md:grid-cols-3 md:divide-x-2 md:divide-y-0">
+                      <div className="grid grid-cols-1 divide-y-2 divide-vjyellow md:grid-cols-3 md:divide-x-2 md:divide-y-0 lg:grid-cols-1 lg:divide-y-2 lg:divide-x-0 xl:grid-cols-3 xl:divide-x-2 xl:divide-y-0">
                         <div className="p-3.5 xl:p-5 font-koho text-xs sm:text-sm font-medium leading-[20px] sm:leading-[22px] text-vj-text-strong">
                           <h3 className="mb-2 font-bold text-sm sm:text-base leading-[20px] text-vj-dark sm:leading-[22px]">
                             Lưu ý sau khi Online Check-in:

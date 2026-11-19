@@ -1960,9 +1960,18 @@ h6 {
   font-size: 14px;
   line-height: 20px;
   font-weight: 400;
-  color: rgb(0, 136, 255);
+  /* Mobile/tablet: ảnh nền tối nên dùng xanh sáng hơn để đảm bảo tương phản. */
+  color: #5cc6ff;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
   text-decoration: none;
   transition: text-decoration-color 160ms ease;
+}
+
+@media (min-width: 1280px) {
+  .vj-skyjoy-register-link {
+    color: rgb(0, 136, 255);
+    text-shadow: none;
+  }
 }
 
 .vj-skyjoy-register-link:hover {
@@ -2027,9 +2036,17 @@ h6 {
   font-size: 14px;
   line-height: 20px;
   font-weight: 500;
-  color: var(--vj-text);
-  text-shadow: 0 1px 3px rgba(255, 255, 255, 0.9);
+  /* Mobile/tablet nằm trên ảnh nền tối, không dùng nền trắng như desktop. */
+  color: #ffffff;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
   text-align: center;
+}
+
+@media (min-width: 1280px) {
+  .vj-skyjoy-line {
+    color: var(--vj-text);
+    text-shadow: none;
+  }
 }
 
 /* ─── SkyID (đo 13/11/2026 từ DOM sống của skyjoy-id.vietjetair.com) ────────

@@ -14,10 +14,10 @@ const STATUS_MAP: Record<string, { label: string; cls: string }> = {
   pending: { label: 'Chờ thanh toán', cls: 'bg-amber-500/10 text-amber-400 border-amber-500/20' },
   confirmed: {
     label: 'Đã xác nhận',
-    cls: 'bg-vj-pay-green text-vj-pay-green border-vj-pay-green',
+    cls: 'bg-emerald-400/10 text-vj-pay-green-text border-emerald-400/30',
   },
   completed: { label: 'Hoàn thành', cls: 'bg-sky-500/10 text-sky-400 border-sky-500/20' },
-  cancelled: { label: 'Đã huỷ', cls: 'bg-vj-red-dark text-vj-red-dark border-vj-red-dark' },
+  cancelled: { label: 'Đã huỷ', cls: 'bg-red-400/10 text-red-400 border-red-400/30' },
   refunded: { label: 'Đã hoàn tiền', cls: 'bg-purple-500/10 text-purple-400 border-purple-500/20' },
 };
 
@@ -61,7 +61,7 @@ export default function RecentBookingsTable({
           <span className="w-2.5 h-2.5 rounded-full bg-vj-pay-green animate-pulse" />
           <div>
             <h3 className="font-bold text-white text-base tracking-tight">Đặt vé gần đây</h3>
-            <p className="text-xs text-vj-text-muted mt-0.5">
+            <p className="text-xs text-vj-admin-muted mt-0.5">
               10 giao dịch đặt vé mới nhất trong hệ thống
             </p>
           </div>
@@ -70,7 +70,7 @@ export default function RecentBookingsTable({
           <button
             type="button"
             onClick={onViewAll}
-            className="text-xs font-bold text-vj-blue hover:text-vj-blue flex items-center gap-1.5 transition-all hover:gap-2 px-3 py-1.5 rounded-vj bg-vj-blue border border-vj-blue"
+            className="text-xs font-bold text-vj-bank-blue-text hover:text-vj-bank-blue-text flex items-center gap-1.5 transition-all hover:gap-2 px-3 py-1.5 rounded-vj bg-vj-blue border border-vj-blue"
           >
             Xem tất cả
             <Icon name="ArrowRightIcon" size={12} />
@@ -82,22 +82,22 @@ export default function RecentBookingsTable({
         <table className="w-full">
           <thead>
             <tr className="bg-white/5 border-b border-white/5">
-              <th className="text-left text-2xs font-bold text-vj-text-muted uppercase tracking-widest px-5 py-3.5">
+              <th className="text-left text-2xs font-bold text-vj-admin-muted uppercase tracking-widest px-5 py-3.5">
                 Mã đặt chỗ
               </th>
-              <th className="text-left text-2xs font-bold text-vj-text-muted uppercase tracking-widest px-5 py-3.5">
+              <th className="text-left text-2xs font-bold text-vj-admin-muted uppercase tracking-widest px-5 py-3.5">
                 Khách hàng
               </th>
-              <th className="text-left text-2xs font-bold text-vj-text-muted uppercase tracking-widest px-5 py-3.5">
+              <th className="text-left text-2xs font-bold text-vj-admin-muted uppercase tracking-widest px-5 py-3.5">
                 Chặng bay
               </th>
-              <th className="text-right text-2xs font-bold text-vj-text-muted uppercase tracking-widest px-5 py-3.5">
+              <th className="text-right text-2xs font-bold text-vj-admin-muted uppercase tracking-widest px-5 py-3.5">
                 Tổng tiền
               </th>
-              <th className="text-center text-2xs font-bold text-vj-text-muted uppercase tracking-widest px-5 py-3.5">
+              <th className="text-center text-2xs font-bold text-vj-admin-muted uppercase tracking-widest px-5 py-3.5">
                 Trạng thái
               </th>
-              <th className="text-right text-2xs font-bold text-vj-text-muted uppercase tracking-widest px-5 py-3.5">
+              <th className="text-right text-2xs font-bold text-vj-admin-muted uppercase tracking-widest px-5 py-3.5">
                 Thời gian
               </th>
             </tr>
@@ -105,7 +105,7 @@ export default function RecentBookingsTable({
           <tbody className="divide-y divide-white/5">
             {!hasData ? (
               <tr>
-                <td colSpan={6} className="px-5 py-8 text-center text-sm text-vj-text-muted">
+                <td colSpan={6} className="px-5 py-8 text-center text-sm text-vj-admin-muted">
                   Chưa có giao dịch đặt vé nào
                 </td>
               </tr>
@@ -113,7 +113,7 @@ export default function RecentBookingsTable({
               data.map((booking) => {
                 const statusMeta = STATUS_MAP[booking.status.toLowerCase()] || {
                   label: booking.status,
-                  cls: 'bg-slate-500 text-vj-text-muted border-vj-border-light',
+                  cls: 'bg-slate-500 text-vj-admin-muted border-vj-border-light',
                 };
 
                 return (
@@ -122,17 +122,17 @@ export default function RecentBookingsTable({
                     className="hover:bg-white/[0.02] transition-colors"
                   >
                     <td className="px-5 py-3.5 whitespace-nowrap">
-                      <span className="font-mono font-bold text-sm text-vj-blue bg-vj-blue px-2 py-0.5 rounded border border-vj-blue">
+                      <span className="font-mono font-bold text-sm text-vj-bank-blue-text bg-vj-blue px-2 py-0.5 rounded border border-vj-blue">
                         {booking.bookingCode || '—'}
                       </span>
                     </td>
                     <td className="px-5 py-3.5 whitespace-nowrap">
-                      <span className="text-sm font-semibold text-vj-text-muted">
+                      <span className="text-sm font-semibold text-vj-admin-muted">
                         {booking.customerName || '—'}
                       </span>
                     </td>
                     <td className="px-5 py-3.5 whitespace-nowrap">
-                      <span className="text-sm text-vj-text-muted font-medium">
+                      <span className="text-sm text-vj-admin-muted font-medium">
                         {booking.route || '—'}
                       </span>
                     </td>
@@ -151,7 +151,7 @@ export default function RecentBookingsTable({
                       </span>
                     </td>
                     <td className="px-5 py-3.5 whitespace-nowrap text-right">
-                      <span className="text-xs text-vj-text-muted">
+                      <span className="text-xs text-vj-admin-muted">
                         {formatRelativeTime(booking.createdAt)}
                       </span>
                     </td>

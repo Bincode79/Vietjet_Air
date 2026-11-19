@@ -9,75 +9,19 @@
  */
 
 import { sql } from '@/lib/neon';
+import {
+  SYSTEM_CONFIG_SCHEMA,
+  type SystemConfigKey,
+  getSystemConfigBounds,
+  getSystemConfigDefault,
+} from './system-config-schema';
 
-/**
- * Schema của các cài đặt được phép tác động tới hành vi runtime.
- *
- * - `type`: kiểu giá trị lưu trong DB (`string` | `number` | `boolean`).
- * - `default`: giá trị dùng khi thiếu hàng trong DB hoặc giá trị không hợp lệ.
- * - `min`/`max`: khoảng hợp lệ cho `number` (dùng để chặn giá trị vô nghĩa).
- */
-export const SYSTEM_CONFIG_SCHEMA = {
-  // ─── Thông báo ────────────────────────────────────────────────────────────
-  auto_send_payment_invoice_email: {
-    type: 'boolean',
-    default: true,
-    description: 'Tự động gửi hoá đơn qua email khi thanh toán',
-  },
-  email_notifications: {
-    type: 'boolean',
-    default: true,
-    description: 'Thông báo qua email',
-  },
-
-  // ─── Cấu hình đặt vé ─────────────────────────────────────────────────────
-  max_passengers_per_booking: {
-    type: 'number',
-    default: 9,
-    min: 1,
-    max: 9,
-    description: 'Số khách tối đa/đơn',
-  },
-  min_booking_amount: {
-    type: 'number',
-    default: 100000,
-    min: 0,
-    max: 999999999,
-    description: 'Giá trị đặt vé tối thiểu (VND)',
-  },
-} as const satisfies Record<
-  string,
-  {
-    type: 'string' | 'number' | 'boolean';
-    default: string | number | boolean;
-    min?: number;
-    max?: number;
-    description: string;
-  }
->;
-
-export type SystemConfigKey = keyof typeof SYSTEM_CONFIG_SCHEMA;
-
-/**
- * Khoảng hợp lệ của một cài đặt số.
- *
- * Schema khai báo `min`/`max` chỉ cho các key có kiểu `number`, nên không thể
- * đọc trực tiếp `SYSTEM_CONFIG_SCHEMA[key].min` — TypeScript không biết key
- * nào có `min`. Hàm này là điểm truy cập duy nhất, và trả `undefined` cho
- * các key không phải số.
- */
-export function getSystemConfigBounds(key: SystemConfigKey): {
-  min?: number;
-  max?: number;
-} {
-  const spec = SYSTEM_CONFIG_SCHEMA[key] as { min?: number; max?: number };
-  return { min: spec.min, max: spec.max };
-}
-
-/** Giá trị mặc định của một cài đặt. */
-export function getSystemConfigDefault<K extends SystemConfigKey>(key: K) {
-  return SYSTEM_CONFIG_SCHEMA[key].default;
-}
+export {
+  SYSTEM_CONFIG_SCHEMA,
+  type SystemConfigKey,
+  getSystemConfigBounds,
+  getSystemConfigDefault,
+};
 
 /**
  * Đọc một giá trị cấu hình đã được ép kiểu theo schema.

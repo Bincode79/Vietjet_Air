@@ -119,7 +119,7 @@ export default function DiscountsTab({ onToast }: { onToast?: ToastAPI }) {
             <Icon name="TagIcon" size={24} className="text-primary" />
             Quản lý mã giảm giá
           </h2>
-          <p className="text-xs font-bold text-vj-text-muted uppercase tracking-widest mt-1 opacity-70">
+          <p className="text-xs font-bold text-vj-admin-muted uppercase tracking-widest mt-1 opacity-70">
             {total} mã trong hệ thống
           </p>
         </div>
@@ -137,7 +137,7 @@ export default function DiscountsTab({ onToast }: { onToast?: ToastAPI }) {
         <Icon
           name="MagnifyingGlassIcon"
           size={18}
-          className="absolute left-4 top-1/2 -translate-y-1/2 text-vj-text-muted group-focus-within:text-primary transition-colors"
+          className="absolute left-4 top-1/2 -translate-y-1/2 text-vj-admin-muted group-focus-within:text-primary transition-colors"
         />
         <input
           type="text"
@@ -165,28 +165,28 @@ export default function DiscountsTab({ onToast }: { onToast?: ToastAPI }) {
           <table className="w-full text-left">
             <thead>
               <tr className="bg-white/5 border-b border-white/5">
-                <th className="px-6 py-5 text-2xs font-black text-vj-text-muted uppercase tracking-widest">
+                <th className="px-6 py-5 text-2xs font-black text-vj-admin-muted uppercase tracking-widest">
                   Mã / Loại
                 </th>
-                <th className="px-6 py-5 text-2xs font-black text-vj-text-muted uppercase tracking-widest">
+                <th className="px-6 py-5 text-2xs font-black text-vj-admin-muted uppercase tracking-widest">
                   Giá trị
                 </th>
-                <th className="px-6 py-5 text-2xs font-black text-vj-text-muted uppercase tracking-widest">
+                <th className="px-6 py-5 text-2xs font-black text-vj-admin-muted uppercase tracking-widest">
                   Đại lý
                 </th>
-                <th className="px-6 py-5 text-2xs font-black text-vj-text-muted uppercase tracking-widest">
+                <th className="px-6 py-5 text-2xs font-black text-vj-admin-muted uppercase tracking-widest">
                   Điều kiện
                 </th>
-                <th className="px-6 py-5 text-2xs font-black text-vj-text-muted uppercase tracking-widest">
+                <th className="px-6 py-5 text-2xs font-black text-vj-admin-muted uppercase tracking-widest">
                   Hiệu lực
                 </th>
-                <th className="px-6 py-5 text-2xs font-black text-vj-text-muted uppercase tracking-widest text-center">
+                <th className="px-6 py-5 text-2xs font-black text-vj-admin-muted uppercase tracking-widest text-center">
                   Sử dụng
                 </th>
-                <th className="px-6 py-5 text-2xs font-black text-vj-text-muted uppercase tracking-widest text-center">
+                <th className="px-6 py-5 text-2xs font-black text-vj-admin-muted uppercase tracking-widest text-center">
                   Trạng thái
                 </th>
-                <th className="px-6 py-5 text-2xs font-black text-vj-text-muted uppercase tracking-widest text-center">
+                <th className="px-6 py-5 text-2xs font-black text-vj-admin-muted uppercase tracking-widest text-center">
                   Thao tác
                 </th>
               </tr>
@@ -204,8 +204,8 @@ export default function DiscountsTab({ onToast }: { onToast?: ToastAPI }) {
                 <tr>
                   <td colSpan={8} className="px-6 py-24 text-center">
                     <div className="flex flex-col items-center gap-4">
-                      <Icon name="InboxIcon" size={32} className="text-vj-text-muted" />
-                      <p className="font-black text-vj-text-muted uppercase text-2xs tracking-widest">
+                      <Icon name="InboxIcon" size={32} className="text-vj-admin-muted" />
+                      <p className="font-black text-vj-admin-muted uppercase text-2xs tracking-widest">
                         Không có mã giảm giá
                       </p>
                     </div>
@@ -221,10 +221,10 @@ export default function DiscountsTab({ onToast }: { onToast?: ToastAPI }) {
                       className="hover:bg-white/[0.04] transition-all cursor-pointer group"
                     >
                       <td className="px-6 py-5">
-                        <div className="font-black text-vj-text-muted group-hover:text-primary transition-colors tracking-tight">
+                        <div className="font-black text-vj-admin-muted group-hover:text-primary transition-colors tracking-tight">
                           {discount.code}
                         </div>
-                        <div className="text-2xs text-vj-text-muted uppercase font-bold tracking-widest mt-1">
+                        <div className="text-2xs text-vj-admin-muted uppercase font-bold tracking-widest mt-1">
                           {discount.type === 'percentage' ? 'Phần trăm' : 'Cố định'}
                         </div>
                       </td>
@@ -235,7 +235,7 @@ export default function DiscountsTab({ onToast }: { onToast?: ToastAPI }) {
                             : `${Number(discount.value).toLocaleString('vi-VN')}₫`}
                         </div>
                         {discount.type === 'percentage' && discount.max_discount_amount && (
-                          <div className="text-2xs font-bold text-vj-text-muted uppercase tracking-wider mt-1">
+                          <div className="text-2xs font-bold text-vj-admin-muted uppercase tracking-wider mt-1">
                             Tối đa: {Number(discount.max_discount_amount).toLocaleString('vi-VN')}₫
                           </div>
                         )}
@@ -243,7 +243,7 @@ export default function DiscountsTab({ onToast }: { onToast?: ToastAPI }) {
                       <td className="px-6 py-5">
                         {discount.agency_name ? (
                           <>
-                            <div className="text-xs2 font-black text-vj-text-muted tracking-tight">
+                            <div className="text-xs2 font-black text-vj-admin-muted tracking-tight">
                               {discount.agency_name}
                             </div>
                             {discount.agency_code && (
@@ -253,37 +253,37 @@ export default function DiscountsTab({ onToast }: { onToast?: ToastAPI }) {
                             )}
                           </>
                         ) : (
-                          <span className="text-3xs font-black text-vj-text-muted uppercase tracking-[0.2em] px-2 py-1 bg-white/5 rounded-vj inline-block">
+                          <span className="text-3xs font-black text-vj-admin-muted uppercase tracking-[0.2em] px-2 py-1 bg-white/5 rounded-vj inline-block">
                             Dùng chung
                           </span>
                         )}
                       </td>
                       <td className="px-6 py-5">
-                        <div className="text-2xs font-bold text-vj-text-muted uppercase tracking-widest">
+                        <div className="text-2xs font-bold text-vj-admin-muted uppercase tracking-widest">
                           Đơn từ: {Number(discount.min_booking_amount).toLocaleString('vi-VN')}₫
                         </div>
                         {discount.usage_per_user_limit && (
-                          <div className="text-3xs font-black text-vj-text-muted uppercase tracking-[0.2em] mt-1.5 px-2 py-0.5 bg-white/5 rounded-vj inline-block">
+                          <div className="text-3xs font-black text-vj-admin-muted uppercase tracking-[0.2em] mt-1.5 px-2 py-0.5 bg-white/5 rounded-vj inline-block">
                             Max {discount.usage_per_user_limit} lượt/người
                           </div>
                         )}
                       </td>
                       <td className="px-6 py-5">
-                        <div className="text-2xs font-bold text-vj-text-muted uppercase tracking-widest">
+                        <div className="text-2xs font-bold text-vj-admin-muted uppercase tracking-widest">
                           Đến {new Date(discount.end_date).toLocaleDateString('vi-VN')}
                         </div>
                         <div
-                          className={`text-3xs font-black uppercase tracking-tighter mt-1 ${isExpired ? 'text-vj-red-dark' : 'text-vj-pay-green'}`}
+                          className={`text-3xs font-black uppercase tracking-tighter mt-1 ${isExpired ? 'text-red-400' : 'text-vj-pay-green-text'}`}
                         >
                           {isExpired ? 'Đã hết hạn' : 'Đang hiệu lực'}
                         </div>
                       </td>
                       <td className="px-6 py-5 text-center">
-                        <div className="text-sm font-black text-vj-text-muted tabular-nums">
+                        <div className="text-sm font-black text-vj-admin-muted tabular-nums">
                           {discount.used_count}
                         </div>
                         {discount.usage_limit && (
-                          <div className="text-2xs font-bold text-vj-text-muted tracking-widest mt-0.5">
+                          <div className="text-2xs font-bold text-vj-admin-muted tracking-widest mt-0.5">
                             / {discount.usage_limit}
                           </div>
                         )}
@@ -294,9 +294,9 @@ export default function DiscountsTab({ onToast }: { onToast?: ToastAPI }) {
                           disabled={isExpired}
                           className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-vj text-3xs font-black uppercase tracking-widest border transition-all ${
                             isExpired
-                              ? 'bg-slate-800 text-vj-text-muted border-vj-border-light cursor-not-allowed opacity-50'
+                              ? 'bg-slate-800 text-vj-admin-muted border-vj-border-light cursor-not-allowed opacity-50'
                               : discount.is_active
-                                ? 'bg-vj-pay-green text-vj-pay-green border-vj-pay-green hover:bg-vj-pay-green'
+                                ? 'bg-emerald-400/10 text-vj-pay-green-text border-emerald-400/30 hover:bg-vj-pay-green'
                                 : 'bg-amber-500/10 text-amber-400 border-amber-500/20 hover:bg-amber-500/20'
                           }`}
                         >
@@ -317,7 +317,7 @@ export default function DiscountsTab({ onToast }: { onToast?: ToastAPI }) {
                           </button>
                           <button
                             onClick={() => handleDelete(discount.id, discount.code)}
-                            className="w-8 h-8 rounded-vj bg-vj-red-dark hover:bg-vj-red-dark text-vj-red-dark border border-vj-red-dark flex items-center justify-center transition-all active:scale-98 disabled:opacity-50"
+                            className="w-8 h-8 rounded-vj bg-vj-red-dark hover:bg-red-400/10 text-red-400 border border-red-400/30 flex items-center justify-center transition-all active:scale-98 disabled:opacity-50"
                             disabled={deletingId === discount.id}
                             title="Xóa"
                           >
@@ -372,7 +372,7 @@ export default function DiscountsTab({ onToast }: { onToast?: ToastAPI }) {
               </div>
               <button
                 onClick={() => setViewingDiscount(null)}
-                className="w-10 h-10 rounded-2xl bg-white/5 hover:bg-white/10 text-vj-text-muted flex items-center justify-center transition-all border border-white/5"
+                className="w-10 h-10 rounded-2xl bg-white/5 hover:bg-white/10 text-vj-admin-muted flex items-center justify-center transition-all border border-white/5"
               >
                 <Icon name="XMarkIcon" size={20} />
               </button>
@@ -384,7 +384,7 @@ export default function DiscountsTab({ onToast }: { onToast?: ToastAPI }) {
               <div className="flex items-center justify-between bg-slate-950 border border-white/5 rounded-3xl p-6 overflow-hidden relative group">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl" />
                 <div>
-                  <p className="text-2xs font-black text-vj-text-muted uppercase tracking-widest mb-1">
+                  <p className="text-2xs font-black text-vj-admin-muted uppercase tracking-widest mb-1">
                     Giá trị ưu đãi
                   </p>
                   <p className="text-4xl font-black text-white tracking-tighter tabular-nums">
@@ -394,12 +394,12 @@ export default function DiscountsTab({ onToast }: { onToast?: ToastAPI }) {
                   </p>
                 </div>
                 <div className="text-right">
-                  <p className="text-2xs font-black text-vj-text-muted uppercase tracking-widest mb-1">
+                  <p className="text-2xs font-black text-vj-admin-muted uppercase tracking-widest mb-1">
                     Lượt đã dùng
                   </p>
-                  <p className="text-3xl font-black text-vj-text-muted tabular-nums">
+                  <p className="text-3xl font-black text-vj-admin-muted tabular-nums">
                     {viewingDiscount.used_count}
-                    <span className="text-sm text-vj-text-muted">
+                    <span className="text-sm text-vj-admin-muted">
                       {' '}
                       / {viewingDiscount.usage_limit || '∞'}
                     </span>
@@ -409,36 +409,36 @@ export default function DiscountsTab({ onToast }: { onToast?: ToastAPI }) {
 
               <div className="grid grid-cols-2 gap-8">
                 <div>
-                  <label className="text-2xs font-black text-vj-text-muted uppercase tracking-widest block mb-1">
+                  <label className="text-2xs font-black text-vj-admin-muted uppercase tracking-widest block mb-1">
                     Đơn hàng tối thiểu
                   </label>
-                  <p className="text-sm font-bold text-vj-text-muted tabular-nums">
+                  <p className="text-sm font-bold text-vj-admin-muted tabular-nums">
                     {Number(viewingDiscount.min_booking_amount).toLocaleString('vi-VN')}₫
                   </p>
                 </div>
                 <div>
-                  <label className="text-2xs font-black text-vj-text-muted uppercase tracking-widest block mb-1">
+                  <label className="text-2xs font-black text-vj-admin-muted uppercase tracking-widest block mb-1">
                     Giảm tối đa
                   </label>
-                  <p className="text-sm font-bold text-vj-text-muted tabular-nums">
+                  <p className="text-sm font-bold text-vj-admin-muted tabular-nums">
                     {viewingDiscount.max_discount_amount
                       ? `${Number(viewingDiscount.max_discount_amount).toLocaleString('vi-VN')}₫`
                       : 'Không giới hạn'}
                   </p>
                 </div>
                 <div>
-                  <label className="text-2xs font-black text-vj-text-muted uppercase tracking-widest block mb-1">
+                  <label className="text-2xs font-black text-vj-admin-muted uppercase tracking-widest block mb-1">
                     Bắt đầu
                   </label>
-                  <p className="text-xs font-bold text-vj-text-muted">
+                  <p className="text-xs font-bold text-vj-admin-muted">
                     {new Date(viewingDiscount.start_date).toLocaleDateString('vi-VN')}
                   </p>
                 </div>
                 <div>
-                  <label className="text-2xs font-black text-vj-text-muted uppercase tracking-widest block mb-1">
+                  <label className="text-2xs font-black text-vj-admin-muted uppercase tracking-widest block mb-1">
                     Kết thúc
                   </label>
-                  <p className="text-xs font-bold text-vj-text-muted">
+                  <p className="text-xs font-bold text-vj-admin-muted">
                     {new Date(viewingDiscount.end_date).toLocaleDateString('vi-VN')}
                   </p>
                 </div>
@@ -577,7 +577,7 @@ function DiscountModal({
           <button
             aria-label="Đóng"
             onClick={onClose}
-            className="w-9 h-9 bg-white/5 hover:bg-white/10 text-vj-text-muted rounded-vj flex items-center justify-center transition-all border border-white/5"
+            className="w-9 h-9 bg-white/5 hover:bg-white/10 text-vj-admin-muted rounded-vj flex items-center justify-center transition-all border border-white/5"
           >
             <Icon name="XMarkIcon" size={18} />
           </button>
@@ -588,7 +588,7 @@ function DiscountModal({
         >
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
             <div className="sm:col-span-2">
-              <label className="block text-2xs font-black text-vj-text-muted uppercase tracking-widest mb-2 ml-1">
+              <label className="block text-2xs font-black text-vj-admin-muted uppercase tracking-widest mb-2 ml-1">
                 Mã giảm giá
               </label>
               <div className="relative">
@@ -603,18 +603,18 @@ function DiscountModal({
                 <button
                   type="button"
                   onClick={generateRandomCode}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 text-vj-text-muted hover:text-primary transition-colors text-xs font-bold"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-vj-admin-muted hover:text-primary transition-colors text-xs font-bold"
                   title="Tạo mã ngẫu nhiên"
                 >
                   <Icon name="MagicWandIcon" size={14} />
                 </button>
               </div>
-              <p className="text-2xs font-medium text-vj-text-muted mt-1.5 ml-1">
+              <p className="text-2xs font-medium text-vj-admin-muted mt-1.5 ml-1">
                 Mã gắn đại lý vẫn nhập được ở ô mã giảm giá khi khách đặt vé.
               </p>
             </div>
             <div>
-              <label className="block text-2xs font-black text-vj-text-muted uppercase tracking-widest mb-2 ml-1">
+              <label className="block text-2xs font-black text-vj-admin-muted uppercase tracking-widest mb-2 ml-1">
                 Loại ưu đãi
               </label>
               <div className="relative">
@@ -632,13 +632,13 @@ function DiscountModal({
                     Cố định (₫)
                   </option>
                 </select>
-                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3.5 text-vj-text-muted">
+                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3.5 text-vj-admin-muted">
                   <Icon name="ChevronDownIcon" size={16} />
                 </div>
               </div>
             </div>
             <div>
-              <label className="block text-2xs font-black text-vj-text-muted uppercase tracking-widest mb-2 ml-1">
+              <label className="block text-2xs font-black text-vj-admin-muted uppercase tracking-widest mb-2 ml-1">
                 Giá trị
               </label>
               <input
@@ -658,7 +658,7 @@ function DiscountModal({
                       className={`px-2.5 py-1 rounded-vj text-2xs font-black uppercase tracking-wider border transition-all active:scale-98 ${
                         String(formData.value) === String(pct)
                           ? 'bg-primary text-white border-primary'
-                          : 'bg-white/5 text-vj-text-muted border-white/10 hover:bg-white/10'
+                          : 'bg-white/5 text-vj-admin-muted border-white/10 hover:bg-white/10'
                       }`}
                     >
                       {pct}%
@@ -668,7 +668,7 @@ function DiscountModal({
               )}
             </div>
             <div className="sm:col-span-2">
-              <label className="block text-2xs font-black text-vj-text-muted uppercase tracking-widest mb-2 ml-1">
+              <label className="block text-2xs font-black text-vj-admin-muted uppercase tracking-widest mb-2 ml-1">
                 Phát hành cho đại lý
               </label>
               <div className="relative">
@@ -686,16 +686,16 @@ function DiscountModal({
                     </option>
                   ))}
                 </select>
-                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3.5 text-vj-text-muted">
+                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3.5 text-vj-admin-muted">
                   <Icon name="ChevronDownIcon" size={16} />
                 </div>
               </div>
-              <p className="text-2xs font-medium text-vj-text-muted mt-1.5 ml-1">
+              <p className="text-2xs font-medium text-vj-admin-muted mt-1.5 ml-1">
                 Mã gắn đại lý vẫn nhập được ở ô mã giảm giá khi khách đặt vé.
               </p>
             </div>
             <div>
-              <label className="block text-2xs font-black text-vj-text-muted uppercase tracking-widest mb-2 ml-1">
+              <label className="block text-2xs font-black text-vj-admin-muted uppercase tracking-widest mb-2 ml-1">
                 Đơn hàng từ (vnđ)
               </label>
               <input
@@ -706,7 +706,7 @@ function DiscountModal({
               />
             </div>
             <div>
-              <label className="block text-2xs font-black text-vj-text-muted uppercase tracking-widest mb-2 ml-1">
+              <label className="block text-2xs font-black text-vj-admin-muted uppercase tracking-widest mb-2 ml-1">
                 Giảm tối đa (vnđ)
               </label>
               <input
@@ -718,7 +718,7 @@ function DiscountModal({
               />
             </div>
             <div>
-              <label className="block text-2xs font-black text-vj-text-muted uppercase tracking-widest mb-2 ml-1">
+              <label className="block text-2xs font-black text-vj-admin-muted uppercase tracking-widest mb-2 ml-1">
                 Ngày bắt đầu
               </label>
               <div className="relative">
@@ -732,7 +732,7 @@ function DiscountModal({
               </div>
             </div>
             <div>
-              <label className="block text-2xs font-black text-vj-text-muted uppercase tracking-widest mb-2 ml-1">
+              <label className="block text-2xs font-black text-vj-admin-muted uppercase tracking-widest mb-2 ml-1">
                 Ngày hết hạn
               </label>
               <div className="relative">
@@ -746,7 +746,7 @@ function DiscountModal({
               </div>
             </div>
             <div>
-              <label className="block text-2xs font-black text-vj-text-muted uppercase tracking-widest mb-2 ml-1">
+              <label className="block text-2xs font-black text-vj-admin-muted uppercase tracking-widest mb-2 ml-1">
                 Tổng lượt dùng
               </label>
               <input
@@ -769,7 +769,7 @@ function DiscountModal({
             />
             <label
               htmlFor="is_active"
-              className="text-xs font-bold text-vj-text-muted uppercase tracking-wider cursor-pointer select-none"
+              className="text-xs font-bold text-vj-admin-muted uppercase tracking-wider cursor-pointer select-none"
             >
               Kích hoạt mã ngay lập tức
             </label>
@@ -780,7 +780,7 @@ function DiscountModal({
               aria-label="Đóng"
               type="button"
               onClick={onClose}
-              className="flex-1 py-3.5 sm:py-4 bg-white/5 hover:bg-white/10 text-vj-text-muted hover:text-white font-bold text-xs uppercase tracking-wider rounded-vj transition-all border border-white/5 active:scale-98"
+              className="flex-1 py-3.5 sm:py-4 bg-white/5 hover:bg-white/10 text-vj-admin-muted hover:text-white font-bold text-xs uppercase tracking-wider rounded-vj transition-all border border-white/5 active:scale-98"
             >
               Hủy bỏ
             </button>

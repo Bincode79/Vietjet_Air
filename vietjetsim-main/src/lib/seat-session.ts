@@ -43,6 +43,7 @@
  */
 import { createHash, randomBytes } from 'crypto';
 import { type NextResponse } from 'next/server';
+import { isSecureRequest } from './cookie-options';
 
 export const SEAT_SESSION_COOKIE = 'vj_seat_session';
 
@@ -56,13 +57,20 @@ export const SEAT_SESSION_COOKIE = 'vj_seat_session';
  */
 const SEAT_SESSION_MAX_AGE = 60 * 60 * 12; // 12 giờ
 
+export function getSeatSessionCookieOptions(request?: Request) {
+  return {
+    httpOnly: true,
+    secure: isSecureRequest(request),
+    sameSite: 'lax' as const,
+    path: '/',
+    maxAge: SEAT_SESSION_MAX_AGE,
+  };
+}
+
 const SEAT_SESSION_COOKIE_OPTIONS = {
   httpOnly: true,
-  secure: process.env.NODE_ENV === 'production',
-  // `strict` (không phải `lax` như cookie đăng nhập): cookie này chỉ dùng
-  // để chứng minh chủ sở hữu lock, và không cần đi theo bất kỳ điều hướng
-  // nào. `strict` khiến một trang khác không thể khiến trình duyệt gửi nó.
-  sameSite: 'strict' as const,
+  secure: isSecureRequest(),
+  sameSite: 'lax' as const,
   path: '/',
   maxAge: SEAT_SESSION_MAX_AGE,
 };
@@ -151,6 +159,10 @@ export function resolveSeatSession(request: Request): {
  *
  * Chỉ cần gọi khi `resolveSeatSession` trả `cookieValue` khác `null`.
  */
-export function setSeatSessionCookie(response: NextResponse, session: string): void {
-  response.cookies.set(SEAT_SESSION_COOKIE, session, SEAT_SESSION_COOKIE_OPTIONS);
+export function setSeatSessionCookie(
+  response: NextResponse,
+  session: string,
+  request?: Request
+): void {
+  response.cookies.set(SEAT_SESSION_COOKIE, session, getSeatSessionCookieOptions(request));
 }

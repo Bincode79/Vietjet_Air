@@ -143,7 +143,7 @@ export default function AirportsTab({ onToast }: { onToast?: ToastAPI }) {
             <Icon name="BuildingOfficeIcon" size={24} className="text-primary" />
             Quản lý sân bay
           </h2>
-          <p className="text-xs font-bold text-vj-text-muted uppercase tracking-widest mt-1 opacity-70">
+          <p className="text-xs font-bold text-vj-admin-muted uppercase tracking-widest mt-1 opacity-70">
             {totalCount} sân bay trong hệ thống
           </p>
         </div>
@@ -164,7 +164,7 @@ export default function AirportsTab({ onToast }: { onToast?: ToastAPI }) {
         <Icon
           name="MagnifyingGlassIcon"
           size={18}
-          className="absolute left-4 top-1/2 -translate-y-1/2 text-vj-text-muted group-focus-within:text-primary transition-colors"
+          className="absolute left-4 top-1/2 -translate-y-1/2 text-vj-admin-muted group-focus-within:text-primary transition-colors"
         />
         <input
           type="text"
@@ -189,19 +189,19 @@ export default function AirportsTab({ onToast }: { onToast?: ToastAPI }) {
           <table className="w-full">
             <thead>
               <tr className="bg-white/5 border-b border-white/5">
-                <th className="px-6 py-5 text-2xs font-black text-vj-text-muted uppercase tracking-widest text-left">
+                <th className="px-6 py-5 text-2xs font-black text-vj-admin-muted uppercase tracking-widest text-left">
                   Mã IATA
                 </th>
-                <th className="px-6 py-5 text-2xs font-black text-vj-text-muted uppercase tracking-widest text-left">
+                <th className="px-6 py-5 text-2xs font-black text-vj-admin-muted uppercase tracking-widest text-left">
                   Tên sân bay
                 </th>
-                <th className="px-6 py-5 text-2xs font-black text-vj-text-muted uppercase tracking-widest text-left hidden sm:table-cell">
+                <th className="px-6 py-5 text-2xs font-black text-vj-admin-muted uppercase tracking-widest text-left hidden sm:table-cell">
                   Thành phố
                 </th>
-                <th className="px-6 py-5 text-2xs font-black text-vj-text-muted uppercase tracking-widest text-left hidden md:table-cell">
+                <th className="px-6 py-5 text-2xs font-black text-vj-admin-muted uppercase tracking-widest text-left hidden md:table-cell">
                   Quốc gia
                 </th>
-                <th className="px-6 py-5 text-2xs font-black text-vj-text-muted uppercase tracking-widest text-center">
+                <th className="px-6 py-5 text-2xs font-black text-vj-admin-muted uppercase tracking-widest text-center">
                   Thao tác
                 </th>
               </tr>
@@ -224,7 +224,7 @@ export default function AirportsTab({ onToast }: { onToast?: ToastAPI }) {
                         size={32}
                         className="text-red-400 opacity-50"
                       />
-                      <p className="font-black text-vj-text-muted">Không thể tải dữ liệu</p>
+                      <p className="font-black text-vj-admin-muted">Không thể tải dữ liệu</p>
                       <button
                         onClick={() => fetchAirports(1, searchQuery)}
                         className="text-2xs font-black uppercase tracking-widest text-primary hover:underline"
@@ -238,8 +238,8 @@ export default function AirportsTab({ onToast }: { onToast?: ToastAPI }) {
                 <tr>
                   <td colSpan={5} className="px-6 py-24 text-center">
                     <div className="flex flex-col items-center gap-4">
-                      <Icon name="InboxIcon" size={32} className="text-vj-text-muted" />
-                      <p className="font-black text-vj-text-muted uppercase text-2xs tracking-widest">
+                      <Icon name="InboxIcon" size={32} className="text-vj-admin-muted" />
+                      <p className="font-black text-vj-admin-muted uppercase text-2xs tracking-widest">
                         Sân bay trống
                       </p>
                     </div>
@@ -257,13 +257,13 @@ export default function AirportsTab({ onToast }: { onToast?: ToastAPI }) {
                         {airport.code}
                       </span>
                     </td>
-                    <td className="px-6 py-5 text-sm font-bold text-vj-text-muted group-hover:text-white transition-colors">
+                    <td className="px-6 py-5 text-sm font-bold text-vj-admin-muted group-hover:text-white transition-colors">
                       {airport.name}
                     </td>
-                    <td className="px-6 py-5 hidden sm:table-cell text-xs font-bold text-vj-text-muted uppercase tracking-wider">
+                    <td className="px-6 py-5 hidden sm:table-cell text-xs font-bold text-vj-admin-muted uppercase tracking-wider">
                       {airport.city}
                     </td>
-                    <td className="px-6 py-5 hidden md:table-cell text-xs font-bold text-vj-text-muted uppercase tracking-widest">
+                    <td className="px-6 py-5 hidden md:table-cell text-xs font-bold text-vj-admin-muted uppercase tracking-widest">
                       {airport.country}
                     </td>
                     <td className="px-6 py-5" onClick={(e) => e.stopPropagation()}>
@@ -278,7 +278,7 @@ export default function AirportsTab({ onToast }: { onToast?: ToastAPI }) {
                         <button
                           onClick={() => handleDelete(airport)}
                           disabled={deletingId === airport.id}
-                          className="w-8 h-8 rounded-vj bg-vj-red-dark hover:bg-vj-red-dark text-vj-red-dark border border-vj-red-dark flex items-center justify-center transition-all active:scale-98 disabled:opacity-50"
+                          className="w-8 h-8 rounded-vj bg-vj-red-dark hover:bg-red-400/10 text-red-400 border border-red-400/30 flex items-center justify-center transition-all active:scale-98 disabled:opacity-50"
                           title="Xoá"
                         >
                           <Icon name="TrashIcon" size={14} />
@@ -360,7 +360,7 @@ export default function AirportsTab({ onToast }: { onToast?: ToastAPI }) {
               </div>
               <button
                 onClick={() => setViewingAirport(null)}
-                className="w-10 h-10 rounded-2xl bg-white/5 hover:bg-white/10 text-vj-text-muted flex items-center justify-center transition-all border border-white/5"
+                className="w-10 h-10 rounded-2xl bg-white/5 hover:bg-white/10 text-vj-admin-muted flex items-center justify-center transition-all border border-white/5"
               >
                 <Icon name="XMarkIcon" size={20} />
               </button>
@@ -369,44 +369,44 @@ export default function AirportsTab({ onToast }: { onToast?: ToastAPI }) {
             <div className="p-8 space-y-8">
               <div className="grid grid-cols-2 gap-8">
                 <div>
-                  <label className="text-2xs font-black text-vj-text-muted uppercase tracking-widest block mb-1">
+                  <label className="text-2xs font-black text-vj-admin-muted uppercase tracking-widest block mb-1">
                     Thành phố
                   </label>
-                  <p className="text-sm font-black text-vj-text-muted">{viewingAirport.city}</p>
+                  <p className="text-sm font-black text-vj-admin-muted">{viewingAirport.city}</p>
                 </div>
                 <div>
-                  <label className="text-2xs font-black text-vj-text-muted uppercase tracking-widest block mb-1">
+                  <label className="text-2xs font-black text-vj-admin-muted uppercase tracking-widest block mb-1">
                     Quốc gia
                   </label>
-                  <p className="text-sm font-black text-vj-text-muted">{viewingAirport.country}</p>
+                  <p className="text-sm font-black text-vj-admin-muted">{viewingAirport.country}</p>
                 </div>
                 <div>
-                  <label className="text-2xs font-black text-vj-text-muted uppercase tracking-widest block mb-1">
+                  <label className="text-2xs font-black text-vj-admin-muted uppercase tracking-widest block mb-1">
                     Ngày tạo
                   </label>
-                  <p className="text-xs font-bold text-vj-text-muted">
+                  <p className="text-xs font-bold text-vj-admin-muted">
                     {new Date(viewingAirport.created_at).toLocaleDateString('vi-VN')}
                   </p>
                 </div>
                 <div>
-                  <label className="text-2xs font-black text-vj-text-muted uppercase tracking-widest block mb-1">
+                  <label className="text-2xs font-black text-vj-admin-muted uppercase tracking-widest block mb-1">
                     ID Hệ thống
                   </label>
-                  <p className="text-2xs font-mono text-vj-text-muted uppercase truncate">
+                  <p className="text-2xs font-mono text-vj-admin-muted uppercase truncate">
                     {viewingAirport.id}
                   </p>
                 </div>
               </div>
 
               <div className="bg-slate-950 border border-white/5 rounded-3xl p-6 flex items-center gap-5">
-                <div className="w-12 h-12 bg-vj-blue rounded-2xl flex items-center justify-center text-vj-blue border border-vj-blue">
+                <div className="w-12 h-12 bg-vj-blue rounded-2xl flex items-center justify-center text-vj-bank-blue-text border border-vj-blue">
                   <Icon name="GlobeAltIcon" size={24} />
                 </div>
                 <div>
-                  <p className="text-2xs font-black text-vj-text-muted uppercase tracking-widest mb-0.5">
+                  <p className="text-2xs font-black text-vj-admin-muted uppercase tracking-widest mb-0.5">
                     Vị trí kết nối
                   </p>
-                  <p className="text-xs font-bold text-vj-text-muted">
+                  <p className="text-xs font-bold text-vj-admin-muted">
                     Đang phục vụ mạng lưới đường bay nội địa & quốc tế.
                   </p>
                 </div>
@@ -463,14 +463,14 @@ function AirportModal({
           <button
             aria-label="Đóng"
             onClick={onClose}
-            className="w-10 h-10 bg-white/5 hover:bg-white/10 text-vj-text-muted rounded-2xl flex items-center justify-center transition-all"
+            className="w-10 h-10 bg-white/5 hover:bg-white/10 text-vj-admin-muted rounded-2xl flex items-center justify-center transition-all"
           >
             <Icon name="XMarkIcon" size={20} />
           </button>
         </div>
         <form onSubmit={onSubmit} className="p-8 space-y-6">
           <div>
-            <label className="block text-2xs font-black text-vj-text-muted uppercase tracking-widest mb-2 ml-1">
+            <label className="block text-2xs font-black text-vj-admin-muted uppercase tracking-widest mb-2 ml-1">
               Mã sân bay <span className="text-primary">*</span>
             </label>
             <input
@@ -485,7 +485,7 @@ function AirportModal({
             />
           </div>
           <div>
-            <label className="block text-2xs font-black text-vj-text-muted uppercase tracking-widest mb-2 ml-1">
+            <label className="block text-2xs font-black text-vj-admin-muted uppercase tracking-widest mb-2 ml-1">
               Tên sân bay <span className="text-primary">*</span>
             </label>
             <input
@@ -499,7 +499,7 @@ function AirportModal({
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-2xs font-black text-vj-text-muted uppercase tracking-widest mb-2 ml-1">
+              <label className="block text-2xs font-black text-vj-admin-muted uppercase tracking-widest mb-2 ml-1">
                 Thành phố <span className="text-primary">*</span>
               </label>
               <input
@@ -512,7 +512,7 @@ function AirportModal({
               />
             </div>
             <div>
-              <label className="block text-2xs font-black text-vj-text-muted uppercase tracking-widest mb-2 ml-1">
+              <label className="block text-2xs font-black text-vj-admin-muted uppercase tracking-widest mb-2 ml-1">
                 Quốc gia
               </label>
               <input

@@ -42,6 +42,13 @@ export DATABASE_URL=""
 export NEON_FETCH_ENDPOINT=""
 export ALLOW_MOCK_DB=1
 
+# `/editor` (và `/api/editor/files`) cần một project root thật để đọc source.
+# Standalone server đổi cwd sang `.next-uicheck/standalone` — nơi không có cây
+# `src/`, nên `/editor` mở file mặc định `src/app/trang-chu/page.tsx` nhận 404
+# và cổng báo lỗi. Trỏ `EDITOR_PROJECT_ROOT` về gốc app để editor đọc đúng cây
+# source; production VPS/Docker không đặt biến này và editor vẫn fail-closed.
+export EDITOR_PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
 if [ "${UI_CHECK_SKIP_BUILD:-0}" != "1" ]; then
   echo "▸ Đang build production (DIST_DIR=$DIST_DIR)…"
   DIST_DIR="$DIST_DIR" npm run build > "$LOG.build" 2>&1 || {

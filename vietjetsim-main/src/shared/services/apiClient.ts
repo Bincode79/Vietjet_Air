@@ -1,4 +1,4 @@
-import { getCsrfHeaders } from '@/lib/csrf-client';
+import { getCsrfHeaders, getCsrfTokenFromDocument } from '@/lib/csrf-client';
 
 /**
  * Error thrown by {@link apiRequest} when the server responds with a non-2xx
@@ -20,6 +20,8 @@ export interface ApiRequestOptions extends Omit<RequestInit, 'method' | 'body'> 
   body?: unknown;
   /** Skip attaching the CSRF header (GET/HEAD never need it). */
   skipCsrf?: boolean;
+  /** Internal flag preventing infinite retry loops on CSRF failure. */
+  _retriedCsrf?: boolean;
 }
 
 /** Substitute `:name` placeholders in an endpoint template with path values. */
@@ -56,8 +58,18 @@ function extractMessage(payload: unknown, fallback: string): string {
  * that every mutating route validates via `validateCsrfOrReject`.
  */
 export async function apiRequest<T>(url: string, options: ApiRequestOptions = {}): Promise<T> {
-  const { method = 'GET', body, skipCsrf, headers, ...rest } = options;
+  const { method = 'GET', body, skipCsrf, headers, _retriedCsrf, ...rest } = options;
   const isMutation = method !== 'GET';
+
+  // If running in browser and a mutation request lacks the CSRF token cookie,
+  // fetch /api/csrf to obtain one before making the call.
+  if (typeof window !== 'undefined' && isMutation && !skipCsrf && !getCsrfTokenFromDocument()) {
+    try {
+      await fetch('/api/csrf', { credentials: 'include' });
+    } catch {
+      // Best-effort attempt; proceed with request if bootstrap fails.
+    }
+  }
 
   const response = await fetch(url, {
     ...rest,
@@ -83,6 +95,25 @@ export async function apiRequest<T>(url: string, options: ApiRequestOptions = {}
   }
 
   if (!response.ok) {
+    // If CSRF check failed (403), auto-refresh the token once and retry the mutation.
+    if (response.status === 403 && typeof window !== 'undefined' && isMutation && !_retriedCsrf) {
+      const errText =
+        typeof payload === 'object' && payload !== null
+          ? JSON.stringify(payload)
+          : String(payload);
+      if (errText.includes('CSRF')) {
+        try {
+          await fetch('/api/csrf', { credentials: 'include' });
+          return await apiRequest<T>(url, {
+            ...options,
+            _retriedCsrf: true,
+          });
+        } catch {
+          // If retry fails, fall through to throwing standard ApiRequestError.
+        }
+      }
+    }
+
     throw new ApiRequestError(
       response.status,
       extractMessage(payload, `Yêu cầu thất bại (${response.status})`),

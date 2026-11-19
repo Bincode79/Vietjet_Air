@@ -186,13 +186,13 @@ export default function GlobalSearch({ isOpen, onClose, onSelectResult }: Global
   const getTypeColor = (type: SearchResult['type']) => {
     switch (type) {
       case 'flight':
-        return { bg: 'bg-red-100', text: 'text-vj-red-dark', label: 'Chuyến bay' };
+        return { bg: 'bg-red-100', text: 'text-red-400', label: 'Chuyến bay' };
       case 'user':
-        return { bg: 'bg-blue-100', text: 'text-vj-blue', label: 'Người dùng' };
+        return { bg: 'bg-blue-100', text: 'text-vj-bank-blue-text', label: 'Người dùng' };
       case 'booking':
         return { bg: 'bg-amber-100', text: 'text-amber-600', label: 'Đặt vé' };
       case 'checkin':
-        return { bg: 'bg-vj-pay-green', text: 'text-vj-pay-green', label: 'Check-in' };
+        return { bg: 'bg-vj-pay-green', text: 'text-vj-pay-green-text', label: 'Check-in' };
     }
   };
 
@@ -208,7 +208,7 @@ export default function GlobalSearch({ isOpen, onClose, onSelectResult }: Global
       delayed: { label: 'Trễ giờ', color: 'bg-orange-100 text-orange-700' },
       locked: { label: 'Khoá', color: 'bg-red-100 text-red-700' },
       admin: { label: 'Hệ Thống', color: 'bg-purple-100 text-purple-700' },
-      super_admin: { label: 'Hệ Thống Cấp Cao', color: 'bg-vj-blue text-vj-blue' },
+      super_admin: { label: 'Hệ Thống Cấp Cao', color: 'bg-vj-blue text-vj-bank-blue-text' },
     };
 
     const config = statusMap[status] || { label: status, color: 'bg-vj-pill text-vj-text-dim' };
@@ -262,7 +262,7 @@ export default function GlobalSearch({ isOpen, onClose, onSelectResult }: Global
           className="flex items-center gap-3 px-4 py-4 border-b"
           style={{ borderColor: 'rgba(148, 163, 184, 0.1)' }}
         >
-          <Icon name="MagnifyingGlassIcon" size={20} className="text-vj-text-muted" />
+          <Icon name="MagnifyingGlassIcon" size={20} className="text-vj-admin-muted" />
           <input
             ref={inputRef}
             type="text"
@@ -277,7 +277,7 @@ export default function GlobalSearch({ isOpen, onClose, onSelectResult }: Global
           <button
             aria-label="Đóng"
             onClick={onClose}
-            className="px-2 py-1 text-xs font-medium text-vj-text-muted bg-slate-800 rounded-vj hover:bg-slate-700 transition-colors"
+            className="px-2 py-1 text-xs font-medium text-vj-admin-muted bg-slate-800 rounded-vj hover:bg-slate-700 transition-colors"
           >
             ESC
           </button>
@@ -304,7 +304,7 @@ export default function GlobalSearch({ isOpen, onClose, onSelectResult }: Global
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
                 activeCategory === cat.id
                   ? 'bg-vj-blue text-white'
-                  : 'bg-slate-800 text-vj-text-muted hover:text-white hover:bg-slate-700'
+                  : 'bg-slate-800 text-vj-admin-muted hover:text-white hover:bg-slate-700'
               }`}
             >
               {cat.label}
@@ -329,11 +329,11 @@ export default function GlobalSearch({ isOpen, onClose, onSelectResult }: Global
                 className="w-16 h-16 rounded-full flex items-center justify-center"
                 style={{ background: 'rgba(148, 163, 184, 0.1)' }}
               >
-                <Icon name="MagnifyingGlassIcon" size={28} className="text-vj-text-muted" />
+                <Icon name="MagnifyingGlassIcon" size={28} className="text-vj-admin-muted" />
               </div>
               <div className="text-center">
-                <p className="text-vj-text-muted text-sm font-medium">Không tìm thấy kết quả</p>
-                <p className="text-vj-text-muted text-xs mt-1">Thử tìm kiếm với từ khoá khác</p>
+                <p className="text-vj-admin-muted text-sm font-medium">Không tìm thấy kết quả</p>
+                <p className="text-vj-admin-muted text-xs mt-1">Thử tìm kiếm với từ khoá khác</p>
               </div>
             </div>
           ) : !query ? (
@@ -342,14 +342,14 @@ export default function GlobalSearch({ isOpen, onClose, onSelectResult }: Global
                 className="w-16 h-16 rounded-full flex items-center justify-center"
                 style={{ background: 'rgba(148, 163, 184, 0.1)' }}
               >
-                <Icon name="MagnifyingGlassIcon" size={28} className="text-vj-text-muted" />
+                <Icon name="MagnifyingGlassIcon" size={28} className="text-vj-admin-muted" />
               </div>
               <div className="text-center">
-                <p className="text-vj-text-muted text-sm font-medium">Tìm kiếm toàn hệ thống</p>
-                <p className="text-vj-text-muted text-xs mt-1">Nhập từ khoá để tìm kiếm</p>
+                <p className="text-vj-admin-muted text-sm font-medium">Tìm kiếm toàn hệ thống</p>
+                <p className="text-vj-admin-muted text-xs mt-1">Nhập từ khoá để tìm kiếm</p>
               </div>
               <div className="flex flex-wrap justify-center gap-2 mt-4 px-4">
-                <span className="text-xs2 text-vj-text-muted px-2 py-1 bg-slate-800 rounded-vj">
+                <span className="text-xs2 text-vj-admin-muted px-2 py-1 bg-slate-800 rounded-vj">
                   Ví dụ: VJ 101, Nguyễn Văn An, VJ2B4K9
                 </span>
               </div>
@@ -384,14 +384,14 @@ export default function GlobalSearch({ isOpen, onClose, onSelectResult }: Global
                         </span>
                         {getStatusBadge(result.status)}
                       </div>
-                      <p className="text-xs text-vj-text-muted truncate mt-0.5">
+                      <p className="text-xs text-vj-admin-muted truncate mt-0.5">
                         {result.subtitle}
                       </p>
                     </div>
                     <Icon
                       name="ArrowRightIcon"
                       size={14}
-                      className="text-vj-text-muted flex-shrink-0"
+                      className="text-vj-admin-muted flex-shrink-0"
                     />
                   </button>
                 );
@@ -402,7 +402,7 @@ export default function GlobalSearch({ isOpen, onClose, onSelectResult }: Global
 
         {/* Footer */}
         <div
-          className="flex items-center justify-between px-4 py-3 border-t text-xs text-vj-text-muted"
+          className="flex items-center justify-between px-4 py-3 border-t text-xs text-vj-admin-muted"
           style={{ borderColor: 'rgba(148, 163, 184, 0.1)' }}
         >
           <div className="flex items-center gap-4">

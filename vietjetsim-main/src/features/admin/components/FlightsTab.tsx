@@ -48,7 +48,7 @@ interface Flight {
 }
 
 const STATUS_MAP: Record<FlightStatus, { label: string; cls: string }> = {
-  active: { label: 'Hoạt động', cls: 'bg-vj-pay-green text-vj-pay-green' },
+  active: { label: 'Hoạt động', cls: 'bg-vj-pay-green text-vj-pay-green-text' },
   cancelled: { label: 'Đã huỷ', cls: 'bg-red-500/15 text-red-400' },
   delayed: { label: 'Trễ giờ', cls: 'bg-amber-500/15 text-amber-400' },
 };
@@ -476,7 +476,7 @@ export default function FlightsTab({ onToast }: { onToast?: ToastAPI }) {
           <Icon
             name="MagnifyingGlassIcon"
             size={18}
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-vj-text-muted"
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-vj-admin-muted"
           />
           <input
             type="text"
@@ -486,7 +486,7 @@ export default function FlightsTab({ onToast }: { onToast?: ToastAPI }) {
               setCurrentPage(1);
             }}
             placeholder="Tìm theo số hiệu, điểm đi/đến..."
-            className="w-full pl-10 pr-4 py-2.5 bg-slate-900 border border-white/10 rounded-vj text-sm text-white placeholder:text-vj-text-muted focus:outline-none focus:border-vj-blue"
+            className="w-full pl-10 pr-4 py-2.5 bg-slate-900 border border-white/10 rounded-vj text-sm text-white placeholder:text-vj-admin-muted focus:outline-none focus:border-vj-blue"
           />
         </div>
         <div className="flex items-center gap-2">
@@ -494,7 +494,7 @@ export default function FlightsTab({ onToast }: { onToast?: ToastAPI }) {
             <Icon
               name="CalendarDaysIcon"
               size={15}
-              className="absolute left-2.5 top-1/2 -translate-y-1/2 text-vj-text-muted pointer-events-none"
+              className="absolute left-2.5 top-1/2 -translate-y-1/2 text-vj-admin-muted pointer-events-none"
             />
             <input
               type="date"
@@ -507,12 +507,12 @@ export default function FlightsTab({ onToast }: { onToast?: ToastAPI }) {
               title="Từ ngày"
             />
           </div>
-          <span className="text-vj-text-muted text-sm font-medium">–</span>
+          <span className="text-vj-admin-muted text-sm font-medium">–</span>
           <div className="relative">
             <Icon
               name="CalendarDaysIcon"
               size={15}
-              className="absolute left-2.5 top-1/2 -translate-y-1/2 text-vj-text-muted pointer-events-none"
+              className="absolute left-2.5 top-1/2 -translate-y-1/2 text-vj-admin-muted pointer-events-none"
             />
             <input
               type="date"
@@ -547,12 +547,12 @@ export default function FlightsTab({ onToast }: { onToast?: ToastAPI }) {
                 className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold transition-all border ${
                   isActive
                     ? `${tab.color} border-transparent shadow-vj-sm`
-                    : 'bg-white/5 border-white/10 text-vj-text-muted hover:bg-white/10 hover:text-white'
+                    : 'bg-white/5 border-white/10 text-vj-admin-muted hover:bg-white/10 hover:text-white'
                 }`}
               >
                 {tab.label}
                 <span
-                  className={`text-xs px-1.5 py-0.5 rounded-full font-bold ${isActive ? 'bg-white/60' : 'bg-slate-500 text-vj-text-muted'}`}
+                  className={`text-xs px-1.5 py-0.5 rounded-full font-bold ${isActive ? 'bg-white/60' : 'bg-slate-500 text-vj-admin-muted'}`}
                 >
                   {count}
                 </span>
@@ -563,7 +563,7 @@ export default function FlightsTab({ onToast }: { onToast?: ToastAPI }) {
         {(activeFilterCount > 0 || searchQuery) && (
           <button
             onClick={clearAllFilters}
-            className="flex items-center gap-1.5 text-xs font-semibold text-vj-text-muted hover:text-red-400 transition-colors px-3 py-1.5 rounded-full border border-white/10 hover:border-red-500/30 hover:bg-vj-surface-rose"
+            className="flex items-center gap-1.5 text-xs font-semibold text-vj-admin-muted hover:text-red-400 transition-colors px-3 py-1.5 rounded-full border border-white/10 hover:border-red-500/30 hover:bg-vj-surface-rose"
           >
             <Icon name="XMarkIcon" size={13} />
             Xoá bộ lọc
@@ -586,47 +586,47 @@ export default function FlightsTab({ onToast }: { onToast?: ToastAPI }) {
             <thead>
               <tr className="border-b border-white/5">
                 <th
-                  className="text-left text-2xs font-black text-vj-text-muted uppercase tracking-widest px-5 py-4 cursor-pointer hover:text-vj-text-muted select-none whitespace-nowrap"
+                  className="text-left text-2xs font-black text-vj-admin-muted uppercase tracking-widest px-5 py-4 cursor-pointer hover:text-vj-admin-muted select-none whitespace-nowrap"
                   onClick={() => handleSort('flightNo')}
                 >
                   Số hiệu
                   <SortIcon col="flightNo" />
                 </th>
-                <th className="text-left text-2xs font-black text-vj-text-muted uppercase tracking-widest px-5 py-4">
+                <th className="text-left text-2xs font-black text-vj-admin-muted uppercase tracking-widest px-5 py-4">
                   Hành trình
                 </th>
-                <th className="text-left text-2xs font-black text-vj-text-muted uppercase tracking-widest px-5 py-4 hidden sm:table-cell">
+                <th className="text-left text-2xs font-black text-vj-admin-muted uppercase tracking-widest px-5 py-4 hidden sm:table-cell">
                   Giờ bay
                 </th>
                 <th
-                  className="text-left text-2xs font-black text-vj-text-muted uppercase tracking-widest px-5 py-4 hidden md:table-cell cursor-pointer hover:text-vj-text-muted select-none whitespace-nowrap"
+                  className="text-left text-2xs font-black text-vj-admin-muted uppercase tracking-widest px-5 py-4 hidden md:table-cell cursor-pointer hover:text-vj-admin-muted select-none whitespace-nowrap"
                   onClick={() => handleSort('date')}
                 >
                   Ngày
                   <SortIcon col="date" />
                 </th>
                 <th
-                  className="text-right text-2xs font-black text-vj-text-muted uppercase tracking-widest px-5 py-4 cursor-pointer hover:text-vj-text-muted select-none whitespace-nowrap"
+                  className="text-right text-2xs font-black text-vj-admin-muted uppercase tracking-widest px-5 py-4 cursor-pointer hover:text-vj-admin-muted select-none whitespace-nowrap"
                   onClick={() => handleSort('price')}
                 >
                   Giá vé
                   <SortIcon col="price" />
                 </th>
                 <th
-                  className="text-center text-2xs font-black text-vj-text-muted uppercase tracking-widest px-5 py-4 hidden lg:table-cell cursor-pointer hover:text-vj-text-muted select-none whitespace-nowrap"
+                  className="text-center text-2xs font-black text-vj-admin-muted uppercase tracking-widest px-5 py-4 hidden lg:table-cell cursor-pointer hover:text-vj-admin-muted select-none whitespace-nowrap"
                   onClick={() => handleSort('booked')}
                 >
                   Tải lượng
                   <SortIcon col="booked" />
                 </th>
                 <th
-                  className="text-center text-2xs font-black text-vj-text-muted uppercase tracking-widest px-5 py-4 cursor-pointer hover:text-vj-text-muted select-none whitespace-nowrap"
+                  className="text-center text-2xs font-black text-vj-admin-muted uppercase tracking-widest px-5 py-4 cursor-pointer hover:text-vj-admin-muted select-none whitespace-nowrap"
                   onClick={() => handleSort('status')}
                 >
                   Trạng thái
                   <SortIcon col="status" />
                 </th>
-                <th className="text-center text-2xs font-black text-vj-text-muted uppercase tracking-widest px-5 py-4">
+                <th className="text-center text-2xs font-black text-vj-admin-muted uppercase tracking-widest px-5 py-4">
                   Thao tác
                 </th>
               </tr>
@@ -676,7 +676,7 @@ export default function FlightsTab({ onToast }: { onToast?: ToastAPI }) {
                       </div>
                       <div>
                         <p className="font-bold text-white text-sm">Không thể tải dữ liệu</p>
-                        <p className="text-xs text-vj-text-muted mt-1 max-w-xs mx-auto">
+                        <p className="text-xs text-vj-admin-muted mt-1 max-w-xs mx-auto">
                           Đã xảy ra lỗi khi tải danh sách chuyến bay. Vui lòng thử lại.
                         </p>
                       </div>
@@ -698,12 +698,12 @@ export default function FlightsTab({ onToast }: { onToast?: ToastAPI }) {
                         <Icon
                           name="AirplaneIcon"
                           size={28}
-                          className="text-vj-text-muted rotate-45"
+                          className="text-vj-admin-muted rotate-45"
                         />
                       </div>
                       <div>
                         <p className="font-bold text-white text-sm">Không tìm thấy chuyến bay</p>
-                        <p className="text-xs text-vj-text-muted mt-1 max-w-xs mx-auto">
+                        <p className="text-xs text-vj-admin-muted mt-1 max-w-xs mx-auto">
                           {searchQuery || statusFilter !== 'all' || dateFrom || dateTo
                             ? 'Bộ lọc hiện tại không khớp với chuyến bay nào. Hãy thử thay đổi tiêu chí tìm kiếm.'
                             : 'Chưa có chuyến bay nào trong hệ thống.'}
@@ -721,7 +721,7 @@ export default function FlightsTab({ onToast }: { onToast?: ToastAPI }) {
                         )}
                         <button
                           onClick={retryLoad}
-                          className="flex items-center gap-1.5 text-xs font-semibold text-vj-text-muted border border-white/10 bg-white/5 hover:bg-white/10 px-4 py-2 rounded-vj transition-all"
+                          className="flex items-center gap-1.5 text-xs font-semibold text-vj-admin-muted border border-white/10 bg-white/5 hover:bg-white/10 px-4 py-2 rounded-vj transition-all"
                         >
                           <Icon name="ArrowPathIcon" size={13} />
                           Tải lại
@@ -752,17 +752,17 @@ export default function FlightsTab({ onToast }: { onToast?: ToastAPI }) {
                     <td className="px-5 py-3.5">
                       <div className="flex items-center gap-1.5 text-sm font-semibold text-white">
                         {flight.from}
-                        <Icon name="ArrowRightIcon" size={11} className="text-vj-text-muted" />
+                        <Icon name="ArrowRightIcon" size={11} className="text-vj-admin-muted" />
                         {flight.to}
                       </div>
                     </td>
                     <td className="px-5 py-3.5 hidden sm:table-cell">
-                      <div className="text-sm text-vj-text-muted">
+                      <div className="text-sm text-vj-admin-muted">
                         {flight.departTime} → {flight.arriveTime}
                       </div>
                     </td>
                     <td className="px-5 py-3.5 hidden md:table-cell">
-                      <span className="text-sm text-vj-text-muted">{flight.date}</span>
+                      <span className="text-sm text-vj-admin-muted">{flight.date}</span>
                     </td>
                     <td className="px-5 py-3.5 text-right">
                       <span className="font-bold text-white text-sm">
@@ -777,7 +777,7 @@ export default function FlightsTab({ onToast }: { onToast?: ToastAPI }) {
                             style={{ width: `${(flight.booked / flight.capacity) * 100}%` }}
                           />
                         </div>
-                        <span className="text-xs text-vj-text-muted whitespace-nowrap">
+                        <span className="text-xs text-vj-admin-muted whitespace-nowrap">
                           {flight.booked}/{flight.capacity}
                         </span>
                       </div>
@@ -841,13 +841,13 @@ export default function FlightsTab({ onToast }: { onToast?: ToastAPI }) {
         {sorted.length > 0 && (
           <div className="px-5 py-3 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-3">
             <div className="flex items-center gap-3">
-              <span className="text-xs text-vj-text-muted">
+              <span className="text-xs text-vj-admin-muted">
                 {sorted.length > pageSize
                   ? `Hiển thị ${(safePage - 1) * pageSize + 1}–${Math.min(safePage * pageSize, sorted.length)} / ${sorted.length} chuyến bay`
                   : `${sorted.length} / ${flights.length} chuyến bay`}
               </span>
               <div className="flex items-center gap-1.5">
-                <span className="text-xs text-vj-text-muted">Hiển thị:</span>
+                <span className="text-xs text-vj-admin-muted">Hiển thị:</span>
                 <select
                   value={pageSize}
                   onChange={(e) => {
@@ -860,7 +860,7 @@ export default function FlightsTab({ onToast }: { onToast?: ToastAPI }) {
                   <option value={25}>25</option>
                   <option value={50}>50</option>
                 </select>
-                <span className="text-xs text-vj-text-muted">hàng</span>
+                <span className="text-xs text-vj-admin-muted">hàng</span>
               </div>
             </div>
             {totalPages > 1 && (
@@ -935,7 +935,7 @@ export default function FlightsTab({ onToast }: { onToast?: ToastAPI }) {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-2xs font-black text-vj-text-muted uppercase tracking-widest mb-1">
+                  <label className="block text-2xs font-black text-vj-admin-muted uppercase tracking-widest mb-1">
                     Điểm đến
                   </label>
                   <select
@@ -951,7 +951,7 @@ export default function FlightsTab({ onToast }: { onToast?: ToastAPI }) {
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-2xs font-black text-vj-text-muted uppercase tracking-widest mb-1">
+                  <label className="block text-2xs font-black text-vj-admin-muted uppercase tracking-widest mb-1">
                     Giờ đi
                   </label>
                   <input
@@ -963,7 +963,7 @@ export default function FlightsTab({ onToast }: { onToast?: ToastAPI }) {
                   />
                 </div>
                 <div>
-                  <label className="block text-2xs font-black text-vj-text-muted uppercase tracking-widest mb-1">
+                  <label className="block text-2xs font-black text-vj-admin-muted uppercase tracking-widest mb-1">
                     Giờ đến
                   </label>
                   <input
@@ -977,7 +977,7 @@ export default function FlightsTab({ onToast }: { onToast?: ToastAPI }) {
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-2xs font-black text-vj-text-muted uppercase tracking-widest mb-1">
+                  <label className="block text-2xs font-black text-vj-admin-muted uppercase tracking-widest mb-1">
                     Giá vé Phổ thông (₫)
                   </label>
                   <div className={`form-field-float ${newFlight.economyPrice ? 'has-value' : ''}`}>
@@ -998,7 +998,7 @@ export default function FlightsTab({ onToast }: { onToast?: ToastAPI }) {
                     the hint says so rather than leaving the operator to guess why
                     the thẻ Business trên trang kết quả lấy một con số từ đâu. */}
                 <div>
-                  <label className="block text-2xs font-black text-vj-text-muted uppercase tracking-widest mb-1">
+                  <label className="block text-2xs font-black text-vj-admin-muted uppercase tracking-widest mb-1">
                     Giá vé Thương gia (₫)
                   </label>
                   <div className={`form-field-float ${newFlight.businessPrice ? 'has-value' : ''}`}>
@@ -1017,7 +1017,7 @@ export default function FlightsTab({ onToast }: { onToast?: ToastAPI }) {
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-2xs font-black text-vj-text-muted uppercase tracking-widest mb-1">
+                  <label className="block text-2xs font-black text-vj-admin-muted uppercase tracking-widest mb-1">
                     Sức chứa
                   </label>
                   <div className={`form-field-float ${newFlight.capacity ? 'has-value' : ''}`}>
@@ -1033,7 +1033,7 @@ export default function FlightsTab({ onToast }: { onToast?: ToastAPI }) {
                   </div>
                 </div>
                 <div>
-                  <label className="block text-2xs font-black text-vj-text-muted uppercase tracking-widest mb-1">
+                  <label className="block text-2xs font-black text-vj-admin-muted uppercase tracking-widest mb-1">
                     Máy bay
                   </label>
                   <select
@@ -1055,7 +1055,7 @@ export default function FlightsTab({ onToast }: { onToast?: ToastAPI }) {
                   type="button"
                   onClick={() => setShowAddModal(false)}
                   disabled={isAdding}
-                  className="flex-1 border border-white/10 bg-white/5 text-vj-text-muted hover:bg-white/10 font-semibold py-2.5 rounded-vj text-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex-1 border border-white/10 bg-white/5 text-vj-admin-muted hover:bg-white/10 font-semibold py-2.5 rounded-vj text-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Huỷ
                 </button>
@@ -1123,7 +1123,7 @@ export default function FlightsTab({ onToast }: { onToast?: ToastAPI }) {
             <form onSubmit={handleSaveEdit} className="p-5 space-y-4">
               {/* ── Field 1: Số hiệu chuyến bay (flight_no) ── */}
               <div>
-                <label className="block text-2xs font-black text-vj-text-muted uppercase tracking-widest mb-1.5 flex items-center gap-1.5">
+                <label className="block text-2xs font-black text-vj-admin-muted uppercase tracking-widest mb-1.5 flex items-center gap-1.5">
                   <span className="w-5 h-5 rounded bg-red-500/10 text-red-400 flex items-center justify-center text-2xs font-bold">
                     1
                   </span>
@@ -1143,7 +1143,7 @@ export default function FlightsTab({ onToast }: { onToast?: ToastAPI }) {
                   className={`w-full px-3 py-2.5 bg-slate-900 border ${editingFlight.flightNo.length >= 3 ? 'border-vj-pay-green' : 'border-white/10'} rounded-vj text-sm text-white font-mono font-bold focus:outline-none focus:border-red-400 focus:ring-2 focus:ring-red-500/20 transition-all`}
                   required
                 />
-                <p className="text-xs2 text-vj-text-muted mt-1">
+                <p className="text-xs2 text-vj-admin-muted mt-1">
                   Định dạng: VJ 101, VN001, BL 202...
                 </p>
               </div>
@@ -1151,7 +1151,7 @@ export default function FlightsTab({ onToast }: { onToast?: ToastAPI }) {
               {/* ── Field 2 & 3: Điểm đi / Điểm đến ── */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-2xs font-black text-vj-text-muted uppercase tracking-widest mb-1.5 flex items-center gap-1.5">
+                  <label className="block text-2xs font-black text-vj-admin-muted uppercase tracking-widest mb-1.5 flex items-center gap-1.5">
                     <span className="w-5 h-5 rounded bg-blue-500/10 text-blue-400 flex items-center justify-center text-2xs font-bold">
                       2
                     </span>
@@ -1174,7 +1174,7 @@ export default function FlightsTab({ onToast }: { onToast?: ToastAPI }) {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-2xs font-black text-vj-text-muted uppercase tracking-widest mb-1.5 flex items-center gap-1.5">
+                  <label className="block text-2xs font-black text-vj-admin-muted uppercase tracking-widest mb-1.5 flex items-center gap-1.5">
                     <span className="w-5 h-5 rounded bg-blue-500/10 text-blue-400 flex items-center justify-center text-2xs font-bold">
                       3
                     </span>
@@ -1219,7 +1219,7 @@ export default function FlightsTab({ onToast }: { onToast?: ToastAPI }) {
               {/* ── Field 4 & 5: Thời gian khởi hành / Thời gian đến ── */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-2xs font-black text-vj-text-muted uppercase tracking-widest mb-1.5 flex items-center gap-1.5">
+                  <label className="block text-2xs font-black text-vj-admin-muted uppercase tracking-widest mb-1.5 flex items-center gap-1.5">
                     <span className="w-5 h-5 rounded bg-amber-500/10 text-amber-400 flex items-center justify-center text-2xs font-bold">
                       4
                     </span>
@@ -1237,7 +1237,7 @@ export default function FlightsTab({ onToast }: { onToast?: ToastAPI }) {
                   />
                 </div>
                 <div>
-                  <label className="block text-2xs font-black text-vj-text-muted uppercase tracking-widest mb-1.5 flex items-center gap-1.5">
+                  <label className="block text-2xs font-black text-vj-admin-muted uppercase tracking-widest mb-1.5 flex items-center gap-1.5">
                     <span className="w-5 h-5 rounded bg-amber-500/10 text-amber-400 flex items-center justify-center text-2xs font-bold">
                       5
                     </span>
@@ -1259,8 +1259,8 @@ export default function FlightsTab({ onToast }: { onToast?: ToastAPI }) {
               {/* ── Fare pair: what the results cards price from (migration 030) ── */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-2xs font-black text-vj-text-muted uppercase tracking-widest mb-1.5 flex items-center gap-1.5">
-                    <span className="w-5 h-5 rounded bg-vj-pay-green text-vj-pay-green flex items-center justify-center text-2xs font-bold">
+                  <label className="block text-2xs font-black text-vj-admin-muted uppercase tracking-widest mb-1.5 flex items-center gap-1.5">
+                    <span className="w-5 h-5 rounded bg-vj-pay-green text-vj-pay-green-text flex items-center justify-center text-2xs font-bold">
                       ₫
                     </span>
                     Giá Phổ thông (₫)
@@ -1281,8 +1281,8 @@ export default function FlightsTab({ onToast }: { onToast?: ToastAPI }) {
                   />
                 </div>
                 <div>
-                  <label className="block text-2xs font-black text-vj-text-muted uppercase tracking-widest mb-1.5 flex items-center gap-1.5">
-                    <span className="w-5 h-5 rounded bg-vj-blue text-vj-blue flex items-center justify-center text-2xs font-bold">
+                  <label className="block text-2xs font-black text-vj-admin-muted uppercase tracking-widest mb-1.5 flex items-center gap-1.5">
+                    <span className="w-5 h-5 rounded bg-vj-blue text-vj-bank-blue-text flex items-center justify-center text-2xs font-bold">
                       ₫
                     </span>
                     Giá Thương gia (₫)
@@ -1325,8 +1325,8 @@ export default function FlightsTab({ onToast }: { onToast?: ToastAPI }) {
                   </div>
                 )}
               <div>
-                <label className="block text-2xs font-black text-vj-text-muted uppercase tracking-widest mb-1.5 flex items-center gap-1.5">
-                  <Icon name="CalendarDaysIcon" size={12} className="text-vj-text-muted" />
+                <label className="block text-2xs font-black text-vj-admin-muted uppercase tracking-widest mb-1.5 flex items-center gap-1.5">
+                  <Icon name="CalendarDaysIcon" size={12} className="text-vj-admin-muted" />
                   Ngày bay
                 </label>
                 <input
@@ -1341,8 +1341,8 @@ export default function FlightsTab({ onToast }: { onToast?: ToastAPI }) {
 
               {/* ── Máy bay (migration 040) ── */}
               <div>
-                <label className="block text-2xs font-black text-vj-text-muted uppercase tracking-widest mb-1.5 flex items-center gap-1.5">
-                  <Icon name="AirplaneIcon" size={12} className="text-vj-text-muted" />
+                <label className="block text-2xs font-black text-vj-admin-muted uppercase tracking-widest mb-1.5 flex items-center gap-1.5">
+                  <Icon name="AirplaneIcon" size={12} className="text-vj-admin-muted" />
                   Máy bay
                 </label>
                 <select
@@ -1359,7 +1359,7 @@ export default function FlightsTab({ onToast }: { onToast?: ToastAPI }) {
                     </option>
                   ))}
                 </select>
-                <p className="mt-1 text-2xs text-vj-text-muted">
+                <p className="mt-1 text-2xs text-vj-admin-muted">
                   Để trống để hệ thống tự chọn theo số hiệu chuyến bay hoặc tuyến.
                 </p>
               </div>
@@ -1388,7 +1388,7 @@ export default function FlightsTab({ onToast }: { onToast?: ToastAPI }) {
 
               {/* ── Field 6: Trạng thái chuyến bay ── */}
               <div>
-                <label className="block text-2xs font-black text-vj-text-muted uppercase tracking-widest mb-1.5 flex items-center gap-1.5">
+                <label className="block text-2xs font-black text-vj-admin-muted uppercase tracking-widest mb-1.5 flex items-center gap-1.5">
                   <span className="w-5 h-5 rounded bg-purple-500/10 text-purple-400 flex items-center justify-center text-2xs font-bold">
                     6
                   </span>
@@ -1401,7 +1401,7 @@ export default function FlightsTab({ onToast }: { onToast?: ToastAPI }) {
                       val: 'active',
                       label: 'Hoạt động',
                       icon: 'CheckCircleIcon',
-                      cls: 'bg-vj-pay-green border-vj-pay-green text-vj-pay-green',
+                      cls: 'bg-vj-pay-green border-vj-pay-green text-vj-pay-green-text',
                     },
                     {
                       val: 'delayed',
@@ -1425,7 +1425,7 @@ export default function FlightsTab({ onToast }: { onToast?: ToastAPI }) {
                       className={`flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-vj text-xs font-bold border-2 transition-all ${
                         editingFlight.status === opt.val
                           ? `${opt.cls} shadow-vj-sm`
-                          : 'bg-white/5 border-white/10 text-vj-text-muted hover:bg-white/10'
+                          : 'bg-white/5 border-white/10 text-vj-admin-muted hover:bg-white/10'
                       }`}
                     >
                       <Icon name={opt.icon} size={13} />
@@ -1433,37 +1433,37 @@ export default function FlightsTab({ onToast }: { onToast?: ToastAPI }) {
                     </button>
                   ))}
                 </div>
-                <p className="text-xs2 text-vj-text-muted mt-1.5">
+                <p className="text-xs2 text-vj-admin-muted mt-1.5">
                   Chọn trạng thái hiện tại của chuyến bay trong hệ thống.
                 </p>
               </div>
 
               {/* Change summary preview */}
               <div className="rounded-vj p-3 space-y-1.5 bg-slate-900 border border-white/10">
-                <p className="text-xs2 font-bold uppercase tracking-widest flex items-center gap-1.5 text-vj-text-muted">
+                <p className="text-xs2 font-bold uppercase tracking-widest flex items-center gap-1.5 text-vj-admin-muted">
                   <Icon name="EyeIcon" size={12} /> Xem trước thay đổi
                 </p>
                 <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs">
                   <div className="flex justify-between">
-                    <span className="text-vj-text-muted">Số hiệu:</span>
+                    <span className="text-vj-admin-muted">Số hiệu:</span>
                     <span className="font-mono font-bold text-white">
                       {editingFlight.flightNo || '—'}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-vj-text-muted">Hành trình:</span>
+                    <span className="text-vj-admin-muted">Hành trình:</span>
                     <span className="font-mono font-bold text-white">
                       {editingFlight.from} → {editingFlight.to}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-vj-text-muted">Giờ bay:</span>
-                    <span className="font-mono text-vj-text-muted">
+                    <span className="text-vj-admin-muted">Giờ bay:</span>
+                    <span className="font-mono text-vj-admin-muted">
                       {editingFlight.departTime || '—'} → {editingFlight.arriveTime || '—'}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-vj-text-muted">Giá Phổ thông:</span>
+                    <span className="text-vj-admin-muted">Giá Phổ thông:</span>
                     <span className="font-mono font-bold text-white">
                       {editingFlight.economyPrice > 0
                         ? `${editingFlight.economyPrice.toLocaleString('vi-VN')}₫`
@@ -1471,7 +1471,7 @@ export default function FlightsTab({ onToast }: { onToast?: ToastAPI }) {
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-vj-text-muted">Giá Thương gia:</span>
+                    <span className="text-vj-admin-muted">Giá Thương gia:</span>
                     <span className="font-mono font-bold text-white">
                       {editingFlight.businessPrice > 0
                         ? `${editingFlight.businessPrice.toLocaleString('vi-VN')}₫`
@@ -1479,7 +1479,7 @@ export default function FlightsTab({ onToast }: { onToast?: ToastAPI }) {
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-vj-text-muted">Trạng thái:</span>
+                    <span className="text-vj-admin-muted">Trạng thái:</span>
                     <span
                       className={`font-bold ${STATUS_MAP[editingFlight.status]?.cls?.replace('badge-', 'text-') || ''}`}
                     >
@@ -1495,7 +1495,7 @@ export default function FlightsTab({ onToast }: { onToast?: ToastAPI }) {
                   type="button"
                   onClick={() => setEditingFlight(null)}
                   disabled={isSavingEdit}
-                  className="flex-1 border border-white/10 bg-white/5 text-vj-text-muted hover:bg-white/10 font-semibold py-2.5 rounded-vj text-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed font-koho"
+                  className="flex-1 border border-white/10 bg-white/5 text-vj-admin-muted hover:bg-white/10 font-semibold py-2.5 rounded-vj text-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed font-koho"
                 >
                   Huỷ bỏ
                 </button>
@@ -1573,21 +1573,21 @@ export default function FlightsTab({ onToast }: { onToast?: ToastAPI }) {
                       {selectedFlight.flightNo}
                     </h3>
                     <span
-                      className={`text-2xs font-black px-2.5 py-1 rounded-vj uppercase tracking-widest ${selectedFlight.status === 'active' ? 'bg-vj-pay-green text-vj-pay-green' : 'bg-amber-500/10 text-amber-400'}`}
+                      className={`text-2xs font-black px-2.5 py-1 rounded-vj uppercase tracking-widest ${selectedFlight.status === 'active' ? 'bg-vj-pay-green text-vj-pay-green-text' : 'bg-amber-500/10 text-amber-400'}`}
                     >
                       {STATUS_MAP[selectedFlight.status]?.label || selectedFlight.status}
                     </span>
                   </div>
                   <div className="flex items-center gap-2 mt-1">
-                    <span className="text-sm font-bold text-vj-text-muted">
+                    <span className="text-sm font-bold text-vj-admin-muted">
                       {selectedFlight.from}
                     </span>
-                    <Icon name="ArrowRightIcon" size={12} className="text-vj-text-muted" />
-                    <span className="text-sm font-bold text-vj-text-muted">
+                    <Icon name="ArrowRightIcon" size={12} className="text-vj-admin-muted" />
+                    <span className="text-sm font-bold text-vj-admin-muted">
                       {selectedFlight.to}
                     </span>
-                    <span className="mx-2 text-vj-text-muted">•</span>
-                    <span className="text-xs font-bold text-vj-text-muted uppercase tracking-widest">
+                    <span className="mx-2 text-vj-admin-muted">•</span>
+                    <span className="text-xs font-bold text-vj-admin-muted uppercase tracking-widest">
                       {selectedFlight.date}
                     </span>
                   </div>
@@ -1595,7 +1595,7 @@ export default function FlightsTab({ onToast }: { onToast?: ToastAPI }) {
               </div>
               <button
                 onClick={() => setSelectedFlight(null)}
-                className="w-12 h-12 bg-white/5 hover:bg-white/10 text-vj-text-muted hover:text-white rounded-2xl flex items-center justify-center transition-all active:scale-90 border border-white/5"
+                className="w-12 h-12 bg-white/5 hover:bg-white/10 text-vj-admin-muted hover:text-white rounded-2xl flex items-center justify-center transition-all active:scale-90 border border-white/5"
               >
                 <Icon name="XMarkIcon" size={24} />
               </button>
@@ -1607,7 +1607,7 @@ export default function FlightsTab({ onToast }: { onToast?: ToastAPI }) {
                 {/* Schedule info */}
                 <div className="space-y-8">
                   <section>
-                    <label className="text-2xs font-black text-vj-text-muted uppercase tracking-[0.2em] mb-4 block">
+                    <label className="text-2xs font-black text-vj-admin-muted uppercase tracking-[0.2em] mb-4 block">
                       Lịch trình bay
                     </label>
                     <div className="relative pl-6 space-y-8">
@@ -1616,13 +1616,13 @@ export default function FlightsTab({ onToast }: { onToast?: ToastAPI }) {
                       <div className="relative">
                         <div className="absolute -left-[23px] top-1.5 w-4 h-4 rounded-full bg-slate-900 border-2 border-vj-blue" />
                         <div>
-                          <p className="text-xs font-black text-vj-text-muted uppercase tracking-widest">
+                          <p className="text-xs font-black text-vj-admin-muted uppercase tracking-widest">
                             Cất cánh
                           </p>
                           <p className="text-xl font-black text-white">
                             {selectedFlight.departTime}
                           </p>
-                          <p className="text-xs font-bold text-vj-blue mt-0.5">
+                          <p className="text-xs font-bold text-vj-bank-blue-text mt-0.5">
                             Sân bay {selectedFlight.from}
                           </p>
                         </div>
@@ -1631,7 +1631,7 @@ export default function FlightsTab({ onToast }: { onToast?: ToastAPI }) {
                       <div className="relative">
                         <div className="absolute -left-[23px] top-1.5 w-4 h-4 rounded-full bg-slate-900 border-2 border-violet-500" />
                         <div>
-                          <p className="text-xs font-black text-vj-text-muted uppercase tracking-widest">
+                          <p className="text-xs font-black text-vj-admin-muted uppercase tracking-widest">
                             Hạ cánh
                           </p>
                           <p className="text-xl font-black text-white">
@@ -1646,14 +1646,14 @@ export default function FlightsTab({ onToast }: { onToast?: ToastAPI }) {
                   </section>
 
                   <section>
-                    <label className="text-2xs font-black text-vj-text-muted uppercase tracking-[0.2em] mb-4 block">
+                    <label className="text-2xs font-black text-vj-admin-muted uppercase tracking-[0.2em] mb-4 block">
                       Thời gian bay dự kiến
                     </label>
                     <div className="bg-white/[0.03] border border-white/5 rounded-2xl p-4 flex items-center gap-4">
-                      <div className="w-10 h-10 rounded-vj bg-slate-800 flex items-center justify-center text-vj-blue shadow-inner">
+                      <div className="w-10 h-10 rounded-vj bg-slate-800 flex items-center justify-center text-vj-bank-blue-text shadow-inner">
                         <Icon name="ClockIcon" size={20} />
                       </div>
-                      <span className="text-sm font-bold text-vj-text-muted">2 giờ 10 phút</span>
+                      <span className="text-sm font-bold text-vj-admin-muted">2 giờ 10 phút</span>
                     </div>
                   </section>
                 </div>
@@ -1661,7 +1661,7 @@ export default function FlightsTab({ onToast }: { onToast?: ToastAPI }) {
                 {/* Capacity & Commercial */}
                 <div className="space-y-8">
                   <section>
-                    <label className="text-2xs font-black text-vj-text-muted uppercase tracking-[0.2em] mb-4 block">
+                    <label className="text-2xs font-black text-vj-admin-muted uppercase tracking-[0.2em] mb-4 block">
                       Tải lượng & Đặt chỗ
                     </label>
                     <div className="bg-white/[0.03] border border-white/5 rounded-3xl p-6">
@@ -1673,15 +1673,15 @@ export default function FlightsTab({ onToast }: { onToast?: ToastAPI }) {
                             )}
                             %
                           </p>
-                          <p className="text-2xs font-bold text-vj-text-muted uppercase tracking-widest mt-1">
+                          <p className="text-2xs font-bold text-vj-admin-muted uppercase tracking-widest mt-1">
                             Hệ số sử dụng ghế
                           </p>
                         </div>
                         <div className="text-right">
-                          <p className="text-sm font-black text-vj-text-muted">
+                          <p className="text-sm font-black text-vj-admin-muted">
                             {selectedFlight.booked} / {selectedFlight.capacity}
                           </p>
-                          <p className="text-2xs font-bold text-vj-text-muted uppercase tracking-widest mt-1">
+                          <p className="text-2xs font-bold text-vj-admin-muted uppercase tracking-widest mt-1">
                             Ghế đã đặt
                           </p>
                         </div>
@@ -1698,20 +1698,20 @@ export default function FlightsTab({ onToast }: { onToast?: ToastAPI }) {
                   </section>
 
                   <section>
-                    <label className="text-2xs font-black text-vj-text-muted uppercase tracking-[0.2em] mb-4 block">
+                    <label className="text-2xs font-black text-vj-admin-muted uppercase tracking-[0.2em] mb-4 block">
                       Thanh khoản dự kiến
                     </label>
                     <div className="bg-vj-pay-green border border-vj-pay-green rounded-3xl p-6 relative group overflow-hidden">
                       <div className="absolute top-[-20%] right-[-10%] w-24 h-24 bg-vj-pay-green rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700" />
                       <div className="relative z-10">
-                        <p className="text-2xs font-black text-vj-pay-green uppercase tracking-widest mb-1">
+                        <p className="text-2xs font-black text-vj-pay-green-text uppercase tracking-widest mb-1">
                           Doanh thu hiện tại
                         </p>
-                        <p className="text-2xl font-black text-vj-pay-green tabular-nums tracking-tighter">
+                        <p className="text-2xl font-black text-vj-pay-green-text tabular-nums tracking-tighter">
                           {(selectedFlight.booked * selectedFlight.price).toLocaleString('vi-VN')}₫
                         </p>
                         <div className="mt-3 flex items-center gap-2">
-                          <span className="text-xs font-bold text-vj-text-muted">Giá cơ bản:</span>
+                          <span className="text-xs font-bold text-vj-admin-muted">Giá cơ bản:</span>
                           <span className="text-xs font-black text-white">
                             {selectedFlight.price.toLocaleString('vi-VN')}₫
                           </span>
@@ -1734,7 +1734,7 @@ export default function FlightsTab({ onToast }: { onToast?: ToastAPI }) {
               >
                 Cập nhật chuyến bay
               </button>
-              <button className="px-8 py-4 bg-white/5 hover:bg-white/10 text-vj-text-muted hover:text-white border border-white/5 rounded-2xl text-xs font-black uppercase tracking-[0.2em] transition-all active:scale-90">
+              <button className="px-8 py-4 bg-white/5 hover:bg-white/10 text-vj-admin-muted hover:text-white border border-white/5 rounded-2xl text-xs font-black uppercase tracking-[0.2em] transition-all active:scale-90">
                 Xem danh sách khách
               </button>
             </div>

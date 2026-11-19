@@ -38,7 +38,7 @@ const CustomTooltip = ({ active, payload }: CustomTooltipProps) => {
         <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: item.color }} />
         <span>{item.name}</span>
       </div>
-      <div className="space-y-1 text-vj-text-muted">
+      <div className="space-y-1 text-vj-admin-muted">
         <div>
           Số lượng:{' '}
           <span className="font-bold text-white">{item.value.toLocaleString('vi-VN')}</span>
@@ -91,20 +91,20 @@ export default function CancellationDonutChart({
       <div className="flex items-center justify-between mb-4">
         <div>
           <h3 className="font-bold text-white text-base tracking-tight">{title}</h3>
-          <p className="text-xs text-vj-text-muted mt-0.5">
+          <p className="text-xs text-vj-admin-muted mt-0.5">
             Tương quan giữa đơn đặt thành công và đơn huỷ
           </p>
         </div>
         <div className="text-right">
-          <span className="text-2xs uppercase tracking-wider text-vj-text-muted font-semibold">
+          <span className="text-2xs uppercase tracking-wider text-vj-admin-muted font-semibold">
             Tỷ lệ huỷ
           </span>
-          <div className="text-base font-black text-vj-red-dark">{rate.toFixed(1)}%</div>
+          <div className="text-base font-black text-red-400">{rate.toFixed(1)}%</div>
         </div>
       </div>
 
       {!hasData ? (
-        <div className="h-[280px] flex flex-col items-center justify-center text-sm text-vj-text-muted">
+        <div className="h-[280px] flex flex-col items-center justify-center text-sm text-vj-admin-muted">
           <p>Chưa có dữ liệu đặt chỗ</p>
         </div>
       ) : (
@@ -120,7 +120,7 @@ export default function CancellationDonutChart({
                 formatter={(value: string) => {
                   const item = chartData.find((d) => d.name === value);
                   return (
-                    <span className="text-vj-text-muted text-xs font-medium ml-1 mr-3">
+                    <span className="text-vj-admin-muted text-xs font-medium ml-1 mr-3">
                       {value}{' '}
                       {item ? `(${item.value.toLocaleString('vi-VN')} - ${item.percent})` : ''}
                     </span>
@@ -150,9 +150,9 @@ export default function CancellationDonutChart({
           </ResponsiveContainer>
           {/* Centered Donut Label */}
           <div className="absolute inset-0 top-[-20px] flex flex-col items-center justify-center pointer-events-none">
-            <span className="text-xs text-vj-text-muted font-medium">Tổng</span>
+            <span className="text-xs text-vj-admin-muted font-medium">Tổng</span>
             <span className="text-xl font-black text-white">{total.toLocaleString('vi-VN')}</span>
-            <span className="text-2xs text-vj-text-muted">đặt chỗ</span>
+            <span className="text-2xs text-vj-admin-muted">đặt chỗ</span>
           </div>
         </div>
       )}

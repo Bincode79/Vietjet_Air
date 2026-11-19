@@ -139,15 +139,15 @@ export default function TransactionsTab({ onToast }: { onToast?: ToastAPI }) {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'completed':
-        return 'bg-vj-pay-green text-vj-pay-green border-vj-pay-green';
+        return 'bg-emerald-400/10 text-vj-pay-green-text border-emerald-400/30';
       case 'pending':
         return 'bg-amber-500/10 text-amber-400 border-amber-500/20';
       case 'failed':
-        return 'bg-vj-red-dark text-vj-red-dark border-vj-red-dark';
+        return 'bg-red-400/10 text-red-400 border-red-400/30';
       case 'refunded':
-        return 'bg-vj-blue text-vj-blue border-vj-blue';
+        return 'bg-sky-400/10 text-vj-bank-blue-text border-sky-400/30';
       default:
-        return 'bg-slate-500 text-vj-text-muted border-vj-border-light';
+        return 'bg-slate-500 text-vj-admin-muted border-vj-border-light';
     }
   };
 
@@ -191,7 +191,7 @@ export default function TransactionsTab({ onToast }: { onToast?: ToastAPI }) {
     }
     return {
       label: method || 'Khác',
-      color: 'bg-slate-500 text-vj-text-muted border-vj-border-light',
+      color: 'bg-slate-500 text-vj-admin-muted border-vj-border-light',
     };
   };
 
@@ -204,14 +204,14 @@ export default function TransactionsTab({ onToast }: { onToast?: ToastAPI }) {
             <Icon name="CurrencyDollarIcon" size={24} className="text-amber-400" />
             Quản lý & Xác nhận thanh toán
           </h2>
-          <p className="text-xs font-bold text-vj-text-muted uppercase tracking-widest mt-1 opacity-70">
+          <p className="text-xs font-bold text-vj-admin-muted uppercase tracking-widest mt-1 opacity-70">
             Duyệt thanh toán VietQR / Ngân hàng, xuất vé điện tử tự động
           </p>
         </div>
         <button
           onClick={() => fetchTransactions()}
           disabled={isLoading}
-          className="flex items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-vj-text-muted hover:text-white border border-white/10 rounded-vj text-xs font-bold transition-all active:scale-98 self-start sm:self-auto"
+          className="flex items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-vj-admin-muted hover:text-white border border-white/10 rounded-vj text-xs font-bold transition-all active:scale-98 self-start sm:self-auto"
         >
           <Icon name="ArrowPathIcon" size={16} className={isLoading ? 'animate-spin' : ''} />
           Làm mới
@@ -221,11 +221,11 @@ export default function TransactionsTab({ onToast }: { onToast?: ToastAPI }) {
       {/* KPI Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="bg-slate-800 border border-white/5 rounded-2xl p-4 relative overflow-hidden">
-          <p className="text-2xs font-bold text-vj-text-muted uppercase tracking-wider">
+          <p className="text-2xs font-bold text-vj-admin-muted uppercase tracking-wider">
             Tổng giao dịch
           </p>
           <h3 className="text-2xl font-black text-white mt-1 tabular-nums">{totalCount}</h3>
-          <div className="text-2xs text-vj-text-muted mt-1">Giao dịch trong hệ thống</div>
+          <div className="text-2xs text-vj-admin-muted mt-1">Giao dịch trong hệ thống</div>
         </div>
 
         <div className="bg-amber-500/5 border border-amber-500/20 rounded-2xl p-4 relative overflow-hidden">
@@ -245,23 +245,23 @@ export default function TransactionsTab({ onToast }: { onToast?: ToastAPI }) {
         </div>
 
         <div className="bg-vj-pay-green border border-vj-pay-green rounded-2xl p-4 relative overflow-hidden">
-          <p className="text-2xs font-bold text-vj-pay-green uppercase tracking-wider">
+          <p className="text-2xs font-bold text-vj-pay-green-text uppercase tracking-wider">
             Đã hoàn tất
           </p>
-          <h3 className="text-2xl font-black text-vj-pay-green mt-1 tabular-nums">
+          <h3 className="text-2xl font-black text-vj-pay-green-text mt-1 tabular-nums">
             {completedCount}
           </h3>
-          <div className="text-2xs text-vj-pay-green mt-1">Vé đã xuất thành công</div>
+          <div className="text-2xs text-vj-pay-green-text mt-1">Vé đã xuất thành công</div>
         </div>
 
         <div className="bg-vj-blue border border-vj-blue rounded-2xl p-4 relative overflow-hidden">
-          <p className="text-2xs font-bold text-vj-blue uppercase tracking-wider">
+          <p className="text-2xs font-bold text-vj-bank-blue-text uppercase tracking-wider">
             Doanh thu đã duyệt
           </p>
-          <h3 className="text-xl font-black text-vj-blue mt-1 tabular-nums truncate">
+          <h3 className="text-xl font-black text-vj-bank-blue-text mt-1 tabular-nums truncate">
             {formatCurrency(totalRevenue)}
           </h3>
-          <div className="text-2xs text-vj-blue mt-1">Thực thu vào tài khoản</div>
+          <div className="text-2xs text-vj-bank-blue-text mt-1">Thực thu vào tài khoản</div>
         </div>
       </div>
 
@@ -271,7 +271,7 @@ export default function TransactionsTab({ onToast }: { onToast?: ToastAPI }) {
           <Icon
             name="MagnifyingGlassIcon"
             size={18}
-            className="absolute left-4 top-1/2 -translate-y-1/2 text-vj-text-muted group-focus-within:text-amber-400 transition-colors"
+            className="absolute left-4 top-1/2 -translate-y-1/2 text-vj-admin-muted group-focus-within:text-amber-400 transition-colors"
           />
           <input
             type="text"
@@ -297,8 +297,8 @@ export default function TransactionsTab({ onToast }: { onToast?: ToastAPI }) {
               }}
               className={`px-3 py-2 rounded-vj text-2xs font-black uppercase tracking-wider transition-all whitespace-nowrap flex items-center gap-1.5 ${
                 filterStatus === item.id
-                  ? 'bg-amber-500 text-vj-text-muted shadow-vj-lg shadow-amber-500/20'
-                  : 'text-vj-text-muted hover:text-vj-text-muted'
+                  ? 'bg-amber-500 text-vj-admin-muted shadow-vj-lg shadow-amber-500/20'
+                  : 'text-vj-admin-muted hover:text-vj-admin-muted'
               }`}
             >
               <span>{item.label}</span>
@@ -332,22 +332,22 @@ export default function TransactionsTab({ onToast }: { onToast?: ToastAPI }) {
           <table className="w-full text-left">
             <thead>
               <tr className="bg-white/5 border-b border-white/5">
-                <th className="px-6 py-5 text-2xs font-black text-vj-text-muted uppercase tracking-widest">
+                <th className="px-6 py-5 text-2xs font-black text-vj-admin-muted uppercase tracking-widest">
                   Mã GD / PNR
                 </th>
-                <th className="px-6 py-5 text-2xs font-black text-vj-text-muted uppercase tracking-widest whitespace-nowrap">
+                <th className="px-6 py-5 text-2xs font-black text-vj-admin-muted uppercase tracking-widest whitespace-nowrap">
                   Khách hàng
                 </th>
-                <th className="px-6 py-5 text-2xs font-black text-vj-text-muted uppercase tracking-widest text-right">
+                <th className="px-6 py-5 text-2xs font-black text-vj-admin-muted uppercase tracking-widest text-right">
                   Số tiền & Phương thức
                 </th>
-                <th className="px-6 py-5 text-2xs font-black text-vj-text-muted uppercase tracking-widest text-center">
+                <th className="px-6 py-5 text-2xs font-black text-vj-admin-muted uppercase tracking-widest text-center">
                   Trạng thái
                 </th>
-                <th className="px-6 py-5 text-2xs font-black text-vj-text-muted uppercase tracking-widest text-right">
+                <th className="px-6 py-5 text-2xs font-black text-vj-admin-muted uppercase tracking-widest text-right">
                   Thời gian
                 </th>
-                <th className="px-6 py-5 text-2xs font-black text-vj-text-muted uppercase tracking-widest text-center">
+                <th className="px-6 py-5 text-2xs font-black text-vj-admin-muted uppercase tracking-widest text-center">
                   Hành động
                 </th>
               </tr>
@@ -363,7 +363,7 @@ export default function TransactionsTab({ onToast }: { onToast?: ToastAPI }) {
                 ))
               ) : paginated.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="px-6 py-20 text-center text-vj-text-muted italic">
+                  <td colSpan={6} className="px-6 py-20 text-center text-vj-admin-muted italic">
                     Không có giao dịch nào được tìm thấy
                   </td>
                 </tr>
@@ -383,7 +383,7 @@ export default function TransactionsTab({ onToast }: { onToast?: ToastAPI }) {
                         <div className="font-mono font-bold text-amber-400 text-sm group-hover:text-amber-300 transition-colors flex items-center gap-1.5">
                           <span>#{t.id.slice(0, 10)}</span>
                         </div>
-                        <div className="text-2xs font-black text-vj-text-muted uppercase tracking-widest mt-0.5">
+                        <div className="text-2xs font-black text-vj-admin-muted uppercase tracking-widest mt-0.5">
                           PNR:{' '}
                           <span className="text-white font-mono font-extrabold">
                             {t.bookingCode || t.bookingId.slice(0, 8)}
@@ -391,10 +391,10 @@ export default function TransactionsTab({ onToast }: { onToast?: ToastAPI }) {
                         </div>
                       </td>
                       <td className="px-6 py-5">
-                        <div className="font-bold text-vj-text-muted text-sm group-hover:text-white transition-colors">
+                        <div className="font-bold text-vj-admin-muted text-sm group-hover:text-white transition-colors">
                           {t.userName}
                         </div>
-                        <div className="text-2xs font-bold text-vj-text-muted">{t.userEmail}</div>
+                        <div className="text-2xs font-bold text-vj-admin-muted">{t.userEmail}</div>
                       </td>
                       <td className="px-6 py-5 text-right">
                         <div className="font-black text-white text-base tracking-tighter tabular-nums">
@@ -407,7 +407,7 @@ export default function TransactionsTab({ onToast }: { onToast?: ToastAPI }) {
                             {methodBadge.label}
                           </span>
                           {t.receiptImage && (
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-3xs font-black uppercase tracking-wider bg-vj-pay-green text-vj-pay-green border border-vj-pay-green">
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-3xs font-black uppercase tracking-wider bg-emerald-400/10 text-vj-pay-green-text border border-emerald-400/30">
                               <RiImageLine size={12} />
                               <span>Có biên lai</span>
                             </span>
@@ -424,10 +424,10 @@ export default function TransactionsTab({ onToast }: { onToast?: ToastAPI }) {
                         </span>
                       </td>
                       <td className="px-6 py-5 text-right">
-                        <div className="text-sm font-bold text-vj-text-muted group-hover:text-vj-text-muted transition-colors">
+                        <div className="text-sm font-bold text-vj-admin-muted group-hover:text-vj-admin-muted transition-colors">
                           {new Date(t.createdAt).toLocaleDateString('vi-VN')}
                         </div>
-                        <div className="text-2xs font-black text-vj-text-muted uppercase tracking-widest mt-0.5">
+                        <div className="text-2xs font-black text-vj-admin-muted uppercase tracking-widest mt-0.5">
                           {new Date(t.createdAt).toLocaleTimeString('vi-VN', {
                             hour: '2-digit',
                             minute: '2-digit',
@@ -441,7 +441,7 @@ export default function TransactionsTab({ onToast }: { onToast?: ToastAPI }) {
                               <button
                                 onClick={() => handleProcessTransaction(t, 'confirm')}
                                 disabled={isProcessing}
-                                className="px-3 py-1.5 bg-vj-pay-green hover:bg-vj-pay-green active:scale-98 text-vj-text-muted font-black text-xs rounded-vj shadow-vj-md shadow-vj-sm transition-all flex items-center gap-1"
+                                className="px-3 py-1.5 bg-vj-pay-green hover:bg-vj-pay-green active:scale-98 text-vj-admin-muted font-black text-xs rounded-vj shadow-vj-md shadow-vj-sm transition-all flex items-center gap-1"
                                 title="Xác nhận tiền đã về tài khoản và xuất vé"
                               >
                                 {isProcessing ? (
@@ -454,15 +454,15 @@ export default function TransactionsTab({ onToast }: { onToast?: ToastAPI }) {
                               <button
                                 onClick={() => handleProcessTransaction(t, 'reject')}
                                 disabled={isProcessing}
-                                className="px-2.5 py-1.5 bg-vj-red-dark hover:bg-vj-red-dark active:scale-98 text-vj-red-dark hover:text-vj-red-dark font-bold text-xs rounded-vj border border-vj-red-dark transition-all"
+                                className="px-2.5 py-1.5 bg-vj-red-dark hover:bg-vj-red-dark active:scale-98 text-red-400 hover:text-red-400 font-bold text-xs rounded-vj border border-vj-red-dark transition-all"
                                 title="Từ chối / Hủy giao dịch"
                               >
                                 <Icon name="XMarkIcon" size={14} />
                               </button>
                             </>
                           ) : (
-                            <span className="text-2xs font-semibold text-vj-text-muted flex items-center gap-1 mr-1">
-                              <Icon name="CheckBadgeIcon" size={16} className="text-vj-pay-green" />
+                            <span className="text-2xs font-semibold text-vj-admin-muted flex items-center gap-1 mr-1">
+                              <Icon name="CheckBadgeIcon" size={16} className="text-vj-pay-green-text" />
                               Đã duyệt
                             </span>
                           )}
@@ -475,7 +475,7 @@ export default function TransactionsTab({ onToast }: { onToast?: ToastAPI }) {
                                 t.status === 'completed' ? 'ticket_issuance' : 'payment_instruction'
                               );
                             }}
-                            className="p-1.5 rounded-vj bg-white/5 hover:bg-white/10 text-vj-text-muted hover:text-white transition-all active:scale-98 border border-white/5"
+                            className="p-1.5 rounded-vj bg-white/5 hover:bg-white/10 text-vj-admin-muted hover:text-white transition-all active:scale-98 border border-white/5"
                             title="Gửi Gmail thanh toán & xuất vé"
                           >
                             <svg className="w-3.5 h-3.5" viewBox="0 0 24 24">
@@ -526,7 +526,7 @@ export default function TransactionsTab({ onToast }: { onToast?: ToastAPI }) {
                   <h3 className="text-lg font-black text-white tracking-tight">
                     Chi tiết giao dịch thanh toán
                   </h3>
-                  <p className="text-2xs font-bold text-vj-text-muted uppercase tracking-widest mt-0.5">
+                  <p className="text-2xs font-bold text-vj-admin-muted uppercase tracking-widest mt-0.5">
                     Mã GD:{' '}
                     <span className="text-amber-400 font-mono tracking-normal">
                       #{selectedTransaction.id}
@@ -536,7 +536,7 @@ export default function TransactionsTab({ onToast }: { onToast?: ToastAPI }) {
               </div>
               <button
                 onClick={() => setSelectedTransaction(null)}
-                className="w-10 h-10 bg-white/5 hover:bg-white/10 text-vj-text-muted hover:text-white rounded-vj flex items-center justify-center transition-all active:scale-90"
+                className="w-10 h-10 bg-white/5 hover:bg-white/10 text-vj-admin-muted hover:text-white rounded-vj flex items-center justify-center transition-all active:scale-90"
               >
                 <Icon name="XMarkIcon" size={20} />
               </button>
@@ -556,7 +556,7 @@ export default function TransactionsTab({ onToast }: { onToast?: ToastAPI }) {
                     <h5 className="text-xs font-black text-amber-300 uppercase tracking-wider">
                       Chờ xác nhận thanh toán
                     </h5>
-                    <p className="text-xs text-vj-text-muted mt-1 leading-relaxed">
+                    <p className="text-xs text-vj-admin-muted mt-1 leading-relaxed">
                       Khách hàng đã chuyển tiền hoặc tạo lệnh thanh toán VietQR. Quản trị viên vui
                       lòng kiểm tra tài khoản ngân hàng nhận, sau đó bấm{' '}
                       <strong>Xác nhận thanh toán</strong> để hoàn tất xuất vé.
@@ -568,7 +568,7 @@ export default function TransactionsTab({ onToast }: { onToast?: ToastAPI }) {
               {/* Amount Display */}
               <div className="text-center py-6 bg-white/[0.02] border border-white/5 rounded-3xl relative overflow-hidden group">
                 <div className="absolute top-[-20%] left-[-10%] w-32 h-32 bg-amber-500/10 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-700" />
-                <p className="text-2xs font-black text-vj-text-muted uppercase tracking-[0.2em] mb-2 relative z-10">
+                <p className="text-2xs font-black text-vj-admin-muted uppercase tracking-[0.2em] mb-2 relative z-10">
                   Số tiền thanh toán
                 </p>
                 <h4 className="text-4xl font-black text-white tracking-tighter tabular-nums relative z-10">
@@ -588,15 +588,15 @@ export default function TransactionsTab({ onToast }: { onToast?: ToastAPI }) {
               {/* Transaction Info Grid */}
               <div className="grid grid-cols-2 gap-x-8 gap-y-5">
                 <div>
-                  <p className="text-2xs font-black text-vj-text-muted uppercase tracking-widest mb-1">
+                  <p className="text-2xs font-black text-vj-admin-muted uppercase tracking-widest mb-1">
                     Phương thức
                   </p>
-                  <p className="text-sm font-bold text-vj-text-muted capitalize">
+                  <p className="text-sm font-bold text-vj-admin-muted capitalize">
                     {selectedTransaction.method}
                   </p>
                 </div>
                 <div>
-                  <p className="text-2xs font-black text-vj-text-muted uppercase tracking-widest mb-1">
+                  <p className="text-2xs font-black text-vj-admin-muted uppercase tracking-widest mb-1">
                     Mã đặt chỗ (PNR)
                   </p>
                   <p className="text-sm font-black text-amber-400 font-mono">
@@ -605,21 +605,21 @@ export default function TransactionsTab({ onToast }: { onToast?: ToastAPI }) {
                 </div>
                 <div className="col-span-2 h-[1px] bg-white/5" />
                 <div>
-                  <p className="text-2xs font-black text-vj-text-muted uppercase tracking-widest mb-1">
+                  <p className="text-2xs font-black text-vj-admin-muted uppercase tracking-widest mb-1">
                     Khách hàng
                   </p>
-                  <p className="text-sm font-bold text-vj-text-muted">
+                  <p className="text-sm font-bold text-vj-admin-muted">
                     {selectedTransaction.userName}
                   </p>
-                  <p className="text-2xs font-bold text-vj-text-muted">
+                  <p className="text-2xs font-bold text-vj-admin-muted">
                     {selectedTransaction.userEmail}
                   </p>
                 </div>
                 <div>
-                  <p className="text-2xs font-black text-vj-text-muted uppercase tracking-widest mb-1">
+                  <p className="text-2xs font-black text-vj-admin-muted uppercase tracking-widest mb-1">
                     Thời gian tạo
                   </p>
-                  <p className="text-sm font-bold text-vj-text-muted">
+                  <p className="text-sm font-bold text-vj-admin-muted">
                     {new Date(selectedTransaction.createdAt).toLocaleString('vi-VN')}
                   </p>
                 </div>
@@ -635,11 +635,11 @@ export default function TransactionsTab({ onToast }: { onToast?: ToastAPI }) {
                     </h5>
                   </div>
                   {selectedTransaction.receiptImage ? (
-                    <span className="px-2.5 py-0.5 rounded-full text-3xs font-black uppercase tracking-wider bg-vj-pay-green text-vj-pay-green border border-vj-pay-green">
+                    <span className="px-2.5 py-0.5 rounded-full text-3xs font-black uppercase tracking-wider bg-emerald-400/10 text-vj-pay-green-text border border-emerald-400/30">
                       ✓ Đã đính kèm ảnh
                     </span>
                   ) : (
-                    <span className="px-2.5 py-0.5 rounded-full text-3xs font-black uppercase tracking-wider bg-slate-800 text-vj-text-muted border border-white/5">
+                    <span className="px-2.5 py-0.5 rounded-full text-3xs font-black uppercase tracking-wider bg-slate-800 text-vj-admin-muted border border-white/5">
                       Chưa có ảnh
                     </span>
                   )}
@@ -665,8 +665,8 @@ export default function TransactionsTab({ onToast }: { onToast?: ToastAPI }) {
                       </div>
                     </div>
                     {selectedTransaction.transferNote && (
-                      <p className="text-xs text-vj-text-muted bg-white/5 px-3 py-2 rounded-vj border border-white/5">
-                        <span className="text-vj-text-muted">Nội dung CK:</span>{' '}
+                      <p className="text-xs text-vj-admin-muted bg-white/5 px-3 py-2 rounded-vj border border-white/5">
+                        <span className="text-vj-admin-muted">Nội dung CK:</span>{' '}
                         <span className="text-amber-300 font-mono font-bold">
                           {selectedTransaction.transferNote}
                         </span>
@@ -674,7 +674,7 @@ export default function TransactionsTab({ onToast }: { onToast?: ToastAPI }) {
                     )}
                   </div>
                 ) : (
-                  <div className="text-center py-4 bg-slate-950 rounded-vj border border-dashed border-white/10 text-xs text-vj-text-muted">
+                  <div className="text-center py-4 bg-slate-950 rounded-vj border border-dashed border-white/10 text-xs text-vj-admin-muted">
                     Khách hàng chưa đính kèm ảnh chụp màn hình biên lai.
                   </div>
                 )}
@@ -688,7 +688,7 @@ export default function TransactionsTab({ onToast }: { onToast?: ToastAPI }) {
                   <button
                     onClick={() => handleProcessTransaction(selectedTransaction, 'confirm')}
                     disabled={processingId === selectedTransaction.id}
-                    className="flex-1 px-6 py-3.5 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-vj-text-muted rounded-2xl text-xs font-black uppercase tracking-wider shadow-vj-lg shadow-vj-sm transition-all active:scale-98 flex items-center justify-center gap-2"
+                    className="flex-1 px-6 py-3.5 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-vj-admin-muted rounded-2xl text-xs font-black uppercase tracking-wider shadow-vj-lg shadow-vj-sm transition-all active:scale-98 flex items-center justify-center gap-2"
                   >
                     {processingId === selectedTransaction.id ? (
                       <Icon name="ArrowPathIcon" size={18} className="animate-spin" />
@@ -717,7 +717,7 @@ export default function TransactionsTab({ onToast }: { onToast?: ToastAPI }) {
                   <button
                     onClick={() => handleProcessTransaction(selectedTransaction, 'reject')}
                     disabled={processingId === selectedTransaction.id}
-                    className="px-6 py-3.5 bg-vj-red-dark hover:bg-vj-red-dark text-vj-red-dark border border-vj-red-dark rounded-2xl text-xs font-bold uppercase tracking-wider transition-all active:scale-98"
+                    className="px-6 py-3.5 bg-vj-red-dark hover:bg-red-400/10 text-red-400 border border-red-400/30 rounded-2xl text-xs font-bold uppercase tracking-wider transition-all active:scale-98"
                   >
                     Từ chối
                   </button>
@@ -750,7 +750,7 @@ export default function TransactionsTab({ onToast }: { onToast?: ToastAPI }) {
                   </button>
                   <button
                     onClick={() => setSelectedTransaction(null)}
-                    className="px-6 py-3.5 bg-white/5 hover:bg-white/10 text-vj-text-muted hover:text-white border border-white/5 rounded-2xl text-xs font-bold uppercase tracking-widest transition-all"
+                    className="px-6 py-3.5 bg-white/5 hover:bg-white/10 text-vj-admin-muted hover:text-white border border-white/5 rounded-2xl text-xs font-bold uppercase tracking-widest transition-all"
                   >
                     Đóng
                   </button>

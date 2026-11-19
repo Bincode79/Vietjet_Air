@@ -16,6 +16,9 @@ import { MOVI_HOLD_MINUTES } from '@/lib/movi';
 import PaymentModal from './PaymentModal';
 import ReservationCountdown from './ReservationCountdown';
 import BookingTicketCard from './BookingTicketCard';
+import GatewayQrPage from './GatewayQrPage';
+import CardGatewayContent from './gateway/CardGatewayContent';
+import MoviGatewayContent from './gateway/MoviGatewayContent';
 import {
   VisaLogo,
   MastercardLogo,
@@ -273,6 +276,10 @@ export default function PaymentClient() {
   const total = booking ? booking.total - discountAmount : 0;
   const [pageLoading, setPageLoading] = useState(true);
   const [showVietQrModal, setShowVietQrModal] = useState(false);
+  const [gatewaySuccess, setGatewaySuccess] = useState(false);
+  const [gatewayDownloaded, setGatewayDownloaded] = useState(false);
+  const [showGateway, setShowGateway] = useState(false);
+  const [gatewayMethod, setGatewayMethod] = useState<string>('qr');
   const toast = useToast();
 
   const vietQrConvenienceFee = useMemo(() => {
@@ -410,18 +417,12 @@ export default function PaymentClient() {
     wallet: 'wallet',
     bank: 'bank',
   };
-
   const goToPaymentGateway = () => {
-    const gatewayMethod = GATEWAY_METHOD_BY_GROUP[selectedMethodGroup] || 'qr';
-    const params = new URLSearchParams();
-    const target = effectiveBookingCode || bookingId;
-    if (target) params.set('bookingId', target);
-    if (promoApplied && promoData?.code) {
-      params.set('promo', promoData.code);
-      params.set('promoDiscount', String(discountAmount));
-    }
-    const qs = params.toString();
-    router.push(`/thanh-toan/gateway/${gatewayMethod}${qs ? `?${qs}` : ''}`);
+    const gw = GATEWAY_METHOD_BY_GROUP[selectedMethodGroup] || 'qr';
+    setGatewayMethod(gw);
+    setGatewaySuccess(false);
+    setGatewayDownloaded(false);
+    setShowGateway(true);
   };
 
   const applyPromo = async () => {
@@ -522,6 +523,74 @@ export default function PaymentClient() {
           </div>
         </div>
       </div>
+    );
+  }
+
+  // Khi khách đã chọn phương thức → hiển thị trang cổng thanh toán tương ứng
+  // Layout (Header/Footer) được cung cấp bởi trang cha (src/app/thanh-toan/page.tsx).
+  if (showGateway) {
+    return (
+      <main
+        id="main-content"
+        className="min-h-screen bg-gradient-to-b from-vj-blue-tint-5 via-vj-blue-tint-4 to-vj-blue-tint-3 relative py-8 sm:py-12 px-4 sm:px-6"
+      >
+        {gatewaySuccess ? (
+          <div className="text-center py-10">
+            <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-4">
+              <Icon name="CheckCircleIcon" size={32} className="text-green-600" />
+            </div>
+            <h2 className="text-xl font-black text-vj-text font-koho">
+              Thanh toán thành công
+            </h2>
+            <p className="mt-2 text-sm text-vj-gray">
+              Đơn hàng {bookingCodeLabel} đã được xác nhận. Vé điện tử sẽ được xuất ngay sau đây.
+            </p>
+            <button
+              type="button"
+              onClick={() => setGatewayDownloaded(true)}
+              disabled={gatewayDownloaded}
+              className="mt-6 px-6 py-2.5 rounded-vj bg-primary hover:bg-primary-dark text-white font-bold text-sm uppercase tracking-wide transition-all shadow-vj-md flex items-center justify-center gap-2 inline-flex"
+            >
+              <Icon name="ArrowDownTrayIcon" size={16} />
+              {gatewayDownloaded ? 'Đã tải vé điện tử' : 'Tải vé điện tử'}
+            </button>
+          </div>
+        ) : (
+          <>
+            {gatewayMethod === 'card' ? (
+              <CardGatewayContent
+                bookingId={booking?.bookingId || bookingId || ''}
+                bookingCode={booking?.bookingCode ?? bookingCodeLabel}
+                amount={total}
+                onSuccess={() => setGatewaySuccess(true)}
+              />
+            ) : gatewayMethod === 'movi' ? (
+              <MoviGatewayContent
+                bookingId={booking?.bookingId || bookingId || ''}
+                bookingCode={booking?.bookingCode ?? bookingCodeLabel}
+                amount={total}
+                onSuccess={(payload) => {
+                  console.log('[MOVI] Hồ sơ tín dụng:', payload);
+                  setGatewaySuccess(true);
+                }}
+              />
+            ) : (
+              <GatewayQrPage
+                method={gatewayMethod}
+                bookingId={booking?.bookingId || bookingId || ''}
+                bookingCode={booking?.bookingCode ?? bookingCodeLabel}
+                amount={total}
+                flightNo={booking?.flightNo}
+                from={booking?.from}
+                to={booking?.to}
+                departTime={booking?.departTime}
+                date={booking?.date}
+                onBack={() => setShowGateway(false)}
+              />
+            )}
+          </>
+        )}
+      </main>
     );
   }
 
@@ -665,9 +734,9 @@ export default function PaymentClient() {
           {/* H1 for accessibility */}
           <h1 className="sr-only">Thanh toán vé máy bay</h1>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="space-y-6">
             {/* Payment Form */}
-            <div className="lg:col-span-2 space-y-4">
+            <div className="space-y-4">
               {/* Accordions Thông tin chuyến bay & hành khách khi tra cứu vé giữ chỗ chuẩn Image #8 */}
               {isPnrLookup && booking && (
                 <div className="space-y-3 font-koho text-xs">
@@ -1011,53 +1080,6 @@ export default function PaymentClient() {
                   </div>
                 </div>
 
-                {/* Giao diện áp mã giảm giá — Chung 1 vùng (ẩn khi chọn MOVI theo đúng Image #1) */}
-                {paymentMethod !== 'movi' && (
-                  <div className="pt-4 border-t border-vj-border-light">
-                    <label className="flex items-center gap-3 cursor-pointer select-none">
-                      <input
-                        type="checkbox"
-                        checked={hasPromoChecked}
-                        onChange={(e) => setHasPromoChecked(e.target.checked)}
-                        className="w-5 h-5 rounded border-vj-line text-vj-red-dark focus:ring-red-500 cursor-pointer accent-red-600"
-                      />
-                      <span className="text-sm font-extrabold text-vj-text font-koho">
-                        Mã khuyến mãi hoặc phiếu quà tặng
-                      </span>
-                    </label>
-                    {hasPromoChecked && (
-                      <div className="mt-3 pt-3 border-t border-vj-border-light flex gap-2 font-koho">
-                        <input
-                          type="text"
-                          value={promoCode}
-                          onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
-                          placeholder="Nhập mã khuyến mãi"
-                          className="flex-1 px-3 py-2 bg-white border border-vj-line rounded-vj text-xs uppercase font-bold outline-none focus:border-red-500 font-koho"
-                        />
-                        <button
-                          type="button"
-                          onClick={applyPromo}
-                          disabled={isApplyingPromo || !promoCode.trim()}
-                          className="bg-vjyellow hover:bg-vjamber disabled:opacity-50 text-black font-black text-xs px-4 py-2 rounded-vj cursor-pointer transition-colors font-koho"
-                        >
-                          {isApplyingPromo ? 'Đang kiểm tra...' : 'Áp dụng'}
-                        </button>
-                      </div>
-                    )}
-                    {promoApplied && promoData && (
-                      <div className="mt-2 text-xs font-bold text-green-700 flex items-center gap-1 font-koho">
-                        <span>✓</span> Đã áp dụng mã {promoData.code}: -
-                        {promoData.discountAmount.toLocaleString('vi-VN')} VND
-                      </div>
-                    )}
-                    {promoError && (
-                      <div className="mt-2 text-xs font-semibold text-vj-red-dark font-koho">
-                        {promoError}
-                      </div>
-                    )}
-                  </div>
-                )}
-
                 {/* CTA dẫn sang cổng thanh toán riêng của từng phương thức */}
                 <div className="pt-4 border-t border-vj-border-light space-y-3">
                   <button
@@ -1094,7 +1116,7 @@ export default function PaymentClient() {
             </div>
 
             {/* Order Summary */}
-            <div className="lg:col-span-1 space-y-4">
+            <div className="space-y-4">
               {/* Realistic Vietjet Ticket Card */}
               <BookingTicketCard
                 flightNo={booking.flightNo}
@@ -1123,11 +1145,10 @@ export default function PaymentClient() {
                 onOpenDetails={() => setShowSummaryModal(true)}
               />
 
-              {paymentMethod !== 'movi' && (
-                <div className="bg-white rounded-2xl border border-[var(--border)] p-5 sticky top-[140px] shadow-vj-sm">
-                  <h3 className="font-extrabold text-sm text-[var(--foreground)] mb-3">
-                    Chi tiết giá & thanh toán
-                  </h3>
+              <div className="bg-white rounded-2xl border border-[var(--border)] p-5 shadow-vj-sm">
+                <h3 className="font-extrabold text-sm text-[var(--foreground)] mb-3">
+                  Chi tiết giá & thanh toán
+                </h3>
 
                   {/* Promo code — chuẩn underline MUI 40px Vietjet live */}
                   <div className="mt-4">
@@ -1244,7 +1265,6 @@ export default function PaymentClient() {
                     Quay lại chọn chuyến bay
                   </Link>
                 </div>
-              )}
             </div>
           </div>
 
