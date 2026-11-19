@@ -264,12 +264,12 @@ export default function AncillaryPaymentPage() {
                   {pm.icon}
                 </div>
                 <span className="text-xs font-black text-vj-text">{pm.label}</span>
-                <span className="text-[10px] text-vj-muted">{pm.desc}</span>
+                <span className="text-2xs text-vj-muted">{pm.desc}</span>
               </button>
             ))}
           </div>
           {totalDue <= 0 && (
-            <p className="mt-3 text-[10px] text-vj-muted">
+            <p className="mt-3 text-2xs text-vj-muted">
               Không có khoản phí dịch vụ nào cần thanh toán.
             </p>
           )}
