@@ -299,7 +299,7 @@ export default function Header({
               - Nút "vi" 38×20px, viền trắng 1px, bo góc 3px, chữ 14px/500.
               - Nút menu 12×14px sát mép phải (x=365). */}
         {!compactMode && isHomepage && (
-          <div className="flex h-full items-start px-3.25 pt-3.25 lg:hidden">
+          <div className="flex h-full items-start px-3.25 pt-3.25 lg:hidden bg-gradient-to-b from-black/80 via-black/55 to-transparent">
             {/* Hàng nội dung cao 20px — logo (15px) canh giữa trong hàng nên
                 nằm ở y=51, đúng như site thật. */}
             <div className="flex h-[20px] w-full items-center">

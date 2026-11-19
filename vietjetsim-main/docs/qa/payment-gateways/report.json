@@ -1,56 +1,56 @@
 {
-  "testedAt": "2026-11-19T07:26:48.899Z",
+  "testedAt": "2026-11-19T16:22:25.821Z",
   "baseUrl": "http://127.0.0.1:4028",
-  "bookingId": "f85acf03-6a01-47a3-a2d6-58abfc6ce6a3",
+  "bookingId": "JB08SN",
   "steps": [
     {
       "step": "1_payment_selection",
-      "bookingId": "f85acf03-6a01-47a3-a2d6-58abfc6ce6a3",
-      "selectionState": "no-booking",
-      "status": "WARNING"
+      "bookingId": "JB08SN",
+      "selectionState": "payment-ui",
+      "status": "OK"
     },
     {
       "step": "2_gateway_qr",
-      "hasCountdown": false,
-      "hasQrContent": false,
-      "status": "WARNING"
+      "hasCountdown": true,
+      "hasQrContent": true,
+      "status": "OK"
     },
     {
       "step": "3_gateway_card",
-      "cardFormVisible": false,
-      "brandDetection": false,
-      "status": "WARNING"
+      "cardFormVisible": true,
+      "brandDetection": true,
+      "status": "OK"
     },
     {
       "step": "4_gateway_napas",
-      "hasBankGrid": false,
-      "status": "WARNING"
+      "hasBankGrid": true,
+      "status": "OK"
     },
     {
       "step": "5_gateway_ewallet",
-      "hasWallets": false,
-      "status": "WARNING"
+      "hasWallets": true,
+      "status": "OK"
     },
     {
       "step": "6_gateway_movi",
-      "hasMoviTenors": false,
-      "status": "WARNING"
+      "hasMoviTenors": true,
+      "status": "OK"
     },
     {
       "step": "7_gateway_wallet",
-      "hasWalletBalance": false,
-      "status": "WARNING"
+      "hasWalletBalance": true,
+      "status": "OK"
     },
     {
       "step": "8_payment_result",
-      "resultState": "not-found",
+      "resultState": "pending",
       "fakePnrGone": true,
       "showsOpenedPnr": true,
-      "hasSuccessDetails": false,
-      "status": "WARNING"
+      "hasSuccessDetails": true,
+      "status": "OK"
     }
   ],
   "overall": {
-    "passed": false
+    "passed": true
   }
 }

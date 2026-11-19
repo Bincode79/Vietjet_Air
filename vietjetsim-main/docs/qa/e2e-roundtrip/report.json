@@ -38,7 +38,7 @@
       }
     ],
     "errors": [],
-    "bookingId": "6f9ec595-4e5b-4db9-b3b4-9164e2bad3ef",
+    "bookingId": "f265cbeb-f7f4-4c9b-9d81-8bd772d3383d",
     "totalAmount": null,
     "passed": true
   },
@@ -81,13 +81,13 @@
       }
     ],
     "errors": [],
-    "bookingId": "a0c7d854-697b-4614-82c6-f2e0e5526564",
+    "bookingId": "c7db8c7d-8417-4633-b24b-79073dc8c4d4",
     "totalAmount": null,
     "passed": true
   },
   "overall": {
     "passed": true,
-    "desktopBookingId": "6f9ec595-4e5b-4db9-b3b4-9164e2bad3ef",
-    "mobileBookingId": "a0c7d854-697b-4614-82c6-f2e0e5526564"
+    "desktopBookingId": "f265cbeb-f7f4-4c9b-9d81-8bd772d3383d",
+    "mobileBookingId": "c7db8c7d-8417-4633-b24b-79073dc8c4d4"
   }
 }
