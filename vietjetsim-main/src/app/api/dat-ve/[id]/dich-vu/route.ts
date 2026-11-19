@@ -9,9 +9,14 @@ import {
   upsertBookingAncillary,
   removeBookingAncillary,
   getBookingAncillaries,
+  getPendingAncillaryAmount,
   setPassengerSeatNumber,
 } from '@/lib/db';
-import { BAGGAGE_PACKAGES, OVERSIZED_BAGGAGE } from '@/features/bookings/pricing';
+import {
+  BAGGAGE_PACKAGES,
+  OVERSIZED_BAGGAGE,
+  getAncillaryPrice,
+} from '@/features/bookings/pricing';
 import { rateLimit } from '@/lib/rate-limit';
 import { isGuestBookingOwner } from '@/lib/guest-booking';
 
@@ -56,17 +61,31 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       );
     }
 
+    // State Guard: Chặn các đơn đã hủy hoặc hoàn tiền
+    if (booking.status === 'cancelled' || booking.status === 'refunded') {
+      return NextResponse.json(
+        {
+          error: 'Booking not eligible',
+          message: 'Đơn đặt chỗ đã bị hủy hoặc hoàn tiền, không thể thay đổi dịch vụ.',
+        },
+        { status: 409 }
+      );
+    }
+
     const body = await request.json();
 
     // Hỗ trợ cập nhật tổng hợp các dịch vụ bổ sung từ trang /dat-ve/[id]/dich-vu
     if (body.services) {
       const s = body.services;
       const passengerId = String(s.passenger_id ?? booking.passengers?.[0]?.id ?? '').trim();
-      const newSeat = s.seat_number ? String(s.seat_number).trim().toUpperCase() : null;
-      if (newSeat && passengerId) {
+      
+      // Cập nhật hoặc gỡ chỗ ngồi
+      if (s.seat_number !== undefined && passengerId) {
+        const newSeat = s.seat_number ? String(s.seat_number).trim().toUpperCase() : null;
         await setPassengerSeatNumber(passengerId, newSeat, booking.id);
       }
 
+      // Mua thêm hành lý
       if (s.package_id) {
         const pkg = BAGGAGE_CATALOG.find((item) => item.id === String(s.package_id).trim());
         if (pkg) {
@@ -82,25 +101,36 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
         }
       }
 
+      // Bảo hiểm Travel Safe
       if (typeof s.insurance === 'boolean') {
         if (s.insurance) {
-          await upsertBookingAncillary(booking.id, 'insurance', 44000, 1);
+          await upsertBookingAncillary(booking.id, 'insurance', getAncillaryPrice('insurance'), 1);
         } else {
           await removeBookingAncillary(booking.id, 'insurance');
         }
+      } else if (s.insurance === null) {
+        await removeBookingAncillary(booking.id, 'insurance');
       }
 
-      if (s.meal) {
-        await upsertBookingAncillary(booking.id, 'meal', 85000, 1);
+      // Suất ăn nóng Jet Café
+      if (s.meal === true || typeof s.meal === 'string' || typeof s.meal === 'object') {
+        await upsertBookingAncillary(booking.id, 'meal', getAncillaryPrice('meal'), 1);
+      } else if (s.meal === false || s.meal === null) {
+        await removeBookingAncillary(booking.id, 'meal');
       }
 
-      if (s.taxi) {
-        await upsertBookingAncillary(booking.id, 'taxi', 150000, 1);
+      // Taxi sân bay
+      if (s.taxi === true || typeof s.taxi === 'string' || typeof s.taxi === 'object') {
+        await upsertBookingAncillary(booking.id, 'taxi', getAncillaryPrice('taxi'), 1);
+      } else if (s.taxi === false || s.taxi === null) {
+        await removeBookingAncillary(booking.id, 'taxi');
       }
 
       const ancillaries = await getBookingAncillaries(booking.id);
       const baggage = await getBookingBaggage(booking.id);
-      const pendingAmount = await getPendingBaggageAmount(booking.id);
+      const pendingBaggage = await getPendingBaggageAmount(booking.id);
+      const pendingAncillaries = await getPendingAncillaryAmount(booking.id);
+      const pendingAmount = pendingBaggage + pendingAncillaries;
 
       return NextResponse.json({
         success: true,
@@ -146,7 +176,9 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       status: 'pending',
     });
 
-    const pendingAmount = await getPendingBaggageAmount(booking.id);
+    const pendingBaggage = await getPendingBaggageAmount(booking.id);
+    const pendingAncillaries = await getPendingAncillaryAmount(booking.id);
+    const pendingAmount = pendingBaggage + pendingAncillaries;
 
     return NextResponse.json(
       {
@@ -177,8 +209,10 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     }
 
     const baggage = await getBookingBaggage(booking.id);
-    const pendingAmount = await getPendingBaggageAmount(booking.id);
+    const pendingBaggage = await getPendingBaggageAmount(booking.id);
     const ancillaries = await getBookingAncillaries(booking.id);
+    const pendingAncillaries = await getPendingAncillaryAmount(booking.id);
+    const pendingAmount = pendingBaggage + pendingAncillaries;
 
     return NextResponse.json({ baggage, pendingAmount, ancillaries });
   } catch (error) {

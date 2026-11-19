@@ -122,3 +122,36 @@ describe('trang quản lý đặt chỗ in PNR thật, không in UUID', () => {
     expect(tripCard).toMatch(/primaryLeg\.bookingCode/);
   });
 });
+
+describe('Phân hệ Dịch vụ bổ sung sau đặt vé (Ảnh #6)', () => {
+  const routeSource = readFileSync(BAGGAGE_ROUTE, 'utf8');
+  const paymentRoute = join(process.cwd(), 'src/app/api/dat-ve/[id]/dich-vu/thanh-toan/route.ts');
+  const paymentSource = readFileSync(paymentRoute, 'utf8');
+
+  it('giá dịch vụ lấy từ pricing.ts (getAncillaryPrice)', () => {
+    expect(routeSource).toMatch(/getAncillaryPrice\('insurance'\)/);
+    expect(routeSource).toMatch(/getAncillaryPrice\('meal'\)/);
+    expect(routeSource).toMatch(/getAncillaryPrice\('taxi'\)/);
+  });
+
+  it('chặn trạng thái cancelled và refunded với mã 409', () => {
+    expect(routeSource).toMatch(/booking\.status === 'cancelled' \|\| booking\.status === 'refunded'/);
+  });
+
+  it('hỗ trợ gỡ dịch vụ (remove symmetry contract)', () => {
+    expect(routeSource).toMatch(/removeBookingAncillary\(booking\.id, 'insurance'\)/);
+    expect(routeSource).toMatch(/removeBookingAncillary\(booking\.id, 'meal'\)/);
+    expect(routeSource).toMatch(/removeBookingAncillary\(booking\.id, 'taxi'\)/);
+  });
+
+  it('tính tổng pendingAmount bao gồm cả hành lý và dịch vụ bổ sung', () => {
+    expect(routeSource).toMatch(/pendingAmount = pendingBaggage \+ pendingAncillaries/);
+  });
+
+  it('có endpoint thanh toán dịch vụ bổ sung tại dich-vu/thanh-toan', () => {
+    expect(paymentSource).toMatch(/getPendingBaggageAmount/);
+    expect(paymentSource).toMatch(/getPendingAncillaryAmount/);
+    expect(paymentSource).toMatch(/markBaggagePaid/);
+    expect(paymentSource).toMatch(/recalcBookingTotal/);
+  });
+});

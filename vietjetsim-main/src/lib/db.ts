@@ -5819,12 +5819,44 @@ export async function getBookingAncillaries(bookingId: string): Promise<BookingA
   }>(rows).map((r) => ({ ...r, unit_price: parseFloat(String(r.unit_price)) }));
 }
 
-export async function updateBookingTotalAmount(bookingId: string, newTotal: number): Promise<boolean> {
+export async function updateBookingTotalPrice(bookingId: string, newTotal: number): Promise<boolean> {
   const rows = await sql`
     UPDATE bookings
-    SET total_amount = ${newTotal}, updated_at = NOW()
+    SET total_price = ${newTotal}, updated_at = NOW()
     WHERE id = ${bookingId}
     RETURNING id
   `;
   return Array.isArray(rows) && rows.length > 0;
+}
+
+/** Tương thích ngược: alias cho updateBookingTotalPrice */
+export const updateBookingTotalAmount = updateBookingTotalPrice;
+
+export const markBaggagePaid = markBookingBaggagePaid;
+
+export async function getPendingAncillaryAmount(bookingId: string): Promise<number> {
+  const rows = await sql`
+    SELECT COALESCE(SUM(unit_price * quantity), 0) AS pending_amount
+    FROM booking_ancillaries
+    WHERE booking_id = ${bookingId}
+  `;
+  const row = asFirstRow<{ pending_amount: string | number }>(rows);
+  return row ? parseFloat(String(row.pending_amount)) : 0;
+}
+
+export async function recalcBookingTotal(bookingId: string): Promise<number> {
+  const booking = await getBookingById(bookingId);
+  if (!booking) return 0;
+
+  const passengers = booking.passengers || [];
+  const paxCount = passengers.length || 1;
+  const flight = booking.flight_id ? await getFlightById(booking.flight_id) : null;
+  const baseFare = flight ? Number(flight.price || flight.economy_price || 0) * paxCount : 0;
+
+  const pendingBaggage = await getPendingBaggageAmount(bookingId);
+  const pendingAncillaries = await getPendingAncillaryAmount(bookingId);
+
+  const newTotal = baseFare + pendingBaggage + pendingAncillaries;
+  await updateBookingTotalPrice(bookingId, newTotal);
+  return newTotal;
 }

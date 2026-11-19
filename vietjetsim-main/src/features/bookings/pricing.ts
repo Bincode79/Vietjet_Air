@@ -54,14 +54,14 @@ export function getSeatCharge(seatNumber: string): number {
   return Math.round(getSeatPrice(seatNumber) * (1 + SEAT_TAX_RATE + SEAT_SERVICE_FEE_RATE));
 }
 
-export type AncillaryId = 'baggage' | 'meal' | 'insurance';
+export type AncillaryId = 'baggage' | 'meal' | 'insurance' | 'taxi' | 'special' | 'pet';
 
 export interface AncillaryOption {
   id: AncillaryId;
   title: string;
   description: string;
-  icon: 'BriefcaseIcon' | 'SparklesIcon' | 'ShieldCheckIcon';
-  /** Price per passenger. */
+  icon: 'BriefcaseIcon' | 'SparklesIcon' | 'ShieldCheckIcon' | 'CarIcon' | 'HeartIcon';
+  /** Price per passenger / unit. */
   price: number;
 }
 
@@ -71,23 +71,39 @@ export const ANCILLARY_OPTIONS: readonly AncillaryOption[] = [
     title: 'Hành lý',
     description: 'Hành lý ký gửi 20kg',
     icon: 'BriefcaseIcon',
-    price: 150000,
+    price: 200000,
   },
   {
     id: 'meal',
     title: 'Suất ăn',
-    description: 'Bữa ăn nóng trên máy bay',
+    description: 'Bữa ăn nóng trên máy bay (Jet Café)',
     icon: 'SparklesIcon',
-    price: 100000,
+    price: 85000,
   },
   {
     id: 'insurance',
     title: 'Bảo hiểm',
-    description: 'Bảo hiểm chuyến bay',
+    description: 'Bảo hiểm du lịch Vietjet Travel Safe',
     icon: 'ShieldCheckIcon',
-    price: 60000,
+    price: 44000,
+  },
+  {
+    id: 'taxi',
+    title: 'Taxi sân bay',
+    description: 'Dịch vụ đưa đón sân bay tận nơi',
+    icon: 'CarIcon',
+    price: 150000,
   },
 ] as const;
+
+export function getAncillaryOption(id: string): AncillaryOption | undefined {
+  return ANCILLARY_OPTIONS.find((item) => item.id === id);
+}
+
+export function getAncillaryPrice(id: string): number {
+  const opt = getAncillaryOption(id);
+  return opt ? opt.price : 0;
+}
 
 export interface BaggagePackage {
   id: string;

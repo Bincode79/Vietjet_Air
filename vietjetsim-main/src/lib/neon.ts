@@ -1341,6 +1341,8 @@ function createMockSql(): SqlClient {
    * được canary".
    */
   const mockMoviApplications: MockResult[] = [];
+  /** Dịch vụ bổ sung sau đặt vé (migration 029) — bảng `booking_ancillaries`. */
+  const mockBookingAncillaries: MockResult[] = [];
 
   /** Sinh id giả cho dòng mock — đủ duy nhất trong phạm vi một phiên test. */
   let mockSeq = 0;
@@ -2088,6 +2090,18 @@ function createMockSql(): SqlClient {
       return [booking];
     }
 
+    if (q.includes('update bookings') && (q.includes('total_price =') || q.includes('total_amount ='))) {
+      const newTotal = Number(values[0] ?? 0);
+      const bookingId = String(values[1] ?? values[values.length - 1] ?? '');
+      const booking = mockBookings.find((b) => String(b.id) === bookingId);
+      if (booking) {
+        booking.total_price = newTotal;
+        booking.updated_at = nowIso();
+        return [{ id: booking.id }];
+      }
+      return [];
+    }
+
     // ── Đổi ghế sau khi đặt vé (`booking_seat_changes` + `seats`) ────────────
     if (q.includes('insert into booking_seat_changes')) {
       const row: MockResult = {
@@ -2149,6 +2163,56 @@ function createMockSql(): SqlClient {
     if (q.includes('from seats')) {
       const bookingId = String(values[0] ?? '');
       return mockSeats.filter((s) => String(s.booking_id) === bookingId);
+    }
+
+    // ── Dịch vụ bổ sung sau đặt vé (`booking_ancillaries`) ────────────────────
+    if (q.includes('insert into booking_ancillaries')) {
+      const bookingId = String(values[0] ?? '');
+      const optionId = String(values[1] ?? '');
+      const unitPrice = Number(values[2] ?? 0) || 0;
+      const quantity = Number(values[3] ?? 1) || 1;
+
+      const existing = mockBookingAncillaries.find(
+        (a) => a.booking_id === bookingId && a.option_id === optionId
+      );
+      if (existing) {
+        existing.unit_price = unitPrice;
+        existing.quantity = quantity;
+        return [existing];
+      }
+      const row: MockResult = {
+        id: mockUuid(),
+        booking_id: bookingId,
+        option_id: optionId,
+        unit_price: unitPrice,
+        quantity,
+        created_at: nowIso(),
+      };
+      mockBookingAncillaries.push(row);
+      return [row];
+    }
+
+    if (q.includes('delete from booking_ancillaries')) {
+      const bookingId = String(values[0] ?? '');
+      const optionId = String(values[1] ?? '');
+      const idx = mockBookingAncillaries.findIndex(
+        (a) => a.booking_id === bookingId && a.option_id === optionId
+      );
+      if (idx >= 0) {
+        const removed = mockBookingAncillaries.splice(idx, 1);
+        return [{ id: removed[0].id }];
+      }
+      return [];
+    }
+
+    if (q.includes('from booking_ancillaries')) {
+      const bookingId = String(values[0] ?? '');
+      const matches = mockBookingAncillaries.filter((a) => a.booking_id === bookingId);
+      if (q.includes('sum(unit_price * quantity)') || q.includes('pending_amount')) {
+        const total = matches.reduce((sum, item) => sum + (Number(item.unit_price) * Number(item.quantity)), 0);
+        return [{ pending_amount: total }];
+      }
+      return matches;
     }
 
     return null;
