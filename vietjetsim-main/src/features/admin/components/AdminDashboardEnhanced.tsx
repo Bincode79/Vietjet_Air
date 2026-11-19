@@ -77,19 +77,6 @@ function generateUserStats(): UserStats {
   };
 }
 
-function generateBookingStats(): BookingStats {
-  const total = 89500;
-  const pending = 12450;
-  const confirmed = 65300;
-  const cancelled = 11800;
-  return {
-    total,
-    pending,
-    confirmed,
-    cancelled,
-    pendingRate: Math.round((pending / total) * 100),
-  };
-}
 
 // Mock data generators
 function generateFlights() {
@@ -417,7 +404,7 @@ function MetricCard({
   change,
   trend,
   icon: IconName,
-  color,
+  color: _color,
 }: {
   title: string;
   value: string | number;
@@ -429,7 +416,7 @@ function MetricCard({
   return (
     <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
       <div className="flex items-center justify-between mb-4">
-        <div className="w-10 h-10 rounded-lg {color} flex items-center justify-center">
+        <div className="w-10 h-10 rounded-lg {_color} flex items-center justify-center">
           <Icon name={IconName} size={20} />
         </div>
         <div className="w-8 h-8 rounded-full {trend === 'up' ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'} flex items-center justify-center">
@@ -655,7 +642,7 @@ function OverviewDashboard({
                   ))}
                 </Pie>
                 <Tooltip
-                  content={({ active, payload, label }: any) => {
+                  content={({ active, payload, label: _label }: any) => {
                     if (active && payload && payload.length) {
                       const data = payload[0].payload as CabinClass;
                       const total = cabinData.reduce((sum, d) => sum + d.value, 0);

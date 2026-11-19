@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Icon } from '@/shared/components/ui';
 
 interface Passenger {
   name: string;

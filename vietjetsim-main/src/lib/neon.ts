@@ -1346,7 +1346,7 @@ function createMockSql(): SqlClient {
 
   /** Sinh id giả cho dòng mock — đủ duy nhất trong phạm vi một phiên test. */
   let mockSeq = 0;
-  const nextMockId = (prefix: string) => `${prefix}-mock-${++mockSeq}`;
+  const _nextMockId = (prefix: string) => `${prefix}-mock-${++mockSeq}`;
   const mockUuid = () => '00000000-0000-4000-8000-' + String(++mockSeq).padStart(12, '0');
 
   /**

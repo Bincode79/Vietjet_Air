@@ -52,7 +52,7 @@ async function checkPage(page, pageInfo, vp) {
     await new Promise((r) => setTimeout(r, 2000));
 
     // Audit layout
-    const auditData = await page.evaluate((vpWidth) => {
+    const auditData = await page.evaluate((_vpWidth) => {
       const docW = document.documentElement.scrollWidth;
       const bodyW = document.body.scrollWidth;
       const winW = window.innerWidth;
