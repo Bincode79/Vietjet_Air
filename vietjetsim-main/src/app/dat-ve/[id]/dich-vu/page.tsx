@@ -8,6 +8,12 @@ import { Icon } from '@/shared/components/ui';
 import { apiRequest } from '@/shared/services';
 import { useToast } from '@/hooks/useToast';
 import { ToastContainer } from '@/shared/components/feedback';
+import {
+  ANCILLARY_OPTIONS,
+  BAGGAGE_PACKAGES,
+  MEAL_OPTIONS,
+  getAncillaryPrice,
+} from '@/features/bookings/pricing';
 
 interface Passenger {
   id: string;
@@ -81,17 +87,17 @@ export default function AncillaryServicesPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Selected services state
+  // Selected services state — giá đọc từ pricing.ts (không hardcode)
   const [selectedSeat, setSelectedSeat] = useState<string>('15-A');
   const [seatPrice, setSeatPrice] = useState<number>(40000);
-  const [selectedBaggage, setSelectedBaggage] = useState<string>('Gói 20kg');
-  const [baggagePrice, setBaggagePrice] = useState<number>(200000);
+  const [selectedBaggage, setSelectedBaggage] = useState<string>(BAGGAGE_PACKAGES[0].label);
+  const [baggagePrice, setBaggagePrice] = useState<number>(BAGGAGE_PACKAGES[0].price);
   const [hasInsurance, setHasInsurance] = useState<boolean>(true);
-  const [insurancePrice, setInsurancePrice] = useState<number>(44000);
-  const [selectedMeal, setSelectedMeal] = useState<string>('jet café');
+  const [insurancePrice, setInsurancePrice] = useState<number>(getAncillaryPrice('insurance'));
+  const [selectedMeal, setSelectedMeal] = useState<string>('');
   const [mealPrice, setMealPrice] = useState<number>(0);
   const [selectedTaxi, setSelectedTaxi] = useState<boolean>(false);
-  const [taxiPrice, setTaxiPrice] = useState<number>(0);
+  const [taxiPrice, setTaxiPrice] = useState<number>(getAncillaryPrice('taxi'));
 
   // Modals state
   const [showSeatModal, setShowSeatModal] = useState<boolean>(false);
@@ -257,11 +263,9 @@ export default function AncillaryServicesPage() {
       const mealVal = overrides?.meal ?? pendingMeal ?? selectedMeal;
       const taxiVal = overrides?.taxi !== undefined ? overrides.taxi : selectedTaxi;
 
-      let pkgId = 'pkg-20';
-      if (baggageVal.includes('30kg')) pkgId = 'pkg-30';
-      else if (baggageVal.includes('40kg')) pkgId = 'pkg-40';
-      else if (baggageVal.includes('quá khổ 20')) pkgId = 'oversized-20';
-      else if (baggageVal.includes('quá khổ 30')) pkgId = 'oversized-30';
+      let pkgId = BAGGAGE_PACKAGES[0].id;
+      const matchedPkg = BAGGAGE_PACKAGES.find((p) => baggageVal.includes(p.label));
+      if (matchedPkg) pkgId = matchedPkg.id;
 
       await apiRequest(`/api/dat-ve/${encodeURIComponent(id)}/dich-vu`, {
         method: 'POST',
@@ -479,10 +483,10 @@ export default function AncillaryServicesPage() {
             <div
               onClick={() => {
                 setSelectedTaxi(!selectedTaxi);
-                setTaxiPrice(!selectedTaxi ? 150000 : 0);
+                setTaxiPrice(!selectedTaxi ? getAncillaryPrice('taxi') : 0);
                 toast.success(
                   !selectedTaxi
-                    ? 'Đã thêm dịch vụ Taxi sân bay (150.000 VND)'
+                    ? `Đã thêm dịch vụ Taxi sân bay (${getAncillaryPrice('taxi').toLocaleString('vi-VN')} VND)`
                     : 'Đã bỏ dịch vụ Taxi'
                 );
               }}
@@ -975,33 +979,28 @@ export default function AncillaryServicesPage() {
               </button>
             </div>
             <div className="p-4 space-y-2.5">
-              {[
-                { name: 'Gói 20kg', price: 200000, desc: 'Phù hợp chuyến đi du lịch 3-5 ngày' },
-                { name: 'Gói 30kg', price: 330000, desc: 'Thoải mái mua sắm và quà lưu niệm' },
-                { name: 'Gói 40kg', price: 440000, desc: 'Dung tích tối đa cho chuyến đi dài' },
-                { name: 'Hành lý quá khổ 20kg', price: 350000, desc: 'Dụng cụ thể thao, nhạc cụ' },
-              ].map((pkg) => (
+              {BAGGAGE_PACKAGES.map((pkg) => (
                 <div
-                  key={pkg.name}
+                  key={pkg.id}
                   onClick={() => {
-                    setPendingBaggage(pkg.name);
+                    setPendingBaggage(pkg.label);
                     setPendingBaggagePrice(pkg.price);
                   }}
                   className={`p-3.5 rounded-xl border flex items-center justify-between cursor-pointer transition-all ${
-                    pendingBaggage === pkg.name
+                    pendingBaggage === pkg.label
                       ? 'border-vj-red-dark bg-red-50/50 shadow-2xs'
                       : 'border-gray-200 hover:border-vj-yellow'
                   }`}
                 >
                   <div>
-                    <div className="font-black text-sm text-vj-text">{pkg.name}</div>
-                    <div className="text-3xs text-gray-500">{pkg.desc}</div>
+                    <div className="font-black text-sm text-vj-text">{pkg.label}</div>
+                    <div className="text-3xs text-gray-500">Hành lý ký gửi {pkg.weight}kg</div>
                   </div>
                   <div className="text-right">
                     <div className="font-black text-xs text-vj-red-dark">
                       {pkg.price.toLocaleString('vi-VN')} VND
                     </div>
-                    <div className="text-2xs">{pendingBaggage === pkg.name ? '✓' : ''}</div>
+                    <div className="text-2xs">{pendingBaggage === pkg.label ? '✓' : ''}</div>
                   </div>
                 </div>
               ))}
@@ -1044,23 +1043,9 @@ export default function AncillaryServicesPage() {
               </button>
             </div>
             <div className="p-4 space-y-2.5">
-              {[
-                { name: 'Cơm gà xối mỡ', price: 85000, desc: 'Cơm dẻo thơm ăn kèm gà vàng giòn' },
-                {
-                  name: 'Xôi mặn ngũ sắc',
-                  price: 85000,
-                  desc: 'Xôi nếp dẻo thơm, chà bông, lạp xưởng',
-                },
-                { name: 'Miến xào cua', price: 95000, desc: 'Thịt cua tươi xào miến dai ngọt' },
-                {
-                  name: 'Bánh mì chả lụa pate',
-                  price: 65000,
-                  desc: 'Đậm đà hương vị truyền thống Việt',
-                },
-                { name: 'Cà phê sữa đá dừa', price: 45000, desc: 'Cà phê thơm béo vị sữa dừa' },
-              ].map((meal) => (
+              {MEAL_OPTIONS.map((meal) => (
                 <div
-                  key={meal.name}
+                  key={meal.id}
                   onClick={() => {
                     setPendingMeal(meal.name);
                     setPendingMealPrice(meal.price);
@@ -1073,7 +1058,7 @@ export default function AncillaryServicesPage() {
                 >
                   <div>
                     <div className="font-black text-sm text-vj-text">{meal.name}</div>
-                    <div className="text-3xs text-gray-500">{meal.desc}</div>
+                    <div className="text-3xs text-gray-500">{meal.id}</div>
                   </div>
                   <div className="text-right">
                     <div className="font-black text-xs text-vj-red-dark">
