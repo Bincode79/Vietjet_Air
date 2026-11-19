@@ -150,10 +150,10 @@ describe('PaymentClient Component UI & Interaction', () => {
     expect(screen.getAllByText(/Trả góp Movi/i).length).toBeGreaterThan(0);
   });
 
-  it('switches to Credit Card method and shows Virtual Credit Card with brand detection', async () => {
+  it('switches to Credit Card method and navigates to its dedicated gateway page', async () => {
     sessionStorage.setItem('vjsim_booking', JSON.stringify(mockBooking));
 
-    const { container } = render(<PaymentClient />);
+    render(<PaymentClient />);
 
     await waitFor(
       () => {
@@ -162,31 +162,19 @@ describe('PaymentClient Component UI & Interaction', () => {
       { timeout: 3000 }
     );
 
-    // Click Credit Card option
+    // Chọn phương thức thẻ — form chi tiết nằm ở trang cổng riêng
     const cardBtns = screen.getAllByText(/Thẻ tín dụng \/ ghi nợ quốc tế/i);
     fireEvent.click(cardBtns[0]);
 
-    // Form inputs for Card should appear
-    await waitFor(() => {
-      expect(container.querySelector('#cardNumber')).toBeDefined();
-      expect(container.querySelector('#cardName')).toBeDefined();
-      expect(container.querySelector('#cardExpiry')).toBeDefined();
-      expect(container.querySelector('#cardCvv')).toBeDefined();
-    });
+    const cta = await screen.findAllByText(/Tiếp tục thanh toán/i);
+    fireEvent.click(cta[0]);
 
-    // Type Visa card number
-    const cardInput = container.querySelector('#cardNumber') as HTMLInputElement;
-    fireEvent.change(cardInput, { target: { value: '4111 2222 3333 4444' } });
-
-    // Type Cardholder name
-    const nameInput = container.querySelector('#cardName') as HTMLInputElement;
-    fireEvent.change(nameInput, { target: { value: 'NGUYEN VAN TEST' } });
-
-    expect(cardInput.value).toBe('4111 2222 3333 4444');
-    expect(nameInput.value).toBe('NGUYEN VAN TEST');
+    expect(mockPush).toHaveBeenCalledWith(
+      expect.stringContaining('/thanh-toan/gateway/card?bookingId=VJ8899')
+    );
   });
 
-  it('switches to Pay Later (MOVI) method and renders customer identity fields', async () => {
+  it('switches to Pay Later (MOVI) method and navigates to its dedicated gateway page', async () => {
     sessionStorage.setItem('vjsim_booking', JSON.stringify(mockBooking));
 
     render(<PaymentClient />);
@@ -202,12 +190,12 @@ describe('PaymentClient Component UI & Interaction', () => {
     const moviBtns = screen.getAllByText(/Trả góp Movi/i);
     fireEvent.click(moviBtns[0]);
 
-    await waitFor(() => {
-      expect(screen.getByText(/Vui lòng nhập thông tin của bạn/i)).toBeDefined();
-      expect(screen.getAllByText(/Bay trước, trả sau/i).length).toBeGreaterThan(0);
-      expect(screen.getByPlaceholderText(/CMND\/CCCD\*/i)).toBeDefined();
-      expect(screen.getByPlaceholderText(/Họ và tên\*/i)).toBeDefined();
-      expect(screen.getByPlaceholderText(/Nhập số điện thoại\*/i)).toBeDefined();
-    });
+    const cta = await screen.findAllByText(/Tiếp tục thanh toán/i);
+    fireEvent.click(cta[0]);
+
+    expect(mockPush).toHaveBeenCalledWith(
+      expect.stringContaining('/thanh-toan/gateway/movi?bookingId=VJ8899')
+    );
   });
 });
+

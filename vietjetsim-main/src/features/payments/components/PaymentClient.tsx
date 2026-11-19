@@ -16,16 +16,12 @@ import { TAX_AND_FEE_RATE, ANCILLARY_OPTIONS, type AncillaryId } from '@/feature
 import type { PaymentMethod } from '@/features/payments/types';
 import { apiRequest, ApiRequestError } from '@/shared/services';
 import { renderTransferNote } from '@/lib/transfer-note';
-import { validateBankTransferInput } from '@/lib/bank-transfer';
 import { skypointPointsForAmount, skypointValueOfPoints } from '@/lib/skypoint';
 import { MOVI_DEFAULT_TENOR, MOVI_HOLD_MINUTES } from '@/lib/movi';
-import { buildBoardingQrContent, buildETicketHtml, type ETicketData } from '../e-ticket';
-import VietQrBox from './VietQrBox';
 import EBoardingPass from './EBoardingPass';
 import PaymentModal from './PaymentModal';
 import ReservationCountdown from './ReservationCountdown';
 import BookingTicketCard from './BookingTicketCard';
-import VirtualCreditCard from './VirtualCreditCard';
 import ItineraryModal from '@/features/bookings/components/ItineraryModal';
 import {
   VisaLogo,
@@ -57,7 +53,6 @@ interface BankAccount {
   transfer_note_template?: string;
 }
 
-const EWALLETS = ['MoMo', 'ZaloPay', 'VNPay'];
 
 // Confetti particle type
 interface Particle {
@@ -377,11 +372,6 @@ export default function PaymentClient() {
     if (param === 'skypoint') return 'skypoint';
     return 'vietqr';
   });
-  const [cardNumber, setCardNumber] = useState('');
-  const [cardName, setCardName] = useState('');
-  const [expiry, setExpiry] = useState('');
-  const [cvv, setCvv] = useState('');
-  const [isCardFlipped, setIsCardFlipped] = useState(false);
   // The bank tab no longer collects the customer's own account — it confirms a
   // transfer they already made, by re-typing the memo and amount we displayed.
   const [transferNoteInput, setTransferNoteInput] = useState('');
@@ -907,6 +897,38 @@ export default function PaymentClient() {
   // Transfer content the customer must paste into their bank app. Admins
   // control the template (Admin → Ngân hàng); the amounts are rendered without
   // thousand separators so a receiving bank cannot misread them.
+  // Mỗi phương thức thanh toán có trang cổng riêng tại
+  // /thanh-toan/gateway/<method> — cổng đó tự tải lại booking và gọi API,
+  // nên ở đây chỉ cần chuyển hướng kèm bookingId + mã giảm giá (nếu có).
+  const GATEWAY_METHOD_BY_GROUP: Record<string, string> = {
+    vnpay_qr: 'qr',
+    vietqr: 'qr',
+    vnpay_dom: 'qr',
+    napas: 'napas',
+    card: 'card',
+    applepay: 'card',
+    googlepay: 'card',
+    momo: 'ewallet',
+    zalopay: 'ewallet',
+    skypoint: 'skypoint',
+    movi: 'movi',
+    wallet: 'wallet',
+    bank: 'bank',
+  };
+
+  const goToPaymentGateway = () => {
+    const gatewayMethod = GATEWAY_METHOD_BY_GROUP[selectedMethodGroup] || 'qr';
+    const params = new URLSearchParams();
+    const target = effectiveBookingCode || bookingId;
+    if (target) params.set('bookingId', target);
+    if (promoApplied && promoData?.code) {
+      params.set('promo', promoData.code);
+      params.set('promoDiscount', String(discountAmount));
+    }
+    const qs = params.toString();
+    router.push(`/thanh-toan/gateway/${gatewayMethod}${qs ? `?${qs}` : ''}`);
+  };
+
   const transferNote = useMemo(
     () =>
       renderTransferNote(selectedAdminAccount?.transfer_note_template, {
@@ -990,133 +1012,6 @@ export default function PaymentClient() {
     }
   };
 
-  const handlePayment = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    // A bank transfer (or a VietQR scan into the same account) is confirmed
-    // here: the customer re-types the memo and amount this page displayed.
-    // If the customer attached an image of their payment receipt screenshot,
-    // we allow submission for manual Admin cross-checking and verification.
-    if (paymentMethod === 'bank' || paymentMethod === 'vietqr') {
-      if (!selectedAdminAccount) {
-        setPaymentError('Chưa có thông tin tài khoản nhận. Vui lòng thử lại sau.');
-        setShowErrorModal(true);
-        return;
-      }
-      if (!receiptImage) {
-        const check = validateBankTransferInput(
-          {
-            transferNote: transferNoteInput.trim() || transferNote,
-            amount: transferAmountInput.trim() || String(total),
-          },
-          { transferNote, amount: total }
-        );
-        if (!check.valid) {
-          setPaymentError(check.message);
-          setShowErrorModal(true);
-          return;
-        }
-      }
-    }
-
-    if (paymentMethod === 'wallet') {
-      if (walletBalance === null || walletBalance < total) {
-        setPaymentError(
-          'Số dư ví không đủ để thanh toán. Vui lòng nạp thêm tiền hoặc chọn phương thức khác.'
-        );
-        setShowErrorModal(true);
-        return;
-      }
-    }
-
-    if (paymentMethod === 'skypoint') {
-      const pointsNeeded = skypointInfo ? skypointPointsForAmount(total, skypointInfo.rate) : null;
-      if (!useCashPlusPoints && (pointsNeeded === null || skypointInfo!.points < pointsNeeded)) {
-        setPaymentError(
-          `Số dư SkyPoint không đủ (cần ${pointsNeeded?.toLocaleString('vi-VN') ?? '—'} điểm). Bạn có thể bật tính năng "Thanh toán kết hợp Cash + Points" hoặc chọn phương thức khác.`
-        );
-        setShowErrorModal(true);
-        return;
-      }
-    }
-
-    if (paymentMethod === 'movi') {
-      // Lượt giữ chỗ đã hết hạn ⇒ mã đặt chỗ đã bị server hủy. Chặn ở client
-      // để khách nhận thông báo rõ ràng NGAY, thay vì bấm "Thanh toán" rồi
-      // mới nhận 409 "Reservation expired" từ server.
-      if (moviHoldExpired) {
-        setPaymentError(
-          'Thời gian giữ chỗ đã hết. Mã đặt chỗ đã bị hủy, vui lòng đặt vé lại để tiếp tục.'
-        );
-        setShowErrorModal(true);
-        return;
-      }
-      if (!moviFullName.trim()) {
-        setPaymentError('Vui lòng nhập Họ và tên người đăng ký trả sau Movi');
-        setShowErrorModal(true);
-        return;
-      }
-      if (!moviBirthDate.trim()) {
-        setPaymentError('Vui lòng nhập Ngày sinh (DD/MM/YYYY)');
-        setShowErrorModal(true);
-        return;
-      }
-      if (!moviCccd.trim() || moviCccd.trim().length < 9) {
-        setPaymentError('Vui lòng nhập số CMND/CCCD hợp lệ (từ 9 đến 12 số)');
-        setShowErrorModal(true);
-        return;
-      }
-      if (!moviPhone.trim() || moviPhone.trim().replace(/\D/g, '').length < 10) {
-        setPaymentError('Vui lòng nhập số điện thoại hợp lệ (10 số)');
-        setShowErrorModal(true);
-        return;
-      }
-
-      // Người dùng chỉ cần nhập các trường và ấn Xác nhận ⇒ Mở modal xác nhận khoản vay (chuẩn Image #2)
-      setShowMoviModal(true);
-      return;
-    }
-    setLoading(true);
-    setPaymentError(null);
-    setShowErrorModal(false);
-    try {
-      const targetBookingId = effectiveLookupTarget || booking?.bookingId || bookingId;
-      if (!targetBookingId) {
-        throw new Error('Không tìm thấy thông tin đặt chỗ');
-      }
-
-      await createPayment({
-        booking_id: targetBookingId,
-        return_booking_id: booking?.returnBookingId || undefined,
-        method: paymentMethod,
-        amount: cashDue,
-        discount_code_id: promoData?.id ?? undefined,
-        discount_amount: discountAmount,
-        discount_code: promoData?.code,
-        bank_account_id: selectedAdminAccount?.id,
-        transfer_note: transferNoteInput.trim() || transferNote,
-        transfer_amount: transferAmountInput.trim() || String(cashDue),
-        receipt_image: receiptImage || undefined,
-        points_to_redeem:
-          useCashPlusPoints && cashPlusPointsRedeem > 0 ? cashPlusPointsRedeem : undefined,
-        movi: undefined,
-      });
-
-      setLoading(false);
-      setConfirmed(true);
-      toast.success('Thanh toán thành công!', 'Vé điện tử đã được gửi đến email của bạn.', {
-        duration: 6000,
-      });
-    } catch (err) {
-      setLoading(false);
-      const errMsg =
-        (err instanceof Error && err.message) ||
-        'Thanh toán thất bại. Vui lòng kiểm tra thông tin và thử lại.';
-      setPaymentError(errMsg);
-      setShowErrorModal(true);
-    }
-  };
-
   const executeMoviPayment = async () => {
     setShowMoviModal(false);
     setLoading(true);
@@ -1174,14 +1069,6 @@ export default function PaymentClient() {
     );
   };
 
-  const formatCardNumber = (val: string) => {
-    return val
-      .replace(/\D/g, '')
-      .substring(0, 16)
-      .replace(/(.{4})/g, '$1 ')
-      .trim();
-  };
-
   const shareText = useMemo(() => {
     if (!booking) return 'Tôi vừa đặt vé thành công trên Vietjet Air!';
     return `Tôi vừa đặt vé thành công trên Vietjet Air!\n✈️ ${booking.flightNo}: ${booking.fromCity} → ${booking.toCity}\n📅 ${booking.date} | ${booking.departTime} - ${booking.arriveTime}\n🎫 Mã đặt chỗ: ${bookingCodeLabel}`;
@@ -1197,128 +1084,6 @@ export default function PaymentClient() {
     }
   }, [shareText]);
 
-  const handlePaymentSuccessFromWebhook = useCallback(() => {
-    setConfirmed(true);
-    toast.success(
-      'Thanh toán thành công!',
-      'VietQR đã ghi nhận tiền về và tự động kích hoạt vé điện tử.',
-      {
-        duration: 6000,
-      }
-    );
-  }, [toast]);
-
-  const handleShareFacebook = useCallback(() => {
-    const url = encodeURIComponent(window.location.origin);
-    window.open(
-      `https://www.facebook.com/sharer/sharer.php?u=${url}&quote=${encodeURIComponent(shareText)}`,
-      '_blank',
-      'width=600,height=400'
-    );
-  }, [shareText]);
-
-  const handleShareTwitter = useCallback(() => {
-    window.open(
-      `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`,
-      '_blank',
-      'width=600,height=400'
-    );
-  }, [shareText]);
-
-  // Dữ liệu vé điện tử cho success screen (thẻ lên máy bay + bản in PDF).
-  const ticketData = useMemo<ETicketData | null>(() => {
-    if (!booking) return null;
-    return {
-      pnr: bookingCodeLabel,
-      flightNo: booking.flightNo,
-      from: booking.from,
-      to: booking.to,
-      fromCity: booking.fromCity,
-      toCity: booking.toCity,
-      date: booking.date,
-      departTime: booking.departTime,
-      arriveTime: booking.arriveTime,
-      passengers: booking.passengers,
-      amount: booking.total,
-    };
-  }, [booking, bookingCodeLabel]);
-
-  /**
-   * Mở cửa sổ in với HTML e-ticket (QR + mã vạch, khổ A4) — khách chọn
-   * "Lưu thành PDF" trong hộp thoại in của trình duyệt. Cùng pattern với
-   * hóa đơn admin (`features/admin/invoice.ts`), không cần thư viện PDF.
-   */
-  const handleDownloadETicket = useCallback(async () => {
-    if (!booking || booking.passengers.length === 0) return;
-    const base: ETicketData = {
-      pnr: bookingCodeLabel,
-      flightNo: booking.flightNo,
-      from: booking.from,
-      to: booking.to,
-      fromCity: booking.fromCity,
-      toCity: booking.toCity,
-      date: booking.date,
-      departTime: booking.departTime,
-      arriveTime: booking.arriveTime,
-      passengers: booking.passengers,
-      amount: booking.total,
-    };
-    let qrDataUrl: string | undefined;
-    try {
-      const QRCode = await import('qrcode');
-      qrDataUrl = await QRCode.toDataURL(buildBoardingQrContent(base, booking.passengers[0]), {
-        margin: 2,
-        width: 320,
-      });
-    } catch {
-      // QR vắng mặt vẫn in được — bản in còn mã vạch Code 39 và thông tin vé.
-    }
-    const printWindow = window.open('', '_blank');
-    if (!printWindow) {
-      toast.error(
-        'Không mở được cửa sổ in',
-        'Trình duyệt đã chặn popup — hãy cho phép popup và thử lại.'
-      );
-      return;
-    }
-    printWindow.document.write(buildETicketHtml({ ...base, qrDataUrl }));
-    printWindow.document.close();
-    printWindow.focus();
-    setTimeout(() => printWindow.print(), 350);
-  }, [booking, bookingCodeLabel, toast]);
-
-  // Xử lý tệp ảnh biên lai chuyển khoản
-  const processReceiptFile = useCallback(
-    (file: File) => {
-      if (!file.type.startsWith('image/')) {
-        toast.error('Định dạng không hợp lệ', 'Vui lòng chọn file hình ảnh (PNG, JPG, JPEG, WEBP)');
-        return;
-      }
-      if (file.size > 3.5 * 1024 * 1024) {
-        toast.error(
-          'File quá lớn',
-          'Kích thước ảnh tối đa là 3.5MB để đảm bảo tải lên nhanh chóng'
-        );
-        return;
-      }
-
-      const reader = new FileReader();
-      reader.onload = () => {
-        setReceiptImage(reader.result as string);
-        setReceiptFileName(file.name);
-        setReceiptFileSize((file.size / 1024).toFixed(0) + ' KB');
-        toast.success(
-          'Đã tải ảnh biên lai thành công!',
-          'Ảnh chụp biên lai sẽ được gửi tới Hệ Thống để đối chiếu xuất vé.'
-        );
-      };
-      reader.onerror = () => {
-        toast.error('Lỗi đọc ảnh', 'Không thể đọc file ảnh, vui lòng thử lại.');
-      };
-      reader.readAsDataURL(file);
-    },
-    [toast]
-  );
 
   const handleReceiptFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -1331,107 +1096,6 @@ export default function PaymentClient() {
     const file = e.dataTransfer.files?.[0];
     if (file) processReceiptFile(file);
   };
-
-  // Form xác nhận đã chuyển khoản — dùng chung cho tab Ngân hàng và tab VietQR
-  const transferConfirmBlock = (
-    <div className="mt-5 pt-4 border-t border-vj-border-light/90 space-y-3">
-      <div className="flex items-center justify-between pb-2 border-b border-vj-border-light">
-        <h4 className="text-sm font-bold font-koho text-vj-text flex items-center gap-2">
-          <Icon name="CheckCircleIcon" size={18} className="text-primary" />
-          Xác nhận thanh toán & Tải ảnh biên lai
-        </h4>
-      </div>
-
-      <p className="text-xs text-[var(--foreground-muted)] leading-relaxed">
-        Sau khi chuyển khoản hoặc quét mã thành công từ ứng dụng ngân hàng, quý khách vui lòng đính
-        kèm ảnh chụp màn hình biên lai hoặc xác nhận bên dưới để hệ thống đối chiếu xuất vé tức thì.
-      </p>
-
-      {/* Vị trí tải ảnh lên để admin đối chiếu */}
-      <div className="space-y-2">
-        <label className="block text-xs font-bold font-koho text-vj-text-strong">
-          Ảnh chụp biên lai thanh toán (Khuyên dùng để duyệt vé tức thì)
-        </label>
-
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept="image/png,image/jpeg,image/jpg,image/webp"
-          onChange={handleReceiptFileChange}
-          className="hidden"
-          id="receipt-file-input"
-        />
-
-        {!receiptImage ? (
-          <div
-            onDragOver={(e) => {
-              e.preventDefault();
-              setIsDraggingReceipt(true);
-            }}
-            onDragLeave={() => setIsDraggingReceipt(false)}
-            onDrop={handleReceiptDrop}
-            onClick={() => fileInputRef.current?.click()}
-            className={`border-2 border-dashed rounded-vj p-3 sm:p-5 text-center cursor-pointer transition-all duration-200 flex flex-col items-center justify-center gap-2 ${
-              isDraggingReceipt
-                ? 'border-primary bg-primary/5 scale-[1.01]'
-                : 'border-vj-line hover:border-primary hover:bg-vj-surface-rose/20 bg-vj-surface-2/60'
-            }`}
-          >
-            <div className="w-12 h-12 rounded-full bg-white shadow-xs border border-vj-border-light flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
-              <Icon name="ArrowUpTrayIcon" size={22} className="text-primary" />
-            </div>
-            <div>
-              <p className="text-xs font-bold font-koho text-vj-text">
-                Kéo thả ảnh hoặc <span className="text-primary underline">bấm để chọn ảnh</span>{' '}
-                biên lai
-              </p>
-              <p className="text-3xs text-vj-gray mt-0.5 font-medium">
-                Hỗ trợ định dạng PNG, JPG, JPEG, WEBP (Tối đa 8MB)
-              </p>
-            </div>
-          </div>
-        ) : (
-          <div className="bg-lime-50/60 border border-lime-300 rounded-vj p-3.5 space-y-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2 text-lime-800 text-xs font-bold font-koho">
-                <Icon name="CheckCircleIcon" size={16} className="text-vj-pay-green" />
-                <span>Đã đính kèm ảnh biên lai thành công</span>
-              </div>
-              <button
-                type="button"
-                onClick={() => setReceiptImage(null)}
-                className="text-3xs font-bold text-vj-red-dark hover:text-red-700 hover:underline cursor-pointer flex items-center gap-1 font-koho"
-              >
-                <Icon name="TrashIcon" size={12} />
-                <span>Xóa ảnh</span>
-              </button>
-            </div>
-
-            <div className="flex items-center gap-3 bg-white p-2.5 rounded-vj border border-lime-200 shadow-2xs">
-              <img
-                src={receiptImage}
-                alt="Ảnh biên lai"
-                className="w-16 h-16 object-cover rounded-vj border border-vj-border-light shrink-0"
-              />
-              <div className="min-w-0 flex-1">
-                <p className="text-xs font-bold text-vj-text truncate">
-                  {receiptFileName || 'bien-lai-chuyen-khoan.png'}
-                </p>
-                <p className="text-3xs text-vj-gray mt-0.5">{receiptFileSize || 'Ảnh hợp lệ'}</p>
-                <button
-                  type="button"
-                  onClick={() => fileInputRef.current?.click()}
-                  className="text-3xs font-semibold text-primary hover:underline mt-1 cursor-pointer block font-koho"
-                >
-                  Thay đổi ảnh khác
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
-  );
 
   if (pageLoading || isBookingLoading) {
     return <PaymentSkeleton />;
@@ -2579,824 +2243,20 @@ export default function PaymentClient() {
                   </div>
                 )}
 
-                <form onSubmit={handlePayment} className="pt-4 border-t border-vj-border-light">
-                  {/* Card Form */}
-                  {paymentMethod === 'card' && (
-                    <div className="space-y-4">
-                      {/* Banner Cổng thẻ quốc tế chuyên biệt (Trang sau) */}
-                      <div className="bg-gradient-to-r from-red-50 to-orange-50 border border-red-200/90 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 shadow-2xs">
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-vj bg-primary text-white flex items-center justify-center shrink-0 shadow-xs">
-                            <Icon name="CreditCardIcon" size={22} />
-                          </div>
-                          <div>
-                            <div className="text-xs sm:text-sm font-extrabold text-vj-dark font-koho">
-                              Cổng thanh toán Thẻ Quốc Tế • 3D Secure
-                            </div>
-                            <div className="text-3xs sm:text-2xs text-vj-text-strong">
-                              Xác thực OTP bảo mật từ ngân hàng phát hành trên màn hình riêng biệt
-                            </div>
-                          </div>
-                        </div>
-                        <Link
-                          href={`/thanh-toan/gateway/card?bookingId=${encodeURIComponent(effectiveBookingCode || booking?.bookingId || bookingId || '')}`}
-                          className="px-4 py-2 bg-primary hover:bg-primary-dark text-white font-bold text-xs rounded-vj inline-flex items-center justify-center gap-1.5 transition-all shadow-xs shrink-0 font-koho cursor-pointer"
-                        >
-                          <span>Mở cổng thẻ</span>
-                          <span className="text-sm leading-none">→</span>
-                        </Link>
-                      </div>
-
-                      {/* Interactive Virtual Credit Card */}
-                      <VirtualCreditCard
-                        cardNumber={cardNumber}
-                        cardName={cardName}
-                        expiry={expiry}
-                        cvv={cvv}
-                        isFlipped={isCardFlipped}
-                      />
-
-                      <div>
-                        <label className="block text-xs font-semibold text-[var(--foreground-subtle)] uppercase tracking-wider mb-1.5">
-                          Số thẻ
-                        </label>
-                        <div className={`form-field-float ${cardNumber ? 'has-value' : ''}`}>
-                          <Icon
-                            name="CreditCardIcon"
-                            size={18}
-                            className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--foreground-subtle)] z-10 pointer-events-none"
-                          />
-                          <input
-                            id="cardNumber"
-                            name="cardNumber"
-                            type="text"
-                            value={cardNumber}
-                            onChange={(e) => setCardNumber(formatCardNumber(e.target.value))}
-                            placeholder=" "
-                            className={`w-full pl-10 pr-4 py-3 bg-[var(--surface)] border border-[var(--border)] rounded-vj text-base font-mono form-input sm:text-sm ${cardNumber.replace(/\s/g, '').length === 16 ? 'form-input-valid' : ''}`}
-                            maxLength={19}
-                            required
-                          />
-                          <label className="form-label-float has-icon">0000 0000 0000 0000</label>
-                        </div>
-                      </div>
-                      <div>
-                        <label className="block text-xs font-semibold text-[var(--foreground-subtle)] uppercase tracking-wider mb-1.5">
-                          Tên chủ thẻ
-                        </label>
-                        <div className={`form-field-float ${cardName ? 'has-value' : ''}`}>
-                          <input
-                            id="cardName"
-                            name="cardName"
-                            type="text"
-                            value={cardName}
-                            onChange={(e) => setCardName(e.target.value.toUpperCase())}
-                            placeholder=" "
-                            className={`w-full px-4 py-3 bg-[var(--surface)] border border-[var(--border)] rounded-vj text-base font-semibold form-input uppercase sm:text-sm ${cardName.trim().length >= 3 ? 'form-input-valid' : ''}`}
-                            required
-                          />
-                          <label className="form-label-float">NGUYEN VAN A</label>
-                        </div>
-                      </div>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <label className="block text-xs font-semibold text-[var(--foreground-subtle)] uppercase tracking-wider mb-1.5">
-                            Ngày hết hạn
-                          </label>
-                          <div className={`form-field-float ${expiry ? 'has-value' : ''}`}>
-                            <input
-                              id="cardExpiry"
-                              name="cardExpiry"
-                              type="text"
-                              value={expiry}
-                              onChange={(e) => {
-                                const v = e.target.value.replace(/\D/g, '').substring(0, 4);
-                                setExpiry(v.length > 2 ? v.slice(0, 2) + '/' + v.slice(2) : v);
-                              }}
-                              placeholder=" "
-                              className={`w-full px-4 py-3 bg-[var(--surface)] border border-[var(--border)] rounded-vj text-base form-input sm:text-sm ${expiry.length === 5 ? 'form-input-valid' : ''}`}
-                              maxLength={5}
-                              required
-                            />
-                            <label className="form-label-float">MM/YY</label>
-                          </div>
-                        </div>
-                        <div>
-                          <label className="block text-xs font-semibold text-[var(--foreground-subtle)] uppercase tracking-wider mb-1.5">
-                            CVV
-                          </label>
-                          <div className={`form-field-float ${cvv ? 'has-value' : ''}`}>
-                            <input
-                              id="cardCvv"
-                              name="cardCvv"
-                              type="password"
-                              value={cvv}
-                              onFocus={() => setIsCardFlipped(true)}
-                              onBlur={() => setIsCardFlipped(false)}
-                              onChange={(e) =>
-                                setCvv(e.target.value.replace(/\D/g, '').substring(0, 3))
-                              }
-                              placeholder=" "
-                              className={`w-full px-4 py-3 bg-[var(--surface)] border border-[var(--border)] rounded-vj text-base form-input sm:text-sm ${cvv.length === 3 ? 'form-input-valid' : ''}`}
-                              maxLength={3}
-                              required
-                            />
-                            <label className="form-label-float">•••</label>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Bank Transfer */}
-                  {paymentMethod === 'bank' && (
-                    <div className="space-y-4">
-                      {/* Transfer Instructions Redesign */}
-                      {selectedAdminAccount && (
-                        <div className="space-y-4">
-                          <label className="block text-xs font-bold text-black uppercase tracking-wider mb-2 font-koho flex items-center gap-1.5">
-                            <Icon name="InformationCircleIcon" size={16} className="text-black" />
-                            Thông tin thanh toán
-                          </label>
-
-                          {/* Account Tabs if multiple */}
-                          {adminAccounts.length > 1 && (
-                            <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar">
-                              {adminAccounts.map((acc) => (
-                                <button
-                                  key={acc.id}
-                                  type="button"
-                                  onClick={() => setSelectedAdminAccount(acc)}
-                                  className={`px-3 py-1.5 rounded-full text-xs2 font-bold whitespace-nowrap transition-all ${
-                                    selectedAdminAccount.id === acc.id
-                                      ? 'bg-primary text-white shadow-vj-md shadow-primary/20'
-                                      : 'bg-[var(--surface-2)] text-[var(--foreground-muted)] hover:bg-[var(--surface-3)] '
-                                  }`}
-                                >
-                                  {acc.admin_bank_name}
-                                </button>
-                              ))}
-                            </div>
-                          )}
-
-                          <div className="bg-white border-2 border-primary/20 rounded-3xl overflow-hidden shadow-xl">
-                            <div className="p-4 bg-gradient-to-br from-[var(--surface)] to-[var(--background)]">
-                              <div className="flex justify-between items-start mb-4">
-                                <div>
-                                  <div className="text-xs font-bold text-[var(--foreground-subtle)] uppercase tracking-widest bg-[var(--surface-2)] px-2 py-0.5 rounded inline-block mb-1">
-                                    Ngân hàng thụ hưởng
-                                  </div>
-                                  <h4 className="text-lg font-black text-[var(--foreground)]">
-                                    {selectedAdminAccount.admin_bank_name}
-                                  </h4>
-                                </div>
-                                <div className="w-10 h-10 bg-white rounded-vj shadow-vj-sm border border-[var(--border)] flex items-center justify-center p-1">
-                                  <div className="text-2xs font-black text-primary">
-                                    {selectedAdminAccount.admin_bank_name.substring(0, 3)}
-                                  </div>
-                                </div>
-                              </div>
-
-                              <div className="space-y-3">
-                                <div className="flex justify-between items-end">
-                                  <div>
-                                    <label className="text-2xs font-bold text-[var(--foreground-subtle)] uppercase tracking-widest block mb-0.5">
-                                      Số tài khoản
-                                    </label>
-                                    <p className="text-lg font-mono font-black text-[var(--foreground)] leading-none tracking-wider">
-                                      {selectedAdminAccount.admin_bank_account_number}
-                                    </p>
-                                  </div>
-                                  <button
-                                    type="button"
-                                    onClick={() => {
-                                      navigator.clipboard.writeText(
-                                        selectedAdminAccount.admin_bank_account_number
-                                      );
-                                      toast.success(
-                                        'Đã chép',
-                                        'Số tài khoản đã được lưu vào bộ nhớ tạm'
-                                      );
-                                    }}
-                                    className="text-primary hover:bg-primary/5 p-2 rounded-vj transition-colors"
-                                  >
-                                    <Icon name="ClipboardDocumentIcon" size={18} />
-                                  </button>
-                                </div>
-
-                                <div className="flex justify-between items-center py-3 px-4 bg-primary/5 rounded-2xl border border-primary/10">
-                                  <div>
-                                    <label className="text-2xs font-bold text-primary/60 uppercase tracking-widest block mb-0.5">
-                                      Nội dung chuyển khoản
-                                    </label>
-                                    <p className="text-base font-black text-primary leading-none tracking-widest font-sans">
-                                      {transferNote}
-                                    </p>
-                                    <span className="inline-block mt-1 text-xs2 font-semibold text-amber-800 bg-amber-100/90 border border-amber-300 rounded px-1.5 py-0.5">
-                                      (Lưu ý: ký tự &quot;O&quot; là chữ O in hoa, không phải số 0)
-                                    </span>
-                                  </div>
-                                  <button
-                                    type="button"
-                                    onClick={() => {
-                                      navigator.clipboard.writeText(transferNote);
-                                      toast.success(
-                                        'Đã chép',
-                                        'Nội dung chuyển khoản đã được lưu vào bộ nhớ tạm'
-                                      );
-                                    }}
-                                    className="bg-primary text-white hover:bg-primary-dark w-10 h-10 rounded-vj flex items-center justify-center transition-all shadow-vj-md shadow-primary/20"
-                                  >
-                                    <Icon name="ClipboardDocumentIcon" size={18} />
-                                  </button>
-                                </div>
-
-                                <div className="pt-2">
-                                  <label className="text-2xs font-bold text-[var(--foreground-subtle)] uppercase tracking-widest block mb-1">
-                                    Chủ tài khoản
-                                  </label>
-                                  <p className="text-sm font-bold text-[var(--foreground)]">
-                                    {selectedAdminAccount.admin_bank_account_holder.toUpperCase()}
-                                  </p>
-                                </div>
-                              </div>
-                            </div>
-
-                            {/* VietQR / VNPAY-QR Quick Scan */}
-                            <div className="flex flex-col items-center justify-center p-4 bg-white border-t border-[var(--border)]">
-                              <span className="text-xs font-bold text-vj-bank-blue uppercase tracking-wider mb-2 font-koho flex items-center gap-1.5">
-                                <Icon name="QrCodeIcon" size={16} />
-                                Quét mã QR thanh toán (STK Hệ Thống)
-                              </span>
-                              <VietQrBox
-                                bookingId={booking?.bookingId ?? bookingId}
-                                onPaid={handlePaymentSuccessFromWebhook}
-                                fallbackAccount={selectedAdminAccount}
-                                fallbackAmount={total}
-                                fallbackPnr={
-                                  effectiveBookingCode ||
-                                  (bookingCodeLabel !== '—'
-                                    ? bookingCodeLabel
-                                    : booking?.flightNo || 'VJ')
-                                }
-                                fallbackAddInfo={transferNote}
-                                showBankHeader={false}
-                                methodType={selectedMethodGroup}
-                              />
-                            </div>
-
-                            <div className="bg-[var(--foreground)] p-3 flex items-center justify-center gap-2">
-                              <Icon
-                                name="ShieldCheckIcon"
-                                size={14}
-                                className="text-[var(--vj-green)]"
-                              />
-                              <span className="text-2xs font-bold text-white/70 uppercase tracking-widest">
-                                Giao dịch bảo mật
-                              </span>
-                            </div>
-                          </div>
-
-                          {transferConfirmBlock}
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                  {/* VNPAY-QR / VietQR — mã EMVCo sinh ở server, QR render cục bộ theo STK admin,
-                      polling tự dò giao dịch; form xác nhận thủ công là fallback. */}
-                  {paymentMethod === 'vietqr' && (
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between pb-1">
-                        <label className="text-xs font-bold text-black uppercase tracking-wider font-koho flex items-center gap-1.5">
-                          <Icon name="QrCodeIcon" size={16} className="text-black" />
-                          {selectedMethodGroup === 'vnpay_qr'
-                            ? 'Thông tin thanh toán (Mã QR VNPAY-QR)'
-                            : 'Thông tin thanh toán (Mã QR thanh toán VietQR)'}
-                        </label>
-                        <span className="text-3xs font-extrabold uppercase px-2 py-0.5 rounded-full bg-blue-50 text-vj-bank-blue border border-blue-200">
-                          {selectedMethodGroup === 'vnpay_qr'
-                            ? 'Quét mã VNPAY-QR'
-                            : 'Quét mã trực tiếp'}
-                        </span>
-                      </div>
-
-                      {/* Banner Cổng thanh toán VNPAY-QR chuyên biệt (Trang sau) */}
-                      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200/90 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 shadow-2xs">
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-vj bg-blue-600 text-white flex items-center justify-center shrink-0 shadow-xs">
-                            <Icon name="QrCodeIcon" size={22} />
-                          </div>
-                          <div>
-                            <div className="text-xs sm:text-sm font-extrabold text-blue-950 font-koho">
-                              Cổng thanh toán{' '}
-                              {selectedMethodGroup === 'vnpay_qr' ? 'VNPAY-QR' : 'VietQR'} chuyên
-                              dụng
-                            </div>
-                            <div className="text-3xs sm:text-2xs text-blue-700">
-                              Màn hình quét mã toàn trang, đếm ngược giữ chỗ 15 phút & xác nhận tự
-                              động
-                            </div>
-                          </div>
-                        </div>
-                        <Link
-                          href={`/thanh-toan/gateway/qr?bookingId=${encodeURIComponent(effectiveBookingCode || booking?.bookingId || bookingId || '')}`}
-                          className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-vj inline-flex items-center justify-center gap-1.5 transition-all shadow-xs shrink-0 font-koho cursor-pointer"
-                        >
-                          <span>Mở trang Cổng QR</span>
-                          <span className="text-sm leading-none">→</span>
-                        </Link>
-                      </div>
-                      <VietQrBox
-                        bookingId={booking?.bookingId ?? bookingId}
-                        onPaid={handlePaymentSuccessFromWebhook}
-                        fallbackAccount={selectedAdminAccount}
-                        fallbackAmount={total}
-                        fallbackPnr={
-                          effectiveBookingCode ||
-                          (bookingCodeLabel !== '—' ? bookingCodeLabel : booking?.flightNo || 'VJ')
-                        }
-                        fallbackAddInfo={transferNote}
-                        methodType={selectedMethodGroup}
-                      />
-                      {transferConfirmBlock}
-                    </div>
-                  )}
-
-                  {/* Wallet Payment */}
-                  {paymentMethod === 'wallet' && (
-                    <div className="space-y-4">
-                      <div
-                        className={`bg-[var(--background)] border rounded-2xl p-6 flex flex-col items-center gap-4 transition-all ${walletBalance !== null && walletBalance >= total ? 'border-[rgb(var(--vj-green-rgb))]/40 bg-[rgb(var(--vj-green-rgb))]/10' : 'border-[var(--border)] '}`}
-                      >
-                        <div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center">
-                          <Icon name="WalletIcon" size={32} className="text-primary" />
-                        </div>
-                        <div className="text-center">
-                          <h4 className="font-bold text-[var(--foreground)] mb-1">
-                            Thanh toán bằng ví tài khoản
-                          </h4>
-                          <p className="text-sm text-[var(--foreground-muted)]">
-                            Thanh toán nhanh chóng bằng số dư của bạn
-                          </p>
-                        </div>
-
-                        <div className="w-full border-t border-[var(--border)] pt-4 mt-2">
-                          <div className="flex justify-between items-center mb-2">
-                            <span className="text-sm text-[var(--foreground-muted)]">
-                              Số dư hiện tại:
-                            </span>
-                            <span
-                              className={`text-base font-black ${walletBalance === null ? 'animate-pulse text-[var(--foreground-subtle)]' : walletBalance >= total ? 'text-[var(--vj-green)]' : 'text-primary'}`}
-                            >
-                              {walletBalance !== null
-                                ? walletBalance.toLocaleString('vi-VN') + '₫'
-                                : '••••••₫'}
-                            </span>
-                          </div>
-                          <div className="flex justify-between items-center">
-                            <span className="text-sm text-[var(--foreground-muted)]">
-                              Số tiền cần trả:
-                            </span>
-                            <span className="text-base font-black text-[var(--foreground)]">
-                              {total.toLocaleString('vi-VN')}₫
-                            </span>
-                          </div>
-                        </div>
-
-                        {walletBalance !== null && walletBalance < total && (
-                          <Link
-                            href="/tai-khoan"
-                            className="text-xs text-primary font-bold hover:underline flex items-center gap-1 mt-2"
-                          >
-                            <Icon name="PlusCircleIcon" size={14} />
-                            Nạp thêm tiền vào ví ngay
-                          </Link>
-                        )}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* E-Wallet */}
-                  {paymentMethod === 'e_wallet' && (
-                    <div className="grid grid-cols-3 gap-3">
-                      {EWALLETS.map((wallet) => (
-                        <button
-                          key={wallet}
-                          type="button"
-                          className="py-4 px-4 bg-[var(--surface)] hover:bg-primary-50 hover:border-primary border border-[var(--border)] rounded-vj text-sm font-bold text-[var(--foreground-muted)] transition-all flex flex-col items-center gap-2"
-                        >
-                          <Icon name="DevicePhoneMobileIcon" size={24} className="text-primary" />
-                          {wallet}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-
-                  {/* SkyPoint / Ví SkyJoy — thanh toán bằng điểm tích lũy & Cash + Points */}
-                  {paymentMethod === 'skypoint' && (
-                    <div className="bg-[var(--background)] border border-[var(--border)] rounded-2xl p-6 flex flex-col gap-5 transition-all shadow-xs">
-                      <div className="flex items-center gap-4">
-                        <div className="w-14 h-14 bg-gradient-to-br from-amber-400 to-amber-500 rounded-2xl flex items-center justify-center shadow-vj-md text-white flex-shrink-0">
-                          <Icon name="StarIcon" size={28} variant="solid" />
-                        </div>
-                        <div>
-                          <h4 className="font-bold text-[var(--foreground)] text-base">
-                            Ví Điểm Thưởng SkyJoy Rewards
-                          </h4>
-                          <p className="text-xs text-[var(--foreground-muted)]">
-                            Tích hợp cơ chế thanh toán kết hợp Điểm thưởng + Tiền mặt (Cash +
-                            Points)
-                          </p>
-                        </div>
-                      </div>
-
-                      <div className="w-full bg-amber-500/10 border border-amber-500/20 rounded-vj p-4 space-y-2 text-sm">
-                        <div className="flex justify-between items-center">
-                          <span className="text-[var(--foreground-muted)]">Số dư SkyPoint:</span>
-                          <span
-                            className={`font-black ${skypointInfo === null ? 'animate-pulse text-[var(--foreground-subtle)]' : 'text-amber-600'}`}
-                          >
-                            {skypointInfo !== null
-                              ? `${skypointInfo.points.toLocaleString('vi-VN')} điểm (≈ ${skypointValueOfPoints(skypointInfo.points, skypointInfo.rate).toLocaleString('vi-VN')}₫)`
-                              : '•••••• điểm'}
-                          </span>
-                        </div>
-                        <div className="flex justify-between items-center">
-                          <span className="text-[var(--foreground-muted)]">
-                            Cần cho 100% hóa đơn này:
-                          </span>
-                          <span className="font-black text-[var(--foreground)]">
-                            {skypointInfo
-                              ? `${skypointPointsForAmount(total, skypointInfo.rate).toLocaleString('vi-VN')} điểm`
-                              : '—'}
-                          </span>
-                        </div>
-                      </div>
-
-                      {/* Cash + Points Switch & Slider */}
-                      <div className="border border-[var(--border)] rounded-vj p-4 bg-[var(--surface-1)] space-y-3">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <span className="font-bold text-sm text-[var(--foreground)]">
-                              Thanh toán kết hợp (Cash + Points)
-                            </span>
-                            <p className="text-xs text-[var(--foreground-muted)]">
-                              Dùng một phần điểm để giảm trừ tiền vé
-                            </p>
-                          </div>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              const nextVal = !useCashPlusPoints;
-                              setUseCashPlusPoints(nextVal);
-                              if (nextVal && skypointInfo) {
-                                setCashPlusPointsRedeem(maxPossiblePointsToRedeem);
-                              } else {
-                                setCashPlusPointsRedeem(0);
-                              }
-                            }}
-                            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                              useCashPlusPoints ? 'bg-primary' : 'bg-vj-surface-3 dark:bg-gray-700'
-                            }`}
-                          >
-                            <span
-                              className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                                useCashPlusPoints ? 'translate-x-6' : 'translate-x-1'
-                              }`}
-                            />
-                          </button>
-                        </div>
-
-                        {useCashPlusPoints && skypointInfo && (
-                          <div className="pt-3 border-t border-[var(--border)] space-y-3">
-                            <div className="flex justify-between text-xs font-semibold text-[var(--foreground)]">
-                              <span>Số điểm muốn đổi:</span>
-                              <span className="text-primary font-bold">
-                                {cashPlusPointsRedeem.toLocaleString('vi-VN')} SkyPoint
-                              </span>
-                            </div>
-
-                            <input
-                              type="range"
-                              min={0}
-                              max={maxPossiblePointsToRedeem}
-                              step={100}
-                              value={cashPlusPointsRedeem}
-                              onChange={(e) => setCashPlusPointsRedeem(Number(e.target.value))}
-                              className="w-full accent-primary cursor-pointer"
-                            />
-
-                            <div className="grid grid-cols-4 gap-2">
-                              {[0.25, 0.5, 0.75, 1.0].map((pct) => {
-                                const pts = Math.round(maxPossiblePointsToRedeem * pct);
-                                return (
-                                  <button
-                                    type="button"
-                                    key={pct}
-                                    onClick={() => setCashPlusPointsRedeem(pts)}
-                                    className="py-1 px-2 rounded-vj text-xs font-semibold bg-[var(--surface-2)] border border-[var(--border)] hover:border-primary transition-colors text-[var(--foreground)]"
-                                  >
-                                    {pct * 100}%
-                                  </button>
-                                );
-                              })}
-                            </div>
-
-                            <div className="bg-[var(--surface-2)] rounded-vj p-3 text-xs space-y-1.5 border border-[var(--border)]">
-                              <div className="flex justify-between">
-                                <span className="text-[var(--foreground-muted)]">
-                                  Giảm trừ từ điểm thưởng:
-                                </span>
-                                <span className="font-bold text-vj-pay-green">
-                                  -{cashPlusPointsDiscountVnd.toLocaleString('vi-VN')}₫
-                                </span>
-                              </div>
-                              <div className="flex justify-between text-sm pt-1 border-t border-[var(--border)]">
-                                <span className="font-bold text-[var(--foreground)]">
-                                  Tiền mặt cần thanh toán:
-                                </span>
-                                <span className="font-black text-primary">
-                                  {payableTotal.toLocaleString('vi-VN')}₫
-                                </span>
-                              </div>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-
-                      {skypointInfo &&
-                        !useCashPlusPoints &&
-                        skypointInfo.points < skypointPointsForAmount(total, skypointInfo.rate) && (
-                          <div className="flex items-center justify-between text-xs">
-                            <span className="text-amber-600 font-medium">
-                              Số dư điểm chưa đủ để thanh toán toàn bộ đơn hàng
-                            </span>
-                            <button
-                              type="button"
-                              onClick={() => {
-                                setUseCashPlusPoints(true);
-                                setCashPlusPointsRedeem(maxPossiblePointsToRedeem);
-                              }}
-                              className="text-primary font-bold hover:underline"
-                            >
-                              Dùng Cash + Points
-                            </button>
-                          </div>
-                        )}
-                    </div>
-                  )}
-
-                  {/* Giữ mã đặt chỗ & thanh toán sau - MOVI chuẩn Vietjet Air */}
-                  {paymentMethod === 'movi' && (
-                    <div className="mt-6 space-y-4 animate-[fadeIn_0.3s_ease-out]">
-                      {/* Hướng dẫn nhập thông tin */}
-                      <div className="space-y-1">
-                        <h4 className="text-sm font-bold text-vj-text">
-                          Vui lòng nhập thông tin của bạn:
-                        </h4>
-                        <p className="text-xs text-vj-text-strong leading-relaxed">
-                          Vui lòng nhập các thông tin: Họ tên, Ngày sinh, CMND/CCCD và số điện
-                          thoại. Sau đó nhấn Xác nhận để tiếp tục....
-                        </p>
-                      </div>
-
-                      {/* Các trường nhập liệu (gạch chân đúng theo thiết kế Vietjet) */}
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4 pt-1 text-xs">
-                        <div>
-                          <input
-                            type="text"
-                            value={moviFullName}
-                            onChange={(e) => setMoviFullName(e.target.value.toUpperCase())}
-                            placeholder="Họ và tên*"
-                            className="w-full py-2 bg-transparent border-b border-vj-line text-xs font-semibold text-vj-text placeholder-gray-500 focus:outline-none focus:border-red-500 transition-colors uppercase"
-                            required
-                          />
-                        </div>
-
-                        <div>
-                          <input
-                            type="text"
-                            value={moviBirthDate}
-                            onChange={(e) => setMoviBirthDate(e.target.value)}
-                            placeholder="Ngày sinh*(DD/MM/YYYY)"
-                            className="w-full py-2 bg-transparent border-b border-vj-line text-xs font-semibold text-vj-text placeholder-gray-500 focus:outline-none focus:border-red-500 transition-colors"
-                            required
-                          />
-                        </div>
-
-                        <div>
-                          <input
-                            type="text"
-                            maxLength={12}
-                            value={moviCccd}
-                            onChange={(e) => setMoviCccd(e.target.value.replace(/[^0-9]/g, ''))}
-                            placeholder="CMND/CCCD*"
-                            className="w-full py-2 bg-transparent border-b border-vj-line text-xs font-mono font-semibold text-vj-text placeholder-gray-500 focus:outline-none focus:border-red-500 transition-colors"
-                            required
-                          />
-                        </div>
-
-                        <div>
-                          <input
-                            type="tel"
-                            value={moviPhone}
-                            onChange={(e) => setMoviPhone(e.target.value)}
-                            placeholder="Nhập số điện thoại*"
-                            className="w-full py-2 bg-transparent border-b border-vj-line text-xs font-semibold text-vj-text placeholder-gray-500 focus:outline-none focus:border-red-500 transition-colors"
-                            required
-                          />
-                        </div>
-                      </div>
-
-                      {/* Nút Xác Nhận màu vàng cam góc phải */}
-                      <div className="flex justify-end pt-1">
-                        <button
-                          type="button"
-                          onClick={handlePayment}
-                          disabled={loading}
-                          className="cursor-pointer font-bold text-xs sm:text-sm px-6 sm:px-8 py-2 rounded-md shadow-xs text-black bg-vjyellow hover:bg-vjamber active:scale-98 transition-all disabled:opacity-50"
-                        >
-                          {loading ? 'Đang xử lý...' : 'Xác Nhận'}
-                        </button>
-                      </div>
-
-                      {/* Đoạn giải thích chính sách */}
-                      <p className="text-xs text-vj-text-dim leading-relaxed pt-2">
-                        “Bay trước, trả sau” là giải pháp tài chính hỗ trợ thanh toán vé máy bay cho
-                        khách hàng trên toàn quốc của Vietjet Air, giúp khách hàng dễ dàng tiếp cận
-                        dịch vụ vé máy bay giá rẻ và được hỗ trợ hình thức trả góp để khách hàng có
-                        thể linh động chi tiêu phù hợp với năng lực tài chính.
-                      </p>
-
-                      {/* Chi tiết thanh toán */}
-                      <div className="pt-2 space-y-2">
-                        <h4 className="text-base font-bold text-vj-text">Chi tiết thanh toán</h4>
-                        <div className="rounded-vj border border-red-500 overflow-hidden bg-white text-xs">
-                          <div className="p-3.5 space-y-2.5">
-                            <div className="flex justify-between items-center text-vj-text-strong">
-                              <span className="font-medium">Tạm tính</span>
-                              <span className="font-bold text-vj-text">
-                                {Math.max(0, total - (booking.ancillaryFee ?? 0)).toLocaleString(
-                                  'vi-VN'
-                                )}{' '}
-                                VND
-                              </span>
-                            </div>
-                            <div className="flex justify-between items-center text-vj-text-strong">
-                              <span className="font-medium">Mã khuyến mãi/Phiếu quà tặng</span>
-                              <span className="font-bold text-vj-text">
-                                {discountAmount > 0
-                                  ? `-${discountAmount.toLocaleString('vi-VN')}`
-                                  : '0'}{' '}
-                                VND
-                              </span>
-                            </div>
-                            <div className="flex justify-between items-center text-vj-text-strong">
-                              <span className="font-medium">Phí tiện ích</span>
-                              <span className="font-bold text-vj-text">
-                                {(booking.ancillaryFee ?? 0).toLocaleString('vi-VN')} VND
-                              </span>
-                            </div>
-                          </div>
-                          <div className="bg-vj-pay-red text-white px-4 py-3 flex justify-between items-center font-bold">
-                            <span className="text-sm">Tổng thanh toán</span>
-                            <span className="text-base font-black font-koho">
-                              {total.toLocaleString('vi-VN')} VND
-                            </span>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-1.5 text-3xs text-vj-text-dim pt-1">
-                          <span className="text-xs">ⓘ</span>
-                          <span>
-                            Giá vé, phụ phí nhiên liệu và các loại thuế có thể thay đổi tùy thuộc
-                            vào ngày xuất vé và tỷ giá.
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {paymentMethod !== 'movi' && (
-                    <>
-                      {/* Chi tiết thanh toán matching Screenshot 4 */}
-                      <div className="mt-6 pt-4 border-t border-vj-border-light">
-                        <h3 className="font-extrabold text-sm text-vj-text mb-3">
-                          Chi tiết thanh toán
-                        </h3>
-                        <div className="bg-vj-surface-2 rounded-vj p-4 border border-vj-border-light/80 space-y-2 text-xs">
-                          <div className="flex justify-between items-center text-vj-text-dim">
-                            <span>Giá vé cơ bản</span>
-                            <span className="font-bold text-vj-text">
-                              {(booking?.fareSubtotal ?? total).toLocaleString('vi-VN')} VND
-                            </span>
-                          </div>
-                          <div className="flex justify-between items-center text-vj-text-dim">
-                            <span>
-                              Thuế &amp; phí sân bay ({Math.round(TAX_AND_FEE_RATE * 100)}%)
-                            </span>
-                            <span className="font-bold text-vj-text">
-                              +{(booking?.tax ?? 0).toLocaleString('vi-VN')} VND
-                            </span>
-                          </div>
-                          {(booking?.seatFee ?? 0) > 0 && (
-                            <div className="flex justify-between items-center text-vj-text-dim">
-                              <span>Phí chọn chỗ</span>
-                              <span className="font-bold text-vj-text">
-                                +{(booking?.seatFee ?? 0).toLocaleString('vi-VN')} VND
-                              </span>
-                            </div>
-                          )}
-                          {(booking?.ancillaryFee ?? 0) > 0 && (
-                            <div className="flex justify-between items-center text-vj-text-dim">
-                              <span>Dịch vụ bổ sung</span>
-                              <span className="font-bold text-vj-text">
-                                +{booking!.ancillaryFee!.toLocaleString('vi-VN')} VND
-                              </span>
-                            </div>
-                          )}
-                          <div className="flex justify-between items-center text-vj-text-dim">
-                            <span>Mã khuyến mãi/Phiếu quà tặng</span>
-                            <span className="font-bold text-green-600">
-                              {discountAmount > 0
-                                ? `-${discountAmount.toLocaleString('vi-VN')} VND`
-                                : '0 VND'}
-                            </span>
-                          </div>
-                          <div className="flex justify-between items-center text-sm font-black text-vj-text pt-2.5 border-t border-vj-border-light">
-                            <span>Tổng thanh toán</span>
-                            <span className="text-base text-vj-dark font-koho">
-                              {total.toLocaleString('vi-VN')} VND
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Submit */}
-                      <button
-                        id="payment-submit-btn"
-                        data-testid="btn-da-thanh-toan"
-                        type="submit"
-                        disabled={loading}
-                        className="w-full mt-6 flex items-center justify-center gap-2 bg-gradient-to-r from-red-600 via-primary to-red-700 hover:from-red-700 hover:to-primary-dark text-white font-koho font-black py-3.5 px-5 sm:py-4 sm:px-6 rounded-vj transition-all duration-200 shadow-vj-btn hover:shadow-vj-btn-hover hover:-translate-y-0.5 active:scale-[0.99] disabled:opacity-60 disabled:cursor-not-allowed text-sm sm:text-base cursor-pointer"
-                      >
-                        {loading ? (
-                          <>
-                            <svg className="animate-spin w-5 h-5" viewBox="0 0 24 24" fill="none">
-                              <circle
-                                className="opacity-25"
-                                cx="12"
-                                cy="12"
-                                r="10"
-                                stroke="currentColor"
-                                strokeWidth="4"
-                              />
-                              <path
-                                className="opacity-75"
-                                fill="currentColor"
-                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-                              />
-                            </svg>
-                            <span>Đang xử lý thanh toán...</span>
-                          </>
-                        ) : paymentMethod === 'bank' || paymentMethod === 'vietqr' ? (
-                          <>
-                            <Icon name="CheckCircleIcon" size={20} />
-                            <span>
-                              {receiptImage
-                                ? `✓ Xác nhận đã thanh toán (${total.toLocaleString('vi-VN')} VND)`
-                                : selectedMethodGroup === 'vnpay_qr'
-                                  ? `Tôi đã quét mã VNPAY-QR — Xác nhận (${total.toLocaleString('vi-VN')} VND)`
-                                  : selectedMethodGroup === 'vietqr'
-                                    ? `Tôi đã quét mã VietQR — Xác nhận (${total.toLocaleString('vi-VN')} VND)`
-                                    : `Tôi đã chuyển khoản — Xác nhận (${total.toLocaleString('vi-VN')} VND)`}
-                            </span>
-                          </>
-                        ) : (
-                          <>
-                            <Icon name="LockClosedIcon" size={18} />
-                            <span>Thanh toán {total.toLocaleString('vi-VN')}₫</span>
-                          </>
-                        )}
-                      </button>
-                    </>
-                  )}
-
-                  {/* Inline payment error (shown when modal is dismissed) */}
-                  {paymentError && !showErrorModal && (
-                    <div className="mt-3 flex items-start gap-3 bg-[rgb(var(--primary-rgb))]/10 border border-primary/30 rounded-vj p-4 text-sm text-primary animate-[fadeInUp_0.3s_ease-out]">
-                      <Icon
-                        name="ExclamationCircleIcon"
-                        size={18}
-                        className="text-primary flex-shrink-0 mt-0.5"
-                      />
-                      <div>
-                        <div className="font-semibold mb-0.5">Thanh toán không thành công</div>
-                        <div className="text-primary">{paymentError}</div>
-                      </div>
-                    </div>
-                  )}
-                </form>
+                {/* CTA dẫn sang cổng thanh toán riêng của từng phương thức */}
+                <div className="pt-4 border-t border-vj-border-light space-y-3">
+                  <button
+                    type="button"
+                    onClick={goToPaymentGateway}
+                    className="w-full py-3.5 rounded-vj bg-primary hover:bg-primary-dark text-white font-black text-sm uppercase tracking-wide transition-all shadow-vj-md cursor-pointer"
+                  >
+                    Tiếp tục thanh toán
+                    {total > 0 ? ` • ${total.toLocaleString('vi-VN')}₫` : ''}
+                  </button>
+                  <p className="text-3xs text-vj-muted text-center font-koho">
+                    Bạn sẽ được chuyển đến cổng bảo mật để hoàn tất thanh toán.
+                  </p>
+                </div>
 
                 {/* Security and Accepted Logos Footer - hidden on MOVI matching Image #1 */}
                 {paymentMethod !== 'movi' && <PaymentSecurityFooter />}
@@ -3597,11 +2457,10 @@ export default function PaymentClient() {
                 </button>
                 <button
                   type="button"
-                  onClick={handlePayment}
-                  disabled={loading}
-                  className="px-8 py-2.5 rounded-full bg-vjyellow hover:bg-vjamber text-black font-bold text-xs shadow-2xs transition-all active:scale-98 cursor-pointer disabled:opacity-50"
+                  onClick={goToPaymentGateway}
+                  className="px-8 py-2.5 rounded-full bg-vjyellow hover:bg-vjamber text-black font-bold text-xs shadow-2xs transition-all active:scale-98 cursor-pointer"
                 >
-                  {loading ? 'Đang xử lý...' : 'Thanh toán'}
+                  Thanh toán
                 </button>
               </div>
             </div>
@@ -3711,21 +2570,10 @@ export default function PaymentClient() {
         </button>
         <button
           type="button"
-          onClick={() => {
-            // For bank/vietqr tabs, the confirmation button is #btn-da-thanh-toan;
-            // for all other methods the submit button is #payment-submit-btn.
-            const transferBtn = document.getElementById('btn-da-thanh-toan');
-            const submitBtn = document.getElementById('payment-submit-btn');
-            if (paymentMethod === 'bank' || paymentMethod === 'vietqr') {
-              (transferBtn ?? submitBtn)?.click();
-            } else {
-              submitBtn?.click();
-            }
-          }}
-          disabled={loading}
-          className="flex-1 bg-vj-gold-button hover:bg-vj-gold-pure disabled:opacity-50 text-vj-dark font-black italic text-sm py-3 rounded-vj shadow transition-all active:scale-98 cursor-pointer text-center"
+          onClick={goToPaymentGateway}
+          className="flex-1 bg-vj-gold-button hover:bg-vj-gold-pure text-vj-dark font-black italic text-sm py-3 rounded-vj shadow transition-all active:scale-98 cursor-pointer text-center"
         >
-          {loading ? 'Đang xử lý...' : 'Thanh toán'}
+          Thanh toán
         </button>
       </div>
 

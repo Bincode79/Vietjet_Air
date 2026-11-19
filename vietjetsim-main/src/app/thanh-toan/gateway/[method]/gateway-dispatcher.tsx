@@ -11,10 +11,23 @@ import MoviGatewayContent, {
   type MoviGatewayApplication,
 } from '@/features/payments/components/gateway/MoviGatewayContent';
 import WalletGatewayContent from '@/features/payments/components/gateway/WalletGatewayContent';
+import BankGatewayContent, {
+  type BankGatewayPayload,
+} from '@/features/payments/components/gateway/BankGatewayContent';
+import SkyPointGatewayContent, {
+  type SkyPointGatewayPayload,
+} from '@/features/payments/components/gateway/SkyPointGatewayContent';
 import { createPayment } from '@/features/payments/services';
 import type { PaymentMethod } from '@/features/payments/types';
 import { apiRequest, getApiErrorMessage } from '@/shared/services';
 import { Icon } from '@/shared/components/ui';
+
+/** Dữ liệu từng cổng trả về khi khách hoàn tất bước xác nhận của cổng đó. */
+interface GatewayPaymentPayload {
+  movi?: MoviGatewayApplication;
+  bank?: BankGatewayPayload;
+  skypoint?: SkyPointGatewayPayload['skypoint'];
+}
 
 interface BookingInfo {
   bookingId: string;
@@ -30,7 +43,9 @@ interface BookingInfo {
 const GATEWAY_PAYMENT_METHOD: Record<string, PaymentMethod | undefined> = {
   card: 'card',
   napas: 'card',
+  bank: 'bank',
   ewallet: 'e_wallet',
+  skypoint: 'skypoint',
   movi: 'movi',
   wallet: 'wallet',
 };
@@ -83,6 +98,10 @@ export default function GatewayDispatcher() {
 
   const method = (params?.method as string) || 'qr';
   const bookingId = searchParams.get('bookingId') || '';
+  // Mã giảm giá đã áp ở trang /thanh-toan — server tự validate lại, client
+  // chỉ chuyển tiếp để cổng hiển thị đúng số tiền và render đúng memo.
+  const promoCode = searchParams.get('promo') || '';
+  const promoDiscount = Math.max(0, Number(searchParams.get('promoDiscount')) || 0);
 
   const [booking, setBooking] = useState<BookingInfo | null>(null);
   const [loadState, setLoadState] = useState<LoadState>(bookingId ? 'loading' : 'ready');
@@ -147,6 +166,10 @@ export default function GatewayDispatcher() {
         return 'Cổng Trả Sau MOVI';
       case 'wallet':
         return 'Cổng Ví Vietjet';
+      case 'bank':
+        return 'Cổng Chuyển Khoản Ngân Hàng';
+      case 'skypoint':
+        return 'Cổng SkyJoy Rewards';
       case 'qr':
       default:
         return 'Cổng VNPAY-QR • VietQR';
@@ -161,7 +184,7 @@ export default function GatewayDispatcher() {
   );
 
   const handlePaymentSuccess = useCallback(
-    async (application?: MoviGatewayApplication) => {
+    async (payload?: GatewayPaymentPayload) => {
       if (!booking) {
         setPaymentError('Không tìm thấy thông tin đặt chỗ để ghi nhận thanh toán.');
         return;
@@ -181,6 +204,10 @@ export default function GatewayDispatcher() {
         return;
       }
 
+      const application = payload?.movi;
+      const bankPayload = payload?.bank;
+      const skypointPayload = payload?.skypoint;
+
       // Cổng MOVI phải có hồ sơ tín dụng — không có hồ sơ thì server từ chối
       // giao dịch, và đó là điều đúng: một đơn trả góp không có hồ sơ là
       // một đơn mà bên tín dụng không thể chấm điểm.
@@ -192,10 +219,18 @@ export default function GatewayDispatcher() {
       setSubmitting(true);
       setPaymentError('');
       try {
+        // SkyPoint: khách trả phần tiền mặt còn lại sau khi trừ điểm; các
+        // phương thức khác trả đúng số tiền sau khuyến mãi. Server vẫn tự
+        // tính lại và từ chối nếu `amount` không khớp.
+        const payableAmount = Math.max(0, booking.total - promoDiscount);
         await createPayment({
           booking_id: booking.bookingId,
           method: paymentMethod,
-          amount: booking.total,
+          amount: skypointPayload?.cashDue ?? payableAmount,
+          discount_code: promoCode || undefined,
+          bank_account_id: bankPayload?.bank_account_id,
+          transfer_note: bankPayload?.transfer_note,
+          transfer_amount: bankPayload?.transfer_amount,
           movi:
             paymentMethod === 'movi' && application
               ? {
@@ -226,7 +261,7 @@ export default function GatewayDispatcher() {
         setSubmitting(false);
       }
     },
-    [booking, goToSuccess, method]
+    [booking, goToSuccess, method, promoCode, promoDiscount]
   );
 
   if (loadState === 'loading') {
@@ -291,7 +326,9 @@ export default function GatewayDispatcher() {
     );
   }
 
-  const effectiveAmount = booking.total;
+  // Số tiền hiển thị trên header và truyền vào các cổng = tổng vé trừ khuyến
+  // mãi đã áp ở /thanh-toan. SkyPoint gateway tự trừ tiếp phần điểm bên trong.
+  const effectiveAmount = Math.max(0, booking.total - promoDiscount);
   const effectiveCode = booking.bookingCode;
 
   return (
@@ -373,6 +410,27 @@ export default function GatewayDispatcher() {
 
         {method === 'wallet' && (
           <WalletGatewayContent
+            bookingId={booking.bookingId}
+            bookingCode={effectiveCode}
+            amount={effectiveAmount}
+            onSuccess={handlePaymentSuccess}
+          />
+        )}
+
+        {method === 'bank' && (
+          <BankGatewayContent
+            bookingId={booking.bookingId}
+            bookingCode={effectiveCode}
+            originalAmount={booking.total}
+            amount={effectiveAmount}
+            discountAmount={promoDiscount}
+            discountCode={promoCode}
+            onSuccess={handlePaymentSuccess}
+          />
+        )}
+
+        {method === 'skypoint' && (
+          <SkyPointGatewayContent
             bookingId={booking.bookingId}
             bookingCode={effectiveCode}
             amount={effectiveAmount}

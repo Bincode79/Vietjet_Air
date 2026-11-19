@@ -16,7 +16,7 @@ interface Props {
   bookingId: string;
   bookingCode?: string;
   amount: number;
-  onSuccess: (application: MoviGatewayApplication) => void;
+  onSuccess: (payload: { movi: MoviGatewayApplication }) => void;
 }
 
 export default function MoviGatewayContent({
@@ -54,11 +54,13 @@ export default function MoviGatewayContent({
       // `method: 'movi'` mà không kèm hồ sơ, nên server không lưu được CCCD,
       // ngày sinh, số điện thoại và kỳ hạn (xem `movi_credit_applications`).
       onSuccess({
-        fullName: fullName.trim(),
-        birthDate: birthDate.trim(),
-        nationalId: nationalId.replace(/\D/g, ''),
-        phone: phone.trim(),
-        tenor,
+        movi: {
+          fullName: fullName.trim(),
+          birthDate: birthDate.trim(),
+          nationalId: nationalId.replace(/\D/g, ''),
+          phone: phone.trim(),
+          tenor,
+        },
       });
     }, 1000);
   };
