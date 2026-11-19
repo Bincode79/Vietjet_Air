@@ -339,6 +339,22 @@ async function main() {
     await page.screenshot({ path: path.join(OUT_DIR, '13-ancillary-services.png') });
     console.log('✓ Captured 13-ancillary-services.png');
 
+    // Mobile viewport capture (390x844) cho trang dịch vụ
+    await page.setViewport({ width: 390, height: 844, isMobile: true });
+    await page.reload({ waitUntil: 'domcontentloaded' });
+    await page
+      .waitForFunction(() => document.body.innerText.includes('Đi tiếp'), { timeout: 40000 })
+      .catch(() => {});
+    await new Promise((r) => setTimeout(r, 1000));
+    await page.screenshot({ path: path.join(OUT_DIR, '16-ancillary-services-mobile.png') });
+    console.log('✓ Captured 16-ancillary-services-mobile.png (mobile)');
+    await page.setViewport({ width: 1280, height: 900 });
+    await page.reload({ waitUntil: 'domcontentloaded' });
+    await page
+      .waitForFunction(() => document.body.innerText.includes('Đi tiếp'), { timeout: 40000 })
+      .catch(() => {});
+    await new Promise((r) => setTimeout(r, 1000));
+
     // Open baggage modal and confirm a package so pendingAmount > 0
     console.log('Opening baggage modal and confirming package...');
     await page
@@ -383,6 +399,22 @@ async function main() {
     console.log('Ancillary payment URL:', page.url());
     await page.screenshot({ path: path.join(OUT_DIR, '14-ancillary-payment.png') });
     console.log('✓ Captured 14-ancillary-payment.png');
+
+    // Mobile viewport capture cho trang thanh toán dịch vụ
+    await page.setViewport({ width: 390, height: 844, isMobile: true });
+    await page.reload({ waitUntil: 'domcontentloaded' });
+    await page
+      .waitForFunction(() => document.body.innerText.includes('VietQR'), { timeout: 30000 })
+      .catch(() => {});
+    await new Promise((r) => setTimeout(r, 1000));
+    await page.screenshot({ path: path.join(OUT_DIR, '17-ancillary-payment-mobile.png') });
+    console.log('✓ Captured 17-ancillary-payment-mobile.png (mobile)');
+    await page.setViewport({ width: 1280, height: 900 });
+    await page.reload({ waitUntil: 'domcontentloaded' });
+    await page
+      .waitForFunction(() => document.body.innerText.includes('VietQR'), { timeout: 30000 })
+      .catch(() => {});
+    await new Promise((r) => setTimeout(r, 1000));
 
     // Pay ancillary fees via VietQR
     console.log('Selecting VietQR and paying ancillary fees...');
