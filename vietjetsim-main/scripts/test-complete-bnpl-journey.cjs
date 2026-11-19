@@ -86,8 +86,10 @@ async function main() {
     // STEP 1: Go to /thanh-toan?bookingId=...
     console.log(`\n--- STEP 1: Navigate to /thanh-toan?bookingId=${bookingCode} ---`);
     await page.goto(`${BASE_URL}/thanh-toan?bookingId=${bookingCode}`, {
-      waitUntil: 'networkidle0',
+      waitUntil: 'domcontentloaded',
     });
+    await page.waitForSelector('button', { timeout: 20000 });
+    await new Promise((r) => setTimeout(r, 1200));
 
     // Select MOVI payment method
     console.log('Selecting MOVI payment method...');
@@ -173,7 +175,9 @@ async function main() {
 
     // STEP 2: Navigate to Chuyến bay của tôi and look up the booking
     console.log(`\n--- STEP 2: Navigate to /chuyen-bay-cua-toi to check PNR ${bookingCode} ---`);
-    await page.goto(`${BASE_URL}/chuyen-bay-cua-toi`, { waitUntil: 'networkidle0' });
+    await page.goto(`${BASE_URL}/chuyen-bay-cua-toi`, { waitUntil: 'domcontentloaded' });
+    await page.waitForSelector('input', { timeout: 20000 });
+    await new Promise((r) => setTimeout(r, 1200));
 
     // Fill bookingCode and surname
     await page.evaluate((code) => {
@@ -224,7 +228,7 @@ async function main() {
       if (submitBtn) submitBtn.click();
     });
 
-    await page.waitForNavigation({ waitUntil: 'networkidle0', timeout: 8000 }).catch(() => {});
+    await page.waitForNavigation({ waitUntil: 'domcontentloaded', timeout: 8000 }).catch(() => {});
     await new Promise((r) => setTimeout(r, 1500));
 
     const currentUrl = page.url();
@@ -322,7 +326,85 @@ async function main() {
     await page.screenshot({ path: path.join(OUT_DIR, '06-payment-confirmed.png') });
     console.log('✓ Captured 06-payment-confirmed.png');
 
-    console.log('\nALL 5 STEPS PASSED SUCCESSFULLY!');
+    // STEP 6: Post-booking ancillary services + ancillary payment
+    console.log(`\n--- STEP 6: Navigate to /dat-ve/${bookingCode}/dich-vu ---`);
+    await page.goto(`${BASE_URL}/dat-ve/${bookingCode}/dich-vu`, {
+      waitUntil: 'domcontentloaded',
+    });
+    // Trang fetch booking + dich-vu tuần tự qua Neon — có thể >5s mới render xong.
+    await page
+      .waitForFunction(() => document.body.innerText.includes('Đi tiếp'), { timeout: 40000 })
+      .catch(() => {});
+    await new Promise((r) => setTimeout(r, 1500));
+    await page.screenshot({ path: path.join(OUT_DIR, '13-ancillary-services.png') });
+    console.log('✓ Captured 13-ancillary-services.png');
+
+    // Open baggage modal and confirm a package so pendingAmount > 0
+    console.log('Opening baggage modal and confirming package...');
+    await page
+      .waitForFunction(
+        () =>
+          Array.from(document.querySelectorAll('div.cursor-pointer')).some((c) =>
+            c.innerText.includes('Chọn hành lý')
+          ),
+        { timeout: 20000 }
+      )
+      .catch(() => {});
+    await page.evaluate(() => {
+      const cards = Array.from(document.querySelectorAll('div.cursor-pointer'));
+      const baggageCard = cards.find((c) => c.innerText.includes('Chọn hành lý'));
+      if (baggageCard) baggageCard.click();
+    });
+    await new Promise((r) => setTimeout(r, 800));
+    await page.evaluate(() => {
+      const btns = Array.from(document.querySelectorAll('button'));
+      const confirmBtn = btns.find((b) => b.innerText.trim() === 'Xác nhận' && b.closest('.fixed'));
+      if (confirmBtn) confirmBtn.click();
+    });
+    await new Promise((r) => setTimeout(r, 1200));
+
+    // Click [ Đi tiếp ] → /dat-ve/:code/dich-vu/thanh-toan
+    console.log('Clicking [ Đi tiếp ] to ancillary payment page...');
+    await page.evaluate(() => {
+      const btns = Array.from(document.querySelectorAll('button'));
+      const nextBtn = btns.find((b) => b.innerText.trim() === 'Đi tiếp');
+      if (nextBtn) nextBtn.click();
+    });
+    await page
+      .waitForFunction(() => window.location.pathname.includes('/dich-vu/thanh-toan'), {
+        timeout: 10000,
+      })
+      .catch(() => {});
+    // Chờ payment methods render xong (trang fetch GET dich-vu rồi mới hiện nút)
+    await page
+      .waitForFunction(() => document.body.innerText.includes('VietQR'), { timeout: 20000 })
+      .catch(() => {});
+    await new Promise((r) => setTimeout(r, 1000));
+    console.log('Ancillary payment URL:', page.url());
+    await page.screenshot({ path: path.join(OUT_DIR, '14-ancillary-payment.png') });
+    console.log('✓ Captured 14-ancillary-payment.png');
+
+    // Pay ancillary fees via VietQR
+    console.log('Selecting VietQR and paying ancillary fees...');
+    await page.evaluate(() => {
+      const btns = Array.from(document.querySelectorAll('button'));
+      const vietqrBtn = btns.find((b) => b.innerText.includes('VietQR'));
+      if (vietqrBtn) vietqrBtn.click();
+    });
+    for (let i = 0; i < 8; i++) {
+      await new Promise((r) => setTimeout(r, 1000));
+      const hasSuccess = await page.evaluate(() =>
+        document.body.innerText.includes('Thanh toán thành công')
+      );
+      if (hasSuccess) {
+        console.log(`>>> ANCILLARY PAYMENT SUCCESS at second ${i + 1}!`);
+        break;
+      }
+    }
+    await page.screenshot({ path: path.join(OUT_DIR, '15-ancillary-payment-success.png') });
+    console.log('✓ Captured 15-ancillary-payment-success.png');
+
+    console.log('\nALL 6 STEPS PASSED SUCCESSFULLY!');
   } finally {
     await browser.close();
   }
