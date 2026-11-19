@@ -16,6 +16,7 @@ import {
   BAGGAGE_PACKAGES,
   OVERSIZED_BAGGAGE,
   getAncillaryPrice,
+  getMealPrice,
 } from '@/features/bookings/pricing';
 import { rateLimit } from '@/lib/rate-limit';
 import { isGuestBookingOwner } from '@/lib/guest-booking';
@@ -112,9 +113,12 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
         await removeBookingAncillary(booking.id, 'insurance');
       }
 
-      // Suất ăn nóng Jet Café
+      // Suất ăn nóng Jet Café — client gửi meal id (vd 'meal-my-y'); giá lấy
+      // từ MEAL_OPTIONS, fallback về giá chung 'meal' khi id không khớp.
       if (s.meal === true || typeof s.meal === 'string' || typeof s.meal === 'object') {
-        await upsertBookingAncillary(booking.id, 'meal', getAncillaryPrice('meal'), 1);
+        const mealKey = typeof s.meal === 'string' ? s.meal : '';
+        const mealPrice = getMealPrice(mealKey) ?? getAncillaryPrice('meal');
+        await upsertBookingAncillary(booking.id, 'meal', mealPrice, 1);
       } else if (s.meal === false || s.meal === null) {
         await removeBookingAncillary(booking.id, 'meal');
       }

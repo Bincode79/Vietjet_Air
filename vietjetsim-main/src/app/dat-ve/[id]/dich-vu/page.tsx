@@ -74,6 +74,7 @@ export default function AncillaryServicesPage() {
   // Chỉ gửi seat/package_id khi user thực sự đổi — tránh ghi đè lựa chọn cũ.
   const [seatDirty, setSeatDirty] = useState<boolean>(false);
   const [baggageDirty, setBaggageDirty] = useState<boolean>(false);
+  const [mealDirty, setMealDirty] = useState<boolean>(false);
 
   // Selected services state — giá đọc từ pricing.ts (không hardcode)
   const [selectedSeat, setSelectedSeat] = useState<string>('15-A');
@@ -83,6 +84,7 @@ export default function AncillaryServicesPage() {
   const [hasInsurance, setHasInsurance] = useState<boolean>(true);
   const insurancePrice = getAncillaryPrice('insurance');
   const [selectedMeal, setSelectedMeal] = useState<string>('');
+  const [selectedMealId, setSelectedMealId] = useState<string>('');
   const [mealPrice, setMealPrice] = useState<number>(0);
   const [selectedTaxi, setSelectedTaxi] = useState<boolean>(false);
   const [taxiPrice, setTaxiPrice] = useState<number>(getAncillaryPrice('taxi'));
@@ -98,6 +100,7 @@ export default function AncillaryServicesPage() {
 
   const [showMealModal, setShowMealModal] = useState<boolean>(false);
   const [pendingMeal, setPendingMeal] = useState<string>('jet café');
+  const [pendingMealId, setPendingMealId] = useState<string>('');
   const [pendingMealPrice, setPendingMealPrice] = useState<number>(0);
 
   // Collapsible sidebar sections
@@ -161,7 +164,7 @@ export default function AncillaryServicesPage() {
         // Nạp trạng thái dịch vụ server đang giữ để form phản ánh đúng DB.
         try {
           const svc = await apiRequest<{
-            ancillaries?: { option_id: string; status?: string }[];
+            ancillaries?: { option_id: string; status?: string; unit_price?: number }[];
             baggage?: { package_id: string; status: string }[];
             pendingAmount?: number;
           }>(`/api/dat-ve/${encodeURIComponent(id)}/dich-vu`);
@@ -171,9 +174,13 @@ export default function AncillaryServicesPage() {
           setHasInsurance(ids.has('insurance'));
           setSelectedTaxi(ids.has('taxi'));
           setTaxiPrice(ids.has('taxi') ? getAncillaryPrice('taxi') : 0);
-          if (ids.has('meal')) {
+          const mealRow = (svc.ancillaries ?? []).find(
+            (a) => a.option_id === 'meal' && a.status !== 'cancelled'
+          );
+          if (mealRow) {
             setSelectedMeal('Suất ăn');
-            setMealPrice(getAncillaryPrice('meal'));
+            // Giá thật server đã ghi (theo meal id), không dùng giá chung.
+            setMealPrice(Number(mealRow.unit_price) || getAncillaryPrice('meal'));
           }
           const pkg =
             (svc.baggage ?? []).find((item) => item.status === 'pending') ?? (svc.baggage ?? [])[0];
@@ -284,7 +291,7 @@ export default function AncillaryServicesPage() {
     insurance?: boolean;
     meal?: string;
     taxi?: boolean;
-  }) => {
+  }): Promise<number | null> => {
     try {
       const insuranceVal = overrides?.insurance !== undefined ? overrides.insurance : hasInsurance;
       const mealVal = overrides?.meal ?? pendingMeal ?? selectedMeal;
@@ -293,10 +300,17 @@ export default function AncillaryServicesPage() {
       const services: Record<string, unknown> = {
         passenger_id: booking?.passengers?.[0]?.id,
         insurance: insuranceVal,
-        // meal: chuỗi rỗng = khách bỏ chọn → gửi null để route gỡ khỏi DB.
-        meal: mealVal ? mealVal : null,
         taxi: taxiVal,
       };
+      // Chỉ gửi meal khi user thực sự chọn/xác nhận — `pendingMeal` có giá trị
+      // mặc định 'jet café' nên gửi vô điều kiện sẽ tự thêm suất ăn 85k mà
+      // khách không hề chọn (và upsert có thể tạo dòng 'pending' thứ hai cạnh
+      // dòng 'paid' đã thu → thu tiền hai lần).
+      if (mealDirty || overrides?.meal !== undefined) {
+        // meal: id suất ăn (route tra giá trong MEAL_OPTIONS); rỗng = bỏ chọn.
+        const mealKey = pendingMealId || selectedMealId || 'meal';
+        services.meal = mealVal ? mealKey : null;
+      }
       // Chỉ gửi seat/package_id khi user thực sự đổi — tránh ghi đè lựa chọn cũ.
       if (seatDirty || overrides?.seat) {
         const seatVal = overrides?.seat ?? pendingSeat ?? selectedSeat;
@@ -312,9 +326,14 @@ export default function AncillaryServicesPage() {
         `/api/dat-ve/${encodeURIComponent(id)}/dich-vu`,
         { method: 'POST', body: { services } }
       );
-      if (typeof res?.pendingAmount === 'number') setPendingAmount(res.pendingAmount);
+      if (typeof res?.pendingAmount === 'number') {
+        setPendingAmount(res.pendingAmount);
+        return res.pendingAmount;
+      }
+      return null;
     } catch (e) {
       console.warn('Could not sync services to backend:', e);
+      return null;
     }
   };
 
@@ -341,7 +360,9 @@ export default function AncillaryServicesPage() {
   };
 
   const handleConfirmMeal = async () => {
+    setMealDirty(true);
     setSelectedMeal(pendingMeal);
+    setSelectedMealId(pendingMealId);
     setMealPrice(pendingMealPrice);
     setShowMealModal(false);
     toast.success(`Đã chọn suất ăn: ${pendingMeal}!`);
@@ -349,8 +370,11 @@ export default function AncillaryServicesPage() {
   };
 
   const handleContinue = async () => {
-    await syncServicesToBackend();
-    if (pendingAmount > 0) {
+    // pendingAmount trong state là giá trị render trước — POST vừa trả về
+    // số mới hơn nên phải dùng giá trị trả về, không đọc state cũ.
+    const freshAmount = await syncServicesToBackend();
+    const due = typeof freshAmount === 'number' ? freshAmount : pendingAmount;
+    if (due > 0) {
       router.push(`/dat-ve/${encodeURIComponent(bookingCode)}/dich-vu/thanh-toan`);
     } else if (!isPaid) {
       router.push(`/thanh-toan?bookingId=${bookingCode}&source=manage`);
@@ -1105,6 +1129,7 @@ export default function AncillaryServicesPage() {
                   key={meal.id}
                   onClick={() => {
                     setPendingMeal(meal.name);
+                    setPendingMealId(meal.id);
                     setPendingMealPrice(meal.price);
                   }}
                   className={`p-3.5 rounded-xl border flex items-center justify-between cursor-pointer transition-all ${
