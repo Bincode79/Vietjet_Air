@@ -4,7 +4,8 @@ const { neon } = require('@neondatabase/serverless');
 const { resolveDatabaseUrl } = require('./db-target.cjs');
 
 const BASE_URL = process.env.BASE_URL || 'http://127.0.0.1:4028';
-const CHROME = process.env.CHROME_PATH || '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
+const CHROME =
+  process.env.CHROME_PATH || '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
 const OUT_DIR = path.join(__dirname, '..', 'docs', 'qa', 'bnpl-journey');
 
 async function main() {
@@ -20,16 +21,22 @@ async function main() {
   try {
     // 1. Get CSRF & create a confirmed booking for check-in
     const csrfRes = await fetch(`${BASE_URL}/api/csrf`);
-    const setCookies = csrfRes.headers.getSetCookie ? csrfRes.headers.getSetCookie() : [csrfRes.headers.get('set-cookie')];
-    const cookieHeader = setCookies.map(c => c.split(';')[0]).join('; ');
-    const csrfCookie = setCookies.map(c => {
-      const [nameVal] = c.split(';');
-      const [name, value] = nameVal.split('=');
-      return { name, value };
-    }).find(c => c.name === 'csrf_token');
+    const setCookies = csrfRes.headers.getSetCookie
+      ? csrfRes.headers.getSetCookie()
+      : [csrfRes.headers.get('set-cookie')];
+    const cookieHeader = setCookies.map((c) => c.split(';')[0]).join('; ');
+    const csrfCookie = setCookies
+      .map((c) => {
+        const [nameVal] = c.split(';');
+        const [name, value] = nameVal.split('=');
+        return { name, value };
+      })
+      .find((c) => c.name === 'csrf_token');
 
     // Get active flight
-    const flightsRes = await fetch(`${BASE_URL}/api/chuyen-bay?from=SGN&to=HAN&date=2026-11-30&adults=1`);
+    const flightsRes = await fetch(
+      `${BASE_URL}/api/chuyen-bay?from=SGN&to=HAN&date=2026-11-30&adults=1`
+    );
     const flightsData = await flightsRes.json();
     const flights = flightsData.flights || flightsData || [];
     const flight = flights[0];
@@ -112,7 +119,11 @@ async function main() {
         hasPnr: text.includes('Mã đặt chỗ') || text.includes('VJ'),
         hasPassengerName: text.includes('LONG KA') || text.includes('KA'),
         hasAgreeCheckbox: !!document.querySelector('#agree'),
-        hasCheckInBtn: Array.from(document.querySelectorAll('button')).some(b => b.innerText.toUpperCase().includes('XÁC NHẬN LÀM THỦ TỤC') || b.innerText.includes('Check-in')),
+        hasCheckInBtn: Array.from(document.querySelectorAll('button')).some(
+          (b) =>
+            b.innerText.toUpperCase().includes('XÁC NHẬN LÀM THỦ TỤC') ||
+            b.innerText.includes('Check-in')
+        ),
       };
     });
     console.log('Search Results Check:', searchResultsCheck);
@@ -127,7 +138,11 @@ async function main() {
 
     await page.evaluate(() => {
       const btns = Array.from(document.querySelectorAll('button'));
-      const btn = btns.find(b => b.innerText.toUpperCase().includes('XÁC NHẬN LÀM THỦ TỤC') || b.innerText.includes('Check-in'));
+      const btn = btns.find(
+        (b) =>
+          b.innerText.toUpperCase().includes('XÁC NHẬN LÀM THỦ TỤC') ||
+          b.innerText.includes('Check-in')
+      );
       if (btn && !btn.disabled) btn.click();
     });
     await new Promise((r) => setTimeout(r, 4000));
@@ -138,11 +153,16 @@ async function main() {
     const boardingPassCheck = await page.evaluate(() => {
       const text = document.body.innerText;
       return {
-        hasSuccessNotice: text.includes('thành công') || text.includes('Thẻ lên máy bay') || text.includes('Boarding Pass'),
+        hasSuccessNotice:
+          text.includes('thành công') ||
+          text.includes('Thẻ lên máy bay') ||
+          text.includes('Boarding Pass'),
         hasQrCode: !!document.querySelector('svg, canvas, img[alt*="QR" i], [aria-label*="QR" i]'),
         hasSeat: text.includes('Ghế') || text.includes('15A') || text.includes('18A'),
         hasPassenger: text.includes('LONG KA') || text.includes('KA'),
-        hasPrintBtn: Array.from(document.querySelectorAll('button')).some(b => b.innerText.includes('In') || b.title?.includes('In')),
+        hasPrintBtn: Array.from(document.querySelectorAll('button')).some(
+          (b) => b.innerText.includes('In') || b.title?.includes('In')
+        ),
       };
     });
     console.log('Boarding Pass Check:', boardingPassCheck);
@@ -156,7 +176,7 @@ async function main() {
   }
 }
 
-main().catch(err => {
+main().catch((err) => {
   console.error('Checkin E2E error:', err);
   process.exit(1);
 });

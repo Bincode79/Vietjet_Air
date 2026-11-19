@@ -135,7 +135,9 @@ describe('Phân hệ Dịch vụ bổ sung sau đặt vé (Ảnh #6)', () => {
   });
 
   it('chặn trạng thái cancelled và refunded với mã 409', () => {
-    expect(routeSource).toMatch(/booking\.status === 'cancelled' \|\| booking\.status === 'refunded'/);
+    expect(routeSource).toMatch(
+      /booking\.status === 'cancelled' \|\| booking\.status === 'refunded'/
+    );
   });
 
   it('hỗ trợ gỡ dịch vụ (remove symmetry contract)', () => {

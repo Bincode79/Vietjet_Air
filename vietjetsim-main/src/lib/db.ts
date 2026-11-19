@@ -5794,7 +5794,10 @@ export async function upsertBookingAncillary(
   return { ...row, unit_price: parseFloat(String(row.unit_price)) };
 }
 
-export async function removeBookingAncillary(bookingId: string, optionId: string): Promise<boolean> {
+export async function removeBookingAncillary(
+  bookingId: string,
+  optionId: string
+): Promise<boolean> {
   const rows = await sql`
     DELETE FROM booking_ancillaries
     WHERE booking_id = ${bookingId} AND option_id = ${optionId}
@@ -5819,7 +5822,10 @@ export async function getBookingAncillaries(bookingId: string): Promise<BookingA
   }>(rows).map((r) => ({ ...r, unit_price: parseFloat(String(r.unit_price)) }));
 }
 
-export async function updateBookingTotalPrice(bookingId: string, newTotal: number): Promise<boolean> {
+export async function updateBookingTotalPrice(
+  bookingId: string,
+  newTotal: number
+): Promise<boolean> {
   const rows = await sql`
     UPDATE bookings
     SET total_price = ${newTotal}, updated_at = NOW()

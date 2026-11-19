@@ -88,6 +88,9 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     });
   } catch (error) {
     console.error('Error processing ancillary payment:', error);
-    return NextResponse.json({ error: 'Payment failed', message: 'Không thể xử lý thanh toán.' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Payment failed', message: 'Không thể xử lý thanh toán.' },
+      { status: 500 }
+    );
   }
 }

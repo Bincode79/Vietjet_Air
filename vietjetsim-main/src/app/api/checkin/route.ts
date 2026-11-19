@@ -231,14 +231,22 @@ export async function POST(request: NextRequest) {
 
     const isOwner = user && (isAdminRole(user.role) || booking.user_id === user.userId);
     const isGuest = isGuestBookingOwner(request, booking.id);
-    const bodyPnr = String(body.bookingCode ?? '').trim().toUpperCase();
+    const bodyPnr = String(body.bookingCode ?? '')
+      .trim()
+      .toUpperCase();
     const isPnrMatch = bodyPnr && booking.booking_code?.toUpperCase() === bodyPnr;
 
     if (!isOwner && !isGuest && !isPnrMatch) {
       if (!user) {
-        return authResponse ?? NextResponse.json(
-          { error: 'Unauthorized', message: 'Vui lòng đăng nhập hoặc dùng mã đặt chỗ để check-in.' },
-          { status: 401 }
+        return (
+          authResponse ??
+          NextResponse.json(
+            {
+              error: 'Unauthorized',
+              message: 'Vui lòng đăng nhập hoặc dùng mã đặt chỗ để check-in.',
+            },
+            { status: 401 }
+          )
         );
       }
       return NextResponse.json(

@@ -79,32 +79,122 @@ function generateBookingStats(): BookingStats {
 // Mock data generators
 function generateFlights() {
   return [
-    { id: 'VJ101', route: 'SGN → HAN', time: '13:00', status: 'scheduled', statusColor: 'text-blue-600 bg-blue-100' },
-    { id: 'VJ102', route: 'HAN → SGN', time: '14:00', status: 'delayed', statusColor: 'text-amber-600 bg-amber-100' },
-    { id: 'VJ103', route: 'SGN → DAD', time: '15:00', status: 'completed', statusColor: 'text-green-600 bg-green-100' },
-    { id: 'VJ104', route: 'DAD → SGN', time: '16:00', status: 'scheduled', statusColor: 'text-blue-600 bg-blue-100' },
-    { id: 'VJ105', route: 'SGN → CXR', time: '17:00', status: 'delayed', statusColor: 'text-amber-600 bg-amber-100' },
-    { id: 'VJ106', route: 'CXR → SGN', time: '18:00', status: 'cancelled', statusColor: 'text-red-600 bg-red-100' },
+    {
+      id: 'VJ101',
+      route: 'SGN → HAN',
+      time: '13:00',
+      status: 'scheduled',
+      statusColor: 'text-blue-600 bg-blue-100',
+    },
+    {
+      id: 'VJ102',
+      route: 'HAN → SGN',
+      time: '14:00',
+      status: 'delayed',
+      statusColor: 'text-amber-600 bg-amber-100',
+    },
+    {
+      id: 'VJ103',
+      route: 'SGN → DAD',
+      time: '15:00',
+      status: 'completed',
+      statusColor: 'text-green-600 bg-green-100',
+    },
+    {
+      id: 'VJ104',
+      route: 'DAD → SGN',
+      time: '16:00',
+      status: 'scheduled',
+      statusColor: 'text-blue-600 bg-blue-100',
+    },
+    {
+      id: 'VJ105',
+      route: 'SGN → CXR',
+      time: '17:00',
+      status: 'delayed',
+      statusColor: 'text-amber-600 bg-amber-100',
+    },
+    {
+      id: 'VJ106',
+      route: 'CXR → SGN',
+      time: '18:00',
+      status: 'cancelled',
+      statusColor: 'text-red-600 bg-red-100',
+    },
   ];
 }
 
 function generateUsers() {
   return [
-    { id: 1, name: 'Nguyen Van A', email: 'nguyenvana@email.com', joined: '2026-10-15', status: 'active' },
-    { id: 2, name: 'Tran Thi B', email: 'tranthib@email.com', joined: '2026-10-16', status: 'active' },
+    {
+      id: 1,
+      name: 'Nguyen Van A',
+      email: 'nguyenvana@email.com',
+      joined: '2026-10-15',
+      status: 'active',
+    },
+    {
+      id: 2,
+      name: 'Tran Thi B',
+      email: 'tranthib@email.com',
+      joined: '2026-10-16',
+      status: 'active',
+    },
     { id: 3, name: 'Le Van C', email: 'levanc@email.com', joined: '2026-10-17', status: 'premium' },
-    { id: 4, name: 'Pham Thi D', email: 'phamthid@email.com', joined: '2026-10-18', status: 'suspended' },
-    { id: 5, name: 'Hoang Van E', email: 'hoange@email.com', joined: '2026-10-19', status: 'active' },
+    {
+      id: 4,
+      name: 'Pham Thi D',
+      email: 'phamthid@email.com',
+      joined: '2026-10-18',
+      status: 'suspended',
+    },
+    {
+      id: 5,
+      name: 'Hoang Van E',
+      email: 'hoange@email.com',
+      joined: '2026-10-19',
+      status: 'active',
+    },
   ];
 }
 
 function generateBookings() {
   return [
-    { id: 'VJ-20261120-001', passenger: 'Nguyen Van A', flight: 'VJ101', status: 'confirmed', amount: 1200000 },
-    { id: 'VJ-20261120-002', passenger: 'Tran Thi B', flight: 'VJ102', status: 'pending', amount: 850000 },
-    { id: 'VJ-20261120-003', passenger: 'Le Van C', flight: 'VJ103', status: 'confirmed', amount: 950000 },
-    { id: 'VJ-20261120-004', passenger: 'Pham Thi D', flight: 'VJ104', status: 'cancelled', amount: 0 },
-    { id: 'VJ-20261120-005', passenger: 'Hoang Van E', flight: 'VJ105', status: 'pending', amount: 1400000 },
+    {
+      id: 'VJ-20261120-001',
+      passenger: 'Nguyen Van A',
+      flight: 'VJ101',
+      status: 'confirmed',
+      amount: 1200000,
+    },
+    {
+      id: 'VJ-20261120-002',
+      passenger: 'Tran Thi B',
+      flight: 'VJ102',
+      status: 'pending',
+      amount: 850000,
+    },
+    {
+      id: 'VJ-20261120-003',
+      passenger: 'Le Van C',
+      flight: 'VJ103',
+      status: 'confirmed',
+      amount: 950000,
+    },
+    {
+      id: 'VJ-20261120-004',
+      passenger: 'Pham Thi D',
+      flight: 'VJ104',
+      status: 'cancelled',
+      amount: 0,
+    },
+    {
+      id: 'VJ-20261120-005',
+      passenger: 'Hoang Van E',
+      flight: 'VJ105',
+      status: 'pending',
+      amount: 1400000,
+    },
   ];
 }
 
@@ -148,7 +238,9 @@ export default function AdminDashboardEnhanced() {
           <div className="hidden md:flex items-center gap-3 px-4 py-2 bg-gray-100 rounded-full">
             <span className="text-sm text-gray-600">Xin chào,</span>
             <span className="text-sm font-semibold text-gray-900">{user?.email || 'Admin'}</span>
-            <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full">Online</span>
+            <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full">
+              Online
+            </span>
           </div>
           <button className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
             <Icon name="LogOut" size={18} />
@@ -161,7 +253,9 @@ export default function AdminDashboardEnhanced() {
         {/* Welcome Section */}
         <div className="mb-8">
           <h2 className="text-2xl font-bold text-gray-900 mb-2">Bảng điều khiển</h2>
-          <p className="text-gray-600">Chào mừng bạn trở lại, {user?.email || 'Admin'}. Đây là tổng quan về hoạt động hệ thống.</p>
+          <p className="text-gray-600">
+            Chào mừng bạn trở lại, {user?.email || 'Admin'}. Đây là tổng quan về hoạt động hệ thống.
+          </p>
         </div>
 
         {/* Key Metrics Cards */}
@@ -219,7 +313,12 @@ export default function AdminDashboardEnhanced() {
           {/* Center Column - Main Content */}
           <div className="lg:col-span-2 space-y-6">
             {/* Active Tab Content */}
-            <OverviewDashboard flightStats={flightStats} revenueStats={revenueStats} userStats={userStats} bookingStats={bookingStats} />
+            <OverviewDashboard
+              flightStats={flightStats}
+              revenueStats={revenueStats}
+              userStats={userStats}
+              bookingStats={bookingStats}
+            />
             <FlightsOverview flights={flights} />
             <UsersOverview users={users} />
             <RevenueOverview stats={revenueStats} />
@@ -246,7 +345,14 @@ export default function AdminDashboardEnhanced() {
 }
 
 // Metric Card Component
-function MetricCard({ title, value, change, trend, icon: IconName, color }: {
+function MetricCard({
+  title,
+  value,
+  change,
+  trend,
+  icon: IconName,
+  color,
+}: {
   title: string;
   value: string | number;
   change: string;
@@ -266,7 +372,9 @@ function MetricCard({ title, value, change, trend, icon: IconName, color }: {
       </div>
       <div className="flex items-baseline gap-2 mb-2">
         <span className="text-3xl font-bold text-gray-900">{value}</span>
-        <span className="text-sm font-semibold {trend === 'up' ? 'text-green-600' : 'text-red-600'}">{change}</span>
+        <span className="text-sm font-semibold {trend === 'up' ? 'text-green-600' : 'text-red-600'}">
+          {change}
+        </span>
       </div>
       <p className="text-sm text-gray-500">{title}</p>
     </div>
@@ -288,7 +396,10 @@ function QuickActionsCard() {
       <h3 className="text-sm font-bold text-gray-900 mb-4">Hành động nhanh</h3>
       <div className="space-y-2">
         {quickActions.map((action, i) => (
-          <button key={i} className="w-full flex items-center justify-between px-4 py-3 rounded-lg bg-gray-50 hover:bg-gray-100 text-left transition-colors">
+          <button
+            key={i}
+            className="w-full flex items-center justify-between px-4 py-3 rounded-lg bg-gray-50 hover:bg-gray-100 text-left transition-colors"
+          >
             <div className="flex items-center gap-3">
               <Icon name={action.icon} size={16} className={`text-${action.color.split('/')[0]}`} />
               <span className="text-sm font-medium text-gray-700">{action.label}</span>
@@ -315,7 +426,17 @@ function RecentAlertsCard() {
       <div className="space-y-3">
         {alerts.map((alert, i) => (
           <div key={i} className="flex items-start gap-3 p-3 rounded-lg bg-gray-50">
-            <Icon name={alert.type === 'error' ? 'AlertCircle' : alert.type === 'warning' ? 'AlertTriangle' : 'Info'} size={18} className={`mt-1 ${alert.type === 'error' ? 'text-red-500' : alert.type === 'warning' ? 'text-amber-500' : 'text-blue-500'}`} />
+            <Icon
+              name={
+                alert.type === 'error'
+                  ? 'AlertCircle'
+                  : alert.type === 'warning'
+                    ? 'AlertTriangle'
+                    : 'Info'
+              }
+              size={18}
+              className={`mt-1 ${alert.type === 'error' ? 'text-red-500' : alert.type === 'warning' ? 'text-amber-500' : 'text-blue-500'}`}
+            />
             <div className="flex-1">
               <p className="text-sm font-medium text-gray-700">{alert.text}</p>
               <p className="text-2xs text-vj-text-muted">{alert.time}</p>
@@ -328,7 +449,12 @@ function RecentAlertsCard() {
 }
 
 // Overview Dashboard Content
-function OverviewDashboard({ flightStats, revenueStats, userStats, bookingStats }: {
+function OverviewDashboard({
+  flightStats,
+  revenueStats,
+  userStats,
+  bookingStats,
+}: {
   flightStats: FlightStats;
   revenueStats: RevenueStats;
   userStats: UserStats;
@@ -341,11 +467,15 @@ function OverviewDashboard({ flightStats, revenueStats, userStats, bookingStats 
           <h3 className="text-sm font-bold text-gray-900 mb-4">Tình trạng chuyến bay</h3>
           <div className="flex items-center justify-between p-4 rounded-lg bg-[var(--surface)]">
             <div>
-              <p className="text-xs font-bold text-gray-900 uppercase tracking-wider mb-1">Tổng chuyến bay</p>
+              <p className="text-xs font-bold text-gray-900 uppercase tracking-wider mb-1">
+                Tổng chuyến bay
+              </p>
               <span className="text-2xl font-bold text-gray-900">{flightStats.total}</span>
             </div>
             <div className="text-right">
-              <span className="text-xs font-semibold text-green-600">{flightStats.onTimeRate}%</span>
+              <span className="text-xs font-semibold text-green-600">
+                {flightStats.onTimeRate}%
+              </span>
               <p className="text-xs text-gray-400">On-time rate</p>
             </div>
           </div>
@@ -367,15 +497,21 @@ function OverviewDashboard({ flightStats, revenueStats, userStats, bookingStats 
           <h3 className="text-sm font-bold text-gray-900 mb-4">Doanh thu hôm nay</h3>
           <div className="flex items-center justify-between p-4 rounded-lg bg-blue-50">
             <div>
-              <span className="text-xs font-bold text-blue-600 uppercase tracking-wider mb-1">Tổng doanh thu hôm nay</span>
-              <span className="text-2xl font-bold text-blue-700 mt-1 block">${(revenueStats.today / 1000000).toLocaleString()} triệu</span>
+              <span className="text-xs font-bold text-blue-600 uppercase tracking-wider mb-1">
+                Tổng doanh thu hôm nay
+              </span>
+              <span className="text-2xl font-bold text-blue-700 mt-1 block">
+                ${(revenueStats.today / 1000000).toLocaleString()} triệu
+              </span>
             </div>
             <span className="text-xs font-semibold text-green-600">+8.5%</span>
           </div>
           <div className="mt-4 grid grid-cols-2 gap-4">
             <div className="p-3 rounded-lg bg-gray-50">
               <p className="text-xs font-medium text-gray-700">Doanh thu tháng</p>
-              <span className="text-lg font-bold text-gray-900">${(revenueStats.thisMonth / 1000000).toLocaleString()} triệu</span>
+              <span className="text-lg font-bold text-gray-900">
+                ${(revenueStats.thisMonth / 1000000).toLocaleString()} triệu
+              </span>
             </div>
             <div className="p-3 rounded-lg bg-gray-50">
               <p className="text-xs font-medium text-gray-700">Tăng trưởng</p>
@@ -389,7 +525,11 @@ function OverviewDashboard({ flightStats, revenueStats, userStats, bookingStats 
 }
 
 // Flights Overview
-function FlightsOverview({ flights }: { flights: Array<{ id: string; route: string; time: string; status: string; statusColor: string }> }) {
+function FlightsOverview({
+  flights,
+}: {
+  flights: Array<{ id: string; route: string; time: string; status: string; statusColor: string }>;
+}) {
   return (
     <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
       <div className="flex items-center justify-between mb-4">
@@ -413,7 +553,9 @@ function FlightsOverview({ flights }: { flights: Array<{ id: string; route: stri
                 <td className="px-4 py-3 text-gray-700">{flight.route}</td>
                 <td className="px-4 py-3 text-gray-700">{flight.time}</td>
                 <td className="px-4 py-3">
-                  <span className={`px-2 py-1 rounded-full text-xs font-bold text-white ${flight.statusColor}`}>
+                  <span
+                    className={`px-2 py-1 rounded-full text-xs font-bold text-white ${flight.statusColor}`}
+                  >
                     {flight.status}
                   </span>
                 </td>
@@ -427,7 +569,11 @@ function FlightsOverview({ flights }: { flights: Array<{ id: string; route: stri
 }
 
 // Users Overview
-function UsersOverview({ users }: { users: Array<{ id: number; name: string; email: string; joined: string; status: string }> }) {
+function UsersOverview({
+  users,
+}: {
+  users: Array<{ id: number; name: string; email: string; joined: string; status: string }>;
+}) {
   return (
     <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
       <div className="flex items-center justify-between mb-4">
@@ -451,7 +597,9 @@ function UsersOverview({ users }: { users: Array<{ id: number; name: string; ema
                 <td className="px-4 py-3 text-gray-700">{user.email}</td>
                 <td className="px-4 py-3 text-gray-700">{user.joined}</td>
                 <td className="px-4 py-3">
-                  <span className={`px-2 py-1 rounded-full text-xs font-bold ${user.status === 'active' ? 'bg-green-100 text-green-600' : user.status === 'premium' ? 'bg-purple-100 text-purple-600' : 'bg-yellow-100 text-yellow-600'}`}>
+                  <span
+                    className={`px-2 py-1 rounded-full text-xs font-bold ${user.status === 'active' ? 'bg-green-100 text-green-600' : user.status === 'premium' ? 'bg-purple-100 text-purple-600' : 'bg-yellow-100 text-yellow-600'}`}
+                  >
                     {user.status}
                   </span>
                 </td>
@@ -471,15 +619,25 @@ function RevenueOverview({ stats }: { stats: RevenueStats }) {
       <h3 className="text-sm font-bold text-gray-900 mb-4">Tổng quan doanh thu</h3>
       <div className="grid grid-cols-3 gap-4">
         <div className="p-4 rounded-lg bg-blue-50">
-          <span className="text-xs font-bold text-blue-600 uppercase tracking-wider mb-1">Tổng doanh thu</span>
-          <span className="text-xl font-bold text-gray-900">${(stats.total / 1000000000).toLocaleString()} tỷ</span>
+          <span className="text-xs font-bold text-blue-600 uppercase tracking-wider mb-1">
+            Tổng doanh thu
+          </span>
+          <span className="text-xl font-bold text-gray-900">
+            ${(stats.total / 1000000000).toLocaleString()} tỷ
+          </span>
         </div>
         <div className="p-4 rounded-lg bg-amber-50">
-          <p className="text-xs font-bold text-amber-600 uppercase tracking-wider mb-1">Doanh thu tháng</p>
-          <span className="text-xl font-bold text-gray-900">${(stats.thisMonth / 1000000).toLocaleString()} triệu</span>
+          <p className="text-xs font-bold text-amber-600 uppercase tracking-wider mb-1">
+            Doanh thu tháng
+          </p>
+          <span className="text-xl font-bold text-gray-900">
+            ${(stats.thisMonth / 1000000).toLocaleString()} triệu
+          </span>
         </div>
         <div className="p-4 rounded-lg bg-emerald-50">
-          <p className="text-xs font-bold text-emerald-600 uppercase tracking-wider mb-1">Tăng trưởng</p>
+          <p className="text-xs font-bold text-emerald-600 uppercase tracking-wider mb-1">
+            Tăng trưởng
+          </p>
           <span className="text-xl font-bold text-gray-900">+${stats.growth}%</span>
         </div>
       </div>
@@ -488,7 +646,17 @@ function RevenueOverview({ stats }: { stats: RevenueStats }) {
 }
 
 // Bookings Overview
-function BookingsOverview({ bookings }: { bookings: Array<{ id: string; passenger: string; flight: string; status: string; amount: number }> }) {
+function BookingsOverview({
+  bookings,
+}: {
+  bookings: Array<{
+    id: string;
+    passenger: string;
+    flight: string;
+    status: string;
+    amount: number;
+  }>;
+}) {
   return (
     <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
       <div className="flex items-center justify-between mb-4">
@@ -513,7 +681,9 @@ function BookingsOverview({ bookings }: { bookings: Array<{ id: string; passenge
                 <td className="px-4 py-3 text-gray-700">{booking.passenger}</td>
                 <td className="px-4 py-3 text-gray-700">{booking.flight}</td>
                 <td className="px-4 py-3">
-                  <span className={`px-2 py-1 rounded-full text-xs font-bold ${booking.status === 'confirmed' ? 'bg-green-100 text-green-600' : booking.status === 'pending' ? 'bg-amber-100 text-amber-600' : 'bg-red-100 text-red-600'}`}>
+                  <span
+                    className={`px-2 py-1 rounded-full text-xs font-bold ${booking.status === 'confirmed' ? 'bg-green-100 text-green-600' : booking.status === 'pending' ? 'bg-amber-100 text-amber-600' : 'bg-red-100 text-red-600'}`}
+                  >
                     {booking.status}
                   </span>
                 </td>
@@ -541,7 +711,17 @@ function RecentNotificationsCard() {
       <div className="space-y-3">
         {notifications.map((n, i) => (
           <div key={i} className="flex items-start gap-3 p-3 rounded-lg bg-gray-50">
-            <Icon name={n.type === 'error' ? 'AlertCircle' : n.type === 'warning' ? 'AlertTriangle' : 'CheckCircle'} size={18} className={`mt-1 ${n.type === 'error' ? 'text-red-500' : n.type === 'warning' ? 'text-amber-500' : 'text-green-500'}`} />
+            <Icon
+              name={
+                n.type === 'error'
+                  ? 'AlertCircle'
+                  : n.type === 'warning'
+                    ? 'AlertTriangle'
+                    : 'CheckCircle'
+              }
+              size={18}
+              className={`mt-1 ${n.type === 'error' ? 'text-red-500' : n.type === 'warning' ? 'text-amber-500' : 'text-green-500'}`}
+            />
             <div className="flex-1">
               <p className="text-sm font-medium text-gray-700">{n.text}</p>
               <p className="text-2xs text-vj-text-muted">{n.time}</p>

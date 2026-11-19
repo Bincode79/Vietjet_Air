@@ -78,7 +78,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     if (body.services) {
       const s = body.services;
       const passengerId = String(s.passenger_id ?? booking.passengers?.[0]?.id ?? '').trim();
-      
+
       // Cập nhật hoặc gỡ chỗ ngồi
       if (s.seat_number !== undefined && passengerId) {
         const newSeat = s.seat_number ? String(s.seat_number).trim().toUpperCase() : null;

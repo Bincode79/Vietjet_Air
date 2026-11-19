@@ -2090,7 +2090,10 @@ function createMockSql(): SqlClient {
       return [booking];
     }
 
-    if (q.includes('update bookings') && (q.includes('total_price =') || q.includes('total_amount ='))) {
+    if (
+      q.includes('update bookings') &&
+      (q.includes('total_price =') || q.includes('total_amount ='))
+    ) {
       const newTotal = Number(values[0] ?? 0);
       const bookingId = String(values[1] ?? values[values.length - 1] ?? '');
       const booking = mockBookings.find((b) => String(b.id) === bookingId);
@@ -2209,7 +2212,10 @@ function createMockSql(): SqlClient {
       const bookingId = String(values[0] ?? '');
       const matches = mockBookingAncillaries.filter((a) => a.booking_id === bookingId);
       if (q.includes('sum(unit_price * quantity)') || q.includes('pending_amount')) {
-        const total = matches.reduce((sum, item) => sum + (Number(item.unit_price) * Number(item.quantity)), 0);
+        const total = matches.reduce(
+          (sum, item) => sum + Number(item.unit_price) * Number(item.quantity),
+          0
+        );
         return [{ pending_amount: total }];
       }
       return matches;
