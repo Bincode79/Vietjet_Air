@@ -3,6 +3,21 @@
 import React from 'react';
 import { Icon } from '@/shared/components/ui';
 import { useAuth } from '@/contexts/AuthContext';
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+  BarChart,
+  Bar,
+  Legend,
+} from 'recharts';
 
 // Types
 interface FlightStats {
@@ -197,6 +212,58 @@ function generateBookings() {
     },
   ];
 }
+
+// ─── Dữ liệu biểu đồ Recharts ─────────────────────────────────────
+
+interface RevenuePoint {
+  name: string;
+  revenue: number;
+  bookings: number;
+}
+
+function generateRevenueChartData(): RevenuePoint[] {
+  const days = ['Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7', 'Chủ Nhật'];
+  return days.map((name, i) => ({
+    name,
+    revenue: 300000000 + i * 45000000 + Math.floor(Math.random() * 20000000),
+    bookings: 1200 + i * 180 + Math.floor(Math.random() * 100),
+  }));
+}
+
+interface CabinClass {
+  name: string;
+  value: number;
+  color: string;
+}
+
+function generateCabinClassData(): CabinClass[] {
+  return [
+    { name: 'Eco', value: 65, color: '#22c55e' },
+    { name: 'Deluxe', value: 20, color: '#f59e0b' },
+    { name: 'SkyBOSS', value: 10, color: '#ec4899' },
+    { name: 'Business', value: 5, color: '#1e40af' },
+  ];
+}
+
+interface BookingStatusPoint {
+  name: string;
+  confirmed: number;
+  pending: number;
+  cancelled: number;
+}
+
+function generateBookingStatusData(): BookingStatusPoint[] {
+  return [
+    { name: 'Thứ 2', confirmed: 350, pending: 120, cancelled: 15 },
+    { name: 'Thứ 3', confirmed: 420, pending: 95, cancelled: 22 },
+    { name: 'Thứ 4', confirmed: 380, pending: 110, cancelled: 18 },
+    { name: 'Thứ 5', confirmed: 460, pending: 140, cancelled: 25 },
+    { name: 'Thứ 6', confirmed: 520, pending: 180, cancelled: 30 },
+    { name: 'Thứ 7', confirmed: 610, pending: 220, cancelled: 35 },
+    { name: 'Chủ Nhật', confirmed: 580, pending: 200, cancelled: 40 },
+  ];
+}
+
 
 export default function AdminDashboardEnhanced() {
   const { user } = useAuth();
@@ -460,6 +527,10 @@ function OverviewDashboard({
   userStats: UserStats;
   bookingStats: BookingStats;
 }) {
+  const revenueData = generateRevenueChartData();
+  const cabinData = generateCabinClassData();
+  const statusData = generateBookingStatusData();
+
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -517,6 +588,123 @@ function OverviewDashboard({
               <p className="text-xs font-medium text-gray-700">Tăng trưởng</p>
               <span className="text-lg font-bold text-green-600">+12.5%</span>
             </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Biểu đồ Recharts */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Line Chart - Doanh thu 7 ngày */}
+        <div className="lg:col-span-2 bg-white rounded-xl border border-gray-100 shadow-sm p-5">
+          <h3 className="text-sm font-bold text-gray-900 mb-4">Doanh thu 7 ngày qua</h3>
+          <div className="h-64 w-full">
+            <ResponsiveContainer width="100%" height={280}>
+              <LineChart data={revenueData}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                <XAxis dataKey="name" stroke="#9ca3af" fontSize={12} />
+                <YAxis stroke="#9ca3af" tickFormatter={(v) => `${v / 1e6}M`} fontSize={12} />
+                <Tooltip
+                  content={({ active, payload, label }: any) => {
+                    if (active && payload && payload.length) {
+                      const data = payload[0].payload as RevenuePoint;
+                      return (
+                        <div className="p-3 bg-white border border-gray-200 rounded-lg shadow-lg">
+                          <p className="text-sm font-bold text-gray-900">{label}</p>
+                          <p className="text-sm text-gray-600">
+                            Doanh thu: {data.revenue.toLocaleString()} VND
+                          </p>
+                          <p className="text-sm text-gray-600">
+                            Đơn đặt: {data.bookings}
+                          </p>
+                        </div>
+                      );
+                    }
+                    return null;
+                  }}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="revenue"
+                  stroke="#ec4899"
+                  strokeWidth={2}
+                  dot={{ fill: '#ec4899', strokeWidth: 2 }}
+                  strokeOpacity={1}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        {/* Pie Chart - Phân bố hạng ghế */}
+        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
+          <h3 className="text-sm font-bold text-gray-900 mb-4">Phân bố hạng ghế</h3>
+          <div className="h-64 w-full flex items-center">
+            <ResponsiveContainer width={180} height={180}>
+              <PieChart>
+                <Pie
+                  data={cabinData}
+                  dataKey="value"
+                  nameKey="name"
+                  cx={80}
+                  cy={90}
+                  innerRadius={60}
+                  outerRadius={80}
+                  fill="#8884d8"
+                  labelLine={false}
+                  label={{ fill: '#4b5563', fontSize: 11 }}
+                >
+                  {cabinData.map((entry) => (
+                    <Cell key={entry.name} fill={entry.color} />
+                  ))}
+                </Pie>
+                <Tooltip
+                  content={({ active, payload, label }: any) => {
+                    if (active && payload && payload.length) {
+                      const data = payload[0].payload as CabinClass;
+                      const total = cabinData.reduce((sum, d) => sum + d.value, 0);
+                      const percent = ((data.value / total) * 100).toFixed(1);
+                      return (
+                        <div className="p-3 bg-white border border-gray-200 rounded-lg shadow-lg">
+                          <p className="text-sm font-bold text-gray-900">{data.name}</p>
+                          <p className="text-sm text-gray-600">
+                            {data.value}% ({percent}%)
+                          </p>
+                        </div>
+                      );
+                    }
+                    return null;
+                  }}
+                />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+          <div className="mt-4 space-y-2">
+            {cabinData.map((item) => (
+              <div key={item.name} className="flex items-center gap-3">
+                <span className="w-3 h-3 rounded-full" style={{ backgroundColor: item.color }} />
+                <span className="text-xs text-gray-700">{item.name}</span>
+                <span className="text-xs font-bold text-gray-900 ml-auto">{item.value}%</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Bar Chart - Đơn đặt theo trạng thái */}
+        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
+          <h3 className="text-sm font-bold text-gray-900 mb-4">Đơn đặt theo trạng thái</h3>
+          <div className="h-64 w-full">
+            <ResponsiveContainer width="100%" height={280}>
+              <BarChart data={statusData}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                <XAxis dataKey="name" stroke="#9ca3af" fontSize={11} />
+                <YAxis stroke="#9ca3af" fontSize={12} />
+                <Tooltip />
+                <Legend />
+                <Bar dataKey="confirmed" fill="#22c55e" radius={[2, 2, 0, 0]} />
+                <Bar dataKey="pending" fill="#f59e0b" radius={[2, 2, 0, 0]} />
+                <Bar dataKey="cancelled" fill="#ef4444" radius={[2, 2, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
           </div>
         </div>
       </div>

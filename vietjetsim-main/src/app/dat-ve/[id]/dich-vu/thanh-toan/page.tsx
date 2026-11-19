@@ -11,6 +11,7 @@ interface AncillaryItem {
   option_id: string;
   unit_price: number;
   quantity: number;
+  status?: string;
 }
 
 interface BaggageItem {
@@ -19,6 +20,12 @@ interface BaggageItem {
   weight_kg: number;
   unit_price: number;
   quantity: number;
+  status?: string;
+}
+
+interface BookingSummary {
+  booking_code?: string;
+  booking_code_upper?: string;
 }
 
 export default function AncillaryPaymentPage() {
@@ -27,8 +34,8 @@ export default function AncillaryPaymentPage() {
   const id = params?.id as string;
   const toast = useToast();
 
-  const [booking, setBooking] = useState<any>(null);
-  const [baggage, setBaggage] = useState<any[]>([]);
+  const [booking, setBooking] = useState<BookingSummary | null>(null);
+  const [baggage, setBaggage] = useState<BaggageItem[]>([]);
   const [ancillaries, setAncillaries] = useState<AncillaryItem[]>([]);
   const [totalDue, setTotalDue] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -43,15 +50,22 @@ export default function AncillaryPaymentPage() {
       if (!id) return;
       try {
         setLoading(true);
-        const data = await apiRequest<any>(`/api/dat-ve/${encodeURIComponent(id)}/dich-vu`);
-        setBaggage(data.baggage || []);
-        setAncillaries(data.ancillaries || []);
+        const data = await apiRequest<{
+          baggage?: BaggageItem[];
+          ancillaries?: AncillaryItem[];
+          pendingAmount?: number;
+        }>(`/api/dat-ve/${encodeURIComponent(id)}/dich-vu`);
+        // Chỉ liệt kê khoản 'pending' — dòng 'paid' đã nằm trong tiền vé/đã thu.
+        setBaggage((data.baggage || []).filter((b) => b.status !== 'paid'));
+        setAncillaries((data.ancillaries || []).filter((a) => a.status !== 'paid'));
         setTotalDue(data.pendingAmount ?? 0);
         // Load booking base info for display
-        const b = await apiRequest<any>(`/api/dat-ve/${encodeURIComponent(id)}`);
+        const b = await apiRequest<{ booking?: BookingSummary } & BookingSummary>(
+          `/api/dat-ve/${encodeURIComponent(id)}`
+        );
         setBooking(b.booking || b);
-      } catch (err: any) {
-        toast.error(err.message || 'Không thể tải thông tin thanh toán.');
+      } catch (err) {
+        toast.error(err instanceof Error ? err.message : 'Không thể tải thông tin thanh toán.');
       } finally {
         setLoading(false);
       }
@@ -67,22 +81,22 @@ export default function AncillaryPaymentPage() {
     }
     setPaying(true);
     try {
-      const res = await apiRequest<any>(
+      const res = await apiRequest<{ success?: boolean; amount?: number; message?: string }>(
         `/api/dat-ve/${encodeURIComponent(id)}/dich-vu/thanh-toan`,
         { method: 'POST', body: { method } }
       );
       if (res.success) {
         setPaidMethod(method);
         setPaid(true);
-        toast.success(`Thanh toán ${formatCurrency(res.amount)} thành công!`);
+        toast.success(`Thanh toán ${formatCurrency(res.amount ?? 0)} thành công!`);
         setTimeout(() => {
           router.push(`/dat-ve/${id}`);
         }, 1500);
       } else {
         toast.error(res.message || 'Thanh toán thất bại.');
       }
-    } catch (err: any) {
-      toast.error(err.message || 'Không thể xử lý thanh toán.');
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Không thể xử lý thanh toán.');
     } finally {
       setPaying(false);
     }
