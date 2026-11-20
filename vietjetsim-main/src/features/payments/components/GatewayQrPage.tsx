@@ -101,25 +101,37 @@ export default function GatewayQrPage({
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-sm">
             <div>
-              <span className="text-vj-gray block text-3xs uppercase tracking-wider">Mã đặt chỗ</span>
+              <span className="text-vj-gray block text-3xs uppercase tracking-wider">
+                Mã đặt chỗ
+              </span>
               <span className="font-bold">{bookingCode || bookingId}</span>
             </div>
             {flightNo && (
               <div>
-                <span className="text-vj-gray block text-3xs uppercase tracking-wider">Chuyến bay</span>
+                <span className="text-vj-gray block text-3xs uppercase tracking-wider">
+                  Chuyến bay
+                </span>
                 <span className="font-bold">{flightNo}</span>
               </div>
             )}
             {from && to && (
               <div>
-                <span className="text-vj-gray block text-3xs uppercase tracking-wider">Tuyến bay</span>
-                <span className="font-bold">{from} → {to}</span>
+                <span className="text-vj-gray block text-3xs uppercase tracking-wider">
+                  Tuyến bay
+                </span>
+                <span className="font-bold">
+                  {from} → {to}
+                </span>
               </div>
             )}
             {departTime && date && (
               <div>
-                <span className="text-vj-gray block text-3xs uppercase tracking-wider">Giờ bay</span>
-                <span className="font-bold">{departTime}, {date}</span>
+                <span className="text-vj-gray block text-3xs uppercase tracking-wider">
+                  Giờ bay
+                </span>
+                <span className="font-bold">
+                  {departTime}, {date}
+                </span>
               </div>
             )}
           </div>

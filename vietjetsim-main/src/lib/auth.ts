@@ -98,13 +98,6 @@ export function getAuthCookieOptions(request?: Request) {
   };
 }
 
-const COOKIE_OPTIONS = {
-  httpOnly: true,
-  secure: isSecureRequest(),
-  sameSite: 'lax' as const,
-  path: '/',
-};
-
 // ─── Password Hashing ───────────────────────────────────────────────────────
 
 export async function hashPassword(password: string): Promise<string> {

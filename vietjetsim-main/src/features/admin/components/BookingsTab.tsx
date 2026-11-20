@@ -816,7 +816,9 @@ export default function BookingsTab({ onToast }: BookingsTabProps = {}) {
                     className="border-b border-white/[0.03] hover:bg-white/[0.05] transition-all group cursor-pointer"
                   >
                     <td className="px-6 py-5">
-                      <span className="font-mono font-bold text-sm text-vj-bank-blue-text">{booking.id}</span>
+                      <span className="font-mono font-bold text-sm text-vj-bank-blue-text">
+                        {booking.id}
+                      </span>
                       {booking.legRole === 'inbound' && (
                         <span className="ml-2 text-2xs font-black px-2 py-0.5 rounded-full bg-sky-500/15 text-sky-300 border border-sky-500/30 uppercase tracking-wider">
                           Chặng về
@@ -837,7 +839,9 @@ export default function BookingsTab({ onToast }: BookingsTabProps = {}) {
                       </div>
                     </td>
                     <td className="px-6 py-5 hidden sm:table-cell">
-                      <div className="font-bold text-vj-admin-muted text-sm">{booking.flightNo}</div>
+                      <div className="font-bold text-vj-admin-muted text-sm">
+                        {booking.flightNo}
+                      </div>
                       <div className="text-2xs font-bold text-vj-admin-muted tracking-wider">
                         {booking.route} · {booking.date}
                       </div>
@@ -1177,7 +1181,9 @@ export default function BookingsTab({ onToast }: BookingsTabProps = {}) {
                           <div className="flex justify-between items-center text-xs">
                             <div>
                               <p className="text-vj-admin-muted mb-0.5">Chuyến bay</p>
-                              <p className="font-black text-vj-bank-blue-text">{selectedBooking.flightNo}</p>
+                              <p className="font-black text-vj-bank-blue-text">
+                                {selectedBooking.flightNo}
+                              </p>
                             </div>
                             <div className="text-right">
                               <p className="text-vj-admin-muted mb-0.5">Ngày khởi hành</p>

@@ -229,11 +229,7 @@ export default function SendBookingEmailModal({
         <div className="p-6 sm:p-8 overflow-y-auto flex-1 space-y-5">
           {errorMessage && (
             <div className="p-3.5 bg-vj-red-dark border border-vj-red-dark rounded-2xl flex items-center gap-2.5 text-red-400 text-xs font-semibold">
-              <Icon
-                name="ExclamationTriangleIcon"
-                size={16}
-                className="text-red-400 shrink-0"
-              />
+              <Icon name="ExclamationTriangleIcon" size={16} className="text-red-400 shrink-0" />
               <span>{errorMessage}</span>
             </div>
           )}

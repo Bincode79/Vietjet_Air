@@ -1089,7 +1089,9 @@ export default function UsersTab({ onToast }: { onToast?: ToastAPI }) {
                         <p className="text-2xs font-black text-vj-admin-muted uppercase tracking-widest">
                           Số điện thoại
                         </p>
-                        <p className="text-sm font-bold text-vj-admin-muted">{selectedUser.phone}</p>
+                        <p className="text-sm font-bold text-vj-admin-muted">
+                          {selectedUser.phone}
+                        </p>
                       </div>
                     </div>
                     <div className="flex items-center gap-4 bg-white/5 border border-white/5 p-3 rounded-2xl">

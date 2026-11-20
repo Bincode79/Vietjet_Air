@@ -457,7 +457,9 @@ export default function AuditLogsTab({ onToast }: { onToast?: ToastAPI }) {
                                     <p className="text-vj-admin-muted font-medium mb-1">
                                       Địa chỉ IP
                                     </p>
-                                    <p className="font-mono text-vj-admin-muted">{log.ip_address}</p>
+                                    <p className="font-mono text-vj-admin-muted">
+                                      {log.ip_address}
+                                    </p>
                                   </div>
                                 )}
                                 {log.user_role && (
@@ -479,7 +481,9 @@ export default function AuditLogsTab({ onToast }: { onToast?: ToastAPI }) {
                               )}
                               {log.user_agent && (
                                 <div className="mt-3 pt-3 border-t border-white/10">
-                                  <p className="text-vj-admin-muted font-medium mb-1">Trình duyệt</p>
+                                  <p className="text-vj-admin-muted font-medium mb-1">
+                                    Trình duyệt
+                                  </p>
                                   <p className="text-xs text-vj-admin-muted truncate">
                                     {log.user_agent}
                                   </p>

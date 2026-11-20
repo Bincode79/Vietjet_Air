@@ -397,8 +397,8 @@ export default function BulkPriceAdjustmentModal({
               <div>
                 <span className="font-semibold text-vj-admin-muted">Quy tắc bảo toàn giá:</span> Giá
                 vé sau khi giảm luôn được đảm bảo không thấp hơn mức sàn tối thiểu{' '}
-                <span className="text-vj-bank-blue-text font-bold">99.000 VND</span>. Giá vé hạng Thương gia
-                được tự động chuẩn hóa theo hệ số 2.77x vé Phổ thông theo chuẩn hãng.
+                <span className="text-vj-bank-blue-text font-bold">99.000 VND</span>. Giá vé hạng
+                Thương gia được tự động chuẩn hóa theo hệ số 2.77x vé Phổ thông theo chuẩn hãng.
               </div>
             </div>
           </div>
@@ -416,7 +416,9 @@ export default function BulkPriceAdjustmentModal({
                     {matchedCount.toLocaleString('vi-VN')} chuyến bay khớp
                   </span>
                 </div>
-                <span className="text-xs2 text-vj-admin-muted">Hiển thị mẫu 10 chuyến đầu tiên</span>
+                <span className="text-xs2 text-vj-admin-muted">
+                  Hiển thị mẫu 10 chuyến đầu tiên
+                </span>
               </div>
 
               {previewSamples && previewSamples.length > 0 ? (

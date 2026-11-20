@@ -462,7 +462,11 @@ export default function TransactionsTab({ onToast }: { onToast?: ToastAPI }) {
                             </>
                           ) : (
                             <span className="text-2xs font-semibold text-vj-admin-muted flex items-center gap-1 mr-1">
-                              <Icon name="CheckBadgeIcon" size={16} className="text-vj-pay-green-text" />
+                              <Icon
+                                name="CheckBadgeIcon"
+                                size={16}
+                                className="text-vj-pay-green-text"
+                              />
                               Đã duyệt
                             </span>
                           )}

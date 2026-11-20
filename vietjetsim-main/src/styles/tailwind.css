@@ -1961,7 +1961,7 @@ h6 {
   line-height: 20px;
   font-weight: 400;
   /* Mobile/tablet: ảnh nền tối nên dùng xanh sáng hơn để đảm bảo tương phản. */
-  color: #5cc6ff;
+  color: rgb(0, 136, 255);
   text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
   text-decoration: none;
   transition: text-decoration-color 160ms ease;

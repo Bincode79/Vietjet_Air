@@ -68,7 +68,7 @@ function formatHoldExpireDate(iso?: string | null): string {
 export default function PaymentClient() {
   const router = useRouter();
   const [showSummaryModal, setShowSummaryModal] = useState(false);
-  const [hasPromoChecked, setHasPromoChecked] = useState(false);
+  const [_promoChecked] = useState(false);
   const [selectedMethodGroup, setSelectedMethodGroup] = useState<string>(() => {
     if (typeof window === 'undefined') return 'vnpay_qr';
     const param = new URLSearchParams(window.location.search).get('method');
@@ -343,7 +343,6 @@ export default function PaymentClient() {
       // Không giữ được chỗ thì vẫn cho khách thanh toán (đây là phương thức
       // thanh toán, không phải điều kiện được phép thanh toán) — nhưng phải
       // nói rõ, vì lúc đó không có ai hủy booking giúp khách.
-      console.error('[MOVI] Failed to reserve the booking hold:', err);
       toast.error(
         'Không giữ được chỗ vé',
         'Vui lòng kiểm tra kết nối và thử lại. Mã đặt chỗ sẽ không tự hủy nếu chưa đặt giữ chỗ thành công.'
@@ -376,25 +375,12 @@ export default function PaymentClient() {
           );
         }
       })
-      .catch((err) => console.error('[MOVI] Failed to expire the booking hold:', err));
   }, [effectiveLookupTarget, toast]);
 
   /** Gia hạn lượt giữ chỗ MOVI (nút "Gia hạn" của đồng hồ đếm ngược). */
   const renewMoviHold = useCallback(() => {
     void acquireMoviHold();
   }, [acquireMoviHold]);
-
-  const effectiveBookingCode = useMemo(() => {
-    if (bookingCode && bookingCode !== '—') return bookingCode;
-    if (booking?.bookingCode && booking.bookingCode !== '—') return booking.bookingCode;
-    if (bookingId && bookingId.length >= 6) {
-      return bookingId
-        .replace(/[^a-zA-Z0-9]/g, '')
-        .slice(-6)
-        .toUpperCase();
-    }
-    return '';
-  }, [bookingCode, booking?.bookingCode, bookingId]);
 
   // Transfer content the customer must paste into their bank app. Admins
   // control the template (Admin → Ngân hàng); the amounts are rendered without
@@ -539,9 +525,7 @@ export default function PaymentClient() {
             <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-4">
               <Icon name="CheckCircleIcon" size={32} className="text-green-600" />
             </div>
-            <h2 className="text-xl font-black text-vj-text font-koho">
-              Thanh toán thành công
-            </h2>
+            <h2 className="text-xl font-black text-vj-text font-koho">Thanh toán thành công</h2>
             <p className="mt-2 text-sm text-vj-gray">
               Đơn hàng {bookingCodeLabel} đã được xác nhận. Vé điện tử sẽ được xuất ngay sau đây.
             </p>
@@ -570,7 +554,6 @@ export default function PaymentClient() {
                 bookingCode={booking?.bookingCode ?? bookingCodeLabel}
                 amount={total}
                 onSuccess={(payload) => {
-                  console.log('[MOVI] Hồ sơ tín dụng:', payload);
                   setGatewaySuccess(true);
                 }}
               />
@@ -1150,121 +1133,119 @@ export default function PaymentClient() {
                   Chi tiết giá & thanh toán
                 </h3>
 
-                  {/* Promo code — chuẩn underline MUI 40px Vietjet live */}
-                  <div className="mt-4">
-                    <label className="block text-xs font-semibold text-[var(--foreground-subtle)] uppercase tracking-wider mb-1.5">
-                      Mã khuyến mãi
-                    </label>
-                    <div className="flex items-center gap-2">
-                      <div className="vj-lookup-field relative flex-1 mt-2 flex items-center h-[42px] px-3 bg-white border border-vj-line rounded-vj shadow-2xs focus-within:border-primary focus-within:ring-1 focus-within:ring-primary transition-all">
-                        <input
-                          id="promo-code-input"
-                          name="promoCode"
-                          type="text"
-                          value={promoCode}
-                          onChange={(e) => {
-                            setPromoCode(e.target.value.toUpperCase());
-                            setPromoError('');
-                          }}
-                          placeholder=" "
-                          disabled={promoApplied}
-                          className={`vj-lookup-input font-mono uppercase font-bold text-black !text-black !border-b-0 w-full disabled:opacity-50 ${promoApplied ? 'form-input-valid' : ''}`}
-                        />
-                        <label
-                          htmlFor="promo-code-input"
-                          className={`vj-lookup-label font-medium font-koho pointer-events-none transition-all ${
-                            promoCode
-                              ? '-top-2 bg-white px-1 text-3xs font-medium text-vj-gray !text-vj-gray'
-                              : 'left-3 text-sm text-vj-muted !text-vj-muted'
-                          }`}
-                        >
-                          VJ2026
-                        </label>
-                      </div>
-                      <button
-                        onClick={applyPromo}
-                        disabled={promoApplied || !promoCode || isApplyingPromo}
-                        className="h-[40px] px-3 bg-accent text-[var(--foreground)] font-bold rounded-vj text-xs hover:bg-accent-dark transition-colors disabled:opacity-50 min-w-[80px] flex items-center justify-center shrink-0"
+                {/* Promo code — chuẩn underline MUI 40px Vietjet live */}
+                <div className="mt-4">
+                  <label className="block text-xs font-semibold text-[var(--foreground-subtle)] uppercase tracking-wider mb-1.5">
+                    Mã khuyến mãi
+                  </label>
+                  <div className="flex items-center gap-2">
+                    <div className="vj-lookup-field relative flex-1 mt-2 flex items-center h-[42px] px-3 bg-white border border-vj-line rounded-vj shadow-2xs focus-within:border-primary focus-within:ring-1 focus-within:ring-primary transition-all">
+                      <input
+                        id="promo-code-input"
+                        name="promoCode"
+                        type="text"
+                        value={promoCode}
+                        onChange={(e) => {
+                          setPromoCode(e.target.value.toUpperCase());
+                          setPromoError('');
+                        }}
+                        placeholder=" "
+                        disabled={promoApplied}
+                        className={`vj-lookup-input font-mono uppercase font-bold text-black !text-black !border-b-0 w-full disabled:opacity-50 ${promoApplied ? 'form-input-valid' : ''}`}
+                      />
+                      <label
+                        htmlFor="promo-code-input"
+                        className={`vj-lookup-label font-medium font-koho pointer-events-none transition-all ${
+                          promoCode
+                            ? '-top-2 bg-white px-1 text-3xs font-medium text-vj-gray !text-vj-gray'
+                            : 'left-3 text-sm text-vj-muted !text-vj-muted'
+                        }`}
                       >
-                        {isApplyingPromo ? (
-                          <div className="w-4 h-4 border-2 border-[rgb(var(--foreground-rgb))]/20 border-t-[var(--foreground)] rounded-full animate-spin" />
-                        ) : promoApplied ? (
-                          '✓'
-                        ) : (
-                          'Áp dụng'
-                        )}
-                      </button>
+                        VJ2026
+                      </label>
                     </div>
-                    {promoError && <p className="text-xs text-primary mt-1">{promoError}</p>}
-                    {promoApplied && promoData && (
-                      <p className="text-xs text-[var(--vj-green)] mt-1 font-semibold">
-                        ✓ Đã áp dụng mã {promoData.code}
-                      </p>
-                    )}
+                    <button
+                      onClick={applyPromo}
+                      disabled={promoApplied || !promoCode || isApplyingPromo}
+                      className="h-[40px] px-3 bg-accent text-[var(--foreground)] font-bold rounded-vj text-xs hover:bg-accent-dark transition-colors disabled:opacity-50 min-w-[80px] flex items-center justify-center shrink-0"
+                    >
+                      {isApplyingPromo ? (
+                        <div className="w-4 h-4 border-2 border-[rgb(var(--foreground-rgb))]/20 border-t-[var(--foreground)] rounded-full animate-spin" />
+                      ) : promoApplied ? (
+                        '✓'
+                      ) : (
+                        'Áp dụng'
+                      )}
+                    </button>
                   </div>
+                  {promoError && <p className="text-xs text-primary mt-1">{promoError}</p>}
+                  {promoApplied && promoData && (
+                    <p className="text-xs text-[var(--vj-green)] mt-1 font-semibold">
+                      ✓ Đã áp dụng mã {promoData.code}
+                    </p>
+                  )}
+                </div>
 
-                  {/* Price breakdown */}
-                  <div className="mt-4 space-y-2 text-sm">
-                    <div className="flex justify-between">
-                      <span className="text-[var(--foreground-muted)]">Giá vé cơ bản</span>
-                      <span className="font-semibold">
-                        {booking?.fareSubtotal.toLocaleString('vi-VN')}₫
-                      </span>
-                    </div>
+                {/* Price breakdown */}
+                <div className="mt-4 space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-[var(--foreground-muted)]">Giá vé cơ bản</span>
+                    <span className="font-semibold">
+                      {booking?.fareSubtotal.toLocaleString('vi-VN')}₫
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-[var(--foreground-muted)]">
+                      Thuế &amp; phí sân bay ({Math.round(TAX_AND_FEE_RATE * 100)}%)
+                    </span>
+                    <span className="font-semibold">
+                      +{(booking?.tax ?? 0).toLocaleString('vi-VN')}₫
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-[var(--foreground-muted)]">Phí chọn chỗ</span>
+                    <span className="font-semibold">
+                      +{(booking?.seatFee ?? 0).toLocaleString('vi-VN')}₫
+                    </span>
+                  </div>
+                  {(booking?.ancillaryFee ?? 0) > 0 && (
                     <div className="flex justify-between">
                       <span className="text-[var(--foreground-muted)]">
-                        Thuế &amp; phí sân bay ({Math.round(TAX_AND_FEE_RATE * 100)}%)
+                        Dịch vụ bổ sung
+                        {booking?.ancillaries?.length
+                          ? ` (${booking.ancillaries
+                              .map((id) => ANCILLARY_OPTIONS.find((o) => o.id === id)?.title)
+                              .filter(Boolean)
+                              .join(', ')})`
+                          : ''}
                       </span>
                       <span className="font-semibold">
-                        +{(booking?.tax ?? 0).toLocaleString('vi-VN')}₫
+                        +{booking!.ancillaryFee!.toLocaleString('vi-VN')}₫
                       </span>
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-[var(--foreground-muted)]">Phí chọn chỗ</span>
-                      <span className="font-semibold">
-                        +{(booking?.seatFee ?? 0).toLocaleString('vi-VN')}₫
+                  )}
+                  {promoApplied && (
+                    <div className="flex justify-between text-[var(--vj-green)] font-medium">
+                      <span>
+                        Giảm giá {promoData?.type === 'percentage' ? `(${promoData.value}%)` : ''}
                       </span>
+                      <span className="font-bold">-{discountAmount.toLocaleString('vi-VN')}₫</span>
                     </div>
-                    {(booking?.ancillaryFee ?? 0) > 0 && (
-                      <div className="flex justify-between">
-                        <span className="text-[var(--foreground-muted)]">
-                          Dịch vụ bổ sung
-                          {booking?.ancillaries?.length
-                            ? ` (${booking.ancillaries
-                                .map((id) => ANCILLARY_OPTIONS.find((o) => o.id === id)?.title)
-                                .filter(Boolean)
-                                .join(', ')})`
-                            : ''}
-                        </span>
-                        <span className="font-semibold">
-                          +{booking!.ancillaryFee!.toLocaleString('vi-VN')}₫
-                        </span>
-                      </div>
-                    )}
-                    {promoApplied && (
-                      <div className="flex justify-between text-[var(--vj-green)] font-medium">
-                        <span>
-                          Giảm giá {promoData?.type === 'percentage' ? `(${promoData.value}%)` : ''}
-                        </span>
-                        <span className="font-bold">
-                          -{discountAmount.toLocaleString('vi-VN')}₫
-                        </span>
-                      </div>
-                    )}
-                    <div className="border-t border-[var(--border)] pt-2 flex justify-between font-bold text-[var(--foreground)]">
-                      <span>Tổng thanh toán</span>
-                      <span className="text-primary text-lg">{total.toLocaleString('vi-VN')}₫</span>
-                    </div>
+                  )}
+                  <div className="border-t border-[var(--border)] pt-2 flex justify-between font-bold text-[var(--foreground)]">
+                    <span>Tổng thanh toán</span>
+                    <span className="text-primary text-lg">{total.toLocaleString('vi-VN')}₫</span>
                   </div>
-
-                  <Link
-                    href="/tim-ve"
-                    className="mt-3 flex min-h-9 items-center gap-1.5 text-xs text-[var(--foreground-subtle)] hover:text-[var(--foreground-muted)] transition-colors"
-                  >
-                    <Icon name="ArrowLeftIcon" size={12} />
-                    Quay lại chọn chuyến bay
-                  </Link>
                 </div>
+
+                <Link
+                  href="/tim-ve"
+                  className="mt-3 flex min-h-9 items-center gap-1.5 text-xs text-[var(--foreground-subtle)] hover:text-[var(--foreground-muted)] transition-colors"
+                >
+                  <Icon name="ArrowLeftIcon" size={12} />
+                  Quay lại chọn chuyến bay
+                </Link>
+              </div>
             </div>
           </div>
 

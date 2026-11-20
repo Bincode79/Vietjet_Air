@@ -98,9 +98,7 @@ export async function apiRequest<T>(url: string, options: ApiRequestOptions = {}
     // If CSRF check failed (403), auto-refresh the token once and retry the mutation.
     if (response.status === 403 && typeof window !== 'undefined' && isMutation && !_retriedCsrf) {
       const errText =
-        typeof payload === 'object' && payload !== null
-          ? JSON.stringify(payload)
-          : String(payload);
+        typeof payload === 'object' && payload !== null ? JSON.stringify(payload) : String(payload);
       if (errText.includes('CSRF')) {
         try {
           await fetch('/api/csrf', { credentials: 'include' });

@@ -11,13 +11,22 @@ interface UpcomingFlightsTableProps {
 }
 
 const FLIGHT_STATUS_MAP: Record<string, { label: string; cls: string }> = {
-  scheduled: { label: 'Đúng giờ', cls: 'bg-emerald-400/10 text-vj-pay-green-text border-emerald-400/30' },
-  on_time: { label: 'Đúng giờ', cls: 'bg-emerald-400/10 text-vj-pay-green-text border-emerald-400/30' },
+  scheduled: {
+    label: 'Đúng giờ',
+    cls: 'bg-emerald-400/10 text-vj-pay-green-text border-emerald-400/30',
+  },
+  on_time: {
+    label: 'Đúng giờ',
+    cls: 'bg-emerald-400/10 text-vj-pay-green-text border-emerald-400/30',
+  },
   boarding: { label: 'Đang lên máy bay', cls: 'bg-sky-500/10 text-sky-400 border-sky-500/20' },
   delayed: { label: 'Chậm giờ', cls: 'bg-amber-500/10 text-amber-400 border-amber-500/20' },
   cancelled: { label: 'Đã huỷ', cls: 'bg-red-400/10 text-red-400 border-red-400/30' },
   departed: { label: 'Đã cất cánh', cls: 'bg-sky-400/10 text-vj-bank-blue-text border-sky-400/30' },
-  active: { label: 'Hoạt động', cls: 'bg-emerald-400/10 text-vj-pay-green-text border-emerald-400/30' },
+  active: {
+    label: 'Hoạt động',
+    cls: 'bg-emerald-400/10 text-vj-pay-green-text border-emerald-400/30',
+  },
 };
 
 function formatDepartTime(isoString: string): string {

@@ -69,7 +69,6 @@ export function getSeatSessionCookieOptions(request?: Request) {
 
 const SEAT_SESSION_COOKIE_OPTIONS = {
   httpOnly: true,
-  secure: isSecureRequest(),
   sameSite: 'lax' as const,
   path: '/',
   maxAge: SEAT_SESSION_MAX_AGE,
