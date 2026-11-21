@@ -82,7 +82,7 @@ export default function SkyIdRealAuthPage({
   const target = redirectTo && redirectTo.startsWith('/') ? redirectTo : '';
 
   const finish = useCallback(
-    (fullName?: string) => {
+    (fullName?: string, role?: string) => {
       flashToast({
         type: 'success',
         title: mode === 'register' ? 'Chào mừng thành viên SkyJoy!' : 'Đăng nhập thành công',
@@ -96,20 +96,27 @@ export default function SkyIdRealAuthPage({
           window.location.href = target;
           return;
         }
+        if (role === 'admin' || role === 'super_admin') {
+          window.location.href = '/quan-tri';
+          return;
+        }
         router.push('/tai-khoan');
       }, 800);
     },
     [mode, router, target]
   );
 
-  const identifier = identifierMode === 'phone' ? phone.replace(/\D/g, '') : accountIdentifier.trim();
+  const isEmailOrId = /[a-zA-Z@._-]/.test(phone);
+  const identifier = identifierMode === 'phone'
+    ? (isEmailOrId ? phone.trim() : phone.replace(/\D/g, ''))
+    : accountIdentifier.trim();
   const canContinue = Boolean(identifier);
 
   const handlePhoneContinue = () => {
     if (!identifier) {
       setError(
         identifierMode === 'phone'
-          ? 'Vui lòng nhập số điện thoại của bạn'
+          ? 'Vui lòng nhập số điện thoại hoặc tài khoản của bạn'
           : 'Vui lòng nhập email hoặc mã hội viên SkyJoy'
       );
       return;
@@ -158,7 +165,7 @@ export default function SkyIdRealAuthPage({
       try {
         const data = await auth.signIn(identifier, password);
         toast.success('Đăng nhập thành công', `Chào mừng ${data.user?.fullName || 'Quý khách'}`);
-        finish(data.user?.fullName);
+        finish(data.user?.fullName, data.user?.role);
       } catch (err) {
         const message = err instanceof Error ? err.message : 'Đăng nhập thất bại';
         setError(message);
@@ -369,11 +376,11 @@ export default function SkyIdRealAuthPage({
                     </label>
                     <input
                       id="skyid-phone"
-                      type="tel"
+                      type="text"
                       aria-label="Số điện thoại"
                       placeholder="Nhập số điện thoại của bạn"
                       value={phone}
-                      onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))}
+                      onChange={(e) => setPhone(e.target.value)}
                       onKeyDown={(e) => {
                         if (e.key === 'Enter' && canContinue) handlePhoneContinue();
                       }}
