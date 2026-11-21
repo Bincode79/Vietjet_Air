@@ -89,7 +89,10 @@ export default function FlightCard({
         </div>
 
         {/* Cột 2: 4 cột hạng ghế — ô 141×96, nền #F8F8F8 (đo 13/11/2026) */}
-        <div className="flex-1 grid grid-cols-4 gap-0.5 sm:gap-1 min-w-0 bg-white overflow-x-auto">
+        {/* Mobile 375–390px: lưới 4 cột rất chật → cho phép cuộn ngang
+            với chỉ báo rõ ràng (`overflow-x-auto` + scrollbar-hide), giá
+            không bị tách dòng, typography/padding tối ưu cho màn hình nhỏ. */}
+        <div className="flex-1 grid grid-cols-4 gap-0.5 sm:gap-1 min-w-0 bg-white overflow-x-auto scrollbar-hide relative">
           {FARE_COLUMNS.map((col) => {
             const active = selectedClass?.toUpperCase() === col.id;
             const priceVal = flight.prices[col.priceKey];
@@ -132,12 +135,15 @@ export default function FlightCard({
                         />
                       </svg>
                       {/* "Hết chỗ" 14px/600 màu #939598 (đo 13/11/2026) */}
-                      <span className="text-sm font-semibold text-vj-sold-out">Hết chỗ</span>
+                      <span className="text-xs sm:text-sm font-semibold text-vj-sold-out">
+                        Hết chỗ
+                      </span>
                     </div>
                   ) : (
                     <>
-                      {/* Giá 26px/400 JambonoMedium #333333; mã tiền tệ 16px/500 #6D6E71 */}
-                      <span className="text-base sm:text-xl5 font-jambono font-normal text-vj-text leading-tight whitespace-nowrap">
+                      {/* Giá 26px/400 JambonoMedium #333333; mã tiền tệ 16px/500 #6D6E71
+                          Mobile: giá không tách dòng, cỡ chữ giảm để vừa hơn. */}
+                      <span className="text-sm sm:text-xl5 font-jambono font-normal text-vj-text leading-tight whitespace-nowrap">
                         {priceVal.toLocaleString('vi-VN')}
                         <span className="text-xs sm:text-base font-medium text-vj-currency-gray ml-0.5 sm:ml-1">
                           VND

@@ -67,7 +67,7 @@ export default function RootLayout({
 
         {/* Vietjet Air is a local booking simulator and is intentionally not indexed as the official airline site. */}
       </head>
-      <body className="bg-[var(--background)] pb-[calc(62px+env(safe-area-inset-bottom))] text-[var(--foreground)] lg:pb-0">
+      <body className="bg-[var(--background)] pb-[calc(88px+env(safe-area-inset-bottom))] text-[var(--foreground)] lg:pb-0">
         {/* Skip link — phần tử đầu tiên nhận focus. Đích `#main-content` do từng
             trang tự đặt *sau* `<Header />` của nó; lý do không đặt ở tầng này nằm
             ở ghi chú trên `<div>` bên dưới. */}
@@ -97,10 +97,8 @@ export default function RootLayout({
         <NextTopLoader color="#EC2029" showSpinner={false} />
         <NavigationOptimizer />
         {/* Khoảng chừa cho thanh điều hướng dưới ở mobile nằm trên `<body>`
-            (`pb-[calc(60px+…)] lg:pb-0`). Trước đây nó là một `<div />` rỗng
-            ngay tại đây — padding đáy của một hộp rỗng không đẩy được nội dung
-            lên, nên nó chỉ tạo thêm 60px trắng phía trên mọi trang mobile mà
-            không hề che được thanh dưới. */}
+            (`pb-[calc(88px+…)] lg:pb-0`, khớp chiều cao thực `BOTTOM_NAV_HEIGHT`
+            của MobileBottomNav) để nội dung đáy không bị thanh cố định che. */}
         <MobileBottomNav />
         <ThemeProvider>
           <AuthProvider>

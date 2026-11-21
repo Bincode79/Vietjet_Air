@@ -229,12 +229,15 @@ function DateStrip({ value, onSelect }: { value?: string; onSelect?: (iso: strin
     onSelect(toIsoDate(day));
   };
 
+  // 375px: 2 arrows (2×28) + 3 day cards (110 + 92 + 92) + gaps (4×4) = 340px,
+  // inside the 345px content column. The old 32px arrows + 114/95px cards
+  // needed 371px, so the outer arrows were clipped by `overflow-x-hidden`.
   const arrowClass =
-    'shrink-0 w-8 h-8 rounded-full bg-white shadow-vj-sm border border-vj-border-light flex items-center justify-center text-vj-text-dim hover:bg-vj-pill hover:text-black transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer';
+    'shrink-0 w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white shadow-vj-sm border border-vj-border-light flex items-center justify-center text-vj-text-dim hover:bg-vj-pill hover:text-black transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer';
 
   return (
     <div
-      className="flex items-center justify-center gap-2 sm:gap-4 py-3 my-2"
+      className="flex items-center justify-center gap-1 sm:gap-4 py-3 my-2"
       data-testid="departure-date-strip"
     >
       <button
@@ -247,7 +250,7 @@ function DateStrip({ value, onSelect }: { value?: string; onSelect?: (iso: strin
         <Icon name="ChevronLeftIcon" size={14} />
       </button>
 
-      <div className="flex items-center justify-center gap-1.5 sm:gap-3">
+      <div className="flex items-center justify-center gap-1 sm:gap-3">
         {days.map((day, idx) => {
           const iso = toIsoDate(day);
           const isSelected = iso === toIsoDate(selected);
@@ -262,7 +265,7 @@ function DateStrip({ value, onSelect }: { value?: string; onSelect?: (iso: strin
                 type="button"
                 onClick={() => onSelect?.(iso)}
                 aria-current="date"
-                className="relative flex h-[82px] sm:h-[95px] w-[114px] sm:w-[156px] shrink-0 flex-col items-center justify-center text-center cursor-pointer focus:outline-none focus:ring-0 z-10 transition-transform active:scale-98 bg-[url('/images/flights/cloud-bg-4.webp')] bg-contain bg-center bg-no-repeat drop-shadow-[0_4px_10px_rgba(245,130,32,0.35)]"
+                className="relative flex h-[82px] sm:h-[95px] w-[110px] sm:w-[156px] shrink-0 flex-col items-center justify-center text-center cursor-pointer focus:outline-none focus:ring-0 z-10 transition-transform active:scale-98 bg-[url('/images/flights/cloud-bg-4.webp')] bg-contain bg-center bg-no-repeat drop-shadow-[0_4px_10px_rgba(245,130,32,0.35)]"
               >
                 <div className="relative z-10 flex flex-col items-center justify-center px-2 py-1">
                   <span className="block text-2xs sm:text-xs font-bold text-amber-900 leading-tight">
@@ -287,7 +290,7 @@ function DateStrip({ value, onSelect }: { value?: string; onSelect?: (iso: strin
               onClick={() => onSelect?.(iso)}
               className={`${
                 isOuterDay ? 'hidden sm:flex' : 'flex'
-              } h-[76px] sm:h-[95px] w-[95px] sm:w-[156px] shrink-0 flex-col items-center justify-center text-center border border-vj-border-light/90 bg-white cursor-pointer focus:outline-none focus:ring-0 rounded-vj shadow-xs hover:border-amber-300 transition-all`}
+              } h-[76px] sm:h-[95px] w-[92px] sm:w-[156px] shrink-0 flex-col items-center justify-center text-center border border-vj-border-light/90 bg-white cursor-pointer focus:outline-none focus:ring-0 rounded-vj shadow-xs hover:border-amber-300 transition-all`}
             >
               <span className="text-2xs sm:text-sm2 font-medium text-vj-text-strong leading-tight">
                 {WEEKDAY_LABELS[day.getDay()]}
@@ -1175,7 +1178,12 @@ export default function FlightResultsStep({
                   className="w-[105px] sm:w-[28%] lg:w-[226px] shrink-0 bg-gradient-to-b from-vj-fare-gold-bright via-vj-fare-gold to-vj-fare-gold-deep p-1.5 sm:p-3 lg:p-4 border-r border-yellow-400 flex flex-col items-center justify-between sm:justify-center text-center relative select-none cursor-pointer hover:brightness-[0.97] transition-colors focus:outline-none focus:ring-0"
                 >
                   <div className="flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-2.5">
-                    <div className="flex items-center gap-1">
+                    {/* Mobile: the 105px info column cannot hold flight number
+                        and a delay/cancel badge on one line (45px + 66px), and
+                        `overflow-hidden` on the card clipped the badge's right
+                        edge. Let the badge wrap to a second line; from `sm` the
+                        column is wide enough for one line. */}
+                    <div className="flex flex-wrap items-center justify-center gap-1 sm:flex-nowrap">
                       <img
                         src="/images/brand/vietjet-air-circle.jpg"
                         alt="VJ"

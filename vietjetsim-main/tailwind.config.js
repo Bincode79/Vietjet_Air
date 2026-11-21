@@ -708,5 +708,18 @@ module.exports = {
         },
       });
     }),
+    // Hide scrollbars visually while keeping horizontal scrolling functional
+    // (used for the 4-column fare grid that becomes scrollable on small screens).
+    plugin(({ addUtilities }) => {
+      addUtilities({
+        '.scrollbar-hide': {
+          '-ms-overflow-style': 'none',
+          'scrollbar-width': 'none',
+          '&::-webkit-scrollbar': {
+            display: 'none',
+          },
+        },
+      });
+    }),
   ],
 };

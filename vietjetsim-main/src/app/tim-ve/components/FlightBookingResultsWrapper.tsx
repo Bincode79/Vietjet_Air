@@ -400,7 +400,11 @@ export default function FlightBookingResultsWrapper({
               ở `y=850` (cách mép dưới `25px`), CĂN GIỮA màn hình
               (`x=158`), chữ `14px/500` KoHo màu `rgba(0,0,0,.87)`, shadow 3 tầng
               của MUI. */}
-          <div className="sm:hidden fixed bottom-[25px] left-0 right-0 z-[60] flex justify-center pointer-events-none">
+          {/* Tailwind arbitrary values cannot contain raw spaces; `_+_` is
+              emitted as `calc(25px + env(safe-area-inset-bottom))`. Without the
+              spaces CSS drops the declaration and the fixed button loses its
+              bottom anchor. */}
+          <div className="sm:hidden fixed bottom-[calc(25px_+_env(safe-area-inset-bottom))] left-0 right-0 z-[60] flex justify-center pointer-events-none">
             <button
               type="button"
               onClick={handleContinue}
@@ -410,6 +414,9 @@ export default function FlightBookingResultsWrapper({
               Đi tiếp
             </button>
           </div>
+
+          {/* CTA bottom margin + safe-area padding để tránh che nội dung khi scroll hoặc mở bàn phím */}
+          <div className="sm:hidden pt-3 pb-safe" />
         </>
       )}
 
