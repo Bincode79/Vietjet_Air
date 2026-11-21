@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { HiOutlineChevronDown, HiOutlineMenu, HiOutlineUserCircle } from 'react-icons/hi';
 import { RiHeadphoneLine } from 'react-icons/ri';
 import { useAuth } from '@/contexts/AuthContext';
@@ -72,6 +72,8 @@ export default function SubpageHeader({
   // không mở modal — nếu không modal sẽ chồng lên chính trang đang xem.
   const onAuthRoute = (AUTH_ROUTES as readonly string[]).includes(pathname);
 
+  const router = useRouter();
+
   // `?redirect=` được đọc lúc bấm chứ không qua `useSearchParams`: hook đó bắt
   // buộc toàn bộ cây phía trên phải nằm trong Suspense khi render tĩnh.
   const readRedirect = () => {
@@ -80,7 +82,10 @@ export default function SubpageHeader({
     return value && value.startsWith('/') ? value : undefined;
   };
 
-  const openLogin = () => openAuthModal('login', { redirectTo: readRedirect() });
+  const openLogin = () => {
+    const r = readRedirect();
+    router.push(r ? `/dang-nhap?redirect=${encodeURIComponent(r)}` : '/dang-nhap');
+  };
 
   return (
     <>

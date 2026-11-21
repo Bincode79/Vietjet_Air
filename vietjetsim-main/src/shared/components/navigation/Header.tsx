@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import {
   HiOutlineChevronDown,
   HiOutlineGlobeAlt,
@@ -175,6 +175,8 @@ export default function Header({
   // presentation variant rather than a second component.
   const compactMode = variant === 'compact';
 
+  const router = useRouter();
+
   // `?redirect=` được đọc lúc bấm chứ không qua `useSearchParams`: hook đó bắt
   // buộc toàn bộ cây phía trên phải nằm trong Suspense khi render tĩnh.
   const readRedirect = () => {
@@ -183,8 +185,14 @@ export default function Header({
     return value && value.startsWith('/') ? value : undefined;
   };
 
-  const openLogin = () => openAuthModal('login', { redirectTo: readRedirect() });
-  const openRegister = () => openAuthModal('register', { redirectTo: readRedirect() });
+  const openLogin = () => {
+    const r = readRedirect();
+    router.push(r ? `/dang-nhap?redirect=${encodeURIComponent(r)}` : '/dang-nhap');
+  };
+  const openRegister = () => {
+    const r = readRedirect();
+    router.push(r ? `/dang-ky?redirect=${encodeURIComponent(r)}` : '/dang-ky');
+  };
 
   const [accountMenuOpen, setAccountMenuOpen] = useState(false);
   const [langMenuOpen, setLangMenuOpen] = useState(false);

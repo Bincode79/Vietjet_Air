@@ -1,7 +1,30 @@
+import React, { useState } from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import LoginPage from '@/app/dang-nhap/page';
-import RegisterPage from '@/app/dang-ky/page';
+import PopupFrame from '@/features/auth/components/PopupFrame';
+import SkyIdAuthFlow from '@/features/auth/components/skyid/SkyIdAuthFlow';
+
+function LoginPage() {
+  const [mode, setMode] = useState<'login' | 'register'>('login');
+  return (
+    <main id="main-content">
+      <PopupFrame title={mode === 'register' ? 'Đăng ký SkyJoy' : 'Đăng nhập SkyJoy'}>
+        <SkyIdAuthFlow variant="popup" mode={mode} onModeChange={setMode} />
+      </PopupFrame>
+    </main>
+  );
+}
+
+function RegisterPage() {
+  const [mode, setMode] = useState<'login' | 'register'>('register');
+  return (
+    <main id="main-content">
+      <PopupFrame title="Đăng ký SkyJoy">
+        <SkyIdAuthFlow variant="popup" mode={mode} onModeChange={setMode} />
+      </PopupFrame>
+    </main>
+  );
+}
 
 const mockToast = vi.hoisted(() => ({
   success: vi.fn(),

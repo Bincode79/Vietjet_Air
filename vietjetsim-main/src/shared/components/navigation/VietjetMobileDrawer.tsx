@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import {
   HiOutlineHome,
   HiOutlineTicket,
@@ -53,6 +53,7 @@ export default function VietjetMobileDrawer({ isOpen, onClose }: VietjetMobileDr
   const { user, signOut } = useAuth();
   const { openAuthModal } = useAuthModal();
   const pathname = usePathname();
+  const router = useRouter();
 
   if (!isOpen) return null;
 
@@ -129,7 +130,7 @@ export default function VietjetMobileDrawer({ isOpen, onClose }: VietjetMobileDr
               type="button"
               onClick={() => {
                 onClose();
-                openAuthModal('login');
+                router.push('/dang-nhap');
               }}
               className="flex items-center gap-3 text-base font-bold text-white hover:text-vjyellow transition-colors"
             >

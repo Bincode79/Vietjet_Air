@@ -32,11 +32,15 @@ function autoSolveCaptcha(token?: string): string {
 export interface SkyIdRealAuthPageProps {
   initialMode?: 'login' | 'register';
   redirectTo?: string;
+  onClose?: () => void;
+  isModal?: boolean;
 }
 
 export default function SkyIdRealAuthPage({
   initialMode = 'login',
   redirectTo,
+  onClose,
+  isModal = false,
 }: SkyIdRealAuthPageProps) {
   const auth = useAuth();
   const toast = useToast();
@@ -251,15 +255,31 @@ export default function SkyIdRealAuthPage({
   };
 
   return (
-    <div className="min-h-screen bg-[#EAF3FC] flex flex-col justify-between items-center py-8 px-4 sm:px-6">
+    <div
+      className={
+        isModal
+          ? 'fixed inset-0 z-[1000] flex items-center justify-center bg-black/60 p-4 backdrop-blur-xs overflow-y-auto'
+          : 'min-h-screen bg-[#EAF3FC] flex flex-col justify-between items-center py-8 px-4 sm:px-6'
+      }
+    >
       {/* Top spacer */}
-      <div />
+      {!isModal && <div />}
 
       {/* Main Authentic 2-Column Card */}
       <div
         data-testid="skyid-card"
-        className="w-full max-w-[854px] bg-white rounded-[20px] shadow-[0_16px_45px_rgba(0,0,0,0.06)] border border-slate-100 overflow-hidden flex flex-col md:flex-row relative"
+        className="w-full max-w-[854px] bg-white rounded-[20px] shadow-[0_16px_45px_rgba(0,0,0,0.06)] border border-slate-100 overflow-hidden flex flex-col md:flex-row relative my-auto"
       >
+        {onClose && (
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Đóng"
+            className="absolute top-3 right-3 z-30 w-8 h-8 rounded-full bg-black/10 hover:bg-black/20 text-slate-700 flex items-center justify-center font-bold transition cursor-pointer"
+          >
+            ✕
+          </button>
+        )}
         {/* Hidden test-compatibility hooks (do not display to prevent CSS interference) */}
         <div style={{ display: 'none' }} aria-hidden="true">
           <span className="vj-popup-frame vj-popup-viewport" />
@@ -731,17 +751,19 @@ export default function SkyIdRealAuthPage({
       </div>
 
       {/* Footer Links below Card matching Image #1 */}
-      <div className="flex items-center justify-center gap-6 mt-5 text-xs text-[#2B6CB0] font-medium">
-        <a href="https://skyjoy.vn" target="_blank" rel="noreferrer" className="hover:underline">
-          Về SkyJoy
-        </a>
-        <a href="/dieu-khoan" className="hover:underline">
-          Điều khoản
-        </a>
-        <a href="/chinh-sach-bao-mat" className="hover:underline">
-          Chính sách bảo mật
-        </a>
-      </div>
+      {!isModal && (
+        <div className="flex items-center justify-center gap-6 mt-5 text-xs text-[#2B6CB0] font-medium">
+          <a href="https://skyjoy.vn" target="_blank" rel="noreferrer" className="hover:underline">
+            Về SkyJoy
+          </a>
+          <a href="/dieu-khoan" className="hover:underline">
+            Điều khoản
+          </a>
+          <a href="/chinh-sach-bao-mat" className="hover:underline">
+            Chính sách bảo mật
+          </a>
+        </div>
+      )}
     </div>
   );
 }
