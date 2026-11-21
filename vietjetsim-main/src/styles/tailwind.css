@@ -1265,11 +1265,22 @@ h6 {
   justify-content: center;
   height: 40px;
   width: 100%;
+  /* Nhãn tab dài hơn ô của nó (tab 1 trên mobile) phải cắt bằng dấu "…"
+     chứ không phải tràn ra ngoài hoặc làm cả dải tab cuộn ngang. */
+  min-width: 0;
+  overflow: hidden;
   font-family: var(--vj-font-cta);
   font-size: 14px;
   line-height: 20px;
   font-weight: 500;
   text-align: center;
+}
+/* Mobile: font nhỏ hơn để nhãn tab dài vừa hơn ô (P0 #1: overflow tìm kiếm). */
+@media (max-width: 767px) {
+  .vj-booking-tab__label {
+    font-size: 12px;
+    line-height: 18px;
+  }
 }
 
 /* Ô nhập trong dải đặt vé: cao 48px, bo góc 10px, nền trắng.
