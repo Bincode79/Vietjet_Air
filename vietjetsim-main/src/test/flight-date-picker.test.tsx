@@ -121,6 +121,58 @@ describe('FlightDatePickerPopover Component', () => {
     expect(onSelectDepart).toHaveBeenCalledWith('2026-10-25');
     expect(onClose).toHaveBeenCalled();
   });
+
+  it('opens above the anchor when there is no room below but enough above', () => {
+    Object.defineProperty(window, 'innerHeight', {
+      writable: true,
+      configurable: true,
+      value: 768,
+    });
+    const { container } = render(
+      <FlightDatePickerPopover
+        departDate="2026-10-19"
+        returnDate=""
+        roundTrip={false}
+        activeStep="depart"
+        onSelectDepart={vi.fn()}
+        onSelectReturn={vi.fn()}
+        onTripTypeChange={vi.fn()}
+        onClose={vi.fn()}
+        minDate="2026-10-01"
+        anchorTop={700}
+      />
+    );
+    const popover = container.firstChild!;
+    const top = Number.parseFloat((popover as HTMLElement).style.top);
+    // 700 - 520 - 8 = 172 (mở lên trên)
+    expect(top).toBe(172);
+  });
+
+  it('opens below the anchor when there is enough room under', () => {
+    Object.defineProperty(window, 'innerHeight', {
+      writable: true,
+      configurable: true,
+      value: 768,
+    });
+    const { container } = render(
+      <FlightDatePickerPopover
+        departDate="2026-10-19"
+        returnDate=""
+        roundTrip={false}
+        activeStep="depart"
+        onSelectDepart={vi.fn()}
+        onSelectReturn={vi.fn()}
+        onTripTypeChange={vi.fn()}
+        onClose={vi.fn()}
+        minDate="2026-10-01"
+        anchorTop={100}
+      />
+    );
+    const popover = container.firstChild!;
+    const top = Number.parseFloat((popover as HTMLElement).style.top);
+    // 100 + 8 = 108 (mở xuống)
+    expect(top).toBe(108);
+  });
 });
 
 describe('HeroBookingWidget Date Selection Flow', () => {

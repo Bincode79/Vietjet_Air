@@ -153,8 +153,16 @@ export default function AirportPicker({
    * inside a group box with `overflow-hidden` (it has to clip the segments to
    * the rounded corners). An absolutely-positioned panel inside that box was
    * clipped away entirely, so the list never appeared at all.
+   *
+   * `bottom` is set instead of `top` when the panel opens upward, so the
+   * panel stays glued to the field no matter how ngắn danh sách thực tế.
    */
-  const [anchor, setAnchor] = useState<{ left: number; top: number; width: number }>();
+  const [anchor, setAnchor] = useState<{
+    left: number;
+    top?: number;
+    bottom?: number;
+    width: number;
+  }>();
   const Icon = icon === 'takeoff' ? MdFlightTakeoff : MdFlightLand;
 
   useEffect(() => {
@@ -212,8 +220,16 @@ export default function AirportPicker({
     if (!list) return;
 
     const fit = () => {
-      const rect = containerRef.current!.getBoundingClientRect();
-      const room = window.innerHeight - rect.bottom;
+      const container = containerRef.current!;
+      // Ô nhập sân bay chỉ chiếm MỘT CỘT của hộp trắng (hộp còn chia cột
+      // "Ngày đi"), nhưng người dùng thấy danh sách bung ra từ cả hộp.
+      // Đo theo hộp trắng (`data-vj-field-box`) để bề rộng panel khớp đúng
+      // ô nhìn thấy — trước đây nó là 260px, lệch so với ô 337/352px.
+      const fieldBox = container.closest('[data-vj-field-box]') as HTMLElement | null;
+      const rect = (fieldBox ?? container).getBoundingClientRect();
+      const viewportHeight = typeof window !== 'undefined' ? window.innerHeight : 360;
+      const roomUnder = viewportHeight - rect.bottom;
+      const roomAbove = rect.top;
       const panel = panelRef.current;
       const chrome =
         panel && list.offsetHeight > 0 ? panel.offsetHeight - list.offsetHeight : CHROME_FALLBACK;
@@ -225,17 +241,29 @@ export default function AirportPicker({
       const viewportWidth = typeof window !== 'undefined' ? window.innerWidth : 360;
       const panelWidth = Math.min(viewportWidth - 16, Math.max(rect.width || 0, 260));
       const panelLeft = Math.max(8, Math.min(rect.left || 0, viewportWidth - panelWidth - 8));
+      const maxUnder = Math.max(96, Math.min(LIST_CAP, roomUnder - chrome - GAP));
+      const maxAbove = Math.max(96, Math.min(LIST_CAP, roomAbove - chrome - GAP));
+      const fitsUnder = roomUnder - chrome - GAP >= 96;
+      const fitsAbove = roomAbove - chrome - GAP >= 96;
+
+      let anchorTop: number;
+      let listMaxHeight: number;
+      if (!fitsUnder && fitsAbove) {
+        // Not enough room below the field, but there is room above: drop the
+        // panel on top of the field instead of hanging it off the bottom edge.
+        listMaxHeight = maxAbove;
+        anchorTop = rect.top - listMaxHeight - chrome - 4;
+      } else {
+        listMaxHeight = maxUnder;
+        anchorTop = (rect.bottom || 0) + 4;
+      }
+
       setAnchor({
         left: panelLeft,
-        top: (rect.bottom || 0) + 4,
+        top: anchorTop,
         width: panelWidth,
       });
-      // The 96px floor is two airports, and it is deliberately low. A higher
-      // floor reads better until the screen is short enough for it to win over
-      // the available room, at which point the panel hangs off the bottom with
-      // airports that cannot be scrolled to — 200px overflowed by 41px on a
-      // 375x667 screen. Two rows plus the search box is the least that works.
-      setListMaxHeight(Math.max(96, Math.min(LIST_CAP, room - chrome - GAP)));
+      setListMaxHeight(listMaxHeight);
     };
 
     fit();
@@ -422,7 +450,10 @@ export default function AirportPicker({
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Tìm sân bay..."
                 aria-label={`Tìm ${(ariaLabel ?? label).toLowerCase()}`}
-                className="min-w-0 flex-1 bg-transparent text-sm text-[var(--foreground)] outline-none placeholder:text-vj-placeholder"
+                // 16px ở MOBILE: iOS Safari tự phóng to cả trang khi bấm vào
+                // một ô có font-size < 16px (xem `.vj-lookup-input` trong
+                // tailwind.css — cùng một lý do).
+                className="min-w-0 flex-1 bg-transparent text-base sm:text-sm text-[var(--foreground)] outline-none placeholder:text-vj-placeholder"
               />
               {/* How many are left, so the list does not have to be scrolled to the
                 end to find out it is not the whole list. Sits in the search row

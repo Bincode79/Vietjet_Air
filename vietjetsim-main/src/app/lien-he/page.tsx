@@ -37,11 +37,11 @@ export default function ContactPage() {
       />
 
       {/* Main Content */}
-      <main id="main-content" className="max-w-[1200px] mx-auto px-4 py-16 -mt-10 relative z-20">
-        <div className="grid lg:grid-cols-3 gap-8">
+      <main id="main-content" className="max-w-[1200px] mx-auto px-3 sm:px-4 py-8 sm:py-16 -mt-6 sm:-mt-10 relative z-20">
+        <div className="grid lg:grid-cols-3 gap-6 sm:gap-8">
           {/* Contact Form */}
-          <div className="lg:col-span-2 bg-white rounded-vj shadow-vj-lg p-8">
-            <h2 className="text-2xl font-bold text-[var(--vj-navy)] mb-6 font-heading-800">
+          <div className="lg:col-span-2 bg-white rounded-vj shadow-vj-lg p-4 sm:p-6 md:p-8">
+            <h2 className="text-xl sm:text-2xl font-bold text-[var(--vj-navy)] mb-4 sm:mb-6 font-heading-800">
               Gửi tin nhắn cho chúng tôi
             </h2>
             {submitted ? (

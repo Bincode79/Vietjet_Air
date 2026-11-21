@@ -29,11 +29,5 @@ export default function SignInPopup({ mode = 'login', redirectTo, onClose }: Sig
 
 /** Popup "Quên mật khẩu?" — cùng giao diện modal. */
 export function ForgotPasswordPopup({ onClose }: { onClose?: () => void }) {
-  return (
-    <SkyIdRealAuthPage
-      initialMode="login"
-      onClose={onClose}
-      isModal
-    />
-  );
+  return <SkyIdRealAuthPage initialMode="login" onClose={onClose} isModal />;
 }

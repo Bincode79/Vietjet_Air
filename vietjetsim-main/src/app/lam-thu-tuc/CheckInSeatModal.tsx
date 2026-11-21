@@ -113,8 +113,8 @@ export default function CheckInSeatModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-      <div className="relative w-full max-w-2xl bg-white rounded-vj shadow-2xl overflow-hidden flex flex-col max-h-[90vh] animate-fadeIn">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-2 sm:p-4">
+      <div className="relative w-full max-w-2xl bg-white rounded-vj shadow-2xl overflow-hidden flex flex-col max-h-[90dvh] sm:max-h-[90vh] animate-fadeIn">
         {/* Header */}
         <div className="p-4 sm:p-5 bg-gradient-to-r from-primary via-red-600 to-primary text-white flex items-center justify-between shadow-vj-md">
           <div className="flex items-center gap-2">
@@ -163,7 +163,7 @@ export default function CheckInSeatModal({
         </div>
 
         {/* Footer actions */}
-        <div className="p-4 bg-white border-t border-vj-border-light flex items-center justify-between">
+        <div className="p-3 sm:p-4 bg-white border-t border-vj-border-light flex items-center justify-between gap-2">
           <div className="text-xs">
             <span className="text-vj-gray">Đã chọn: </span>
             <strong className="text-primary font-black text-sm">

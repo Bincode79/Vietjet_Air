@@ -251,9 +251,9 @@ export default function ServicesPage() {
         description="Nâng cao trải nghiệm bay với các dịch vụ bổ trợ đa dạng và tiện ích"
       />
 
-      <main id="main-content" className="max-w-[1200px] mx-auto px-4 py-10">
+      <main id="main-content" className="max-w-[1200px] mx-auto px-3 sm:px-4 py-6 sm:py-10">
         {/* Services Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 mb-8 sm:mb-10">
           {SERVICES.map((service) => (
             <button
               key={service.id}

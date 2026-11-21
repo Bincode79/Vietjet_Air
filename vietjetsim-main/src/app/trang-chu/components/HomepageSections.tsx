@@ -48,6 +48,7 @@ const DEFAULT_ORDER = [
   'shopping',
 ] as const;
 
+
 export default function HomepageSections({
   hero,
   serviceStrip,
@@ -56,6 +57,7 @@ export default function HomepageSections({
   destinations,
   shopping,
 }: HomepageSectionsProps) {
+
   const [layout, setLayout] = useState<PageLayout | null>(null);
 
   useEffect(() => {

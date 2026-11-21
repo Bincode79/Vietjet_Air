@@ -11,7 +11,19 @@
 - ✅ `src/app/hanh-ly/page.tsx` — redirect sang `/dich-vu?service=baggage`, không cần sửa riêng
 - ✅ `src/features/admin/components/AdminDashboardClient.tsx` — sidebar `hidden lg:flex`, content responsive
 - ✅ `src/features/auth/components/skyid/SkyIdRealAuthPage.tsx` — `md:flex-row` (2 cột desktop → 1 cột mobile), input `h-[40px]`, container `max-w-[854px]`
-- ⏭️ `src/app/trang-chu/components/HeroSection.tsx` (P0 #1) — chưa bắt đầu
+- ✅ `src/app/trang-chu/components/HeroSection.tsx` + `HeroBookingWidget.tsx` (P0 #1) — tabs co giãn %, DatePicker & PassengerPicker dạng bottom sheet không tràn viewport, AirportPicker bám viewport, CTA hiển thị chuẩn trên 375/390px portrait & 812x375 landscape (7/7 Playwright tests + 49 Vitest tests pass)
+- ✅ `src/app/trang-chu/components/DatePicker.tsx` (P3 #23) — chuyển sang bottom sheet trên mobile (< lg), dynamic anchoring trên desktop (>= lg), fit viewport
+- ✅ `src/app/lam-thu-tuc/CheckInSeatModal.tsx` (P2 #13) — modal responsive `p-2 sm:p-4`, `max-h-[90dvh]`, action buttons gọn trên mobile
+- ✅ `src/app/gioi-thieu/page.tsx` (P2 #19) — padding card `p-4 sm:p-8 md:p-12`, stats grid responsive
+- ✅ `src/app/chuyen-bay-cua-toi/page.tsx` (P2 #11) — form mobile `max-w-[540px]`, ô nhập 290px bám giữa, SubpageHeader chuẩn
+- ✅ `src/app/lam-thu-tuc/page.tsx` (P2 #12) — CheckInHeader, form tra cứu responsive bám chuẩn
+- ✅ `src/app/tra-cuu/page.tsx` (P2 #14) — PageHero, card kết quả PNR `max-w-2xl` căn giữa, route responsive
+- ✅ `src/app/hoi-dap/page.tsx` (P2 #16) — padding `px-3 sm:px-4 py-8 sm:py-16`, accordion căn giữa, search bar responsive
+- ✅ `src/app/dich-vu/page.tsx` (P2 #17) — grid 1 col mobile / 2 sm / 3 lg, padding `px-3 sm:px-4 py-6 sm:py-10`
+- ✅ `src/app/lien-he/page.tsx` (P2 #20) — padding form `p-4 sm:p-6 md:p-8`, grid responsive
+- ✅ `src/app/error.tsx` & `src/app/global-error.tsx` (P3 #21, #22) — padding `p-3 sm:p-4`, card `p-5 sm:p-8`
+- ✅ `src/app/trang-chu/components/FAQSection.tsx` (P3 #25) — grid 2/3 cột responsive, không tràn ngang
+- ✅ `src/app/vi/page.tsx` (P2 #15) — re-export Homepage, đồng bộ toàn bộ layout responsive mới
 
 ## Cần chỉnh sửa (theo thứ tự ưu tiên)
 

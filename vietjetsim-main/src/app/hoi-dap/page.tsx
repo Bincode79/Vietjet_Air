@@ -38,7 +38,7 @@ export default function FAQPage() {
       {/* Main Content — container 1200px chuẩn, nội dung hẹp căn giữa */}
       <main
         id="main-content"
-        className="mx-auto w-full max-w-[1200px] px-4 py-16 -mt-10 relative z-20"
+        className="mx-auto w-full max-w-[1200px] px-3 sm:px-4 py-8 sm:py-16 -mt-6 sm:-mt-10 relative z-20"
       >
         <div className="mx-auto w-full max-w-3xl">
           {/* Search Bar */}

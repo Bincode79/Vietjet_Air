@@ -124,7 +124,7 @@ export default function BaggageSelectionDrawer({
       />
 
       {/* Drawer content */}
-      <div className="relative w-full max-w-lg bg-white h-full shadow-2xl flex flex-col z-10 animate-slideInRight">
+      <div className="relative w-full max-w-lg bg-white h-[100dvh] shadow-2xl flex flex-col z-10 animate-slideInRight">
         {/* Header with Vietjet curve top-right (Screenshot 10) */}
         <div className="relative bg-primary-dark text-white px-4 py-3 flex items-center justify-between shadow-vj-md overflow-hidden">
           <div className="w-8 shrink-0" />
@@ -134,7 +134,7 @@ export default function BaggageSelectionDrawer({
           <div className="relative z-10">
             <button
               onClick={onClose}
-              className="text-vj-text bg-white/90 hover:bg-white p-1 rounded-full transition-colors flex items-center justify-center h-7 w-7"
+              className="text-vj-text bg-white/90 hover:bg-white p-1 rounded-full transition-colors flex items-center justify-center h-11 w-11 sm:h-7 sm:w-7"
               aria-label="Đóng"
             >
               <RiCloseLine size={20} />
@@ -206,10 +206,6 @@ export default function BaggageSelectionDrawer({
 
         {/* Scrollable Content */}
         <div className="flex-1 overflow-y-auto px-4 py-4 bg-slate-50 space-y-4">
-          <div className="text-xs font-bold text-green-700 flex items-center gap-1.5 bg-green-50 p-2.5 rounded-vj border border-green-200">
-            <span>ⓘ</span>
-            <span>Hạng vé của bạn đã bao gồm 7kg hành lý xách tay</span>
-          </div>
           {/* Promo banner */}
           <div className="bg-gradient-to-r from-red-600 to-rose-500 text-white rounded-vj p-4 shadow-vj-sm flex items-center gap-3">
             <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center shrink-0">
@@ -226,8 +222,8 @@ export default function BaggageSelectionDrawer({
           </div>
 
           {/* Included note */}
-          <div className="flex items-center gap-2 text-xs text-vj-pay-green bg-vj-pay-green border border-vj-pay-green rounded-vj p-2.5">
-            <RiInformationLine size={18} className="text-vj-pay-green shrink-0" />
+          <div className="flex items-center gap-2 text-xs text-black bg-vj-pay-green border border-vj-pay-green rounded-vj p-2.5">
+            <RiInformationLine size={18} className="text-black shrink-0" />
             <span>
               Hạng vé của bạn đã bao gồm <strong>7kg hành lý xách tay</strong>
             </span>
@@ -360,24 +356,26 @@ export default function BaggageSelectionDrawer({
           </div>
         </div>
 
-        {/* Sticky Drawer Footer — "Tổng tiền" 20px/600 trắng, giá 22px/700 Jambono */}
-        <div className="bg-primary-dark text-white p-3 flex items-center justify-between shadow-vj-lg">
-          <div>
-            <span className="text-2xl3 font-semibold text-white block">
-              Tổng tiền (
-              {isRoundTrip ? (
-                <>
-                  Đi: {outboundPackage ? outboundPackage.label : '7kg'} | Về:{' '}
-                  {returnPackage ? returnPackage.label : '7kg'}
-                </>
-              ) : outboundPackage ? (
-                outboundPackage.label
-              ) : (
-                'Hành lý:'
-              )}
-              )
+        {/* Sticky Drawer Footer — "Tổng tiền" + giá + nút Xác nhận. Mobile dùng
+           chữ nhỏ gọn, không ép dòng (`block` tắt), padding safe-area. */}
+        <div
+          className="bg-primary-dark text-white p-2 sm:p-3 flex items-center justify-between gap-2 sm:gap-0 shadow-vj-lg"
+          style={{ paddingBottom: 'max(0.75rem, env(safe-area-inset-bottom, 0px))' }}
+        >
+          <div className="min-w-0 flex-1 text-left">
+            <span className="text-sm sm:text-base font-semibold text-white block leading-tight">
+              Tổng tiền
             </span>
-            <span className="text-xl4 font-bold font-jambono text-white">
+            <span className="text-xs sm:text-sm2 font-medium text-white/85 block mt-0.5 truncate">
+              {isRoundTrip
+                ? `Đi: ${outboundPackage ? outboundPackage.label : '7kg'} | Về: ${
+                    returnPackage ? returnPackage.label : '7kg'
+                  }`
+                : outboundPackage
+                  ? outboundPackage.label
+                  : 'Hành lý 7kg'}
+            </span>
+            <span className="text-base sm:text-lg font-bold font-jambono text-white leading-tight">
               {totalFee > 0 ? `${totalFee.toLocaleString('vi-VN')} VND` : '0 VND'}
             </span>
           </div>
@@ -385,7 +383,7 @@ export default function BaggageSelectionDrawer({
           <button
             type="button"
             onClick={handleConfirm}
-            className="vj-cta disabled:opacity-50 disabled:cursor-not-allowed h-[39px] min-h-[39px] px-6 rounded-vj font-koho text-sm font-medium uppercase tracking-normal transition-all shadow-vj-sm active:scale-98 cursor-pointer"
+            className="vj-cta disabled:opacity-50 disabled:cursor-not-allowed h-[39px] min-h-[39px] px-4 sm:px-6 rounded-vj font-koho text-sm font-medium uppercase tracking-normal transition-all shadow-vj-sm active:scale-98 cursor-pointer shrink-0"
           >
             Xác nhận
           </button>

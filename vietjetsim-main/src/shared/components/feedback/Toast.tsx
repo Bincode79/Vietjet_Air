@@ -42,14 +42,14 @@ const TYPE_CONFIG: Record<
 > = {
   // ── Thành công: nền vàng-brand rất nhạt, viền vàng-brand ──
   success: {
-    bar: 'bg-accent',
-    bg: 'bg-accent-50 border-2 border-accent shadow-xl shadow-amber-200/30',
-    iconBg: 'bg-accent shadow-vj-md shadow-amber-200/30',
+    bar: 'bg-[#7aa52a]',
+    bg: 'bg-[#9acd32] border-2 border-[#7aa52a] shadow-xl shadow-lime-200/40',
+    iconBg: 'bg-[#7aa52a] shadow-vj-md shadow-lime-200/40',
     iconColor: 'text-white',
-    titleColor: 'text-vj-ink font-black',
-    messageColor: 'text-vj-gray font-medium',
-    closeBtn: 'text-vj-gray hover:text-accent-dark hover:bg-accent-100',
-    progressColor: 'bg-accent',
+    titleColor: 'text-white font-black',
+    messageColor: 'text-white font-medium',
+    closeBtn: 'text-white hover:text-white hover:bg-black/10',
+    progressColor: 'bg-white/80',
     defaultIcon: (
       <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 text-white">
         <path
@@ -166,7 +166,7 @@ function ToastNotification({ toast, onDismiss }: ToastProps) {
   const [paused, setPaused] = useState(false);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const config = TYPE_CONFIG[toast.type];
-  const duration = toast.duration ?? 5000;
+  const duration = toast.duration ?? 4000;
 
   const dismiss = () => {
     setExiting(true);
@@ -194,7 +194,7 @@ function ToastNotification({ toast, onDismiss }: ToastProps) {
 
   return (
     <div
-      className={`relative w-[360px] max-w-[calc(100vw-32px)] rounded-vj shadow-vj-toast overflow-hidden cursor-pointer transition-all duration-300 ease-vj ${config.bg}
+      className={`relative w-[min(300px,calc(100vw-32px))] sm:w-[360px] max-w-[calc(100vw-32px)] rounded-vj shadow-vj-toast overflow-hidden cursor-pointer transition-all duration-300 ease-vj ${config.bg}
         ${visible && !exiting ? 'opacity-100 translate-x-0 scale-100' : 'opacity-0 translate-x-8 scale-95'}
       `}
       onMouseEnter={() => setPaused(true)}
@@ -205,21 +205,23 @@ function ToastNotification({ toast, onDismiss }: ToastProps) {
       {/* Top accent bar */}
       <div className={`h-1 w-full ${config.bar}`} />
 
-      <div className="flex items-start gap-3 px-4 pt-3 pb-4">
+      <div className="flex items-start gap-2 px-3 py-1.5 sm:gap-3 sm:px-4 sm:pt-3 sm:pb-4">
         {/* Icon */}
         <div
-          className={`flex-shrink-0 w-8 h-8 rounded-vj ${config.iconBg} ${config.iconColor} flex items-center justify-center mt-0.5`}
+          className={`flex-shrink-0 w-7 h-7 sm:w-8 sm:h-8 rounded-vj ${config.iconBg} ${config.iconColor} flex items-center justify-center mt-0.5`}
         >
           {toast.icon ?? config.defaultIcon}
         </div>
 
         {/* Content */}
         <div className="flex-1 min-w-0">
-          <p className={`text-sm leading-tight font-['KoHo',sans-serif] ${config.titleColor}`}>
+            <p className={`text-sm leading-tight font-black font-['KoHo',sans-serif] ${config.titleColor}`}>
             {toast.title}
           </p>
           {toast.message && (
-            <p className={`text-xs mt-1 leading-relaxed ${config.messageColor}`}>{toast.message}</p>
+            <p className={`text-xs mt-0.5 leading-snug font-bold ${config.messageColor}`}>
+              {toast.message}
+            </p>
           )}
 
           {/* Action buttons */}
@@ -254,7 +256,7 @@ function ToastNotification({ toast, onDismiss }: ToastProps) {
             e.stopPropagation();
             dismiss();
           }}
-          className={`flex-shrink-0 w-6 h-6 rounded-vj flex items-center justify-center transition-colors duration-150 mt-0.5 ${config.closeBtn}`}
+          className={`flex-shrink-0 w-7 h-7 sm:w-6 sm:h-6 rounded-vj flex items-center justify-center transition-colors duration-150 mt-0.5 ${config.closeBtn}`}
           aria-label="Đóng thông báo"
         >
           <svg viewBox="0 0 16 16" fill="currentColor" className="w-3.5 h-3.5">

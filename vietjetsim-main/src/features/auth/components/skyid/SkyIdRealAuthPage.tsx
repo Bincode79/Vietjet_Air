@@ -399,7 +399,7 @@ export default function SkyIdRealAuthPage({
                   </div>
 
                   {/* Phone Input Box with Floating Notched Label */}
-                  <div className="relative flex-1 h-[40px] border border-slate-700 rounded-md px-2.5 bg-white flex items-center transition focus-within:border-black">
+                  <div className="relative flex-1 h-[40px] border border-slate-300 rounded-md px-2.5 bg-white flex items-center transition focus-within:border-slate-800">
                     <label
                       htmlFor="skyid-phone"
                       className="vj-skyid-label vj-skyid-label-phone absolute -top-2 left-2 px-1 bg-white text-[10px] font-medium text-slate-600 leading-none whitespace-nowrap pointer-events-none"
@@ -416,7 +416,7 @@ export default function SkyIdRealAuthPage({
                       onKeyDown={(e) => {
                         if (e.key === 'Enter' && canContinue) handlePhoneContinue();
                       }}
-                      className="vj-skyid-input w-full text-xs font-semibold text-slate-900 placeholder-slate-400 outline-none bg-transparent"
+                      className="vj-skyid-input w-full text-xs font-normal text-slate-600 placeholder-slate-400 outline-none bg-transparent"
                     />
                   </div>
 
@@ -425,9 +425,9 @@ export default function SkyIdRealAuthPage({
                     type="button"
                     disabled={!canContinue || loading}
                     onClick={handlePhoneContinue}
-                    className={`vj-skyid-btn !min-w-0 !w-auto h-[40px] px-4 rounded-md font-bold text-xs transition-all flex items-center justify-center whitespace-nowrap shrink-0 ${
+                    className={`vj-skyid-btn !min-w-0 !w-auto h-[40px] px-5 rounded-md font-extrabold text-base tracking-wide transition-all flex items-center justify-center whitespace-nowrap shrink-0 ${
                       canContinue && !loading
-                        ? '!bg-gradient-to-r !from-[#FFD200] !to-[#F7931E] !text-slate-900 shadow-xs hover:brightness-105 active:scale-98 cursor-pointer'
+                        ? '!bg-gradient-to-r !from-[#FFD200] !to-[#F7931E] !text-slate-900 shadow-md hover:brightness-105 hover:shadow-lg active:scale-98 cursor-pointer'
                         : '!bg-[#f7f7f7] !text-[#c7c7c7] border border-slate-200/60 cursor-not-allowed'
                     }`}
                   >
@@ -467,7 +467,7 @@ export default function SkyIdRealAuthPage({
                     placeholder="Nhập mật khẩu"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full text-sm font-semibold text-slate-800 placeholder-slate-400 outline-none bg-transparent pr-12"
+                    className="w-full text-sm font-normal text-slate-600 placeholder-slate-400 outline-none bg-transparent pr-12"
                   />
                   <button
                     type="button"
@@ -557,51 +557,51 @@ export default function SkyIdRealAuthPage({
 
                 <div className="grid grid-cols-2 gap-2">
                   <div className="border border-slate-300 rounded-lg px-3 py-1 bg-white">
-                    <label className="text-[10px] text-slate-500 block">Họ *</label>
+                    <label className="text-[10px] text-slate-400 block">Họ *</label>
                     <input
                       type="text"
                       placeholder="NGUYEN"
                       value={surname}
                       onChange={(e) => setSurname(e.target.value)}
-                      className="w-full text-xs font-bold uppercase text-slate-800 outline-none bg-transparent"
+                      className="w-full text-xs font-bold uppercase text-slate-500 outline-none bg-transparent"
                     />
                   </div>
                   <div className="border border-slate-300 rounded-lg px-3 py-1 bg-white">
-                    <label className="text-[10px] text-slate-500 block">Tên đệm & Tên *</label>
+                    <label className="text-[10px] text-slate-400 block">Tên đệm & Tên *</label>
                     <input
                       type="text"
                       placeholder="VAN A"
                       value={givenName}
                       onChange={(e) => setGivenName(e.target.value)}
-                      className="w-full text-xs font-bold uppercase text-slate-800 outline-none bg-transparent"
+                      className="w-full text-xs font-bold uppercase text-slate-500 outline-none bg-transparent"
                     />
                   </div>
                 </div>
 
                 <div className="border border-slate-300 rounded-lg px-3 py-1 bg-white">
-                  <label className="text-[10px] text-slate-500 block">Email</label>
+                  <label className="text-[10px] text-slate-400 block">Email</label>
                   <input
                     type="email"
                     placeholder="email@example.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full text-xs font-semibold text-slate-800 outline-none bg-transparent"
+                    className="w-full text-xs font-semibold text-slate-500 outline-none bg-transparent"
                   />
                 </div>
 
                 <div className="border border-slate-300 rounded-lg px-3 py-1 bg-white">
-                  <label className="text-[10px] text-slate-500 block">Mật khẩu mới *</label>
+                  <label className="text-[10px] text-slate-400 block">Mật khẩu mới *</label>
                   <input
                     type="password"
                     placeholder="Tối thiểu 8 ký tự"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full text-xs font-semibold text-slate-800 outline-none bg-transparent"
+                    className="w-full text-xs font-semibold text-slate-500 outline-none bg-transparent"
                   />
                 </div>
 
                 <div className="border border-slate-300 rounded-lg px-3 py-1 bg-white">
-                  <label className="text-[10px] text-slate-500 block">
+                  <label className="text-[10px] text-slate-400 block">
                     Mã giới thiệu (không bắt buộc)
                   </label>
                   <input
@@ -609,7 +609,7 @@ export default function SkyIdRealAuthPage({
                     placeholder="VJ689"
                     value={referralCode}
                     onChange={(e) => setReferralCode(e.target.value)}
-                    className="w-full text-xs font-semibold text-slate-800 outline-none bg-transparent"
+                    className="w-full text-xs font-semibold text-slate-500 outline-none bg-transparent"
                   />
                 </div>
 
@@ -700,7 +700,9 @@ export default function SkyIdRealAuthPage({
               <img
                 src="/images/skyid/endorsement-logos.png"
                 alt="SkyJoy vietjetAir.com SkyPay"
-                className="h-[18px] w-auto object-contain"
+                width={190}
+                height={20}
+                className="h-5 w-auto object-contain"
               />
             </div>
 

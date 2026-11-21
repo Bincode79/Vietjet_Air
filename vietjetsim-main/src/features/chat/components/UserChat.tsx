@@ -798,7 +798,7 @@ export default function UserChat() {
                   className="bg-white rounded-2xl border border-red-100 p-4 shadow-vj-sm space-y-3"
                 >
                   <div className="flex items-center justify-between border-b border-vj-border-light pb-2">
-                    <span className="text-xs font-bold text-vj-red-dark font-koho uppercase tracking-wider">
+                    <span className="text-xs font-bold text-black font-koho uppercase tracking-wider">
                       Thông tin khách hàng
                     </span>
                   </div>

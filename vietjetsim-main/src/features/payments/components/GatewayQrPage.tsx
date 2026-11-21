@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React from 'react';
 import Link from 'next/link';
 import { Icon } from '@/shared/components/ui';
 import VietQrBox from '@/features/payments/components/VietQrBox';
@@ -51,16 +51,9 @@ export default function GatewayQrPage({
   departTime,
   date,
 }: GatewayQrPageProps) {
-  const [copiedNote, setCopiedNote] = useState(false);
   const label = METHOD_LABELS[method] || 'Thanh toán';
   const badgeClass = METHOD_BADGE[method] || 'bg-blue-50 border-blue-200 text-vj-bank-blue';
   const effectiveNote = `VJ ${bookingCode || 'DATVE'}`;
-
-  const handleCopyNote = () => {
-    navigator.clipboard.writeText(effectiveNote);
-    setCopiedNote(true);
-    setTimeout(() => setCopiedNote(false), 2000);
-  };
 
   return (
     <div className="space-y-6">
@@ -89,23 +82,17 @@ export default function GatewayQrPage({
         <h2 className="text-xl sm:text-2xl font-black text-vj-text font-koho">{label}</h2>
         <p className="text-xs sm:text-sm text-vj-gray max-w-md mx-auto">
           Quét mã QR hoặc sao chép nội dung chuyển khoản để hoàn tất thanh toán đơn{' '}
-          <strong className="text-vj-text font-bold">{bookingCode || bookingId}</strong>.
+          <strong className="text-vj-text font-bold">{bookingCode || bookingId}</strong>
         </p>
       </div>
       {/* Order details */}
-      {bookingCode || flightNo || from || to ? (
+      {flightNo || from || to ? (
         <div className="bg-white rounded-2xl border border-vj-border-light p-4 sm:p-5 shadow-vj-sm space-y-2">
           <div className="flex items-center gap-2 text-xs font-bold text-vj-text-strong uppercase tracking-wider font-koho mb-1">
             <Icon name="TicketIcon" size={14} />
             Chi tiết đơn hàng
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-sm">
-            <div>
-              <span className="text-vj-gray block text-3xs uppercase tracking-wider">
-                Mã đặt chỗ
-              </span>
-              <span className="font-bold">{bookingCode || bookingId}</span>
-            </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-sm">
             {flightNo && (
               <div>
                 <span className="text-vj-gray block text-3xs uppercase tracking-wider">
@@ -154,39 +141,6 @@ export default function GatewayQrPage({
             hideSteps
             hideScanGuide
           />
-        </div>
-      </div>
-
-      {/* Transfer Note */}
-      <div className="bg-amber-50/80 rounded-2xl border border-amber-200/90 p-4 space-y-2 text-xs">
-        <div className="flex items-center justify-between">
-          <span className="font-bold text-amber-900 font-koho flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-amber-500 animate-ping inline-block" />
-            Nội dung chuyển khoản bắt buộc:
-          </span>
-          <button
-            type="button"
-            onClick={handleCopyNote}
-            className="text-2xs font-bold text-amber-800 bg-amber-200/60 hover:bg-amber-200 px-2.5 py-1 rounded transition-colors cursor-pointer"
-          >
-            {copiedNote ? '✓ Đã chép' : 'Sao chép nội dung'}
-          </button>
-        </div>
-        <div className="font-mono text-base font-extrabold text-amber-950 bg-white/80 px-3 py-2 rounded-vj border border-amber-200 tracking-wider text-center select-all">
-          {effectiveNote}
-        </div>
-        <p className="text-3xs text-amber-800 text-center">
-          * Vui lòng giữ nguyên nội dung trên để hệ thống tự động gạch nợ và xuất vé ngay lập tức.
-        </p>
-      </div>
-
-      {/* Amount summary */}
-      <div className="bg-white rounded-2xl border border-vj-border-light p-5 sm:p-6 shadow-vj-sm">
-        <div className="flex justify-between items-center mb-1">
-          <span className="text-sm font-bold text-vj-text-dim uppercase">Tổng thanh toán</span>
-          <span className="text-lg font-black text-primary">
-            {amount.toLocaleString('vi-VN')} ₫
-          </span>
         </div>
       </div>
 

@@ -365,7 +365,9 @@ export default function MyFlightsPage() {
                 `360px` tại `x=15` (padding ngang 15px của trang), cao `61px`,
                 bo góc `12px`, margin-bottom `16px`. */}
             <div className="mx-auto w-full max-w-[1200px] px-3.75 sm:px-0">
-              <div className="pt-2.5 sm:pt-4">
+              {/* Mobile: khung pill `pt-0` để mép trên của thẻ trắng bám sát
+                  băng đỏ header (feedback UI); desktop giữ `pt-4`. */}
+              <div className="pt-0 sm:pt-4">
                 {/* Dải pill "Dịch vụ tra cứu" — 2 pill 164×36 bo 18px
                     (ở mobile: 160×36, padding 0 10px, dải bo góc 12px). */}
                 <nav aria-label="Dịch vụ tra cứu" className="vj-pill-tabs">
@@ -400,7 +402,7 @@ export default function MyFlightsPage() {
                   <>
                     {/* Giao diện Mobile khớp 100% Ảnh mẫu tham chiếu */}
                     <div className="xl:hidden w-full max-w-[540px] mx-auto pt-2 pb-28 sm:pb-24">
-                      <p className="mb-4 w-full font-koho text-base font-medium leading-[24px] text-white [text-shadow:0_1px_4px_rgba(0,0,0,0.55)]">
+                      <p className="mb-4 w-full font-koho text-base font-normal leading-[24px] text-black">
                         Bạn muốn xem chuyến bay đã đặt, đổi lịch trình bay hay mua thêm dịch vụ hành
                         lý, chỗ ngồi, suất ăn..., vui lòng điền thông tin bên dưới:
                       </p>

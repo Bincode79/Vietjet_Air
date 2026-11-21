@@ -155,11 +155,7 @@ export default function ReservationCountdown({
                   <span className="text-2xs sm:text-xs font-black uppercase tracking-wider text-amber-200 whitespace-nowrap">
                     Thời gian giữ chỗ
                   </span>
-                  {bookingCode && (
-                    <span className="text-4xs sm:text-3xs font-bold px-1.5 py-0.5 rounded-full bg-white/20 text-white font-mono">
-                      {bookingCode}
-                    </span>
-                  )}
+
                 </div>
                 <p className="text-3xs sm:text-xs text-white/90 font-medium hidden sm:block mt-0.5">
                   {isUrgent

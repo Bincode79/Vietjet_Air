@@ -53,7 +53,13 @@ export default function BookingBottomBar({
 
   return (
     <div
-      className="fixed inset-x-0 bottom-0 z-30 border-t border-[var(--border)] bg-[var(--surface)] shadow-vj-up-xs"
+      // `z-40` để thanh này nằm TRÊN `MobileBottomNav` (z-30) — trong luồng
+      // đặt vé, thanh "Tổng tiền" là hành động chính, thanh điều hướng
+      // dưới không được chen giữa nó và ngón tay.
+      className="fixed inset-x-0 bottom-0 z-40 border-t border-[var(--border)] bg-[var(--surface)] shadow-vj-up-xs"
+      // Safe-area: trên iPhone có vạch home-indicator, thanh cố định phải
+      // chừa chỗ cho nó, nếu không CTA nằm sát mép dưới và bị hệ thống che.
+      style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
       data-testid={testId}
     >
       {/* Container 1200px — khớp số đo site thật (13/11/2026).
@@ -80,7 +86,9 @@ export default function BookingBottomBar({
 
         {/* Center: Total price — nhỏ hơn ở mobile để không chạm hai nút bên cạnh */}
         <div className="flex min-w-0 flex-col items-center leading-tight sm:absolute sm:left-1/2 sm:top-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2">
-          <span className="text-sm font-bold text-black font-koho sm:text-2xl3">Tổng tiền</span>
+          <span className="text-xs font-semibold uppercase tracking-wide text-vj-text-dim font-koho sm:text-sm">
+            Tổng tiền
+          </span>
           <span className="w-full truncate text-center text-base font-bold text-black font-jambono sm:text-xl4">
             {total.toLocaleString('vi-VN')} VND
           </span>

@@ -508,21 +508,22 @@ export default function PaymentClient() {
         className="min-h-screen bg-gradient-to-b from-vj-blue-tint-5 via-vj-blue-tint-4 to-vj-blue-tint-3 relative py-8 sm:py-12 px-4 sm:px-6"
       >
         {gatewaySuccess ? (
-          <div className="text-center py-10">
+          <div className="mx-auto max-w-md rounded-2xl border border-vj-border-light bg-white px-5 py-8 text-center font-koho shadow-vj-sm sm:p-10">
             <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-4">
               <Icon name="CheckCircleIcon" size={32} className="text-green-600" />
             </div>
             <h2 className="text-xl font-black text-vj-text font-koho">Thanh toán thành công</h2>
             <p className="mt-2 text-sm text-vj-gray">
-              Đơn hàng {bookingCodeLabel} đã được xác nhận. Vé điện tử sẽ được xuất ngay sau đây.
+              Đơn hàng <strong className="text-vj-text">{bookingCodeLabel}</strong> đã được xác
+              nhận.
             </p>
             <button
               type="button"
               onClick={() => setGatewayDownloaded(true)}
               disabled={gatewayDownloaded}
-              className="mt-6 px-6 py-2.5 rounded-vj bg-primary hover:bg-primary-dark text-white font-bold text-sm uppercase tracking-wide transition-all shadow-vj-md flex items-center justify-center gap-2 inline-flex"
+              className="mt-6 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-vj bg-primary px-6 py-2.5 text-sm font-bold text-white enabled:hover:bg-primary-dark disabled:bg-green-100 disabled:text-green-800 sm:w-auto"
             >
-              <Icon name="ArrowDownTrayIcon" size={16} />
+              <Icon name={gatewayDownloaded ? 'CheckCircleIcon' : 'ArrowDownTrayIcon'} size={16} />
               {gatewayDownloaded ? 'Đã tải vé điện tử' : 'Tải vé điện tử'}
             </button>
           </div>
@@ -877,16 +878,11 @@ export default function PaymentClient() {
           <button
             type="button"
             onClick={goToPaymentGateway}
-            className="h-11 sm:h-12 flex-1 sm:flex-initial min-w-[170px] sm:min-w-[240px] px-4 sm:px-8 rounded-full bg-gradient-vj-yellow hover:brightness-105 active:scale-98 shadow-md hover:shadow-lg transition-all cursor-pointer flex items-center justify-center gap-2 text-center"
+            className="min-h-9 sm:min-h-10 px-4 sm:px-6 py-0.5 rounded-full bg-gradient-vj-yellow hover:brightness-105 active:scale-98 shadow-md transition-all cursor-pointer flex items-center justify-center gap-2 text-center font-koho"
           >
-            <span className="font-koho font-extrabold text-xs sm:text-sm uppercase tracking-wide text-vj-text whitespace-nowrap">
+            <span className="font-bold text-xs sm:text-sm leading-tight text-vj-text">
               Tiếp tục thanh toán
             </span>
-            {total > 0 && (
-              <span className="font-koho font-extrabold text-2xs text-vj-red-dark bg-white/90 px-2 py-0.5 rounded-full shadow-2xs shrink-0 tracking-normal">
-                {total.toLocaleString('vi-VN')}₫
-              </span>
-            )}
           </button>
         </div>
       </div>

@@ -138,12 +138,12 @@ describe('Placeholder form khách lạ của chat — phải nhạt, không ph�
 });
 
 describe('Nút hành động — đo 14/11/2026', () => {
-  it('"Tìm kiếm" 127×39, bo góc 10px, chữ 14px/500', () => {
+  it('"Tìm kiếm" 127×39, bo góc 10px, chữ 14px/700', () => {
     expect(ruleValue('.vj-lookup-btn', 'width')).toBe('127px');
     expect(ruleValue('.vj-lookup-btn', 'height')).toBe('39px');
     expect(ruleValue('.vj-lookup-btn', 'border-radius')).toBe('10px');
     expect(ruleValue('.vj-lookup-btn', 'font-size')).toBe('14px');
-    expect(ruleValue('.vj-lookup-btn', 'font-weight')).toBe('500');
+    expect(ruleValue('.vj-lookup-btn', 'font-weight')).toBe('700');
   });
 
   it('"Đăng nhập" 137×48, bo góc 12px', () => {
@@ -161,12 +161,12 @@ describe('Nút hành động — đo 14/11/2026', () => {
 });
 
 describe('Pill tab "Dịch vụ tra cứu" — đo 14/11/2026', () => {
-  it('pill 164×36 bo góc 18px, chữ 14px/500', () => {
+  it('pill 164×36 bo góc 18px, chữ 14px/700', () => {
     expect(ruleValue('.vj-pill-tabs .vj-pill-tab', 'min-width')).toBe('164px');
     expect(ruleValue('.vj-pill-tab', 'height')).toBe('36px');
     expect(ruleValue('.vj-pill-tab', 'border-radius')).toBe('18px');
     expect(ruleValue('.vj-pill-tab', 'font-size')).toBe('14px');
-    expect(ruleValue('.vj-pill-tab', 'font-weight')).toBe('500');
+    expect(ruleValue('.vj-pill-tab', 'font-weight')).toBe('700');
     expect(ruleValue('.vj-pill-tab', 'padding')).toBe('0 12px');
   });
 

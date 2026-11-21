@@ -39,7 +39,7 @@ export default function InsuranceDrawer({
       />
 
       {/* Drawer content */}
-      <div className="relative w-full max-w-lg bg-white h-full shadow-2xl flex flex-col z-10 animate-slideInRight">
+      <div className="relative w-full max-w-lg bg-white h-[100dvh] shadow-2xl flex flex-col z-10 animate-slideInRight">
         {/* Header - Red bar matching Screenshot 1 */}
         <div className="bg-primary-dark text-white px-4 py-3 flex items-center justify-between shadow-vj-md">
           <h2 className="text-sm sm:text-base font-black uppercase tracking-wider">
@@ -171,7 +171,12 @@ export default function InsuranceDrawer({
         </div>
 
         {/* Footer Red Bar matching Screenshot 1 */}
-        <div className="bg-primary-dark text-white p-3 flex items-center justify-between shadow-vj-lg">
+        <div
+          className="bg-primary-dark text-white p-3 flex items-center justify-between shadow-vj-lg"
+          // Safe-area: chân drawer là chỗ ngón tay bấm Xác nhận — trên
+          // iPhone có home-indicator, padding dưới phải nhường chỗ cho nó.
+          style={{ paddingBottom: 'max(0.75rem, env(safe-area-inset-bottom, 0px))' }}
+        >
           <div className="flex items-center gap-2 max-w-[65%]">
             <div className="w-9 h-9 rounded-vj bg-white/20 flex items-center justify-center shrink-0">
               <RiShieldCheckLine size={20} className="text-white" />

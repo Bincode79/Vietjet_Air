@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import Image from 'next/image';
 import { getAirportCity } from '@/features/flights';
 import { resolveAircraft } from '@/features/flights/services';
 
@@ -391,21 +392,21 @@ export default function FlightSummaryCard({
     >
       {/* Header Card với thương hiệu Vietjet Air */}
       <div className="bg-gradient-to-r from-primary via-primary-dark to-primary-dark text-white px-4 sm:px-5 py-3 flex flex-wrap items-center justify-between gap-3 shadow-xs">
-        <div className="flex items-center gap-3">
-          <span className="text-2xl sm:text-3xl font-black italic tracking-tighter font-serif text-white">
-            vietjet<span className="text-accent">Air</span>.com
-          </span>
+        <div className="flex min-w-0 flex-col items-start gap-1 sm:flex-row sm:items-center sm:gap-3">
+          <Image
+            src="/images/brand/vietjet-logo-white.png"
+            alt="Vietjet Air"
+            width={223}
+            height={40}
+            className="h-auto w-28 max-w-full sm:w-36"
+          />
           <span className="hidden sm:inline-block w-px h-6 bg-white/25" />
-          <span className="text-xs sm:text-sm font-bold text-white/95 uppercase tracking-wider font-koho">
-            {title}
-          </span>
+          <span className="font-koho text-sm font-bold leading-tight sm:text-base">{title}</span>
         </div>
         {bookingCode && (
-          <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/15 backdrop-blur-xs border border-white/25 text-white shadow-2xs">
-            <span className="text-3xs uppercase tracking-wider text-white/80 font-bold">
-              Mã đặt chỗ:
-            </span>
-            <span className="font-mono font-black text-xs sm:text-sm text-accent tracking-wider">
+          <div className="rounded-vj border border-white/25 px-3 py-1 text-center">
+            <span className="block font-koho text-xs leading-tight text-white">Mã đặt chỗ</span>
+            <span className="block font-mono text-base font-bold tracking-wider text-white">
               {bookingCode}
             </span>
           </div>

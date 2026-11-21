@@ -236,7 +236,7 @@ export default function PassengerPicker({
         <div
           role="dialog"
           aria-label="Chọn số hành khách"
-          className="absolute left-0 top-full z-50 mt-1 w-full max-w-[calc(100vw-28px)] min-w-[280px] sm:min-w-[340px] rounded-vj border border-vj-border bg-white p-3.5 sm:p-4 shadow-vj-modal animate-fadeIn text-[var(--foreground)]"
+          className="fixed inset-x-0 bottom-0 z-50 w-full max-w-none rounded-t-vj border-t border-vj-border bg-white p-3.5 pb-[calc(14px+env(safe-area-inset-bottom,0px))] shadow-vj-modal animate-fadeIn text-[var(--foreground)] sm:absolute sm:inset-x-auto sm:bottom-auto sm:left-0 sm:top-full sm:mt-1 sm:w-full sm:max-w-[calc(100vw-28px)] sm:min-w-[340px] sm:rounded-vj sm:border sm:p-4 sm:pb-4"
         >
           {/* Top Row: Yêu cầu trợ giúp đặc biệt */}
           <div className="flex justify-end mb-3">
@@ -277,7 +277,7 @@ export default function PassengerPicker({
                       onClick={() => step(row.type, -1)}
                       disabled={value[row.type] <= row.min}
                       aria-label={`Giảm số ${row.title}`}
-                      className="grid h-8 w-8 place-items-center rounded-full border border-vj-border text-vj-text-soft hover:bg-vj-surface-cool disabled:opacity-30 disabled:cursor-not-allowed transition-all cursor-pointer"
+                      className="grid h-11 w-11 place-items-center rounded-full border border-vj-border text-vj-text-soft hover:bg-vj-surface-cool disabled:opacity-30 disabled:cursor-not-allowed transition-all cursor-pointer sm:h-8 sm:w-8"
                     >
                       <MdRemove className="text-sm" />
                     </button>
@@ -289,7 +289,7 @@ export default function PassengerPicker({
                       onClick={() => step(row.type, 1)}
                       disabled={value[row.type] >= maxFor(value, row.type)}
                       aria-label={`Tăng số ${row.title}`}
-                      className="grid h-8 w-8 place-items-center rounded-full border border-vj-border text-vj-text-strong hover:bg-vj-surface-cool disabled:opacity-30 disabled:cursor-not-allowed transition-all cursor-pointer"
+                      className="grid h-11 w-11 place-items-center rounded-full border border-vj-border text-vj-text-strong hover:bg-vj-surface-cool disabled:opacity-30 disabled:cursor-not-allowed transition-all cursor-pointer sm:h-8 sm:w-8"
                     >
                       <MdAdd className="text-sm" />
                     </button>

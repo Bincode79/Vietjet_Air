@@ -60,7 +60,7 @@ const fieldLabelClass = 'block text-base font-medium text-vj-currency-gray mb-1 
 
 /** Bề rộng/cao của radio và checkbox theo chuẩn form hiện đại Vietjet. */
 const RADIO_CLASS = 'w-[18px] h-[18px] cursor-pointer accent-primary shrink-0';
-const CHECKBOX_CLASS = 'w-[14px] h-[14px] rounded border-vj-line accent-primary shrink-0';
+const CHECKBOX_CLASS = 'w-[14px] h-[14px] rounded border-vj-line accent-lime-600 shrink-0';
 
 /**
  * Ô nhập kiểu Material-UI underline — cao 40px, gạch chân 1px `#D9D9D9`
@@ -74,18 +74,20 @@ function UnderlineField({
   label,
   filled = false,
   hasPrefix = false,
+  muted = false,
   children,
 }: {
   id: string;
   label: string;
   filled?: boolean;
   hasPrefix?: boolean;
+  muted?: boolean;
   children: React.ReactNode;
 }) {
   const isFilled = filled || hasPrefix;
   return (
     <div
-      className="vj-underline-field relative"
+      className={`vj-underline-field relative${muted ? ' vj-underline-field-muted' : ''}`}
       data-filled={isFilled ? 'true' : 'false'}
       data-has-prefix={hasPrefix ? 'true' : 'false'}
     >
@@ -508,6 +510,7 @@ export default function PassengerInfoStep({
                           id={`passenger-${i}-dob`}
                           name={`passenger-${i}-dob`}
                           type="date"
+                          className="font-medium font-koho"
                           value={p.dob}
                           onChange={(e) => updatePassenger(i, 'dob', e.target.value)}
                           required
@@ -516,10 +519,16 @@ export default function PassengerInfoStep({
                     </div>
                     {isAdult && (
                       <div>
-                        <UnderlineField id={`passenger-${i}-countryCode`} label="Quốc gia" filled>
+                        <UnderlineField
+                          id={`passenger-${i}-countryCode`}
+                          label="Quốc gia"
+                          filled
+                          muted
+                        >
                           <select
                             id={`passenger-${i}-countryCode`}
                             name={`passenger-${i}-countryCode`}
+                            className="font-medium font-koho"
                             value={p.countryCode}
                             onChange={(e) => updatePassenger(i, 'countryCode', e.target.value)}
                             required
@@ -544,8 +553,9 @@ export default function PassengerInfoStep({
                           label="Số điện thoại"
                           filled={!!p.phone}
                           hasPrefix
+                          muted
                         >
-                          <span className="flex items-center gap-1 pr-2 text-base font-medium text-vj-text select-none shrink-0">
+                          <span className="flex items-center gap-1 pr-2 text-base font-medium text-vj-gray select-none shrink-0">
                             {getCountryDialCode(p.countryCode)}{' '}
                             <span className="text-3xs text-vj-muted">▾</span>
                           </span>
@@ -553,6 +563,7 @@ export default function PassengerInfoStep({
                             id={`passenger-${i}-phone`}
                             name={`passenger-${i}-phone`}
                             type="tel"
+                            className="font-bold font-koho"
                             value={p.phone}
                             onChange={(event) =>
                               updatePassenger(
@@ -594,6 +605,7 @@ export default function PassengerInfoStep({
                             id={`passenger-${i}-email`}
                             name={`passenger-${i}-email`}
                             type="email"
+                            className="font-medium font-koho"
                             value={p.email}
                             onChange={(event) => updatePassenger(i, 'email', event.target.value)}
                             onBlur={() =>
@@ -632,7 +644,7 @@ export default function PassengerInfoStep({
                         name={`passenger-${i}-idNumber`}
                         type="text"
                         autoCapitalize="characters"
-                        className="uppercase font-medium"
+                        className="uppercase font-medium font-koho"
                         value={p.idNumber}
                         onChange={(e) =>
                           updatePassenger(i, 'idNumber', e.target.value.toUpperCase())
@@ -653,6 +665,7 @@ export default function PassengerInfoStep({
                         id={`passenger-${i}-residence`}
                         name={`passenger-${i}-residence`}
                         type="text"
+                        className="font-medium font-koho"
                         value={p.residence}
                         onChange={(event) => updatePassenger(i, 'residence', event.target.value)}
                       />
@@ -671,6 +684,7 @@ export default function PassengerInfoStep({
                           id={`passenger-${i}-skyJoyMemberId`}
                           name={`passenger-${i}-skyJoyMemberId`}
                           type="text"
+                          className="uppercase font-medium font-koho"
                           value={p.skyJoyMemberId}
                           onChange={(event) =>
                             updatePassenger(

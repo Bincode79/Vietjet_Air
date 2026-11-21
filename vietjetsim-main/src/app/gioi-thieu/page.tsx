@@ -18,7 +18,7 @@ export default function AboutPage() {
       {/* Main Content */}
       <main id="main-content" className="max-w-[1200px] mx-auto px-4 py-16 -mt-10 relative z-20">
         {/* About Card */}
-        <div className="bg-white rounded-vj shadow-vj-lg p-8 md:p-12 mb-12">
+        <div className="bg-white rounded-vj shadow-vj-lg p-4 sm:p-8 md:p-12 mb-12">
           <div className="grid md:grid-cols-2 gap-10 items-center">
             <div>
               <h2 className="text-2xl font-bold text-[var(--vj-navy)] mb-4 font-heading-800">
@@ -91,7 +91,7 @@ export default function AboutPage() {
         </div>
 
         {/* Team & Acknowledgments */}
-        <div className="bg-[var(--vj-navy)] rounded-vj p-8 md:p-12 text-white">
+        <div className="bg-[var(--vj-navy)] rounded-vj p-4 sm:p-8 md:p-12 text-white">
           <div className="text-center mb-10">
             <h2 className="text-2xl font-bold mb-3 font-heading-800">Đội ngũ phát triển</h2>
             <p className="text-white/70 max-w-xl mx-auto">

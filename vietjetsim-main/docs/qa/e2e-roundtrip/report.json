@@ -7,40 +7,18 @@
         "status": "OK"
       },
       {
-        "step": 2,
-        "name": 2,
-        "status": "OK"
-      },
-      {
-        "step": 3,
-        "name": 3,
-        "status": "OK"
-      },
-      {
-        "step": 4,
-        "name": 4,
-        "status": "OK"
-      },
-      {
-        "step": 5,
-        "name": 5,
-        "status": "OK"
-      },
-      {
-        "step": 6,
-        "name": 6,
-        "status": "OK"
-      },
-      {
-        "step": 7,
-        "name": 7,
-        "status": "OK"
+        "step": 99,
+        "name": 99,
+        "status": "FAILED",
+        "error": "Lỗi điều khiển trình duyệt: Waiting for selector `button[data-testid=\"select-fare\"]` failed"
       }
     ],
-    "errors": [],
-    "bookingId": "f265cbeb-f7f4-4c9b-9d81-8bd772d3383d",
+    "errors": [
+      "Lỗi điều khiển trình duyệt: Waiting for selector `button[data-testid=\"select-fare\"]` failed"
+    ],
+    "bookingId": null,
     "totalAmount": null,
-    "passed": true
+    "passed": false
   },
   "mobile": {
     "steps": [
@@ -50,44 +28,22 @@
         "status": "OK"
       },
       {
-        "step": 2,
-        "name": 2,
-        "status": "OK"
-      },
-      {
-        "step": 3,
-        "name": 3,
-        "status": "OK"
-      },
-      {
-        "step": 4,
-        "name": 4,
-        "status": "OK"
-      },
-      {
-        "step": 5,
-        "name": 5,
-        "status": "OK"
-      },
-      {
-        "step": 6,
-        "name": 6,
-        "status": "OK"
-      },
-      {
-        "step": 7,
-        "name": 7,
-        "status": "OK"
+        "step": 99,
+        "name": 99,
+        "status": "FAILED",
+        "error": "Lỗi điều khiển trình duyệt: Waiting for selector `button[data-testid=\"select-fare\"]` failed"
       }
     ],
-    "errors": [],
-    "bookingId": "c7db8c7d-8417-4633-b24b-79073dc8c4d4",
+    "errors": [
+      "Lỗi điều khiển trình duyệt: Waiting for selector `button[data-testid=\"select-fare\"]` failed"
+    ],
+    "bookingId": null,
     "totalAmount": null,
-    "passed": true
+    "passed": false
   },
   "overall": {
-    "passed": true,
-    "desktopBookingId": "f265cbeb-f7f4-4c9b-9d81-8bd772d3383d",
-    "mobileBookingId": "c7db8c7d-8417-4633-b24b-79073dc8c4d4"
+    "passed": false,
+    "desktopBookingId": null,
+    "mobileBookingId": null
   }
 }

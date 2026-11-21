@@ -1155,9 +1155,11 @@ export default function SeatSelectionStep({
 
       {/* Exit Row Safety Confirmation Modal */}
       {exitRowCandidate && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-          <div className="bg-white rounded-vj max-w-md w-full overflow-hidden shadow-2xl animate-fadeIn">
-            <div className="bg-vjred p-4 text-white flex items-center justify-between">
+        // MOBILE: sheet từ đáy, full-width, tự cuộn — hộp canh giữa `p-4`
+        // trên 375px chỉ còn 311px bề ngang và bị bàn phím che khi đang đọc.
+        <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 backdrop-blur-sm sm:items-center sm:p-4">
+          <div className="flex max-h-[90dvh] w-full max-w-md flex-col overflow-hidden rounded-t-vj bg-white shadow-2xl animate-fadeIn sm:rounded-vj">
+            <div className="shrink-0 bg-vjred p-4 text-white flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Icon name="ShieldCheckIcon" size={20} className="text-vjyellow" />
                 <h3 className="text-base font-black uppercase">
@@ -1174,7 +1176,7 @@ export default function SeatSelectionStep({
               </button>
             </div>
 
-            <div className="p-5 space-y-3 text-xs text-vjdark">
+            <div className="flex-1 overflow-y-auto p-5 space-y-3 text-xs text-vjdark">
               <p className="font-semibold text-vjdark">
                 Theo quy định an toàn của Cục Hàng không và Vietjet, hành khách ngồi tại hàng ghế
                 thoát hiểm cần đáp ứng các điều kiện sau:
@@ -1190,7 +1192,12 @@ export default function SeatSelectionStep({
               </ul>
             </div>
 
-            <div className="bg-vjbgs p-4 flex gap-2 justify-end border-t border-black/10">
+            <div
+              className="shrink-0 bg-vjbgs p-4 flex gap-2 justify-end border-t border-black/10"
+              // Safe-area: hai nút này nằm sát đáy sheet — trên iPhone có
+              // home-indicator, chừa chỗ cho nó.
+              style={{ paddingBottom: 'max(1rem, env(safe-area-inset-bottom, 0px))' }}
+            >
               <button
                 type="button"
                 onClick={() => setExitRowCandidate(null)}

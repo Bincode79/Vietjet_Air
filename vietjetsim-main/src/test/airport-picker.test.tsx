@@ -12,6 +12,8 @@ interface Geometry {
   innerHeight: number;
   /** Distance from the top of the window to the bottom of the field. */
   fieldBottom: number;
+  /** Distance from the top of the window to the top of the field. */
+  fieldTop?: number;
   /** Rendered height of the list, as a real browser would report it. */
   listHeight?: number;
 }
@@ -34,9 +36,10 @@ function openList(geometry: Geometry) {
   return document.querySelector('[role="listbox"] ul') as HTMLUListElement;
 }
 
-function setGeometry({ innerHeight, fieldBottom, listHeight = 300 }: Geometry) {
+function setGeometry({ innerHeight, fieldBottom, fieldTop = 0, listHeight = 300 }: Geometry) {
   vi.spyOn(window, 'innerHeight', 'get').mockReturnValue(innerHeight);
   vi.spyOn(Element.prototype, 'getBoundingClientRect').mockReturnValue({
+    top: fieldTop,
     bottom: fieldBottom,
   } as DOMRect);
   // The panel wraps the list, so it is taller by the search row and the count
@@ -305,5 +308,25 @@ describe('AirportPicker', () => {
     expect(button.className).not.toContain('rounded');
     expect(button.className).not.toContain('border-vj-border');
     expect(container.firstElementChild).toHaveClass('sm:col-span-2');
+  });
+
+  it('drops the airport list above the field when there is no room below', () => {
+    // window 600px tall, field sits at bottom 420px → only 164px under, chrome
+    // 70 + gap 16 leaves 78px < 96px floor. Field top is 380px, so there is
+    // 304px above → panel opens above with a capped height.
+    const _list = openList({ innerHeight: 600, fieldBottom: 420, fieldTop: 380, listHeight: 300 });
+    const panel = document.querySelector<HTMLElement>('[role="listbox"]')!;
+    const top = Number.parseFloat(panel.style.top);
+    // top = 380 - maxAbove(304) - chrome(70) - 4 = 2px, above the field.
+    expect(top).toBeGreaterThanOrEqual(0);
+    expect(top).toBeLessThan(280);
+    expect(capOf(_list)).toBe(294);
+  });
+
+  it('stays below the field when there is enough room under', () => {
+    const _list = openList({ innerHeight: 1200, fieldBottom: 300, fieldTop: 200, listHeight: 300 });
+    const panel = document.querySelector<HTMLElement>('[role="listbox"]')!;
+    const top = Number.parseFloat(panel.style.top);
+    expect(top).toBe(304); // rect.bottom + 4
   });
 });

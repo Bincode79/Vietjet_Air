@@ -1,6 +1,14 @@
 'use client';
 import React from 'react';
 import { Icon } from '@/shared/components/ui';
+import {
+  VisaLogo,
+  MastercardLogo,
+  JcbLogo,
+  AmexLogo,
+  NapasLogo,
+  VietQrLogo,
+} from '@/features/payments/components/PaymentMethodLogos';
 import type {
   PaymentMethodConfig,
   PaymentCategory,
@@ -146,48 +154,18 @@ export function SecurityFooter({ hideOnMovi = true, isMovi = false }: SecurityFo
 
   return (
     <>
-      {/* Security logos */}
+      {/* Security logos — brand logos real (không phải placeholder) */}
       <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 py-3 text-center">
         <span className="text-3xs font-bold text-vj-gray uppercase tracking-wider w-full sm:w-auto">
           Được bảo vệ bởi
         </span>
         <div className="flex items-center gap-2 sm:gap-3">
-          <img
-            src="/images/payment/visa-secure.png"
-            alt="Visa Secure"
-            height={20}
-            className="opacity-70 hover:opacity-100 transition-opacity"
-          />
-          <img
-            src="/images/payment/mastercard-secure.png"
-            alt="Mastercard SecureCode"
-            height={20}
-            className="opacity-70 hover:opacity-100 transition-opacity"
-          />
-          <img
-            src="/images/payment/jcb-secure.png"
-            alt="JCB J/Secure"
-            height={20}
-            className="opacity-70 hover:opacity-100 transition-opacity"
-          />
-          <img
-            src="/images/payment/amex-safekey.png"
-            alt="Amex SafeKey"
-            height={20}
-            className="opacity-70 hover:opacity-100 transition-opacity"
-          />
-          <img
-            src="/images/payment/3d-secure.png"
-            alt="3D Secure"
-            height={20}
-            className="opacity-70 hover:opacity-100 transition-opacity"
-          />
-          <img
-            src="/images/payment/pci-dss.png"
-            alt="PCI DSS"
-            height={20}
-            className="opacity-70 hover:opacity-100 transition-opacity"
-          />
+          <VisaLogo className="h-4 w-auto" />
+          <MastercardLogo className="h-4 w-auto" />
+          <JcbLogo className="h-4 w-auto" />
+          <AmexLogo className="h-4 w-auto" />
+          <NapasLogo className="h-3.5 w-auto" />
+          <VietQrLogo className="h-4 w-auto" />
         </div>
       </div>
 

@@ -1,0 +1,340 @@
+[
+  {
+    "viewport": "375",
+    "label": "before",
+    "url": "/tim-ve?from=SGN&to=HAN&depart=2026-11-23&pax=1",
+    "status": 200,
+    "metrics": {
+      "vw": 375,
+      "docScrollWidth": 375,
+      "overflowX": 0,
+      "cardCount": 18,
+      "card": {
+        "x": 15,
+        "y": 372,
+        "w": 345,
+        "h": 102,
+        "bottom": 474
+      },
+      "leftCol": {
+        "x": 16,
+        "y": 373,
+        "w": 105,
+        "h": 100,
+        "bottom": 473
+      },
+      "fareGrid": {
+        "x": 121,
+        "y": 373,
+        "w": 238,
+        "h": 100,
+        "bottom": 473
+      },
+      "fareGridScrollWidth": 238,
+      "fareGridClientWidth": 238,
+      "fareCells": [
+        {
+          "x": 123,
+          "y": 375,
+          "w": 57,
+          "h": 96,
+          "bottom": 471
+        },
+        {
+          "x": 182,
+          "y": 375,
+          "w": 57,
+          "h": 96,
+          "bottom": 471
+        },
+        {
+          "x": 241,
+          "y": 375,
+          "w": 57,
+          "h": 96,
+          "bottom": 471
+        },
+        {
+          "x": 300,
+          "y": 375,
+          "w": 57,
+          "h": 96,
+          "bottom": 471
+        }
+      ],
+      "lastFareRight": 357,
+      "fixedCtaWrap": {
+        "x": 0,
+        "y": 602,
+        "w": 375,
+        "h": 40,
+        "bottom": 642
+      },
+      "fixedCta": {
+        "x": 109,
+        "y": 602,
+        "w": 157,
+        "h": 40,
+        "bottom": 642
+      },
+      "launcher": {
+        "x": 316,
+        "y": 519,
+        "w": 47,
+        "h": 52,
+        "bottom": 571
+      },
+      "dateStrip": {
+        "x": 15,
+        "w": 345,
+        "right": 360,
+        "scrollWidth": 371,
+        "clientWidth": 345,
+        "children": [
+          {
+            "tag": "BUTTON",
+            "x": -10,
+            "w": 32,
+            "right": 22,
+            "clippedLeft": true,
+            "clippedRight": false
+          },
+          {
+            "tag": "DIV",
+            "x": 30,
+            "w": 316,
+            "right": 346,
+            "clippedLeft": false,
+            "clippedRight": false
+          },
+          {
+            "tag": "BUTTON",
+            "x": 354,
+            "w": 32,
+            "right": 386,
+            "clippedLeft": false,
+            "clippedRight": true
+          }
+        ]
+      },
+      "footer": {
+        "x": 0,
+        "y": 2640,
+        "w": 375,
+        "h": 2538,
+        "bottom": 5178
+      },
+      "wideEls": []
+    },
+    "bottom": {
+      "scrollY": 4573,
+      "lastCard": {
+        "top": -2195,
+        "bottom": -2093,
+        "h": 102
+      },
+      "fixedCta": {
+        "top": 602,
+        "bottom": 642,
+        "h": 40
+      },
+      "footer": {
+        "top": -1933,
+        "bottom": 605,
+        "h": 2538
+      },
+      "ctaOverlapsLastCard": false,
+      "ctaOverlapsFooter": true
+    },
+    "badge": {
+      "before": {
+        "leftW": 104,
+        "rowScrollW": 45,
+        "rowClientW": 45
+      },
+      "after": {
+        "leftW": 104,
+        "rowScrollW": 111,
+        "rowClientW": 111,
+        "badgeRight": 123,
+        "leftRight": 121
+      },
+      "overflows": false
+    },
+    "longPrice": {
+      "cellW": 57,
+      "numW": 39,
+      "overflow": false
+    },
+    "consoleErrors": []
+  },
+  {
+    "viewport": "390",
+    "label": "before",
+    "url": "/tim-ve?from=SGN&to=HAN&depart=2026-11-23&pax=1",
+    "status": 200,
+    "metrics": {
+      "vw": 390,
+      "docScrollWidth": 390,
+      "overflowX": 0,
+      "cardCount": 18,
+      "card": {
+        "x": 15,
+        "y": 372,
+        "w": 360,
+        "h": 102,
+        "bottom": 474
+      },
+      "leftCol": {
+        "x": 16,
+        "y": 373,
+        "w": 105,
+        "h": 100,
+        "bottom": 473
+      },
+      "fareGrid": {
+        "x": 121,
+        "y": 373,
+        "w": 253,
+        "h": 100,
+        "bottom": 473
+      },
+      "fareGridScrollWidth": 253,
+      "fareGridClientWidth": 253,
+      "fareCells": [
+        {
+          "x": 123,
+          "y": 375,
+          "w": 61,
+          "h": 96,
+          "bottom": 471
+        },
+        {
+          "x": 186,
+          "y": 375,
+          "w": 61,
+          "h": 96,
+          "bottom": 471
+        },
+        {
+          "x": 249,
+          "y": 375,
+          "w": 61,
+          "h": 96,
+          "bottom": 471
+        },
+        {
+          "x": 311,
+          "y": 375,
+          "w": 61,
+          "h": 96,
+          "bottom": 471
+        }
+      ],
+      "lastFareRight": 372,
+      "fixedCtaWrap": {
+        "x": 0,
+        "y": 779,
+        "w": 390,
+        "h": 40,
+        "bottom": 819
+      },
+      "fixedCta": {
+        "x": 117,
+        "y": 779,
+        "w": 157,
+        "h": 40,
+        "bottom": 819
+      },
+      "launcher": {
+        "x": 331,
+        "y": 696,
+        "w": 47,
+        "h": 52,
+        "bottom": 748
+      },
+      "dateStrip": {
+        "x": 15,
+        "w": 360,
+        "right": 375,
+        "scrollWidth": 378,
+        "clientWidth": 360,
+        "children": [
+          {
+            "tag": "BUTTON",
+            "x": -3,
+            "w": 32,
+            "right": 29,
+            "clippedLeft": true,
+            "clippedRight": false
+          },
+          {
+            "tag": "DIV",
+            "x": 37,
+            "w": 316,
+            "right": 353,
+            "clippedLeft": false,
+            "clippedRight": false
+          },
+          {
+            "tag": "BUTTON",
+            "x": 361,
+            "w": 32,
+            "right": 393,
+            "clippedLeft": false,
+            "clippedRight": true
+          }
+        ]
+      },
+      "footer": {
+        "x": 0,
+        "y": 2640,
+        "w": 390,
+        "h": 2516,
+        "bottom": 5156
+      },
+      "wideEls": []
+    },
+    "bottom": {
+      "scrollY": 4374,
+      "lastCard": {
+        "top": -1996,
+        "bottom": -1894,
+        "h": 102
+      },
+      "fixedCta": {
+        "top": 779,
+        "bottom": 819,
+        "h": 40
+      },
+      "footer": {
+        "top": -1734,
+        "bottom": 782,
+        "h": 2516
+      },
+      "ctaOverlapsLastCard": false,
+      "ctaOverlapsFooter": true
+    },
+    "badge": {
+      "before": {
+        "leftW": 104,
+        "rowScrollW": 45,
+        "rowClientW": 45
+      },
+      "after": {
+        "leftW": 104,
+        "rowScrollW": 111,
+        "rowClientW": 111,
+        "badgeRight": 123,
+        "leftRight": 121
+      },
+      "overflows": false
+    },
+    "longPrice": {
+      "cellW": 61,
+      "numW": 39,
+      "overflow": false
+    },
+    "consoleErrors": []
+  }
+]

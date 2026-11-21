@@ -132,7 +132,9 @@ describe('Cổng thanh toán (/thanh-toan/gateway/[method])', () => {
         amount: 1250000,
       });
     });
-    expect(nav.push).toHaveBeenCalledWith('/thanh-toan/thanh-cong?bookingId=bk-1');
+    expect(nav.push).toHaveBeenCalledWith(
+      '/thanh-toan/thanh-cong?bookingId=bk-1&bookingCode=AB12CD'
+    );
   });
 
   it('giữ nguyên trang và hiện lỗi khi API thanh toán thất bại', async () => {
@@ -157,7 +159,9 @@ describe('Cổng thanh toán (/thanh-toan/gateway/[method])', () => {
     fireEvent.click(await screen.findByRole('button', { name: 'Xác nhận thanh toán thử' }));
 
     await waitFor(() => {
-      expect(nav.push).toHaveBeenCalledWith('/thanh-toan/thanh-cong?bookingId=bk-1');
+      expect(nav.push).toHaveBeenCalledWith(
+        '/thanh-toan/thanh-cong?bookingId=bk-1&bookingCode=AB12CD'
+      );
     });
   });
 });

@@ -332,9 +332,8 @@ export default function VietQrBox({
             )}
 
             {/* Dòng hướng dẫn thanh toán */}
-            <p className="mt-3 text-center text-xs sm:text-sm font-bold text-vj-text-strong leading-snug px-2 font-koho">
-              Quý khách vui lòng thanh toán theo đúng số tiền và nội dung trên. Sau khi thanh toán,
-              hệ thống sẽ tự động đối soát và xuất vé ngay lập tức.
+            <p className="mt-2.5 text-center text-xs text-vj-gray leading-relaxed px-2 font-koho">
+              Thanh toán đúng số tiền và nội dung — hệ thống tự đối soát và xuất vé ngay.
             </p>
           </div>
         </div>
@@ -353,7 +352,7 @@ export default function VietQrBox({
             </div>
 
             {/* Thông tin thanh toán chi tiết (STK Admin, Tên, Số tiền, Nội dung) */}
-            <div className="w-full mt-5 space-y-2.5 bg-slate-50 p-4 rounded-vj border border-vj-border-light/90 shadow-2xs">
+            <div className="w-full mt-5 space-y-2 bg-slate-50 p-4 rounded-vj border border-vj-border-light/90 shadow-2xs">
               <div className="flex items-center justify-between pb-2 border-b border-vj-border-light">
                 <span className="text-xs font-black uppercase tracking-wider text-black font-koho flex items-center gap-1.5">
                   <Icon name="InformationCircleIcon" size={16} />
@@ -362,53 +361,54 @@ export default function VietQrBox({
               </div>
 
               {/* Hàng 1: Số tài khoản thụ hưởng của Admin */}
-              <div className="flex items-center justify-between gap-3 rounded-vj border border-blue-100 bg-white p-3 sm:p-4 shadow-2xs">
+              <div className="flex items-center justify-between gap-3 rounded-vj bg-white p-3 sm:p-4">
                 <div className="flex min-w-0 items-center gap-3">
                   <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-vj border border-blue-100 bg-blue-50 text-vj-bank-blue">
                     <Icon name="BuildingLibraryIcon" size={20} />
                   </span>
                   <div className="min-w-0">
-                    <span className="block text-3xs sm:text-2xs font-bold uppercase tracking-wider text-vj-gray font-koho">
+                    <span className="block text-3xs sm:text-2xs font-bold uppercase tracking-wider text-black font-koho">
                       Số tài khoản{' '}
                     </span>
-                    <span className="block font-mono font-black tracking-tight text-vj-text text-base sm:text-lg">
+                    <span className="block font-mono font-black tracking-tight text-black text-base sm:text-lg">
                       {data?.bank?.accountNumber ?? '—'}
                     </span>
-                    <span className="block truncate text-3xs font-medium text-vj-gray">
-                      {data?.bank?.name ?? '—'} • {data?.bank?.accountHolder ?? '—'}
+                    <span className="block text-3xs font-medium text-black">
+                      Chủ Tài Khoản : {data?.bank?.accountHolder ?? '—'}
+                    </span>
+                    <span className="block text-3xs font-medium text-black">
+                      Ngân Hàng Thụ Hưởng : {data?.bank?.name ?? '—'}
                     </span>
                   </div>
                 </div>
               </div>
 
               {/* Hàng 2: Số tiền thanh toán */}
-              <div className="flex items-center justify-between gap-3 rounded-vj border border-vj-border-light bg-white p-3 sm:p-4 shadow-2xs">
+              <div className="flex items-center justify-between gap-3 rounded-vj bg-white p-3 sm:p-4">
                 <div className="min-w-0">
-                  <span className="block text-3xs sm:text-2xs font-bold uppercase tracking-wider text-vj-gray font-koho">
+                  <span className="block text-3xs sm:text-2xs font-bold uppercase tracking-wider text-black font-koho">
                     Số tiền{' '}
                   </span>
-                  <span className="block font-koho font-black text-vj-red-dark text-base sm:text-lg">
+                  <span className="block font-koho font-black text-black text-base sm:text-lg">
                     {(data?.amount ?? 0).toLocaleString('vi-VN')}₫
                   </span>
                 </div>
               </div>
 
-              {/* Hàng 3: Nội dung chuyển khoản (bắt buộc) */}
-              <div className="rounded-vj border-2 border-red-200 bg-red-50/20 bg-white p-3 sm:p-4 shadow-2xs">
+              {/* Hàng 3: Nội Dung : */}
+              <div className="rounded-vj bg-white p-3 sm:p-4">
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
-                    <span className="block text-3xs sm:text-2xs font-black uppercase tracking-wider text-vj-red-dark font-koho flex items-center gap-1">
-                      <span>Nội dung chuyển khoản (bắt buộc)</span>
+                    <span className="block text-3xs sm:text-2xs font-black uppercase tracking-wider text-black font-koho flex items-center gap-1">
+                      <span>Nội Dung :</span>
                     </span>
-                    <span className="block font-bold font-sans text-vj-text text-base sm:text-lg tracking-wider break-all select-all">
+                    <span className="block font-bold font-sans text-black text-base sm:text-lg tracking-wider break-all select-all">
                       {displayAddInfo}
                     </span>
                   </div>
                 </div>
-                <p className="text-3xs text-vj-gray mt-1 italic">
-                  * Mã QR chuẩn bảo mật NAPAS 247 tự động nhận diện STK và tên thụ hưởng. Quý khách
-                  vui lòng nhập đúng Số tiền và Nội dung chuyển khoản để hệ thống tự động xuất vé
-                  ngay lập tức.
+                <p className="text-3xs text-black mt-1 italic">
+                  * Nhập đúng số tiền và nội dung để hệ thống tự xuất vé.
                 </p>
               </div>
             </div>

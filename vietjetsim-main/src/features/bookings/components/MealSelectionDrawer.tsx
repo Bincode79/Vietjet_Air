@@ -76,7 +76,7 @@ export default function MealSelectionDrawer({
       />
 
       {/* Drawer content */}
-      <div className="relative w-full max-w-lg bg-white h-full shadow-2xl flex flex-col z-10 animate-slideInRight">
+      <div className="relative w-full max-w-lg bg-white h-[100dvh] shadow-2xl flex flex-col z-10 animate-slideInRight">
         {/* Header with Vietjet curve top-right (Screenshot 11) */}
         <div className="relative bg-primary-dark text-white px-4 py-3 flex items-center justify-between shadow-vj-md overflow-hidden">
           <div className="w-8 shrink-0" />
@@ -86,7 +86,7 @@ export default function MealSelectionDrawer({
           <div className="relative z-10">
             <button
               onClick={onClose}
-              className="text-vj-text bg-white/90 hover:bg-white p-1 rounded-full transition-colors flex items-center justify-center h-7 w-7 cursor-pointer"
+              className="text-vj-text bg-white/90 hover:bg-white p-1 rounded-full transition-colors flex items-center justify-center h-11 w-11 sm:h-7 sm:w-7 cursor-pointer"
               aria-label="Đóng"
             >
               <RiCloseLine size={20} />
@@ -247,7 +247,12 @@ export default function MealSelectionDrawer({
         </div>
 
         {/* Footer Red Bar matching Screenshot 11 */}
-        <div className="bg-primary-dark text-white p-3 flex items-center justify-between shadow-vj-lg">
+        <div
+          className="bg-primary-dark text-white p-3 flex items-center justify-between shadow-vj-lg"
+          // Safe-area: chân drawer là chỗ ngón tay bấm Xác nhận — trên
+          // iPhone có home-indicator, padding dưới phải nhường chỗ cho nó.
+          style={{ paddingBottom: 'max(0.75rem, env(safe-area-inset-bottom, 0px))' }}
+        >
           <div className="flex items-center gap-2.5">
             <div className="w-9 h-9 rounded-vj bg-accent flex items-center justify-center shrink-0 shadow-xs p-1">
               <HotMealIcon size={24} />

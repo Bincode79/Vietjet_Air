@@ -61,6 +61,10 @@ const HIDDEN_ON = [
   '/quen-mat-khau',
   '/tim-ve',
   '/thanh-toan',
+  // Luồng đặt vé có thanh "Tổng tiền" cố định của riêng nó
+  // (`BookingBottomBar`). Hai thanh cùng `bottom-0` sẽ chồng lên nhau và
+  // thanh điều hướng sẽ bị che (và che ngược lại CTA bước đặt vé).
+  '/dat-ve',
 ];
 
 /**

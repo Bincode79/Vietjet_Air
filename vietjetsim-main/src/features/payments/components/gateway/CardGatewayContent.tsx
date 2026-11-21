@@ -120,7 +120,7 @@ export default function CardGatewayContent({
               placeholder="4111 2222 3333 4444"
               value={cardNumber}
               onChange={(e) => handleCardNumberChange(e.target.value)}
-              className="w-full px-3.5 py-2.5 rounded-vj border border-vj-line font-mono text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-hidden"
+              className="w-full px-3.5 py-2.5 rounded-vj border border-vj-line font-mono text-base sm:text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-hidden"
             />
           </div>
 
@@ -135,7 +135,7 @@ export default function CardGatewayContent({
               placeholder="NGUYEN VAN A"
               value={cardHolder}
               onChange={(e) => setCardHolder(e.target.value.toUpperCase())}
-              className="w-full px-3.5 py-2.5 rounded-vj border border-vj-line font-sans uppercase text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-hidden"
+              className="w-full px-3.5 py-2.5 rounded-vj border border-vj-line font-sans uppercase text-base sm:text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-hidden"
             />
           </div>
 
@@ -151,7 +151,7 @@ export default function CardGatewayContent({
                 placeholder="12/28"
                 value={expiry}
                 onChange={(e) => handleExpiryChange(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-vj border border-vj-line font-mono text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-hidden"
+                className="w-full px-3.5 py-2.5 rounded-vj border border-vj-line font-mono text-base sm:text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-hidden"
               />
             </div>
             <div>
@@ -166,7 +166,7 @@ export default function CardGatewayContent({
                 placeholder="•••"
                 value={cvv}
                 onChange={(e) => setCvv(e.target.value.replace(/\D/g, ''))}
-                className="w-full px-3.5 py-2.5 rounded-vj border border-vj-line font-mono text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-hidden"
+                className="w-full px-3.5 py-2.5 rounded-vj border border-vj-line font-mono text-base sm:text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-hidden"
               />
             </div>
           </div>

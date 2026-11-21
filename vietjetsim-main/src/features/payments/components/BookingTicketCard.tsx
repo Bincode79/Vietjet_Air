@@ -135,7 +135,7 @@ export default function BookingTicketCard({
             </span>
           </div>
           <div className="flex items-center gap-1 sm:gap-1.5 font-bold font-koho text-xs sm:text-sm shrink-0">
-            <span className="text-vj-blue">{outboundTotal.toLocaleString('vi-VN')} VND</span>
+            <span className="text-vj-red-dark">{outboundTotal.toLocaleString('vi-VN')} VND</span>
             <span className="text-3xs text-vj-muted">{showFlightInfo ? '▲' : '▼'}</span>
           </div>
         </div>
@@ -312,7 +312,7 @@ export default function BookingTicketCard({
                       {idx + 1}. {p.name || 'Hành khách'} ({p.type || 'Người lớn'})
                     </span>
                   </div>
-                  <span className="text-3xs px-2.5 py-1 rounded bg-amber-100 text-amber-900 font-bold font-mono">
+                  <span className="text-3xs px-2.5 py-1 rounded bg-vj-surface-2 text-vj-text-strong font-semibold">
                     Ghế: {flightNo}-{p.seat || 'Chưa chọn'}
                   </span>
                 </div>
@@ -400,7 +400,7 @@ export default function BookingTicketCard({
                     type="button"
                     onClick={onApplyPromo}
                     disabled={promoApplied || !promoCode || isApplyingPromo}
-                    className="h-[42px] sm:h-[38px] px-3.5 bg-accent text-[var(--foreground)] font-bold rounded-vj text-xs hover:bg-accent-dark transition-colors disabled:opacity-50 min-w-[80px] flex items-center justify-center shrink-0 cursor-pointer active:scale-98"
+                    className="h-[44px] sm:h-[42px] px-4 sm:px-5 bg-vj-yellow text-vj-navy font-koho font-black uppercase text-sm tracking-wide hover:bg-vj-yellow-dark transition-all disabled:opacity-50 min-w-[100px] flex items-center justify-center shrink-0 cursor-pointer active:scale-98 shadow-lg shadow-amber-200/40 border-2 border-amber-300 ring-2 ring-amber-200/50"
                   >
                     {isApplyingPromo ? (
                       <div className="w-4 h-4 border-2 border-[rgb(var(--foreground-rgb))]/20 border-t-[var(--foreground)] rounded-full animate-spin" />

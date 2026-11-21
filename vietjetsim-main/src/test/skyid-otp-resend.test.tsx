@@ -1,6 +1,8 @@
+import React, { useState } from 'react';
 import { render, screen, fireEvent, act, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import RegisterPage from '@/app/dang-ky/page';
+import PopupFrame from '@/features/auth/components/PopupFrame';
+import SkyIdAuthFlow from '@/features/auth/components/skyid/SkyIdAuthFlow';
 
 /**
  * Kiểm thử nút "Gửi lại mã" (`.gid-resend-otp`) của bước OTP theo SkyID thật:
@@ -49,9 +51,25 @@ afterEach(() => {
   vi.useRealTimers();
 });
 
+/**
+ * `/dang-ky` từ 21/11/2026 render `SkyIdRealAuthPage` (đăng ký không qua bước
+ * OTP), còn luồng OTP + nút gửi lại mã vẫn sống trong `SkyIdAuthFlow` — nên
+ * test render flow đó trực tiếp, đúng cách `skyid-auth-ui.test.tsx` làm.
+ */
+function RegisterFlow() {
+  const [mode, setMode] = useState<'login' | 'register'>('register');
+  return (
+    <main id="main-content">
+      <PopupFrame title="Đăng ký SkyJoy">
+        <SkyIdAuthFlow variant="popup" mode={mode} onModeChange={setMode} />
+      </PopupFrame>
+    </main>
+  );
+}
+
 /** Điền đủ form đăng ký rồi bấm nút gửi mã để sang bước OTP. */
 async function goToOtpStep() {
-  render(<RegisterPage />);
+  render(<RegisterFlow />);
 
   fireEvent.change(screen.getByPlaceholderText('Nhập số điện thoại của bạn'), {
     target: { value: '0912345678' },
@@ -61,7 +79,9 @@ async function goToOtpStep() {
   fireEvent.change(screen.getByLabelText('Họ'), { target: { value: 'Nguyễn' } });
   fireEvent.change(screen.getByLabelText('Tên đệm và tên'), { target: { value: 'Văn A' } });
   fireEvent.change(screen.getByLabelText('Email'), { target: { value: 'a@b.com' } });
-  fireEvent.change(screen.getByLabelText(/Mã giới thiệu/), { target: { value: 'VJ689' } });
+  fireEvent.change(screen.getByLabelText('Mã giới thiệu (bắt buộc)'), {
+    target: { value: 'VJ689' },
+  });
   fireEvent.click(screen.getByRole('checkbox'));
   fireEvent.click(screen.getByRole('button', { name: 'Đăng ký' }));
 

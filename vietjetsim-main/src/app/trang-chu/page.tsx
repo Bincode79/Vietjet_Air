@@ -16,8 +16,8 @@ export default function Homepage() {
     // điều kiện để skip link ở `src/app/layout.tsx` có tác dụng — trỏ vào
     // `#main-content` phải nhảy *qua* thanh điều hướng, không phải tới nó.
     //
-    // Cấu trúc trang chủ bám theo vietjetair.com (đo 13/11/2026): Hero + dải
-    // đặt vé → dải thẻ dịch vụ 4 thẻ → Swift 247 → Ưu đãi giá tốt mỗi ngày →
+    // Cấu trúc trang chủ bám theo vietjetair.com (đo 13/11/2026): Hero → dải
+    // dịch vụ nhỏ (4 thẻ hàng ngang) → Swift 247 → Ưu đãi giá tốt mỗi ngày →
     // Điểm đến → Mua sắm trực tuyến.
     //
     // `HomepageSections` là lớp áp dụng bố cục: khi trình soạn thảo trực quan

@@ -23,26 +23,35 @@ import { FlightDatePickerPopover, formatDisplayDate, toInputDate } from './DateP
  *     135deg.
  *   - Chữ tab: JambonoMedium 14px/500, KHÔNG uppercase, canh giữa.
  */
+/**
+ * Bề rộng tab trên MOBILE là PHẦN TRĂM, không phải pixel.
+ *
+ * Ba tab cộng lại đúng bằng bề rộng viewport ở 390px (207 + 105 + 78 = 390),
+ * nên ở 375px chúng tràn ra 15px và dải tab phải cuộn ngang — nhãn tab đầu
+ * ("Mua hành lý, suất ăn chọn chỗ ngồi và hơn thế nữa...") bị cắt và người
+ * dùng không biết còn tab nào phía bên phải. Dùng tỉ lệ 53/27/20 giữ đúng
+ * tỉ lệ đo được của site thật ở 390px (207/105/78) và tự co lại ở 375px.
+ */
 const TABS = [
   {
     id: 'flight',
     label: 'Mua hành lý, suất ăn chọn chỗ ngồi và hơn thế nữa...',
     href: '/dich-vu#hanh-ly',
-    width: 'w-[207px] lg:w-[201px]',
+    width: 'w-[53%] lg:w-[201px]',
     variant: 'red',
   },
   {
     id: 'rewards',
     label: 'Đổi thưởng & Mua Skypoint',
     href: '/dich-vu#skypoint',
-    width: 'w-[105px] lg:w-[103px]',
+    width: 'w-[27%] lg:w-[103px]',
     variant: 'gold',
   },
   {
     id: 'cargo',
     label: 'Gửi hàng nhanh',
     href: '/dich-vu#hang-hoa',
-    width: 'w-[78px] lg:w-[76px]',
+    width: 'w-[20%] lg:w-[76px]',
     variant: 'red',
   },
 ] as const;
@@ -93,6 +102,7 @@ export default function HeroBookingWidget() {
   const [pax, setPax] = useState<PaxCounts>({ adult: 1, child: 0, infant: 0 });
   const [searchError, setSearchError] = useState<string | null>(null);
   const [openCalendar, setOpenCalendar] = useState<'depart' | 'return' | null>(null);
+  const [dateAnchorTop, setDateAnchorTop] = useState(0);
 
   useEffect(() => {
     let active = true;
@@ -200,7 +210,9 @@ export default function HeroBookingWidget() {
                 className={`vj-booking-tab ${tab.width} ${active ? 'vj-booking-tab--active' : ''}`}
                 title={tab.label}
               >
-                <span className="vj-booking-tab__label">{tab.label}</span>
+                <span className="vj-booking-tab__label">
+                  <span className="truncate">{tab.label}</span>
+                </span>
               </Link>
             );
           })}
@@ -263,7 +275,7 @@ export default function HeroBookingWidget() {
                 hộp trắng. Trước đây vỏ lại cộng một lần nữa nên chữ lệch
                 sang x=+96, lệch hẳn nhãn "Hành khách"/"Mã khuyến mại" (+48)
                 và tràn 7px vào cột ngày. */}
-            <div className={fieldBoxClass}>
+            <div className={fieldBoxClass} data-vj-field-box>
               <div className="relative flex min-w-0 flex-1 items-center pr-2">
                 <AirportPicker
                   label="Điểm khởi hành"
@@ -280,6 +292,9 @@ export default function HeroBookingWidget() {
               </div>
               <button
                 type="button"
+                ref={(el) => {
+                  if (el) setDateAnchorTop(el.getBoundingClientRect().top);
+                }}
                 onClick={() => setOpenCalendar((prev) => (prev === 'depart' ? null : 'depart'))}
                 aria-label="Ngày đi"
                 aria-expanded={openCalendar === 'depart'}
@@ -292,7 +307,7 @@ export default function HeroBookingWidget() {
             </div>
 
             {/* Ô 2: Điểm đến + Ngày về — cùng cách căn lề như Ô 1. */}
-            <div className={`mt-2.75 ${fieldBoxClass}`}>
+            <div className={`mt-2.75 ${fieldBoxClass}`} data-vj-field-box>
               <div className="relative flex min-w-0 flex-1 items-center pr-2">
                 <AirportPicker
                   label="Điểm đến"
@@ -310,6 +325,9 @@ export default function HeroBookingWidget() {
               {roundTrip && (
                 <button
                   type="button"
+                  ref={(el) => {
+                    if (el) setDateAnchorTop(el.getBoundingClientRect().top);
+                  }}
                   onClick={() => setOpenCalendar((prev) => (prev === 'return' ? null : 'return'))}
                   aria-label="Ngày về"
                   aria-expanded={openCalendar === 'return'}
@@ -423,6 +441,7 @@ export default function HeroBookingWidget() {
               onTripTypeChange={(isRound) => handleTripTypeChange(isRound ? 'round' : 'one')}
               onClose={() => setOpenCalendar(null)}
               minDate={toInputDate(new Date())}
+              anchorTop={dateAnchorTop}
             />
           )}
         </div>

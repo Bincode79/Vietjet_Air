@@ -1184,11 +1184,6 @@ export default function FlightResultsStep({
                         edge. Let the badge wrap to a second line; from `sm` the
                         column is wide enough for one line. */}
                     <div className="flex flex-wrap items-center justify-center gap-1 sm:flex-nowrap">
-                      <img
-                        src="/images/brand/vietjet-air-circle.jpg"
-                        alt="VJ"
-                        className="w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-full object-cover shrink-0 shadow-2xs border border-white/60"
-                      />
                       <span className="text-3xs sm:text-2xs font-bold text-vj-text tracking-wider uppercase leading-tight">
                         {flight.flightNo}
                       </span>

@@ -13,8 +13,8 @@ export default function GlobalError({
   return (
     <html lang="vi">
       <body>
-        <div className="min-h-screen bg-gradient-to-br from-[var(--vj-navy)] via-vj-navy-mid to-[rgb(var(--primary-rgb))]/20 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full p-8 text-center space-y-6 animate-fade-in">
+        <div className="min-h-screen bg-gradient-to-br from-[var(--vj-navy)] via-vj-navy-mid to-[rgb(var(--primary-rgb))]/20 flex items-center justify-center p-3 sm:p-4">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full p-5 sm:p-8 text-center space-y-4 sm:space-y-6 animate-fade-in">
             {/* Error Icon */}
             <div className="flex justify-center">
               <div className="bg-red-50 rounded-full p-6">

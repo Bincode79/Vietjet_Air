@@ -615,8 +615,8 @@ h6 {
     border-radius: 10px;
     text-transform: none;
     font-family: var(--vj-font-body, 'KoHo');
-    font-size: 16px;
-    font-weight: 500;
+    font-size: 18px;
+    font-weight: 700;
     padding: 0 15px;
   }
 
@@ -626,8 +626,8 @@ h6 {
     align-items: center;
     gap: 10px;
     font-family: var(--vj-font-cta);
-    font-size: 16px;
-    font-weight: 500;
+    font-size: 18px;
+    font-weight: 700;
     text-transform: none;
   }
 
@@ -699,13 +699,12 @@ h6 {
   padding-right: 20px;
 }
 
-/* Dải dịch vụ nhỏ (SkyJoy / Swift 247 / E-Sim / E-Visa): 338×136, bo góc
-   20px, nền rgba(161,117,117,0.07), padding 20px. */
+/* Dải dịch vụ nhỏ (SkyJoy / Swift 247 / E-Sim / E-Visa): ~160×88 px mobile, ~178×96 px desktop, bo góc 12px, nền rgba(161,117,117,0.07), padding 12px. */
 .vj-service-card {
   background-color: rgb(var(--vj-service-tint-rgb) / 0.07);
-  border-radius: 20px;
-  padding: 20px;
-  min-height: 136px;
+  border-radius: 12px;
+  padding: 12px;
+  min-height: 96px;
 }
 
 /* Nhóm pill chọn hành trình: nền #F3F1F1, bo tròn 999px, item active trắng
@@ -1891,6 +1890,44 @@ h6 {
   color: #111827;
 }
 
+/* Biến thể chữ nhạt — dùng cho nhóm Ngày sinh/Quốc gia và ô Số điện thoại
+ * theo yêu cầu thiết kế: giá trị nhập, select và cả nhãn đều dùng tông xám
+ * nhạt thay vì `--foreground` / `#111827`. */
+.vj-underline-field.vj-underline-field-muted input,
+.vj-underline-field.vj-underline-field-muted select {
+  color: var(--vj-field-placeholder);
+}
+
+.vj-underline-field[data-has-prefix='true'] input[type='tel'] {
+  font-weight: 700;
+}
+
+/* Ô ngày đã có giá trị: phần text của `::-webkit-datetime-edit` kế thừa màu
+ * input — tô nhạt theo biến thể muted. Ô ngày RỖNG thì không đụng vào: rule
+ * `data-filled='false'` phía trên vẫn giữ nó `transparent` để không đè lên
+ * nhãn nổi giữa ô. */
+.vj-underline-field.vj-underline-field-muted[data-filled='true']
+  input[type='date']::-webkit-datetime-edit {
+  color: var(--vj-field-placeholder);
+}
+
+.vj-underline-field.vj-underline-field-muted .vj-underline-label {
+  color: var(--vj-field-placeholder);
+}
+
+.vj-underline-field.vj-underline-field-muted:focus-within .vj-underline-label,
+.vj-underline-field.vj-underline-field-muted[data-filled='true'] .vj-underline-label,
+.vj-underline-field.vj-underline-field-muted[data-has-prefix='true'] .vj-underline-label,
+.vj-underline-field.vj-underline-field-muted:has(.select-none) .vj-underline-label {
+  color: var(--vj-field-placeholder);
+}
+
+/* Ô ngày rỗng khi đang focus: Chrome vẫn hiện "mm/dd/yyyy" — giữ tông nhạt. */
+.vj-underline-field.vj-underline-field-muted[data-filled='false']:focus-within
+  input[type='date']::-webkit-datetime-edit {
+  color: var(--vj-field-placeholder);
+}
+
 /* Dải tab trắng 50px của trang tra cứu (site thật: 16px/700 uppercase). */
 .vj-subtabs {
   display: flex;
@@ -1951,7 +1988,7 @@ h6 {
   );
   font-size: 14px;
   line-height: 24.5px;
-  font-weight: 500;
+  font-weight: 700;
   color: var(--foreground);
   cursor: pointer;
   transition: opacity 160ms ease;
@@ -2019,7 +2056,7 @@ h6 {
   background-color: #ffffff;
   font-family: 'KoHo', ui-sans-serif, system-ui, sans-serif;
   font-size: 16px;
-  font-weight: 500;
+  font-weight: 700;
   color: var(--vj-skyjoy-id);
   cursor: pointer;
   transition:
@@ -2046,10 +2083,10 @@ h6 {
   font-family: 'KoHo', ui-sans-serif, system-ui, sans-serif;
   font-size: 14px;
   line-height: 20px;
-  font-weight: 500;
+  font-weight: 600;
   /* Mobile/tablet nằm trên ảnh nền tối, không dùng nền trắng như desktop. */
   color: #ffffff;
-  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.45);
   text-align: center;
 }
 
@@ -2351,12 +2388,14 @@ h6 {
   box-shadow:
     inset 0 0 0 1px var(--vj-skyid-border),
     0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: box-shadow 160ms ease;
 }
 
 .vj-skyid-phone:focus-within {
   box-shadow:
     inset 0 0 0 1px var(--vj-skyid-border-focus),
-    0 2px 8px rgba(0, 0, 0, 0.08);
+    0 2px 8px rgba(0, 0, 0, 0.08),
+    0 0 0 3px rgba(255, 219, 1, 0.28);
 }
 
 /* Nút mở danh sách mã quốc gia — nằm trong ô nhập nhưng cho phép dropdown
@@ -3467,7 +3506,7 @@ h6 {
   font-size: 16px;
   line-height: 21.28px;
   font-weight: 700;
-  color: #000000;
+  color: var(--vj-text-gray);
 }
 
 .vj-lookup-field .vj-lookup-input:focus {
@@ -3556,12 +3595,16 @@ h6 {
 }
 
 /* Ở MOBILE site thật thu nhỏ cả chữ trong ô lẫn nhãn xuống 1pt:
-   input `14px/500`, nhãn `14px/600` (đo 14/11/2026, 390×844). */
+   input `14px/500`, nhãn `14px/600` (đo 14/11/2026, 390×844).
+   NHƯNG input 14px làm iOS Safari TỰ PHÓNG TO cả trang khi bấm vào ô
+   (Safari phóng khi font-size < 16px) — người dùng phải zoom thủ công để
+   gõ lại, và nội dung trượt khỏi màn hình. Ô nhập giữ 16px ở mobile;
+   nhãn (chữ không focus được) vẫn 14px như site thật. */
 @media (max-width: 639px) {
   .vj-lookup-field .vj-lookup-input {
-    height: 30px;
-    font-size: 14px;
-    line-height: 18.62px;
+    height: 34px;
+    font-size: 16px;
+    line-height: 20px;
   }
 
   .vj-lookup-field .vj-lookup-label {
@@ -3734,8 +3777,8 @@ h6 {
   font-family: 'KoHo', ui-sans-serif, system-ui, sans-serif;
   font-size: 14px;
   line-height: 20px;
-  font-weight: 500;
-  color: var(--vj-text-gray);
+  font-weight: 700;
+  color: var(--vj-ink);
   transition:
     background-color 160ms ease,
     color 160ms ease;
@@ -3743,13 +3786,13 @@ h6 {
 
 .vj-pill-tab:hover {
   background-color: rgba(255, 221, 50, 0.35);
-  color: var(--vj-tab-ink);
+  color: var(--vj-ink);
 }
 
 .vj-pill-tab[aria-selected='true'],
 .vj-pill-tab[data-active='true'] {
   background-color: var(--vj-yellow-tab);
-  color: var(--vj-tab-ink);
+  color: var(--vj-ink);
 }
 
 /* Dải chứa các pill tab — bo góc 16px, nền trắng, padding 16px (đo 14/11/2026:

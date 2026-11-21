@@ -208,6 +208,11 @@ export default function SeatSelectionDrawer({
 
   const handleConfirm = () => {
     onConfirmSeats(outboundSeats, totalSeatFee, inboundSeats);
+    // Round-trip: after confirming outbound seats, jump to inbound leg
+    if (isRoundTrip && activeLeg === 'outbound' && inboundSeats.length === 0) {
+      setActiveLeg('inbound');
+      return;
+    }
     onClose();
   };
 
@@ -226,25 +231,31 @@ export default function SeatSelectionDrawer({
   const hasSelection = outboundSeats.length > 0 || inboundSeats.length > 0;
 
   return (
-    <div className="fixed inset-0 z-50 overflow-hidden flex justify-end">
+    <div className="fixed inset-0 z-[70] overflow-hidden flex justify-end">
       {/* Backdrop */}
       <div
         className="fixed inset-0 bg-black/50 transition-opacity animate-fadeIn"
         onClick={onClose}
       />
 
-      {/* Drawer content */}
-      <div className="relative w-full max-w-full sm:max-w-lg bg-white h-full shadow-2xl flex flex-col z-10 animate-slideInRight">
+      {/* Drawer content — `h-[100dvh]` thay cho `h-full`.
+       *
+       * `h-full` bám theo LAYOUT viewport (`fixed inset-0`), nên khi bàn phím
+       * mở trên iOS, layout viewport không đổi và drawer vẫn cao cũ — chân
+       * drawer (nơi có nút "Xác nhận chọn ghế") bị bàn phím che. `dvh` bám
+       * theo VISUAL viewport: bàn phím mở thì drawer co lại, chân drawer
+       * luôn nằm ngay trên bàn phím. */}
+      <div className="relative w-full max-w-full sm:max-w-lg bg-white h-[100dvh] shadow-2xl flex flex-col z-10 animate-slideInRight">
         {/* Header with Vietjet curve top-right (Screenshot 9) */}
         <div className="relative bg-primary-dark text-white px-4 py-3 flex items-center justify-between shadow-vj-md overflow-hidden">
           <div className="w-8 shrink-0" />
-          <h2 className="font-jambono font-medium text-base2 text-white text-center">
+          <h2 className="relative z-10 font-jambono font-medium text-base2 text-white text-center">
             CHỌN CHỖ NGỒI YÊU THÍCH
           </h2>
           <div className="relative z-10">
             <button
               onClick={onClose}
-              className="text-vj-text bg-white/90 hover:bg-white p-1 rounded-full transition-colors flex items-center justify-center h-7 w-7"
+              className="text-vj-text bg-white/90 hover:bg-white p-1 rounded-full transition-colors flex items-center justify-center h-11 w-11 sm:h-7 sm:w-7"
               aria-label="Đóng"
             >
               <RiCloseLine size={20} />
@@ -392,15 +403,15 @@ export default function SeatSelectionDrawer({
             <div className="flex items-center justify-between text-sm font-medium text-vj-currency-gray mb-2 px-1">
               <div className="flex gap-2">
                 {COLS_LEFT.map((col) => (
-                  <span key={col} className="w-7 text-center">
+                  <span key={col} className="w-8 text-center">
                     {col}
                   </span>
                 ))}
               </div>
-              <span className="w-6 text-center text-vj-muted">|</span>
+              <span className="w-7 text-center text-vj-muted">|</span>
               <div className="flex gap-2">
                 {COLS_RIGHT.map((col) => (
-                  <span key={col} className="w-7 text-center">
+                  <span key={col} className="w-8 text-center">
                     {col}
                   </span>
                 ))}
@@ -451,7 +462,7 @@ export default function SeatSelectionDrawer({
                               key={seatId}
                               disabled={isOccupied || isLocked || isLocking}
                               onClick={() => handleToggleSeat(seatId)}
-                              className={`w-6 h-6 sm:w-7 sm:h-7 rounded text-3xs sm:text-2xs font-medium flex items-center justify-center transition-all ${bgColor}`}
+                              className={`w-8 h-8 sm:w-9 sm:h-9 rounded text-3xs sm:text-2xs font-medium flex items-center justify-center transition-all ${bgColor}`}
                               title={`Ghế ${seatId} - ${getSeatCharge(seatId).toLocaleString('vi-VN')}₫${
                                 isLocked ? ' (Đang giữ bởi người khác)' : ''
                               }`}
@@ -501,7 +512,7 @@ export default function SeatSelectionDrawer({
                               key={seatId}
                               disabled={isOccupied || isLocked || isLocking}
                               onClick={() => handleToggleSeat(seatId)}
-                              className={`w-6 h-6 sm:w-7 sm:h-7 rounded text-3xs sm:text-2xs font-medium flex items-center justify-center transition-all ${bgColor}`}
+                              className={`w-8 h-8 sm:w-9 sm:h-9 rounded text-3xs sm:text-2xs font-medium flex items-center justify-center transition-all ${bgColor}`}
                               title={`Ghế ${seatId} - ${getSeatCharge(seatId).toLocaleString('vi-VN')}₫${
                                 isLocked ? ' (Đang giữ bởi người khác)' : ''
                               }`}
@@ -522,10 +533,17 @@ export default function SeatSelectionDrawer({
         {/* Sticky Drawer Footer — "Tổng tiền" 20px/600 trắng, giá 22px/700
             JambonoMedium trắng (đo 13/11/2026). Danh sách ghế đã chọn là dòng
             phụ 13px/500 nên không cạnh tranh với nhãn tổng. */}
-        <div className="bg-primary-dark text-white p-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 shadow-vj-lg">
-          <div>
-            <span className="text-base sm:text-2xl3 font-semibold text-white block">Tổng tiền</span>
-            <span className="text-sm2 font-medium text-white/85 block mt-0.5">
+        <div
+          className="bg-primary-dark text-white px-3 py-2.5 flex items-center justify-between gap-3 shadow-vj-lg sm:p-3"
+          // Safe-area: chân drawer là chỗ ngón tay bấm Xác nhận — trên
+          // iPhone có home-indicator, padding dưới phải nhường chỗ cho nó.
+          style={{ paddingBottom: 'max(0.625rem, env(safe-area-inset-bottom, 0px))' }}
+        >
+          <div className="min-w-0 flex-1 text-left">
+            <span className="text-sm sm:text-base font-semibold text-white block leading-tight">
+              Tổng tiền
+            </span>
+            <span className="text-xs sm:text-sm2 font-medium text-white/85 block mt-0.5 truncate">
               {[
                 outboundSeats.length > 0 ? `Đi: ${outboundSeats.join(', ')}` : null,
                 inboundSeats.length > 0 ? `Về: ${inboundSeats.join(', ')}` : null,
@@ -533,17 +551,17 @@ export default function SeatSelectionDrawer({
                 .filter(Boolean)
                 .join(' | ') || 'Chưa chọn chỗ ngồi'}
             </span>
-            <span className="text-lg sm:text-xl4 font-bold font-jambono text-white">
+            <span className="text-base sm:text-lg font-bold font-jambono text-white leading-tight">
               {totalSeatFee > 0 ? `${totalSeatFee.toLocaleString('vi-VN')} VND` : '0 VND'}
             </span>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex shrink-0 items-center gap-2">
             {outboundSeats.length === 0 && inboundSeats.length === 0 ? (
               <button
                 type="button"
                 onClick={handleSkip}
-                className="bg-vjgold hover:bg-yellow-400 text-black text-xs font-bold px-4 py-2 rounded shadow transition-colors"
+                className="bg-vjgold hover:bg-yellow-400 text-black text-xs font-bold px-3 py-2 rounded shadow transition-colors whitespace-nowrap sm:px-4"
               >
                 Không, cảm ơn
               </button>
@@ -551,7 +569,7 @@ export default function SeatSelectionDrawer({
               <button
                 type="button"
                 onClick={handleConfirm}
-                className="bg-vjgold hover:bg-yellow-400 text-black text-xs font-black px-5 py-2.5 rounded shadow transition-colors"
+                className="bg-vjgold hover:bg-yellow-400 text-black text-2xs sm:text-xs font-black px-3 py-1.5 sm:px-5 sm:py-2.5 rounded shadow transition-colors"
               >
                 Xác nhận chọn ghế
               </button>

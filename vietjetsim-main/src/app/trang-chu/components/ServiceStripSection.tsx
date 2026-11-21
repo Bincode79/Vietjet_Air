@@ -3,12 +3,10 @@
 import Link from 'next/link';
 import { AppImage } from '@/shared/components/ui';
 
-/**
- * Dải thẻ dịch vụ nhỏ ngay dưới dải đặt vé.
- * Site thật (đo 13/11/2026): 4 thẻ 338×136, bo góc 20px, nền
- * rgba(161,117,117,0.07), padding 20px — icon ở trên, tiêu đề 16px/700,
- * mô tả 14px.
- */
+/** 4 thẻ dịch vụ nhỏ, số đo site thật (đo 13/11/2026): ~178×96 px desktop,
+ * ~160×88 px mobile, bo góc 12px, nền rgba(161,117,117,0.07), padding 12px —
+ * icon trên, tiêu đề 14px/700, mô tả 12px. Luôn một hàng ngang (overflow-x-auto
+ * trên mobile), thay vì rơi xuống nhiều hàng. */
 const SERVICE_CARDS = [
   {
     title: 'SkyJoy',
@@ -38,30 +36,26 @@ const SERVICE_CARDS = [
 
 export default function ServiceStripSection() {
   return (
-    <section className="bg-white pt-12 pb-12 sm:pt-16 sm:pb-16">
+    <section className="bg-white pt-8 pb-8 sm:pt-12 sm:pb-12 lg:pt-16 lg:pb-16">
       <div className="vj-section-wide">
-        {/* Bốn thẻ dịch vụ phải nằm trên MỘT hàng ngang — trước đây
-            `sm:grid-cols-2` làm chúng rơi xuống 2 hàng ở tablet (đo 840px),
-            đọc như 4 mục rời rạc thay vì một dải thẻ. `md` (768px) là mốc
-            đủ chỗ cho 4 cột; dưới đó vẫn xếp dọc 1 cột trên mobile. */}
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-4 lg:gap-5">
+        <div className="mt-4 flex gap-2 overflow-x-auto pb-1 sm:mt-5">
           {SERVICE_CARDS.map((card) => (
             <Link
               key={card.title}
               href={card.href}
-              className="vj-service-card flex flex-col transition-transform duration-200 hover:-translate-y-1"
+              className="vj-service-card flex w-[160px] min-w-[160px] max-w-[160px] shrink-0 flex-col overflow-hidden break-words transition-transform duration-200 hover:-translate-y-1 sm:w-[178px] sm:min-w-[178px] sm:max-w-[178px]"
             >
               <AppImage
                 src={card.icon}
                 alt=""
-                className="h-12 w-12 shrink-0 object-contain"
-                width={48}
-                height={48}
+                className="h-8 w-8 shrink-0 object-contain mb-1"
+                width={32}
+                height={32}
               />
-              <span className="mt-3 block text-base font-bold text-[var(--vj-ink)]">
+              <span className="mt-1 block text-sm font-bold text-[var(--vj-ink)]">
                 {card.title}
               </span>
-              <span className="mt-1 block text-sm leading-5 text-[var(--vj-muted)]">
+              <span className="mt-0.5 block text-xs leading-4 text-[var(--vj-muted)]">
                 {card.description}
               </span>
             </Link>

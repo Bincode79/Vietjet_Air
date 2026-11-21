@@ -1,0 +1,70 @@
+===========================================
+Vietjet Air - Deployment Package
+===========================================
+
+Build Date: 2026-11-21 20:13:12 +07
+Package Version: 20261121-201312
+Node.js Version Required: 18.17+ or 20.x
+Production Port: 4028
+
+===========================================
+CONTENTS
+===========================================
+
+.next/               - Next.js production build
+public/              - Static assets
+scripts/             - Standalone server script
+vps-scripts/         - VPS management scripts
+  ├── backup.sh      - Backup configuration
+  ├── update.sh      - Update deployment
+  ├── health-check.sh - System health check
+  └── README.md      - Scripts documentation
+logs/                - Log directory (empty)
+ecosystem.config.js  - PM2 configuration
+.env                 - Environment variables (TEMPLATE - MUST CONFIGURE)
+package.json         - Package metadata
+DEPLOY_VPS_GUIDE.md  - Complete deployment guide
+
+===========================================
+QUICK START
+===========================================
+
+1. Extract on VPS:
+   tar -xzf vietjet-*.tar.gz -C /opt/vietjet
+
+2. Configure environment:
+   cd /opt/vietjet
+   nano .env
+   # Set: DATABASE_URL, JWT_SECRET, JWT_REFRESH_SECRET, CAPTCHA_SECRET
+
+3. Start with PM2:
+   pm2 start ecosystem.config.js
+   pm2 save
+   pm2 startup
+
+4. Setup Nginx (see DEPLOY_VPS_GUIDE.md)
+
+5. Install SSL:
+   sudo certbot --nginx -d vietjet.shop
+
+===========================================
+MANAGEMENT COMMANDS
+===========================================
+
+Health Check:    ./vps-scripts/health-check.sh
+Backup:          ./vps-scripts/backup.sh
+Update:          ./vps-scripts/update.sh <new-archive.tar.gz>
+View Logs:       pm2 logs vietjet-air
+Monitor:         pm2 monit
+Restart:         pm2 restart vietjet-air
+
+===========================================
+SUPPORT
+===========================================
+
+Documentation: DEPLOY_VPS_GUIDE.md
+Logs: logs/pm2-*.log
+PM2 Status: pm2 status
+Node.js: node --version (must be 18.17+ or 20.x)
+
+===========================================

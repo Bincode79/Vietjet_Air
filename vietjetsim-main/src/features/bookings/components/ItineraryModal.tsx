@@ -140,14 +140,18 @@ export default function ItineraryModal({ isOpen, onClose, booking }: ItineraryMo
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-xs overflow-y-auto"
+      // MOBILE: modal trượt lên từ đáy, chiếm toàn bộ bề ngang và cao tối đa
+      // 92% viewport. Trước đây nó là hộp `max-w-3xl` canh giữa trong
+      // `p-3` — trên 375px nội dung bị bóp còn ~24px mỗi bên, bảng chuyến
+      // bay phải cuộn ngang và nút "Tải xuống PDF" chạm mép màn hình.
+      className="fixed inset-0 z-50 flex items-end justify-center overflow-y-auto bg-black/60 backdrop-blur-xs sm:items-center sm:p-4"
       role="dialog"
       aria-modal="true"
       aria-label="Thông tin hành trình của bạn"
     >
-      <div className="relative w-full max-w-3xl my-6 bg-white rounded-vj shadow-2xl border border-vj-border-light overflow-hidden animate-fadeIn">
+      <div className="relative flex max-h-[92dvh] w-full max-w-3xl flex-col overflow-hidden rounded-t-vj bg-white shadow-2xl border border-vj-border-light animate-fadeIn print:max-h-none print:overflow-visible sm:my-6 sm:max-h-[88dvh] sm:rounded-vj">
         {/* Thanh tiêu đề Modal màu đỏ */}
-        <div className="bg-primary text-white px-4 py-2.5 sm:py-3 flex items-center justify-between">
+        <div className="shrink-0 bg-primary text-white px-4 py-2.5 sm:py-3 flex items-center justify-between">
           <h3 className="font-bold text-sm sm:text-base tracking-wide flex items-center gap-2">
             <span>Thông tin hành trình của bạn</span>
           </h3>
@@ -162,21 +166,43 @@ export default function ItineraryModal({ isOpen, onClose, booking }: ItineraryMo
         </div>
 
         {/* Nội dung tài liệu hành trình */}
-        <div ref={printContentRef} className="p-4 sm:p-6 space-y-4 text-vj-text bg-white">
+        <div
+          ref={printContentRef}
+          className="flex-1 overflow-y-auto overscroll-contain p-4 sm:p-6 pb-[calc(24px+env(safe-area-inset-bottom,0px))] sm:pb-6 space-y-4 font-koho text-vj-text bg-white print:overflow-visible"
+        >
           {/* Header tài liệu: Logo Vietjet bên trái + Hotline 1900 1886 bên phải */}
-          <div className="flex items-center justify-between pb-3 border-b border-vj-border-light">
-            <div className="flex items-center gap-1.5">
-              <span className="text-xl sm:text-2xl font-black text-primary tracking-tight font-serif italic">
-                vietjet<span className="text-accent">Air</span>.com
+          <div className="flex items-center justify-between pb-3 sm:pb-4 border-b border-vj-border-light gap-3">
+            <div className="flex items-center gap-2">
+              <img
+                src="/images/vj-logo.svg"
+                alt="Vietjet Air"
+                width={160}
+                height={28}
+                className="h-7 sm:h-8 w-auto object-contain"
+              />
+              <span className="sr-only">Vietjet Air</span>
+            </div>
+            <a
+              href="tel:19001886"
+              aria-label="Hotline 1900 1886"
+              className="inline-flex items-center gap-1.5 bg-accent hover:bg-accent-dark text-vj-dark font-black px-3 sm:px-3.5 py-1 sm:py-1.5 rounded-full text-xs sm:text-sm tracking-wide shadow-2xs hover:shadow-xs active:scale-95 transition-all shrink-0 cursor-pointer print:shadow-none print:border print:border-vj-border-light"
+            >
+              <svg
+                aria-hidden="true"
+                className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-vj-dark fill-current shrink-0"
+                viewBox="0 0 24 24"
+              >
+                <path d="M6.62 10.79a15.053 15.053 0 006.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z" />
+              </svg>
+              <span className="hidden xs:inline sm:inline text-3xs uppercase font-bold tracking-wider text-vj-dark/80 mr-0.5">
+                Hotline
               </span>
-            </div>
-            <div className="bg-accent text-vj-dark font-black px-3.5 py-1 rounded-full text-xs sm:text-sm tracking-wide shadow-2xs">
-              1900 1886
-            </div>
+              <span className="tabular-nums">1900 1886</span>
+            </a>
           </div>
 
           {/* Dải băng đỏ: THÔNG TIN HÀNH TRÌNH CỦA BẠN */}
-          <div className="bg-primary text-white font-black text-center py-2 text-sm sm:text-base uppercase tracking-wider rounded-xs">
+          <div className="text-primary-dark font-bold text-center py-2 text-base sm:text-xl">
             THÔNG TIN HÀNH TRÌNH CỦA BẠN
           </div>
 
@@ -187,14 +213,14 @@ export default function ItineraryModal({ isOpen, onClose, booking }: ItineraryMo
             </div>
             <div className="border border-vj-border-light border-t-0 p-3 sm:p-4 grid grid-cols-1 md:grid-cols-[1fr_200px] gap-4 items-center">
               {/* Cột trái */}
-              <div className="space-y-1.5 text-xs">
+              <div className="space-y-2 text-sm leading-snug">
                 <div className="grid grid-cols-[130px_1fr] items-start">
                   <span className="text-vj-text-strong font-medium">Họ và tên:</span>
                   <span className="font-bold text-vj-text">{primaryName}</span>
                 </div>
                 <div className="grid grid-cols-[130px_1fr] items-start">
                   <span className="text-vj-text-strong font-medium">Email:</span>
-                  <span className="font-mono text-vj-text-strong">{maskedEmail}</span>
+                  <span className="break-all text-vj-text">{maskedEmail}</span>
                 </div>
                 <div className="grid grid-cols-[130px_1fr] items-start">
                   <span className="text-vj-text-strong font-medium">Ngày đặt chỗ:</span>
