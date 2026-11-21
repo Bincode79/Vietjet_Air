@@ -5,6 +5,9 @@ import { Icon } from '@/shared/components/ui';
 import { ToastContainer } from '@/shared/components/feedback';
 import { useToast } from '@/hooks/useToast';
 import { apiRequest, getApiErrorMessage } from '@/shared/services';
+import AvatarUpload from './AvatarUpload';
+import ProfileHistory from './ProfileHistory';
+import SkyJoyLink from './SkyJoyLink';
 
 /** Get display info for a role (label + badge color) */
 function getRoleDisplay(role: string): { label: string; bg: string } {
@@ -86,6 +89,7 @@ export default function ProfileTab({ user }: { user: User }) {
   const toast = useToast();
   const [showPasswordForm, setShowPasswordForm] = useState(false);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(user.avatarUrl || null);
+  const [skyjoyId, setSkyjoyId] = useState<string | null>(null);
 
   const [profile, setProfile] = useState<ProfileForm>({
     fullName: user.fullName || '',
@@ -117,16 +121,20 @@ export default function ProfileTab({ user }: { user: User }) {
 
     void (async () => {
       try {
-        const data = await apiRequest<ProfileApiResponse>('/api/nguoi-dung/profile');
+        const [profileData, skyjoyData] = await Promise.all([
+          apiRequest<ProfileApiResponse>('/api/nguoi-dung/profile'),
+          apiRequest<{ skyjoyMemberId: string | null; isLinked: boolean }>('/api/nguoi-dung/profile/skyjoy').catch(() => ({ skyjoyMemberId: null })),
+        ]);
         if (cancelled) return;
         setProfile({
-          fullName: data.profile.fullName || '',
-          email: data.profile.email || '',
-          phone: data.profile.phone || '',
-          dob: toDateInputValue(data.profile.dob),
-          gender: data.profile.gender || '',
-          address: data.profile.address || '',
+          fullName: profileData.profile.fullName || '',
+          email: profileData.profile.email || '',
+          phone: profileData.profile.phone || '',
+          dob: toDateInputValue(profileData.profile.dob),
+          gender: profileData.profile.gender || '',
+          address: profileData.profile.address || '',
         });
+        setSkyjoyId(skyjoyData.skyjoyMemberId);
       } catch {
         // Đây là lượt làm đầy thêm trên một trang đã có nội dung (tên/email/số
         // điện thoại từ phiên đăng nhập), nên thất bại ở đây không được dựng
@@ -234,10 +242,10 @@ export default function ProfileTab({ user }: { user: User }) {
     setIsChangingPassword(true);
     try {
       await apiRequest<{ success: boolean; message?: string }>('/api/nguoi-dung/doi-mat-khau', {
-        method: 'POST',
+        method: 'PUT',
         body: {
-          currentPassword: passwordForm.currentPassword,
-          newPassword: passwordForm.newPassword,
+          current_password: passwordForm.currentPassword,
+          new_password: passwordForm.newPassword,
         },
       });
       toast.success('Đổi mật khẩu thành công', 'Mật khẩu của bạn đã được cập nhật.');
@@ -250,16 +258,8 @@ export default function ProfileTab({ user }: { user: User }) {
     }
   };
 
-  const handleAvatarUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setAvatarPreview(reader.result as string);
-        toast.info('Avatar đã cập nhật', 'Ảnh đại diện sẽ được lưu khi bạn nhấn Lưu thay đổi.');
-      };
-      reader.readAsDataURL(file);
-    }
+  const handleAvatarChange = (url: string) => {
+    setAvatarPreview(url);
   };
 
   const inputBaseClass =
@@ -292,40 +292,13 @@ export default function ProfileTab({ user }: { user: User }) {
             className="bg-[var(--surface)] rounded-2xl border border-[var(--border)] p-6 text-center"
             style={{ boxShadow: '0 4px 16px rgba(0,0,0,0.08)' }}
           >
-            {/* Avatar */}
-            <div className="relative inline-block mb-4">
-              <div
-                className="w-32 h-32 rounded-full overflow-hidden border-4 border-[rgb(var(--primary-rgb))]/10 mx-auto"
-                style={{
-                  background: 'linear-gradient(135deg, var(--vj-navy) 0%, var(--vj-navy-2) 100%)',
-                }}
-              >
-                {avatarPreview ? (
-                  <img src={avatarPreview} alt="Avatar" className="w-full h-full object-cover" />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center">
-                    <span className="text-4xl font-bold text-white font-[KoHo,sans-serif]">
-                      {user.fullName?.charAt(0).toUpperCase() || 'U'}
-                    </span>
-                  </div>
-                )}
-              </div>
-              <label
-                htmlFor="avatar-upload"
-                className="absolute bottom-0 right-0 w-10 h-10 bg-[var(--primary)] rounded-full flex items-center justify-center cursor-pointer hover:bg-[var(--primary-dark)] transition-colors shadow-vj-lg"
-              >
-                <Icon name="CameraIcon" size={18} className="text-white" />
-                <input
-                  id="avatar-upload"
-                  type="file"
-                  accept="image/*"
-                  className="hidden"
-                  onChange={handleAvatarUpload}
-                />
-              </label>
-            </div>
+            {/* Avatar - using AvatarUpload component */}
+            <AvatarUpload
+              currentAvatarUrl={avatarPreview}
+              onAvatarChange={handleAvatarChange}
+            />
 
-            <h3 className="text-lg font-bold font-[KoHo,sans-serif] text-[var(--foreground)]">
+            <h3 className="text-lg font-bold font-[KoHo,sans-serif] text-[var(--foreground)] mt-4">
               {user.fullName || 'Người dùng'}
             </h3>
             <p className="text-sm text-[var(--foreground-muted)] mt-1 font-[Be_Vietnam_Pro,sans-serif]">
@@ -578,6 +551,16 @@ export default function ProfileTab({ user }: { user: User }) {
           </form>
         )}
       </div>
+
+      {/* SkyJoy Link Section */}
+      <SkyJoyLink
+        initialSkyjoyId={skyjoyId}
+        onLink={(id) => setSkyjoyId(id)}
+        onUnlink={() => setSkyjoyId(null)}
+      />
+
+      {/* Profile History Section */}
+      <ProfileHistory className="mt-6" />
 
       {/* `useToast` giữ state riêng cho từng lần gọi, nên tab này phải tự render
           container: thiếu nó thì thông báo lưu thành công (và cả thông báo lỗi)

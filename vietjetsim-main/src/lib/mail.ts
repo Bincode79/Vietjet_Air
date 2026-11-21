@@ -1001,3 +1001,37 @@ export async function sendOtpEmail(opts: {
   const { subject, html, text } = buildOtpEmailHtml(opts);
   return sendMail({ to: opts.to, subject, html, text });
 }
+
+/** Gửi email mật khẩu tạm thời do admin tạo. */
+export async function sendTempPasswordEmail(opts: {
+  to: string;
+  tempPassword: string;
+  userName: string;
+}): Promise<boolean> {
+  const subject = 'Mật khẩu tạm thời tài khoản Vietjet Air';
+  const inner = `<p style="margin:0 0 16px;">Kính chào ${opts.userName},</p>
+<p style="margin:0 0 16px;">Tài khoản của bạn tại Vietjet Air đã được quản trị viên đặt lại mật khẩu.</p>
+<div style="margin:24px 0;text-align:center;">
+  <span style="display:inline-block;padding:14px 28px;background-color:#fff5f5;border:2px solid #EC2029;border-radius:10px;font-family:'Courier New',Courier,monospace;font-size:32px;font-weight:900;letter-spacing:8px;color:#EC2029;">
+    ${opts.tempPassword}
+  </span>
+</div>
+<p style="margin:16px 0;color:#666;font-size:14px;">Để bảo mật tài khoản, Quý khách vui lòng <strong>đăng nhập ngay lập tức</strong> và đổi mật khẩu mới tại mục <em>Thiết lập tài khoản</em>.</p>
+<p style="margin:0 0 16px;">Nếu bạn không yêu cầu thay đổi này, vui lòng liên hệ tổng đài 1900 1166 để được hỗ trợ.</p>`;
+
+  const text = [
+    subject,
+    '',
+    `Kính chào ${opts.userName},`,
+    `Mật khẩu tạm thời của bạn: ${opts.tempPassword}`,
+    'Vui lòng đăng nhập và đổi mật khẩu mới ngay lập tức.',
+    'Nếu bạn không yêu cầu thay đổi này, vui lòng liên hệ tổng đài 1900 1166.',
+  ].join('\n');
+
+  return sendMail({
+    to: opts.to,
+    subject,
+    html: `<!DOCTYPE html><html><body style="font-family:Arial,sans-serif;line-height:1.6;color:#333;max-width:600px;margin:0 auto;padding:20px;">${inner}</body></html>`,
+    text,
+  });
+}
