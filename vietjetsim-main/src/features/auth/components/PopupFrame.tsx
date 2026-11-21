@@ -71,7 +71,13 @@ export default function PopupFrame({
 
   return (
     <div className="vj-popup-overlay" role="presentation" onClick={handleOverlayClick}>
-      <div role="dialog" aria-modal="true" aria-label={title} className="vj-popup-frame" onClick={(e) => e.stopPropagation()}>
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-label={title}
+        className="vj-popup-frame"
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* Băng đỏ 48px — tiêu đề + nút đóng. */}
         <div className="vj-popup-header">
           <span className="vj-popup-header-title">{title}</span>

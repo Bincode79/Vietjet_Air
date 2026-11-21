@@ -234,7 +234,7 @@ export default function SeatSelectionDrawer({
       />
 
       {/* Drawer content */}
-      <div className="relative w-full max-w-lg bg-white h-full shadow-2xl flex flex-col z-10 animate-slideInRight">
+      <div className="relative w-full max-w-full sm:max-w-lg bg-white h-full shadow-2xl flex flex-col z-10 animate-slideInRight">
         {/* Header with Vietjet curve top-right (Screenshot 9) */}
         <div className="relative bg-primary-dark text-white px-4 py-3 flex items-center justify-between shadow-vj-md overflow-hidden">
           <div className="w-8 shrink-0" />
@@ -451,7 +451,7 @@ export default function SeatSelectionDrawer({
                               key={seatId}
                               disabled={isOccupied || isLocked || isLocking}
                               onClick={() => handleToggleSeat(seatId)}
-                              className={`w-7 h-7 rounded text-2xs font-medium flex items-center justify-center transition-all ${bgColor}`}
+                              className={`w-6 h-6 sm:w-7 sm:h-7 rounded text-3xs sm:text-2xs font-medium flex items-center justify-center transition-all ${bgColor}`}
                               title={`Ghế ${seatId} - ${getSeatCharge(seatId).toLocaleString('vi-VN')}₫${
                                 isLocked ? ' (Đang giữ bởi người khác)' : ''
                               }`}
@@ -501,7 +501,7 @@ export default function SeatSelectionDrawer({
                               key={seatId}
                               disabled={isOccupied || isLocked || isLocking}
                               onClick={() => handleToggleSeat(seatId)}
-                              className={`w-7 h-7 rounded text-2xs font-medium flex items-center justify-center transition-all ${bgColor}`}
+                              className={`w-6 h-6 sm:w-7 sm:h-7 rounded text-3xs sm:text-2xs font-medium flex items-center justify-center transition-all ${bgColor}`}
                               title={`Ghế ${seatId} - ${getSeatCharge(seatId).toLocaleString('vi-VN')}₫${
                                 isLocked ? ' (Đang giữ bởi người khác)' : ''
                               }`}
@@ -522,9 +522,9 @@ export default function SeatSelectionDrawer({
         {/* Sticky Drawer Footer — "Tổng tiền" 20px/600 trắng, giá 22px/700
             JambonoMedium trắng (đo 13/11/2026). Danh sách ghế đã chọn là dòng
             phụ 13px/500 nên không cạnh tranh với nhãn tổng. */}
-        <div className="bg-primary-dark text-white p-3 flex items-center justify-between shadow-vj-lg">
+        <div className="bg-primary-dark text-white p-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 shadow-vj-lg">
           <div>
-            <span className="text-2xl3 font-semibold text-white block">Tổng tiền</span>
+            <span className="text-base sm:text-2xl3 font-semibold text-white block">Tổng tiền</span>
             <span className="text-sm2 font-medium text-white/85 block mt-0.5">
               {[
                 outboundSeats.length > 0 ? `Đi: ${outboundSeats.join(', ')}` : null,
@@ -533,7 +533,7 @@ export default function SeatSelectionDrawer({
                 .filter(Boolean)
                 .join(' | ') || 'Chưa chọn chỗ ngồi'}
             </span>
-            <span className="text-xl4 font-bold font-jambono text-white">
+            <span className="text-lg sm:text-xl4 font-bold font-jambono text-white">
               {totalSeatFee > 0 ? `${totalSeatFee.toLocaleString('vi-VN')} VND` : '0 VND'}
             </span>
           </div>

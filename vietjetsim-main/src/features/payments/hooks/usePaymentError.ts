@@ -25,7 +25,10 @@ export interface PaymentError {
   action?: () => void;
 }
 
-const ERROR_MESSAGES: Record<PaymentErrorType, { message: string; retryable: boolean; actionLabel?: string }> = {
+const ERROR_MESSAGES: Record<
+  PaymentErrorType,
+  { message: string; retryable: boolean; actionLabel?: string }
+> = {
   validation: {
     message: 'Thông tin thanh toán không hợp lệ. Vui lòng kiểm tra lại.',
     retryable: true,
@@ -83,61 +86,139 @@ const ERROR_MESSAGES: Record<PaymentErrorType, { message: string; retryable: boo
 };
 
 function classifyError(err: unknown, context?: string): PaymentError {
-  const statusCode = (err as { status?: number; response?: { status?: number } })?.status ??
+  const statusCode =
+    (err as { status?: number; response?: { status?: number } })?.status ??
     (err as { response?: { status?: number } })?.response?.status;
 
   // 409 = duplicate payment (already handled by gateway-dispatcher)
   if (statusCode === 409) {
-    return { type: 'duplicate', message: ERROR_MESSAGES.duplicate.message, originalError: err, statusCode, retryable: false };
+    return {
+      type: 'duplicate',
+      message: ERROR_MESSAGES.duplicate.message,
+      originalError: err,
+      statusCode,
+      retryable: false,
+    };
   }
 
   // 400/422 = validation
   if (statusCode === 400 || statusCode === 422) {
-    return { type: 'validation', message: getApiErrorMessage(err, ERROR_MESSAGES.validation.message), originalError: err, statusCode, retryable: true };
+    return {
+      type: 'validation',
+      message: getApiErrorMessage(err, ERROR_MESSAGES.validation.message),
+      originalError: err,
+      statusCode,
+      retryable: true,
+    };
   }
 
   // 401/403 = auth/session expired
   if (statusCode === 401 || statusCode === 403) {
-    return { type: 'expired', message: ERROR_MESSAGES.expired.message, originalError: err, statusCode, retryable: false };
+    return {
+      type: 'expired',
+      message: ERROR_MESSAGES.expired.message,
+      originalError: err,
+      statusCode,
+      retryable: false,
+    };
   }
 
   // 404 = booking not found
   if (statusCode === 404) {
-    return { type: 'booking_not_found', message: ERROR_MESSAGES.booking_not_found.message, originalError: err, statusCode, retryable: false };
+    return {
+      type: 'booking_not_found',
+      message: ERROR_MESSAGES.booking_not_found.message,
+      originalError: err,
+      statusCode,
+      retryable: false,
+    };
   }
 
   // 5xx = server error
   if (statusCode && statusCode >= 500) {
-    return { type: 'server', message: ERROR_MESSAGES.server.message, originalError: err, statusCode, retryable: true };
+    return {
+      type: 'server',
+      message: ERROR_MESSAGES.server.message,
+      originalError: err,
+      statusCode,
+      retryable: true,
+    };
   }
 
   // Network errors (no response)
   if (err instanceof TypeError && err.message.includes('fetch')) {
-    return { type: 'network', message: ERROR_MESSAGES.network.message, originalError: err, retryable: true };
+    return {
+      type: 'network',
+      message: ERROR_MESSAGES.network.message,
+      originalError: err,
+      retryable: true,
+    };
   }
 
   // MOVI application incomplete
   if (context === 'movi' && statusCode === 400) {
-    return { type: 'application_incomplete', message: ERROR_MESSAGES.application_incomplete.message, originalError: err, statusCode, retryable: true };
+    return {
+      type: 'application_incomplete',
+      message: ERROR_MESSAGES.application_incomplete.message,
+      originalError: err,
+      statusCode,
+      retryable: true,
+    };
   }
 
   // Insufficient funds keywords
   const errorMessage = getApiErrorMessage(err, '').toLowerCase();
-  if (errorMessage.includes('insufficient') || errorMessage.includes('số dư') || errorMessage.includes('không đủ')) {
-    return { type: 'insufficient_funds', message: ERROR_MESSAGES.insufficient_funds.message, originalError: err, statusCode, retryable: true };
+  if (
+    errorMessage.includes('insufficient') ||
+    errorMessage.includes('số dư') ||
+    errorMessage.includes('không đủ')
+  ) {
+    return {
+      type: 'insufficient_funds',
+      message: ERROR_MESSAGES.insufficient_funds.message,
+      originalError: err,
+      statusCode,
+      retryable: true,
+    };
   }
 
   // Method invalid
-  if (errorMessage.includes('method') || errorMessage.includes('phương thức') || errorMessage.includes('unsupported')) {
-    return { type: 'method_invalid', message: ERROR_MESSAGES.method_invalid.message, originalError: err, statusCode, retryable: false };
+  if (
+    errorMessage.includes('method') ||
+    errorMessage.includes('phương thức') ||
+    errorMessage.includes('unsupported')
+  ) {
+    return {
+      type: 'method_invalid',
+      message: ERROR_MESSAGES.method_invalid.message,
+      originalError: err,
+      statusCode,
+      retryable: false,
+    };
   }
 
   // Expired/session
-  if (errorMessage.includes('expired') || errorMessage.includes('hết hạn') || errorMessage.includes('session')) {
-    return { type: 'expired', message: ERROR_MESSAGES.expired.message, originalError: err, statusCode, retryable: false };
+  if (
+    errorMessage.includes('expired') ||
+    errorMessage.includes('hết hạn') ||
+    errorMessage.includes('session')
+  ) {
+    return {
+      type: 'expired',
+      message: ERROR_MESSAGES.expired.message,
+      originalError: err,
+      statusCode,
+      retryable: false,
+    };
   }
 
-  return { type: 'unknown', message: getApiErrorMessage(err, ERROR_MESSAGES.unknown.message), originalError: err, statusCode, retryable: true };
+  return {
+    type: 'unknown',
+    message: getApiErrorMessage(err, ERROR_MESSAGES.unknown.message),
+    originalError: err,
+    statusCode,
+    retryable: true,
+  };
 }
 
 /**
@@ -174,7 +255,7 @@ export function usePaymentErrorState() {
   const clearError = useCallback(() => setError(null), []);
 
   const executeWithErrorHandling = useCallback(
-    async <T,>(fn: () => Promise<T>, context?: string): Promise<T | null> => {
+    async <T>(fn: () => Promise<T>, context?: string): Promise<T | null> => {
       setSubmitting(true);
       clearError();
       try {

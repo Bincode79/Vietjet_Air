@@ -1,7 +1,10 @@
 'use client';
 import React from 'react';
 import { Icon } from '@/shared/components/ui';
-import type { PaymentMethodConfig, PaymentCategory } from '@/features/payments/config/paymentMethods';
+import type {
+  PaymentMethodConfig,
+  PaymentCategory,
+} from '@/features/payments/config/paymentMethods';
 import type { ComponentType } from 'react';
 
 interface PaymentMethodCardProps {
@@ -13,7 +16,13 @@ interface PaymentMethodCardProps {
 }
 
 /** Component hiển thị logo động (lazy load) */
-const DynamicLogo = ({ logo, className }: { logo: ComponentType<{ className?: string }>; className?: string }) => {
+const DynamicLogo = ({
+  logo,
+  className,
+}: {
+  logo: ComponentType<{ className?: string }>;
+  className?: string;
+}) => {
   const LogoComponent = logo;
   return <LogoComponent className={className} />;
 };
@@ -22,7 +31,12 @@ const DynamicLogo = ({ logo, className }: { logo: ComponentType<{ className?: st
  * Card phương thức thanh toán thống nhất.
  * Dùng chung cho tất cả các nhóm: cards_banks, ewallets, loyalty, installments.
  */
-export default function PaymentMethodCard({ method, isSelected, onSelect, className }: PaymentMethodCardProps) {
+export default function PaymentMethodCard({
+  method,
+  isSelected,
+  onSelect,
+  className,
+}: PaymentMethodCardProps) {
   return (
     <button
       type="button"
@@ -30,9 +44,11 @@ export default function PaymentMethodCard({ method, isSelected, onSelect, classN
       className={`
         p-2.5 sm:p-3 rounded-vj border flex flex-col justify-between text-left transition-all cursor-pointer
         min-h-[92px] sm:min-h-[96px] relative overflow-hidden active:scale-[0.98]
-        ${isSelected
-          ? 'border-2 border-primary bg-[rgb(var(--vj-red-rgb))]/10 shadow-xs'
-          : 'border-vj-border-light hover:border-vj-line bg-white'}
+        ${
+          isSelected
+            ? 'border-2 border-primary bg-[rgb(var(--vj-red-rgb))]/10 shadow-xs'
+            : 'border-vj-border-light hover:border-vj-line bg-white'
+        }
         ${className || ''}
       `}
       aria-pressed={isSelected}
@@ -65,14 +81,10 @@ export default function PaymentMethodCard({ method, isSelected, onSelect, classN
 
       {/* Subtitle / Badge phụ (ví dụ: "Bay trước, trả sau") */}
       {method.subtitle && (
-        <span className="text-4xs text-vj-gray font-medium block mt-0.5">
-          {method.subtitle}
-        </span>
+        <span className="text-4xs text-vj-gray font-medium block mt-0.5">{method.subtitle}</span>
       )}
       {method.badge && !method.subtitle && (
-        <span className="text-4xs text-vj-gray font-medium block mt-0.5">
-          {method.badge}
-        </span>
+        <span className="text-4xs text-vj-gray font-medium block mt-0.5">{method.badge}</span>
       )}
     </button>
   );
@@ -108,7 +120,7 @@ export function PaymentCategorySection({
         {title}
       </h3>
       <div className={gridClassName}>
-        {methods.map(method => (
+        {methods.map((method) => (
           <PaymentMethodCard
             key={method.groupKey}
             method={method}
@@ -140,12 +152,42 @@ export function SecurityFooter({ hideOnMovi = true, isMovi = false }: SecurityFo
           Được bảo vệ bởi
         </span>
         <div className="flex items-center gap-2 sm:gap-3">
-          <img src="/images/payment/visa-secure.png" alt="Visa Secure" height={20} className="opacity-70 hover:opacity-100 transition-opacity" />
-          <img src="/images/payment/mastercard-secure.png" alt="Mastercard SecureCode" height={20} className="opacity-70 hover:opacity-100 transition-opacity" />
-          <img src="/images/payment/jcb-secure.png" alt="JCB J/Secure" height={20} className="opacity-70 hover:opacity-100 transition-opacity" />
-          <img src="/images/payment/amex-safekey.png" alt="Amex SafeKey" height={20} className="opacity-70 hover:opacity-100 transition-opacity" />
-          <img src="/images/payment/3d-secure.png" alt="3D Secure" height={20} className="opacity-70 hover:opacity-100 transition-opacity" />
-          <img src="/images/payment/pci-dss.png" alt="PCI DSS" height={20} className="opacity-70 hover:opacity-100 transition-opacity" />
+          <img
+            src="/images/payment/visa-secure.png"
+            alt="Visa Secure"
+            height={20}
+            className="opacity-70 hover:opacity-100 transition-opacity"
+          />
+          <img
+            src="/images/payment/mastercard-secure.png"
+            alt="Mastercard SecureCode"
+            height={20}
+            className="opacity-70 hover:opacity-100 transition-opacity"
+          />
+          <img
+            src="/images/payment/jcb-secure.png"
+            alt="JCB J/Secure"
+            height={20}
+            className="opacity-70 hover:opacity-100 transition-opacity"
+          />
+          <img
+            src="/images/payment/amex-safekey.png"
+            alt="Amex SafeKey"
+            height={20}
+            className="opacity-70 hover:opacity-100 transition-opacity"
+          />
+          <img
+            src="/images/payment/3d-secure.png"
+            alt="3D Secure"
+            height={20}
+            className="opacity-70 hover:opacity-100 transition-opacity"
+          />
+          <img
+            src="/images/payment/pci-dss.png"
+            alt="PCI DSS"
+            height={20}
+            className="opacity-70 hover:opacity-100 transition-opacity"
+          />
         </div>
       </div>
 

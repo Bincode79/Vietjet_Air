@@ -21,7 +21,10 @@ import CardGatewayContent from './gateway/CardGatewayContent';
 import MoviGatewayContent from './gateway/MoviGatewayContent';
 import { GalaxyPayBadge } from './PaymentMethodLogos';
 import { usePaymentMethod } from '@/features/payments/hooks/usePaymentMethod';
-import { PaymentCategorySection, SecurityFooter } from '@/features/payments/components/PaymentMethodCard';
+import {
+  PaymentCategorySection,
+  SecurityFooter,
+} from '@/features/payments/components/PaymentMethodCard';
 
 /**
  * `YYYY-MM-DD` from the booking, as `d/M/yyyy`.
@@ -777,7 +780,7 @@ export default function PaymentClient() {
                 </div>
 
                 {/* Render categories dynamically */}
-                {activeCategories.map(category => (
+                {activeCategories.map((category) => (
                   <PaymentCategorySection
                     key={category.key}
                     category={category.key}
@@ -792,7 +795,6 @@ export default function PaymentClient() {
                 <SecurityFooter hideOnMovi={true} isMovi={isMovi} />
               </div>
             </div>
-
           </div>
         </div>
       </div>

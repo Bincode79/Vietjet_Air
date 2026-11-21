@@ -44,8 +44,10 @@ export default function SkyIdRealAuthPage({
   const searchParams = useSearchParams();
 
   const [mode, setMode] = useState<'login' | 'register'>(initialMode);
-  const [step, setStep] = useState<'phone' | 'password' | 'register-form' | 'login-otp' | 'otp'>('phone');
-  
+  const [step, setStep] = useState<'phone' | 'password' | 'register-form' | 'login-otp' | 'otp'>(
+    'phone'
+  );
+
   const [phone, setPhone] = useState('');
   const [country, setCountry] = useState<SkyIdCountry>(COUNTRY_CODES[0]);
   const [countryOpen, setCountryOpen] = useState(false);
@@ -107,9 +109,12 @@ export default function SkyIdRealAuthPage({
   );
 
   const isEmailOrId = /[a-zA-Z@._-]/.test(phone);
-  const identifier = identifierMode === 'phone'
-    ? (isEmailOrId ? phone.trim() : phone.replace(/\D/g, ''))
-    : accountIdentifier.trim();
+  const identifier =
+    identifierMode === 'phone'
+      ? isEmailOrId
+        ? phone.trim()
+        : phone.replace(/\D/g, '')
+      : accountIdentifier.trim();
   const canContinue = Boolean(identifier);
 
   const handlePhoneContinue = () => {
@@ -316,7 +321,9 @@ export default function SkyIdRealAuthPage({
             {/* Error message */}
             {error && (
               <div className="mt-3 p-2.5 rounded-lg bg-red-50 border border-red-200 text-xs text-red-600 font-medium flex items-center gap-2">
-                <span className="w-4 h-4 rounded-full bg-red-500 text-white flex items-center justify-center text-[10px] font-bold">!</span>
+                <span className="w-4 h-4 rounded-full bg-red-500 text-white flex items-center justify-center text-[10px] font-bold">
+                  !
+                </span>
                 <span>{error}</span>
               </div>
             )}
@@ -324,7 +331,10 @@ export default function SkyIdRealAuthPage({
             {/* STEP 1: Nhập số điện thoại */}
             {step === 'phone' && (
               <>
-                <h1 className="text-[22px] sm:text-[23px] font-bold text-[#2D2D2D] mt-4 leading-tight tracking-tight" aria-label="Đăng nhập">
+                <h1
+                  className="text-[22px] sm:text-[23px] font-bold text-[#2D2D2D] mt-4 leading-tight tracking-tight"
+                  aria-label="Đăng nhập"
+                >
                   {mode === 'register' ? 'Đăng ký tài khoản' : 'Nhập số điện thoại'}
                 </h1>
                 <p className="text-xs text-[#6F6F6F] mt-1 leading-relaxed">
@@ -358,7 +368,9 @@ export default function SkyIdRealAuthPage({
                             }}
                             className="w-full text-left px-3 py-1.5 text-xs hover:bg-slate-50 flex items-center justify-between"
                           >
-                            <span>{c.flag} {c.label}</span>
+                            <span>
+                              {c.flag} {c.label}
+                            </span>
                             <span className="font-semibold text-slate-500">{c.dial}</span>
                           </button>
                         ))}
@@ -423,7 +435,10 @@ export default function SkyIdRealAuthPage({
 
                 {/* Password field */}
                 <div className="mt-3 relative border border-slate-300 rounded-lg px-3 py-1.5 bg-white focus-within:border-slate-800 transition">
-                  <label htmlFor="skyid-password" className="text-[11px] font-medium text-slate-500 block leading-tight">
+                  <label
+                    htmlFor="skyid-password"
+                    className="text-[11px] font-medium text-slate-500 block leading-tight"
+                  >
                     Mật khẩu <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -477,7 +492,10 @@ export default function SkyIdRealAuthPage({
                 </p>
 
                 <div className="mt-4 border border-slate-300 rounded-lg px-3 py-2 bg-white focus-within:border-slate-800 transition">
-                  <label htmlFor="skyid-otp" className="text-[11px] font-medium text-slate-500 block">
+                  <label
+                    htmlFor="skyid-otp"
+                    className="text-[11px] font-medium text-slate-500 block"
+                  >
                     Mã xác thực OTP (6 chữ số)
                   </label>
                   <input
@@ -563,7 +581,9 @@ export default function SkyIdRealAuthPage({
                 </div>
 
                 <div className="border border-slate-300 rounded-lg px-3 py-1 bg-white">
-                  <label className="text-[10px] text-slate-500 block">Mã giới thiệu (không bắt buộc)</label>
+                  <label className="text-[10px] text-slate-500 block">
+                    Mã giới thiệu (không bắt buộc)
+                  </label>
                   <input
                     type="text"
                     placeholder="VJ689"
@@ -607,7 +627,9 @@ export default function SkyIdRealAuthPage({
               <div className="absolute inset-0 flex items-center">
                 <div className="w-full border-t border-slate-200" />
               </div>
-              <span className="relative bg-white px-2.5 text-[11px] text-slate-400">hoặc tiếp tục với</span>
+              <span className="relative bg-white px-2.5 text-[11px] text-slate-400">
+                hoặc tiếp tục với
+              </span>
             </div>
 
             {/* Social Buttons matching Image #1 */}

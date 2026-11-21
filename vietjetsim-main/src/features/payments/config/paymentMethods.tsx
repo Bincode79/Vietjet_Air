@@ -52,10 +52,10 @@ export interface PaymentMethodConfig {
 
 /** Danh mục phương thức thanh toán */
 export type PaymentCategory =
-  | 'cards_banks'      // Thẻ và tài khoản ngân hàng
-  | 'ewallets'         // Ví điện tử
-  | 'installments'     // Giữ mã & thanh toán sau (trả góp)
-  | 'loyalty';         // Điểm thưởng / ví tích lũy
+  | 'cards_banks' // Thẻ và tài khoản ngân hàng
+  | 'ewallets' // Ví điện tử
+  | 'installments' // Giữ mã & thanh toán sau (trả góp)
+  | 'loyalty'; // Điểm thưởng / ví tích lũy
 
 /** Cấu hình hiển thị cho từng danh mục */
 export interface PaymentCategoryConfig {
@@ -241,19 +241,21 @@ export const PAYMENT_METHODS: PaymentMethodConfig[] = [
 
 /** Helper: Lấy phương thức theo groupKey */
 export function getPaymentMethod(groupKey: string): PaymentMethodConfig | undefined {
-  return PAYMENT_METHODS.find(m => m.groupKey === groupKey);
+  return PAYMENT_METHODS.find((m) => m.groupKey === groupKey);
 }
 
 /** Helper: Lấy phương thức theo paymentMethod (API) */
-export function getPaymentMethodByApiType(paymentMethod: PaymentMethod): PaymentMethodConfig | undefined {
-  return PAYMENT_METHODS.find(m => m.paymentMethod === paymentMethod);
+export function getPaymentMethodByApiType(
+  paymentMethod: PaymentMethod
+): PaymentMethodConfig | undefined {
+  return PAYMENT_METHODS.find((m) => m.paymentMethod === paymentMethod);
 }
 
 /** Helper: Lấy tất cả phương thức trong một danh mục, đã sắp xếp theo order */
 export function getMethodsByCategory(category: PaymentCategory): PaymentMethodConfig[] {
-  return PAYMENT_METHODS
-    .filter(m => m.category === category && !m.disabled)
-    .sort((a, b) => a.order - b.order);
+  return PAYMENT_METHODS.filter((m) => m.category === category && !m.disabled).sort(
+    (a, b) => a.order - b.order
+  );
 }
 
 /** Helper: Lấy danh mục của một groupKey */

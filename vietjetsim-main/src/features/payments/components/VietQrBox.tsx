@@ -406,9 +406,9 @@ export default function VietQrBox({
                   </div>
                 </div>
                 <p className="text-3xs text-vj-gray mt-1 italic">
-                  * Mã QR chuẩn bảo mật NAPAS 247 tự động nhận diện STK và tên thụ hưởng. Quý khách vui
-                  lòng nhập đúng Số tiền và Nội dung chuyển khoản để hệ thống tự động xuất vé ngay lập
-                  tức.
+                  * Mã QR chuẩn bảo mật NAPAS 247 tự động nhận diện STK và tên thụ hưởng. Quý khách
+                  vui lòng nhập đúng Số tiền và Nội dung chuyển khoản để hệ thống tự động xuất vé
+                  ngay lập tức.
                 </p>
               </div>
             </div>
@@ -426,7 +426,11 @@ export default function VietQrBox({
           >
             {pollState === 'paid' ? (
               <>
-                <Icon name="CheckCircleIcon" size={18} className="text-vj-pay-green animate-bounce" />
+                <Icon
+                  name="CheckCircleIcon"
+                  size={18}
+                  className="text-vj-pay-green animate-bounce"
+                />
                 <span>Đã nhận được thanh toán thành công — Đang mở vé điện tử...</span>
               </>
             ) : (
@@ -449,9 +453,9 @@ export default function VietQrBox({
         {!hideScanGuide && (
           <div className="mt-4 pt-3 border-t border-vj-border-light text-center max-w-md">
             <p className="text-xs text-vj-text-strong leading-relaxed font-medium">
-              Mở ứng dụng <span className="font-bold text-vj-bank-blue">Mobile Banking</span> của bất
-              kỳ ngân hàng nào (Vietcombank, BIDV, Agribank, VietinBank, MBBank, Techcombank, VPBank,
-              ACB...){' '}
+              Mở ứng dụng <span className="font-bold text-vj-bank-blue">Mobile Banking</span> của
+              bất kỳ ngân hàng nào (Vietcombank, BIDV, Agribank, VietinBank, MBBank, Techcombank,
+              VPBank, ACB...){' '}
               {isVnpay ? (
                 <>
                   hoặc ứng dụng <span className="font-bold text-vj-red-dark">Ví VNPAY</span>{' '}

@@ -20,7 +20,9 @@ import {
  */
 export function usePaymentMethod() {
   // Group key (vnpay_qr, vietqr, card, momo, movi, etc.)
-  const [selectedMethodGroup, setSelectedMethodGroup] = useState<string>(() => getDefaultGroupFromUrl());
+  const [selectedMethodGroup, setSelectedMethodGroup] = useState<string>(() =>
+    getDefaultGroupFromUrl()
+  );
 
   // Payment method type gửi cho API (vietqr, card, bank, e_wallet, movi, skypoint)
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>(() =>
@@ -47,21 +49,21 @@ export function usePaymentMethod() {
       loyalty: [],
       installments: [],
     };
-    PAYMENT_METHODS.forEach(m => {
+    PAYMENT_METHODS.forEach((m) => {
       if (!m.disabled) {
         map[m.category].push(m);
       }
     });
     // Sắp xếp theo order
-    Object.keys(map).forEach(key => {
+    Object.keys(map).forEach((key) => {
       map[key as PaymentCategory].sort((a, b) => a.order - b.order);
     });
     return map;
   }, []);
 
   // Computed: categories có method enabled
-  const activeCategories = useMemo(() =>
-    PAYMENT_CATEGORIES.filter(cat => methodsByCategory[cat.key].length > 0),
+  const activeCategories = useMemo(
+    () => PAYMENT_CATEGORIES.filter((cat) => methodsByCategory[cat.key].length > 0),
     [methodsByCategory]
   );
 
@@ -121,7 +123,7 @@ export function usePaymentMethod() {
 
     // Helpers
     getMethodsByCategory: (cat: PaymentCategory) => methodsByCategory[cat] || [],
-    getCategoryConfig: (cat: PaymentCategory) => PAYMENT_CATEGORIES.find(c => c.key === cat),
+    getCategoryConfig: (cat: PaymentCategory) => PAYMENT_CATEGORIES.find((c) => c.key === cat),
   };
 }
 

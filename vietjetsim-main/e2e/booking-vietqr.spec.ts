@@ -26,12 +26,6 @@ test.describe('E2E Flow 1: Full Booking to VietQR Payment', () => {
     );
     await expect(flightCards.first()).toBeVisible({ timeout: 15_000 });
 
-    const selectButton = flightCards
-      .first()
-      .locator('button:has-text("Chọn"), button:has-text("Đặt vé")');
-    if ((await selectButton.count()) > 0) {
-      await selectButton.first().click();
-    }
 
     // 4. Thiết lập booking trong session và điều hướng sang trang thanh toán
     await page.evaluate(() => {

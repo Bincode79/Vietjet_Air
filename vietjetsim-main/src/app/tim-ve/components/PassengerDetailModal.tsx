@@ -72,7 +72,7 @@ export default function PassengerDetailModal({
       />
 
       {/* Modal Card matching Screenshot 7 */}
-      <div className="relative w-full max-w-lg bg-white rounded-vj shadow-2xl overflow-hidden z-10 flex flex-col max-h-[92vh] animate-scaleUp">
+      <div className="relative w-full max-w-full sm:max-w-lg bg-white rounded-vj shadow-2xl overflow-hidden z-10 flex flex-col max-h-[92vh] animate-scaleUp">
         {/* Header - Red bar with Vietjet curve top-right (Screenshot 7) */}
         <div className="relative bg-primary-dark text-white px-4 py-3.5 flex items-center justify-between shadow-vj-md overflow-hidden">
           <div className="w-8 shrink-0" />
@@ -102,7 +102,7 @@ export default function PassengerDetailModal({
         </div>
 
         {/* Scrollable Body */}
-        <div className="p-4 space-y-3 overflow-y-auto flex-1 text-xs">
+        <div className="p-2 sm:p-4 space-y-3 overflow-y-auto flex-1 text-xs">
           {/* Box 1: Thông tin hành khách */}
           <div className="rounded-vj bg-vj-pill p-3 text-xs font-bold text-vj-text-strong">
             Thông tin hành khách: <span className="uppercase text-vj-text">{passengerName}</span>
@@ -328,7 +328,7 @@ export default function PassengerDetailModal({
         </div>
 
         {/* Fixed Red Bottom Bar (Screenshot 7) */}
-        <div className="bg-primary-dark text-white px-5 py-3.5 flex items-center justify-between font-bold text-sm shadow-vj-lg">
+        <div className="bg-primary-dark text-white px-3 sm:px-5 py-2.5 sm:py-3.5 flex items-center justify-between font-bold text-xs sm:text-sm shadow-vj-lg">
           <span className="font-bold text-white text-sm">Tổng tiền</span>
           <span className="font-black text-white text-base">
             {grandTotal.toLocaleString('vi-VN')} VND

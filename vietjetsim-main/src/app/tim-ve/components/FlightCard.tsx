@@ -56,7 +56,7 @@ export default function FlightCard({
     <div className="rounded-vj border border-black/10 bg-white overflow-hidden shadow-xs transition-all mb-3">
       <article className="flex flex-row items-stretch">
         {/* Cột 1: Giờ bay & Số hiệu — Khung vàng chuẩn Screenshot 3 */}
-        <div className="w-[100px] sm:w-[130px] shrink-0 bg-vj-gold-deep p-2 flex flex-col justify-between items-center text-center">
+        <div className="w-[80px] sm:w-[100px] lg:w-[130px] shrink-0 bg-vj-gold-deep p-2 flex flex-col justify-between items-center text-center">
           <span className="text-3xs font-bold text-vj-text-dim">{flight.no}</span>
           <div className="py-1">
             <div className="text-sm font-medium text-vj-dark leading-tight font-koho">
@@ -89,7 +89,7 @@ export default function FlightCard({
         </div>
 
         {/* Cột 2: 4 cột hạng ghế — ô 141×96, nền #F8F8F8 (đo 13/11/2026) */}
-        <div className="flex-1 grid grid-cols-4 gap-1 min-w-0 bg-white">
+        <div className="flex-1 grid grid-cols-4 gap-0.5 sm:gap-1 min-w-0 bg-white overflow-x-auto">
           {FARE_COLUMNS.map((col) => {
             const active = selectedClass?.toUpperCase() === col.id;
             const priceVal = flight.prices[col.priceKey];
@@ -101,7 +101,7 @@ export default function FlightCard({
                 type="button"
                 disabled={isZero}
                 onClick={() => onSelect(flight.no, col.id, priceVal)}
-                className={`flex flex-col items-center justify-between h-24 min-w-[141px] rounded-vj border transition-all overflow-hidden focus:outline-none focus:ring-0 ${
+                className={`flex flex-col items-center justify-between h-20 sm:h-24 min-w-[80px] sm:min-w-[141px] rounded-vj border transition-all overflow-hidden focus:outline-none focus:ring-0 ${
                   active
                     ? 'border-2 border-primary bg-[rgb(var(--vj-red-rgb))]/10'
                     : isZero
@@ -137,9 +137,9 @@ export default function FlightCard({
                   ) : (
                     <>
                       {/* Giá 26px/400 JambonoMedium #333333; mã tiền tệ 16px/500 #6D6E71 */}
-                      <span className="text-xl5 font-jambono font-normal text-vj-text leading-tight whitespace-nowrap">
+                      <span className="text-base sm:text-xl5 font-jambono font-normal text-vj-text leading-tight whitespace-nowrap">
                         {priceVal.toLocaleString('vi-VN')}
-                        <span className="text-base font-medium text-vj-currency-gray ml-1">
+                        <span className="text-xs sm:text-base font-medium text-vj-currency-gray ml-0.5 sm:ml-1">
                           VND
                         </span>
                       </span>

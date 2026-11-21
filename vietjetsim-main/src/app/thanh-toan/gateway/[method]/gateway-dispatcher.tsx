@@ -10,14 +10,30 @@ import { apiRequest, getApiErrorMessage } from '@/shared/services';
 import { Icon } from '@/shared/components/ui';
 
 // Lazy load gateway components for better initial load performance
-const QrGatewayContent = lazy(() => import('@/features/payments/components/gateway/QrGatewayContent'));
-const CardGatewayContent = lazy(() => import('@/features/payments/components/gateway/CardGatewayContent'));
-const NapasGatewayContent = lazy(() => import('@/features/payments/components/gateway/NapasGatewayContent'));
-const EWalletGatewayContent = lazy(() => import('@/features/payments/components/gateway/EWalletGatewayContent'));
-const MoviGatewayContent = lazy(() => import('@/features/payments/components/gateway/MoviGatewayContent'));
-const WalletGatewayContent = lazy(() => import('@/features/payments/components/gateway/WalletGatewayContent'));
-const BankGatewayContent = lazy(() => import('@/features/payments/components/gateway/BankGatewayContent'));
-const SkyPointGatewayContent = lazy(() => import('@/features/payments/components/gateway/SkyPointGatewayContent'));
+const QrGatewayContent = lazy(
+  () => import('@/features/payments/components/gateway/QrGatewayContent')
+);
+const CardGatewayContent = lazy(
+  () => import('@/features/payments/components/gateway/CardGatewayContent')
+);
+const NapasGatewayContent = lazy(
+  () => import('@/features/payments/components/gateway/NapasGatewayContent')
+);
+const EWalletGatewayContent = lazy(
+  () => import('@/features/payments/components/gateway/EWalletGatewayContent')
+);
+const MoviGatewayContent = lazy(
+  () => import('@/features/payments/components/gateway/MoviGatewayContent')
+);
+const WalletGatewayContent = lazy(
+  () => import('@/features/payments/components/gateway/WalletGatewayContent')
+);
+const BankGatewayContent = lazy(
+  () => import('@/features/payments/components/gateway/BankGatewayContent')
+);
+const SkyPointGatewayContent = lazy(
+  () => import('@/features/payments/components/gateway/SkyPointGatewayContent')
+);
 
 // Type imports for payload handling
 import type { MoviGatewayApplication } from '@/features/payments/components/gateway/MoviGatewayContent';
@@ -371,8 +387,8 @@ export default function GatewayDispatcher() {
           </div>
         )}
 
-        <Suspense fallback={<GatewaySkeleton />}>{
-          method === 'qr' && (
+        <Suspense fallback={<GatewaySkeleton />}>
+          {method === 'qr' && (
             <QrGatewayContent
               bookingId={booking.bookingId}
               bookingCode={effectiveCode}
@@ -380,60 +396,60 @@ export default function GatewayDispatcher() {
               onSuccess={handlePaymentSuccess}
               methodType="vnpay_qr"
             />
-          )
-        }</Suspense>
-        <Suspense fallback={<GatewaySkeleton />}>{
-          method === 'card' && (
+          )}
+        </Suspense>
+        <Suspense fallback={<GatewaySkeleton />}>
+          {method === 'card' && (
             <CardGatewayContent
               bookingId={booking.bookingId}
               bookingCode={effectiveCode}
               amount={effectiveAmount}
               onSuccess={handlePaymentSuccess}
             />
-          )
-        }</Suspense>
-        <Suspense fallback={<GatewaySkeleton />}>{
-          method === 'napas' && (
+          )}
+        </Suspense>
+        <Suspense fallback={<GatewaySkeleton />}>
+          {method === 'napas' && (
             <NapasGatewayContent
               bookingId={booking.bookingId}
               bookingCode={effectiveCode}
               amount={effectiveAmount}
               onSuccess={handlePaymentSuccess}
             />
-          )
-        }</Suspense>
-        <Suspense fallback={<GatewaySkeleton />}>{
-          method === 'ewallet' && (
+          )}
+        </Suspense>
+        <Suspense fallback={<GatewaySkeleton />}>
+          {method === 'ewallet' && (
             <EWalletGatewayContent
               bookingId={booking.bookingId}
               bookingCode={effectiveCode}
               amount={effectiveAmount}
               onSuccess={handlePaymentSuccess}
             />
-          )
-        }</Suspense>
-        <Suspense fallback={<GatewaySkeleton />}>{
-          method === 'movi' && (
+          )}
+        </Suspense>
+        <Suspense fallback={<GatewaySkeleton />}>
+          {method === 'movi' && (
             <MoviGatewayContent
               bookingId={booking.bookingId}
               bookingCode={effectiveCode}
               amount={effectiveAmount}
               onSuccess={handlePaymentSuccess}
             />
-          )
-        }</Suspense>
-        <Suspense fallback={<GatewaySkeleton />}>{
-          method === 'wallet' && (
+          )}
+        </Suspense>
+        <Suspense fallback={<GatewaySkeleton />}>
+          {method === 'wallet' && (
             <WalletGatewayContent
               bookingId={booking.bookingId}
               bookingCode={effectiveCode}
               amount={effectiveAmount}
               onSuccess={handlePaymentSuccess}
             />
-          )
-        }</Suspense>
-        <Suspense fallback={<GatewaySkeleton />}>{
-          method === 'bank' && (
+          )}
+        </Suspense>
+        <Suspense fallback={<GatewaySkeleton />}>
+          {method === 'bank' && (
             <BankGatewayContent
               bookingId={booking.bookingId}
               bookingCode={effectiveCode}
@@ -443,18 +459,18 @@ export default function GatewayDispatcher() {
               discountCode={promoCode}
               onSuccess={handlePaymentSuccess}
             />
-          )
-        }</Suspense>
-        <Suspense fallback={<GatewaySkeleton />}>{
-          method === 'skypoint' && (
+          )}
+        </Suspense>
+        <Suspense fallback={<GatewaySkeleton />}>
+          {method === 'skypoint' && (
             <SkyPointGatewayContent
               bookingId={booking.bookingId}
               bookingCode={effectiveCode}
               amount={effectiveAmount}
               onSuccess={handlePaymentSuccess}
             />
-          )
-        }</Suspense>
+          )}
+        </Suspense>
       </div>
     </div>
   );
