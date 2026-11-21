@@ -9,6 +9,8 @@ interface Props {
   amount?: number;
   methodTitle: string;
   initialMinutes?: number;
+  /** Mốc hết hạn do server quyết định (ISO string). Dùng cho MOVI hold 30 phút. */
+  expiresAt?: string | null;
 }
 
 export default function PaymentGatewayHeader({
@@ -17,15 +19,27 @@ export default function PaymentGatewayHeader({
   amount,
   methodTitle,
   initialMinutes = 15,
+  expiresAt,
 }: Props) {
-  const [secondsLeft, setSecondsLeft] = useState(initialMinutes * 60);
+  const [secondsLeft, setSecondsLeft] = useState(() => {
+    if (expiresAt) {
+      const diff = new Date(expiresAt).getTime() - Date.now();
+      return Math.max(0, Math.ceil(diff / 1000));
+    }
+    return initialMinutes * 60;
+  });
 
   useEffect(() => {
+    if (expiresAt) {
+      // Server-side countdown: sync with expiresAt on mount
+      const diff = new Date(expiresAt).getTime() - Date.now();
+      setSecondsLeft(Math.max(0, Math.ceil(diff / 1000)));
+    }
     const timer = setInterval(() => {
       setSecondsLeft((prev) => (prev > 0 ? prev - 1 : 0));
     }, 1000);
     return () => clearInterval(timer);
-  }, []);
+  }, [expiresAt]);
 
   const minutes = Math.floor(secondsLeft / 60);
   const seconds = secondsLeft % 60;

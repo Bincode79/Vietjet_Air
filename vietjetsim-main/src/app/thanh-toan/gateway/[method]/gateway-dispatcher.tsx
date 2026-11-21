@@ -1,26 +1,28 @@
 'use client';
-import React, { useCallback, useEffect, useState, useMemo } from 'react';
+import React, { useCallback, useEffect, useState, useMemo, Suspense, lazy } from 'react';
 import Link from 'next/link';
 import { useParams, useSearchParams, useRouter } from 'next/navigation';
 import PaymentGatewayHeader from '@/features/payments/components/gateway/PaymentGatewayHeader';
-import QrGatewayContent from '@/features/payments/components/gateway/QrGatewayContent';
-import CardGatewayContent from '@/features/payments/components/gateway/CardGatewayContent';
-import NapasGatewayContent from '@/features/payments/components/gateway/NapasGatewayContent';
-import EWalletGatewayContent from '@/features/payments/components/gateway/EWalletGatewayContent';
-import MoviGatewayContent, {
-  type MoviGatewayApplication,
-} from '@/features/payments/components/gateway/MoviGatewayContent';
-import WalletGatewayContent from '@/features/payments/components/gateway/WalletGatewayContent';
-import BankGatewayContent, {
-  type BankGatewayPayload,
-} from '@/features/payments/components/gateway/BankGatewayContent';
-import SkyPointGatewayContent, {
-  type SkyPointGatewayPayload,
-} from '@/features/payments/components/gateway/SkyPointGatewayContent';
+import GatewaySkeleton from '@/features/payments/components/gateway/GatewaySkeleton';
 import { createPayment } from '@/features/payments/services';
 import type { PaymentMethod } from '@/features/payments/types';
 import { apiRequest, getApiErrorMessage } from '@/shared/services';
 import { Icon } from '@/shared/components/ui';
+
+// Lazy load gateway components for better initial load performance
+const QrGatewayContent = lazy(() => import('@/features/payments/components/gateway/QrGatewayContent'));
+const CardGatewayContent = lazy(() => import('@/features/payments/components/gateway/CardGatewayContent'));
+const NapasGatewayContent = lazy(() => import('@/features/payments/components/gateway/NapasGatewayContent'));
+const EWalletGatewayContent = lazy(() => import('@/features/payments/components/gateway/EWalletGatewayContent'));
+const MoviGatewayContent = lazy(() => import('@/features/payments/components/gateway/MoviGatewayContent'));
+const WalletGatewayContent = lazy(() => import('@/features/payments/components/gateway/WalletGatewayContent'));
+const BankGatewayContent = lazy(() => import('@/features/payments/components/gateway/BankGatewayContent'));
+const SkyPointGatewayContent = lazy(() => import('@/features/payments/components/gateway/SkyPointGatewayContent'));
+
+// Type imports for payload handling
+import type { MoviGatewayApplication } from '@/features/payments/components/gateway/MoviGatewayContent';
+import type { BankGatewayPayload } from '@/features/payments/components/gateway/BankGatewayContent';
+import type { SkyPointGatewayPayload } from '@/features/payments/components/gateway/SkyPointGatewayContent';
 
 /** Dữ liệu từng cổng trả về khi khách hoàn tất bước xác nhận của cổng đó. */
 interface GatewayPaymentPayload {
@@ -37,6 +39,8 @@ interface BookingInfo {
   flightNo?: string;
   fromCity?: string;
   toCity?: string;
+  /** Mốc hết hạn giữ chỗ (ISO string) - dùng cho MOVI 30 phút server-side */
+  holdExpiresAt?: string;
 }
 
 /** Phương thức thanh toán server chấp nhận cho từng cổng hiển thị. */
@@ -140,6 +144,7 @@ export default function GatewayDispatcher() {
           flightNo: flight.flight_no ? String(flight.flight_no) : undefined,
           fromCity: flight.from_code ? String(flight.from_code) : undefined,
           toCity: flight.to_code ? String(flight.to_code) : undefined,
+          holdExpiresAt: raw.hold_expires_at ? String(raw.hold_expires_at) : undefined,
         });
         setLoadState('ready');
       })
@@ -177,8 +182,11 @@ export default function GatewayDispatcher() {
   }, [method]);
 
   const goToSuccess = useCallback(
-    (id: string) => {
-      router.push(`/thanh-toan/thanh-cong?bookingId=${encodeURIComponent(id)}`);
+    (id: string, code?: string) => {
+      const params = new URLSearchParams();
+      params.set('bookingId', id);
+      if (code) params.set('bookingCode', code);
+      router.push(`/thanh-toan/thanh-cong?${params.toString()}`);
     },
     [router]
   );
@@ -242,13 +250,13 @@ export default function GatewayDispatcher() {
                 }
               : undefined,
         });
-        goToSuccess(booking.bookingId);
+        goToSuccess(booking.bookingId, booking.bookingCode);
       } catch (err) {
         // 409 = đơn đã được thanh toán (lần bấm trước đã commit, hoặc webhook QR
         // về trước). Đó không phải thất bại: khách phải thấy vé, không phải một
         // banner đỏ trong khi tiền đã trừ và đơn đã `confirmed`.
         if ((err as { status?: number } | null)?.status === 409) {
-          goToSuccess(booking.bookingId);
+          goToSuccess(booking.bookingId, booking.bookingCode);
           return;
         }
         setPaymentError(
@@ -319,7 +327,7 @@ export default function GatewayDispatcher() {
           tone="info"
           title="Đơn đặt vé đã được thanh toán"
           description={`Đặt chỗ ${booking.bookingCode ?? booking.bookingId} đã ở trạng thái đã xác nhận, không cần thanh toán thêm.`}
-          actionHref={`/thanh-toan/thanh-cong?bookingId=${encodeURIComponent(booking.bookingId)}`}
+          actionHref={`/thanh-toan/thanh-cong?bookingId=${encodeURIComponent(booking.bookingId)}&bookingCode=${encodeURIComponent(booking.bookingCode || '')}`}
           actionLabel="Xem vé điện tử"
         />
       </div>
@@ -338,6 +346,7 @@ export default function GatewayDispatcher() {
         bookingCode={effectiveCode}
         amount={effectiveAmount}
         methodTitle={methodTitle}
+        expiresAt={method === 'movi' ? booking.holdExpiresAt : undefined}
       />
 
       <div className="py-4">
@@ -362,81 +371,90 @@ export default function GatewayDispatcher() {
           </div>
         )}
 
-        {method === 'qr' && (
-          <QrGatewayContent
-            bookingId={booking.bookingId}
-            bookingCode={effectiveCode}
-            amount={effectiveAmount}
-            onSuccess={handlePaymentSuccess}
-            methodType="vnpay_qr"
-          />
-        )}
-
-        {method === 'card' && (
-          <CardGatewayContent
-            bookingId={booking.bookingId}
-            bookingCode={effectiveCode}
-            amount={effectiveAmount}
-            onSuccess={handlePaymentSuccess}
-          />
-        )}
-
-        {method === 'napas' && (
-          <NapasGatewayContent
-            bookingId={booking.bookingId}
-            bookingCode={effectiveCode}
-            amount={effectiveAmount}
-            onSuccess={handlePaymentSuccess}
-          />
-        )}
-
-        {method === 'ewallet' && (
-          <EWalletGatewayContent
-            bookingId={booking.bookingId}
-            bookingCode={effectiveCode}
-            amount={effectiveAmount}
-            onSuccess={handlePaymentSuccess}
-          />
-        )}
-
-        {method === 'movi' && (
-          <MoviGatewayContent
-            bookingId={booking.bookingId}
-            bookingCode={effectiveCode}
-            amount={effectiveAmount}
-            onSuccess={handlePaymentSuccess}
-          />
-        )}
-
-        {method === 'wallet' && (
-          <WalletGatewayContent
-            bookingId={booking.bookingId}
-            bookingCode={effectiveCode}
-            amount={effectiveAmount}
-            onSuccess={handlePaymentSuccess}
-          />
-        )}
-
-        {method === 'bank' && (
-          <BankGatewayContent
-            bookingId={booking.bookingId}
-            bookingCode={effectiveCode}
-            originalAmount={booking.total}
-            amount={effectiveAmount}
-            discountAmount={promoDiscount}
-            discountCode={promoCode}
-            onSuccess={handlePaymentSuccess}
-          />
-        )}
-
-        {method === 'skypoint' && (
-          <SkyPointGatewayContent
-            bookingId={booking.bookingId}
-            bookingCode={effectiveCode}
-            amount={effectiveAmount}
-            onSuccess={handlePaymentSuccess}
-          />
-        )}
+        <Suspense fallback={<GatewaySkeleton />}>{
+          method === 'qr' && (
+            <QrGatewayContent
+              bookingId={booking.bookingId}
+              bookingCode={effectiveCode}
+              amount={effectiveAmount}
+              onSuccess={handlePaymentSuccess}
+              methodType="vnpay_qr"
+            />
+          )
+        }</Suspense>
+        <Suspense fallback={<GatewaySkeleton />}>{
+          method === 'card' && (
+            <CardGatewayContent
+              bookingId={booking.bookingId}
+              bookingCode={effectiveCode}
+              amount={effectiveAmount}
+              onSuccess={handlePaymentSuccess}
+            />
+          )
+        }</Suspense>
+        <Suspense fallback={<GatewaySkeleton />}>{
+          method === 'napas' && (
+            <NapasGatewayContent
+              bookingId={booking.bookingId}
+              bookingCode={effectiveCode}
+              amount={effectiveAmount}
+              onSuccess={handlePaymentSuccess}
+            />
+          )
+        }</Suspense>
+        <Suspense fallback={<GatewaySkeleton />}>{
+          method === 'ewallet' && (
+            <EWalletGatewayContent
+              bookingId={booking.bookingId}
+              bookingCode={effectiveCode}
+              amount={effectiveAmount}
+              onSuccess={handlePaymentSuccess}
+            />
+          )
+        }</Suspense>
+        <Suspense fallback={<GatewaySkeleton />}>{
+          method === 'movi' && (
+            <MoviGatewayContent
+              bookingId={booking.bookingId}
+              bookingCode={effectiveCode}
+              amount={effectiveAmount}
+              onSuccess={handlePaymentSuccess}
+            />
+          )
+        }</Suspense>
+        <Suspense fallback={<GatewaySkeleton />}>{
+          method === 'wallet' && (
+            <WalletGatewayContent
+              bookingId={booking.bookingId}
+              bookingCode={effectiveCode}
+              amount={effectiveAmount}
+              onSuccess={handlePaymentSuccess}
+            />
+          )
+        }</Suspense>
+        <Suspense fallback={<GatewaySkeleton />}>{
+          method === 'bank' && (
+            <BankGatewayContent
+              bookingId={booking.bookingId}
+              bookingCode={effectiveCode}
+              originalAmount={booking.total}
+              amount={effectiveAmount}
+              discountAmount={promoDiscount}
+              discountCode={promoCode}
+              onSuccess={handlePaymentSuccess}
+            />
+          )
+        }</Suspense>
+        <Suspense fallback={<GatewaySkeleton />}>{
+          method === 'skypoint' && (
+            <SkyPointGatewayContent
+              bookingId={booking.bookingId}
+              bookingCode={effectiveCode}
+              amount={effectiveAmount}
+              onSuccess={handlePaymentSuccess}
+            />
+          )
+        }</Suspense>
       </div>
     </div>
   );

@@ -668,12 +668,16 @@ module.exports = {
           '0%': { transform: 'translateX(100%)' },
           '100%': { transform: 'translateX(-100%)' },
         },
-        scaleIn: {
+        'scale-in': {
           '0%': { transform: 'scale(0.95)', opacity: '0' },
           '100%': { transform: 'scale(1)', opacity: '1' },
         },
       },
     },
+  },
+  corePlugins: {
+    // `outline-hidden` (Tailwind 3.4+) — used in payment gateway inputs
+    outline: true,
   },
   plugins: [
     // `tailwindcss-animate` provides `animate-in`, `fade-in`, `zoom-in-95`,
@@ -687,6 +691,21 @@ module.exports = {
     plugin(({ addUtilities }) => {
       addUtilities({
         '.perspective-1000': { perspective: '1000px' },
+      });
+    }),
+    // Tailwind 3.4 lacks `outline-hidden` (added in v4). Used in payment
+    // gateway inputs. Register as custom utility.
+    plugin(({ addUtilities }) => {
+      addUtilities({
+        '.outline-hidden': {
+          outline: 'none',
+          '--tw-ring-offset-shadow':
+            'var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color)',
+          '--tw-ring-shadow':
+            'var(--tw-ring-inset) 0 0 0 calc(1px + var(--tw-ring-offset-width)) var(--tw-ring-color)',
+          'box-shadow':
+            'var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000)',
+        },
       });
     }),
   ],

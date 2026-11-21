@@ -92,7 +92,13 @@ export default function SubpageHeader({
             aria-label="Vietjet Air - Trang chủ"
             className="mr-10 flex shrink-0 items-center transition hover:opacity-95"
           >
-            <img src="/images/vj-logo.svg" alt="Vietjet Air" className="h-[46px] w-auto" />
+            <img
+              src="/images/vj-logo.svg"
+              alt="Vietjet Air"
+              width={265}
+              height={46}
+              className="h-[46px] w-auto"
+            />
           </Link>
 
           <nav aria-label="Điều hướng chính" className="flex items-center gap-7">

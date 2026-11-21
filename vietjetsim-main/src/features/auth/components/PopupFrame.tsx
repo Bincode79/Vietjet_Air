@@ -50,14 +50,28 @@ export default function PopupFrame({
   );
 
   useEffect(() => {
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = originalOverflow;
+    };
+  }, []);
+
+  useEffect(() => {
     if (!onClose) return;
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [handleKeyDown, onClose]);
 
+  const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (e.target === e.currentTarget && onClose) {
+      onClose();
+    }
+  };
+
   return (
-    <div className="vj-popup-overlay" role="presentation">
-      <div role="dialog" aria-modal="true" aria-label={title} className="vj-popup-frame">
+    <div className="vj-popup-overlay" role="presentation" onClick={handleOverlayClick}>
+      <div role="dialog" aria-modal="true" aria-label={title} className="vj-popup-frame" onClick={(e) => e.stopPropagation()}>
         {/* Băng đỏ 48px — tiêu đề + nút đóng. */}
         <div className="vj-popup-header">
           <span className="vj-popup-header-title">{title}</span>

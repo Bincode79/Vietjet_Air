@@ -185,7 +185,7 @@ export default function CardGatewayContent({
         {/* 3D-Secure OTP Simulation Modal */}
         {showOtpModal && (
           <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4">
-            <div className="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl space-y-4 text-center animate-scaleIn">
+            <div className="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl space-y-4 text-center animate-scale-in">
               <div className="w-12 h-12 rounded-full bg-blue-50 text-vj-blue flex items-center justify-center mx-auto">
                 <Icon name="ShieldCheckIcon" size={28} />
               </div>

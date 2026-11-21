@@ -88,6 +88,8 @@ export default function VietjetMobileDrawer({ isOpen, onClose }: VietjetMobileDr
             <img
               src="/images/vj-logo.svg"
               alt="Vietjet Air"
+              width={84}
+              height={15}
               className="h-6 w-auto brightness-0 invert"
             />
           </div>

@@ -908,6 +908,8 @@ export default function MyFlightsPage() {
             <img
               src="/images/hero/amy-mascot.png"
               alt="Mascot Amy"
+              width={200}
+              height={100}
               className="w-24 sm:w-28 h-auto drop-shadow-lg"
               loading="lazy"
             />

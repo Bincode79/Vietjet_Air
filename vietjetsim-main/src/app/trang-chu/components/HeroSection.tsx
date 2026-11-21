@@ -110,6 +110,9 @@ export default function HeroSection() {
               <img
                 src={banner.image}
                 alt={banner.title}
+                loading={idx === 0 ? 'eager' : 'lazy'}
+                width={1440}
+                height={720}
                 className={`w-full h-full object-cover object-top ${banner.focusClass}`}
               />
             </div>

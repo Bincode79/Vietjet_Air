@@ -19,23 +19,9 @@ import BookingTicketCard from './BookingTicketCard';
 import GatewayQrPage from './GatewayQrPage';
 import CardGatewayContent from './gateway/CardGatewayContent';
 import MoviGatewayContent from './gateway/MoviGatewayContent';
-import {
-  VisaLogo,
-  MastercardLogo,
-  JcbLogo,
-  AmexLogo,
-  NapasLogo,
-  VietQrLogo,
-  VnpayLogo,
-  MomoLogo,
-  ZaloPayLogo,
-  ApplePayLogo,
-  GooglePayLogo,
-  SkyJoyLogo,
-  MoviLogo,
-  GalaxyPayBadge,
-  PaymentSecurityFooter,
-} from './PaymentMethodLogos';
+import { GalaxyPayBadge } from './PaymentMethodLogos';
+import { usePaymentMethod } from '@/features/payments/hooks/usePaymentMethod';
+import { PaymentCategorySection, SecurityFooter } from '@/features/payments/components/PaymentMethodCard';
 
 /**
  * `YYYY-MM-DD` from the booking, as `d/M/yyyy`.
@@ -69,20 +55,21 @@ export default function PaymentClient() {
   const router = useRouter();
   const [showSummaryModal, setShowSummaryModal] = useState(false);
   const [_promoChecked] = useState(false);
-  const [selectedMethodGroup, setSelectedMethodGroup] = useState<string>(() => {
-    if (typeof window === 'undefined') return 'vnpay_qr';
-    const param = new URLSearchParams(window.location.search).get('method');
-    return param || 'vnpay_qr';
-  });
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>(() => {
-    if (typeof window === 'undefined') return 'vietqr';
-    const param = new URLSearchParams(window.location.search).get('method');
-    if (param === 'card') return 'card';
-    if (param === 'bank') return 'bank';
-    if (param === 'wallet') return 'wallet';
-    if (param === 'skypoint') return 'skypoint';
-    return 'vietqr';
-  });
+
+  // Hook quản lý state phương thức thanh toán (nhóm theo danh mục)
+  const {
+    selectedMethodGroup,
+    paymentMethod,
+    currentMethod,
+    isMovi,
+    isCardType,
+    isQrType,
+    isEwalletType,
+    selectMethod,
+    methodsByCategory,
+    activeCategories,
+    gatewayRoute,
+  } = usePaymentMethod();
   const [promoCode, setPromoCode] = useState('');
   const [promoApplied, setPromoApplied] = useState(false);
   const [promoData, setPromoData] = useState<{
@@ -305,8 +292,6 @@ export default function PaymentClient() {
    * đóng tab là mất trắng, và chỉnh ngày giờ máy là thay đổi luật.
    */
   const [moviHoldExpiresAt, setMoviHoldExpiresAt] = useState<string | null>(null);
-  const [showFlightInfoAccordion, setShowFlightInfoAccordion] = useState<boolean>(true);
-  const [showPaxInfoAccordion, setShowPaxInfoAccordion] = useState<boolean>(true);
 
   // Ưu tiên dùng PNR (booking_code) làm lookup target cho cả hold lẫn thanh toán
   // để mọi khách (dù chưa đăng nhập hoặc tra cứu lại vé) đều được cấp quyền qua canAccessBooking
@@ -339,7 +324,7 @@ export default function PaymentClient() {
       if (data.hold?.expiresAt) {
         setMoviHoldExpiresAt(data.hold.expiresAt);
       }
-    } catch (err) {
+    } catch (_err) {
       // Không giữ được chỗ thì vẫn cho khách thanh toán (đây là phương thức
       // thanh toán, không phải điều kiện được phép thanh toán) — nhưng phải
       // nói rõ, vì lúc đó không có ai hủy booking giúp khách.
@@ -366,15 +351,14 @@ export default function PaymentClient() {
     void apiRequest<{ expired?: boolean; booking_status?: string }>(
       `/api/dat-ve/${effectiveLookupTarget}/giu-cho`,
       { method: 'POST', body: { action: 'expire' } }
-    )
-      .then((data) => {
-        if (data.expired || data.booking_status === 'cancelled') {
-          toast.error(
-            'Hết thời gian giữ chỗ',
-            'Mã đặt chỗ đã bị hủy. Vui lòng đặt vé lại để tiếp tục.'
-          );
-        }
-      })
+    ).then((data) => {
+      if (data.expired || data.booking_status === 'cancelled') {
+        toast.error(
+          'Hết thời gian giữ chỗ',
+          'Mã đặt chỗ đã bị hủy. Vui lòng đặt vé lại để tiếp tục.'
+        );
+      }
+    });
   }, [effectiveLookupTarget, toast]);
 
   /** Gia hạn lượt giữ chỗ MOVI (nút "Gia hạn" của đồng hồ đếm ngược). */
@@ -553,7 +537,7 @@ export default function PaymentClient() {
                 bookingId={booking?.bookingId || bookingId || ''}
                 bookingCode={booking?.bookingCode ?? bookingCodeLabel}
                 amount={total}
-                onSuccess={(payload) => {
+                onSuccess={() => {
                   setGatewaySuccess(true);
                 }}
               />
@@ -582,21 +566,29 @@ export default function PaymentClient() {
       {/* Trip strip — brand-yellow band directly under header matching Image #1 or Image #8 */}
       {isPnrLookup ? (
         <div
-          className="bg-vj-yellow text-vj-dark shadow-vj-sm border-b border-amber-300 py-2.5 px-3 sm:px-6 z-20 font-koho sticky top-[74px]"
+          className="bg-vj-yellow text-vj-dark shadow-vj-sm border-b border-amber-300 py-2 sm:py-2.5 px-3 sm:px-6 z-20 font-koho sticky top-[48px] lg:top-[74px]"
           data-testid="trip-board"
         >
-          <div className="max-w-5xl mx-auto flex flex-wrap items-center justify-between gap-y-1 text-2xs sm:text-xs">
-            <div className="flex items-center gap-1.5 font-bold">
-              <span>Mã đặt chỗ :</span>
-              <span className="text-red-600 font-black text-xs sm:text-sm">{bookingCodeLabel}</span>
+          <div className="max-w-5xl mx-auto flex flex-col sm:flex-row sm:items-center justify-between gap-1 sm:gap-2 text-2xs sm:text-xs">
+            <div className="flex items-center justify-between sm:justify-start gap-3">
+              <div className="flex items-center gap-1.5 font-bold">
+                <span>Mã đặt chỗ :</span>
+                <span className="text-red-600 font-black text-xs sm:text-sm font-mono">
+                  {bookingCodeLabel}
+                </span>
+              </div>
+              <div className="flex items-center gap-1.5 font-bold">
+                <span className="hidden sm:inline">Trạng thái:</span>
+                <span className="text-red-600 font-bold bg-red-100 text-3xs px-2 py-0.5 rounded">
+                  Chưa thanh toán
+                </span>
+              </div>
             </div>
-            <div className="flex items-center gap-1.5 font-bold">
-              <span>Trạng thái thanh toán :</span>
-              <span className="text-red-600 font-black">Chưa thanh toán</span>
-            </div>
-            <div className="flex items-center gap-1 text-right font-bold">
-              <span>Yêu cầu thanh toán :</span>
-              <span className="text-red-600 font-black">{total.toLocaleString('vi-VN')} VND</span>
+            <div className="flex items-center justify-between sm:justify-end gap-1.5 font-bold pt-1 sm:pt-0 border-t sm:border-t-0 border-amber-300/60">
+              <span className="text-vj-text">Yêu cầu thanh toán:</span>
+              <span className="text-red-600 font-black text-xs sm:text-sm">
+                {total.toLocaleString('vi-VN')} VND
+              </span>
               {moviHoldExpiresAt && (
                 <span className="text-red-600 text-3xs font-medium ml-1">
                   trước {formatHoldExpireDate(moviHoldExpiresAt)} (Theo giờ địa phương)
@@ -612,23 +604,28 @@ export default function PaymentClient() {
         >
           <div className="mx-auto flex max-w-5xl items-center justify-between gap-x-3 px-3 py-2 sm:px-6 sm:py-2 text-xs">
             {/* Mobile compact summary */}
-            <div className="flex sm:hidden items-center gap-2">
+            <div className="flex sm:hidden items-center gap-2 min-w-0 flex-1">
               <button
                 type="button"
                 onClick={() => setShowSummaryModal(true)}
                 className="bg-white rounded-full px-2.5 py-1 text-2xs font-bold text-vj-text flex items-center gap-1 shadow-xs cursor-pointer hover:bg-vj-surface-2 active:scale-98 transition-all border border-amber-200 shrink-0"
               >
                 <span>Tổng:</span>
-                <span className="text-vj-red-dark font-bold">
+                <span className="text-vj-red-dark font-bold whitespace-nowrap">
                   {total > 0 ? `${total.toLocaleString('vi-VN')} VND` : '0 VND'}
                 </span>
                 <span className="text-3xs text-vj-gray">▾</span>
               </button>
-              <div className="flex items-center gap-1 font-koho text-2xs font-semibold text-vj-text truncate">
-                <span>{booking.fromCity || booking.from}</span>
-                <span className="text-vj-red-dark">✈</span>
-                <span>{booking.toCity || booking.to}</span>
+              <div className="flex items-center gap-1 font-koho text-2xs font-semibold text-vj-text truncate min-w-0">
+                <span className="truncate">{booking.fromCity || booking.from}</span>
+                <span className="text-vj-red-dark shrink-0">✈</span>
+                <span className="truncate">{booking.toCity || booking.to}</span>
               </div>
+            </div>
+
+            {/* Mobile-only Step Pill */}
+            <div className="flex sm:hidden items-center gap-1 font-koho text-3xs font-bold text-white bg-vj-pay-green px-2 py-0.5 rounded-full shrink-0 shadow-2xs">
+              4/4 Thanh toán
             </div>
 
             {/* Desktop matching Image #1: 2 lines */}
@@ -647,8 +644,8 @@ export default function PaymentClient() {
               </div>
             </div>
 
-            {/* 4 Green Circle Badges matching Image #1 */}
-            <div className="flex items-center gap-2 font-koho">
+            {/* 4 Green Circle Badges matching Image #1 (Desktop only) */}
+            <div className="hidden sm:flex items-center gap-2 font-koho">
               <div
                 className="w-7 h-7 rounded-full bg-vj-pay-green text-white flex items-center justify-center shadow-xs cursor-default"
                 title="1. Chuyến bay"
@@ -678,8 +675,8 @@ export default function PaymentClient() {
         </div>
       )}
 
-      <div className="pt-4 sm:pt-6 pb-28 sm:pb-12">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6">
+      <div className="pt-3 sm:pt-6 pb-36 sm:pb-12">
+        <div className="max-w-5xl mx-auto px-3 sm:px-6">
           {/* Reservation Countdown Timer
            *
            * MOVI có đồng hồ RIÊNG, đếm theo mốc hết hạn do SERVER quyết
@@ -718,586 +715,85 @@ export default function PaymentClient() {
           <h1 className="sr-only">Thanh toán vé máy bay</h1>
 
           <div className="space-y-6">
+            {/* THÔNG TIN ĐẶT CHỖ — gộp toàn bộ chuyến bay, hành khách, chi tiết giá & thanh toán */}
+            <BookingTicketCard
+              flightNo={booking.flightNo}
+              from={booking.from}
+              to={booking.to}
+              fromCity={booking.fromCity}
+              toCity={booking.toCity}
+              departTime={booking.departTime}
+              arriveTime={booking.arriveTime}
+              date={booking.date ? formatBookingDay(booking.date) : ''}
+              bookingCode={bookingCodeLabel !== '—' ? bookingCodeLabel : undefined}
+              passengers={booking.passengers}
+              fareClass="Eco"
+              ancillaries={
+                booking.ancillaries?.length
+                  ? (booking.ancillaries
+                      .map((id) => ANCILLARY_OPTIONS.find((o) => o.id === id)?.title)
+                      .filter(Boolean) as string[])
+                  : ['Hành lý xách tay 7kg']
+              }
+              fareSubtotal={booking.fareSubtotal ?? 1738800}
+              tax={booking.tax ?? 581581}
+              seatFee={booking.seatFee ?? 259200}
+              ancillaryFee={booking.ancillaryFee ?? 44000}
+              total={total}
+              terminal="Nhà ga 1"
+              aircraft="A321"
+              duration="2 giờ 10 phút"
+              contactEmail={booking.contactEmail}
+              contactPhone={booking.contactPhone}
+              onOpenDetails={() => setShowSummaryModal(true)}
+              promoCode={promoCode}
+              onPromoCodeChange={(val) => {
+                setPromoCode(val);
+                setPromoError('');
+              }}
+              onApplyPromo={applyPromo}
+              isApplyingPromo={isApplyingPromo}
+              promoApplied={promoApplied}
+              promoData={promoData}
+              promoError={promoError}
+              discountAmount={discountAmount}
+              taxRate={TAX_AND_FEE_RATE}
+            />
+
             {/* Payment Form */}
             <div className="space-y-4">
-              {/* Accordions Thông tin chuyến bay & hành khách khi tra cứu vé giữ chỗ chuẩn Image #8 */}
-              {isPnrLookup && booking && (
-                <div className="space-y-3 font-koho text-xs">
-                  {/* 1. Thông tin chuyến bay */}
-                  <div className="rounded-xl border border-gray-200 bg-white overflow-hidden shadow-2xs">
-                    <button
-                      type="button"
-                      onClick={() => setShowFlightInfoAccordion((prev) => !prev)}
-                      className="w-full flex items-center justify-between p-3.5 bg-gray-50/80 hover:bg-gray-100 transition-colors cursor-pointer text-left font-bold text-gray-900 border-b border-gray-100"
-                    >
-                      <span className="text-sm">Thông tin chuyến bay</span>
-                      <span className="text-xs text-gray-500 font-mono">
-                        {showFlightInfoAccordion ? '▲' : '▼'}
-                      </span>
-                    </button>
-                    {showFlightInfoAccordion && (
-                      <div className="p-4 space-y-2 text-gray-700 bg-white">
-                        <div className="font-bold text-gray-900 text-sm">
-                          Chuyến đi: {booking.from}-{booking.to}
-                        </div>
-                        <div className="text-red-600 font-semibold text-xs">
-                          Số hiệu chuyến bay: {booking.flightNo}
-                        </div>
-                        <div className="text-xs leading-relaxed">
-                          <span className="text-red-600 font-bold">* Khởi hành: </span>
-                          <span>
-                            {booking.departTime}, {formatBookingDay(booking.date)} (Giờ địa phương)
-                          </span>
-                          <div className="text-gray-500 ml-3">
-                            {booking.fromCity} - Sân bay ({booking.from}) - Nhà ga 1
-                          </div>
-                        </div>
-                        <div className="text-xs leading-relaxed">
-                          <span className="text-vj-pay-green font-bold">• Đến: </span>
-                          <span>
-                            {booking.arriveTime}, {formatBookingDay(booking.date)} (Giờ địa phương)
-                          </span>
-                          <div className="text-gray-500 ml-3">
-                            {booking.toCity} - Sân bay ({booking.to})
-                          </div>
-                        </div>
-                        <div className="text-gray-500 text-3xs pt-1.5 border-t border-gray-100">
-                          Thời gian: 2 giờ 10 phút &nbsp;|&nbsp; Airbus: A321 &nbsp;|&nbsp; Khai
-                          thác bởi: Vietjet
-                        </div>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* 2. Thông tin hành khách */}
-                  <div className="rounded-xl border border-gray-200 bg-white overflow-hidden shadow-2xs">
-                    <button
-                      type="button"
-                      onClick={() => setShowPaxInfoAccordion((prev) => !prev)}
-                      className="w-full flex items-center justify-between p-3.5 bg-gray-50/80 hover:bg-gray-100 transition-colors cursor-pointer text-left font-bold text-gray-900 border-b border-gray-100"
-                    >
-                      <span className="text-sm">Thông tin hành khách</span>
-                      <span className="text-xs text-gray-500 font-mono">
-                        {showPaxInfoAccordion ? '▲' : '▼'}
-                      </span>
-                    </button>
-                    {showPaxInfoAccordion && (
-                      <div className="p-4 space-y-1.5 text-gray-700 bg-white text-xs">
-                        <div className="font-bold text-gray-900 flex items-center gap-1.5">
-                          <span>👤</span>
-                          <span>Người lớn: {booking.passengers?.[0]?.name || '—'}</span>
-                        </div>
-                        <div className="font-semibold text-gray-600">
-                          {booking.from} ➔ {booking.to}
-                        </div>
-                        <div>
-                          Số ghế: {booking.flightNo}-{booking.passengers?.[0]?.seat || '15A'}
-                        </div>
-                        <div>Hành lý ký gửi: Gói 20kg</div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
               {/* Payment Method Card */}
-              <div className="bg-white rounded-2xl border border-[var(--border)] p-4 sm:p-5 shadow-vj-sm">
-                <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+              <div className="bg-white rounded-2xl border border-[var(--border)] p-3.5 sm:p-5 shadow-vj-sm">
+                <div className="mb-3.5 sm:mb-4 flex flex-wrap items-center justify-between gap-2">
                   <div>
-                    <h2 className="text-lg font-bold font-koho text-vj-text">
+                    <h2 className="text-base sm:text-lg font-bold font-koho text-vj-text">
                       Phương thức thanh toán
                     </h2>
                   </div>
-                  <div className="flex items-center gap-1.5 text-xs text-vj-gray font-koho">
-                    <span>Được xử lý bởi Cổng thanh toán</span>
+                  <div className="flex items-center gap-1.5 text-3xs sm:text-xs text-vj-gray font-koho">
+                    <span className="hidden sm:inline">Được xử lý bởi Cổng thanh toán</span>
                     <GalaxyPayBadge />
                   </div>
                 </div>
 
-                {/* 1. Thẻ và tài khoản ngân hàng (Screenshot 3) */}
-                <div className="mb-5">
-                  <h3 className="text-2xl3 font-semibold font-koho uppercase text-vj-text tracking-normal mb-2.5">
-                    Thẻ và tài khoản ngân hàng
-                  </h3>
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-                    {/* 1. Quét mã QR VNPAY (Khuyên dùng - Mặc định) */}
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setSelectedMethodGroup('vnpay_qr');
-                        setPaymentMethod('vietqr');
-                      }}
-                      className={`p-3 rounded-vj border flex flex-col justify-between text-left transition-all cursor-pointer min-h-[96px] relative overflow-hidden ${
-                        selectedMethodGroup === 'vnpay_qr'
-                          ? 'border-2 border-primary bg-[rgb(var(--vj-red-rgb))]/10 shadow-xs'
-                          : 'border-vj-border-light hover:border-vj-line bg-white'
-                      }`}
-                    >
-                      <div className="absolute top-0 right-0 bg-primary text-white text-4xs font-black px-1.5 py-0.5 rounded-bl-md uppercase tracking-wider">
-                        Khuyên dùng
-                      </div>
-                      <div className="flex items-center h-8">
-                        <VnpayLogo className="h-5 w-auto max-w-[104px]" />
-                      </div>
-                      <span className="text-xs font-bold text-vj-text mt-2 line-clamp-2 leading-tight">
-                        Quét mã VNPAY-QR
-                      </span>
-                    </button>
-
-                    {/* 2. Mobile Banking VietQR */}
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setSelectedMethodGroup('vietqr');
-                        setPaymentMethod('vietqr');
-                      }}
-                      className={`p-3 rounded-vj border flex flex-col justify-between text-left transition-all cursor-pointer min-h-[96px] relative overflow-hidden ${
-                        selectedMethodGroup === 'vietqr'
-                          ? 'border-2 border-primary bg-[rgb(var(--vj-red-rgb))]/10 shadow-xs'
-                          : 'border-vj-border-light hover:border-vj-line bg-white'
-                      }`}
-                    >
-                      <div className="flex items-center h-8">
-                        <VietQrLogo className="h-5 w-auto max-w-[104px]" />
-                      </div>
-                      <span className="text-xs font-bold text-vj-text mt-2 line-clamp-2 leading-tight">
-                        Mobile Banking VietQR
-                      </span>
-                    </button>
-
-                    {/* 3. Thẻ ATM nội địa Napas */}
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setSelectedMethodGroup('napas');
-                        setPaymentMethod('bank');
-                      }}
-                      className={`p-3 rounded-vj border flex flex-col justify-between text-left transition-all cursor-pointer min-h-[96px] ${
-                        selectedMethodGroup === 'napas'
-                          ? 'border-2 border-primary bg-[rgb(var(--vj-red-rgb))]/10 shadow-xs'
-                          : 'border-vj-border-light hover:border-vj-line bg-white'
-                      }`}
-                    >
-                      <div className="flex items-center h-8">
-                        <NapasLogo className="h-4 w-auto max-w-[104px]" />
-                      </div>
-                      <span className="text-xs font-bold text-vj-text mt-2">Thẻ ATM nội địa</span>
-                    </button>
-
-                    {/* 4. Thẻ tín dụng / ghi nợ quốc tế */}
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setSelectedMethodGroup('card');
-                        setPaymentMethod('card');
-                      }}
-                      className={`p-3 rounded-vj border flex flex-col justify-between text-left transition-all cursor-pointer min-h-[96px] ${
-                        selectedMethodGroup === 'card'
-                          ? 'border-2 border-primary bg-[rgb(var(--vj-red-rgb))]/10 shadow-xs'
-                          : 'border-vj-border-light hover:border-vj-line bg-white'
-                      }`}
-                    >
-                      {/* Bốn logo mạng thẻ xếp 2×2 để không bị chồng lên nhau */}
-                      <div className="grid grid-cols-2 gap-x-2 gap-y-1 h-8 items-center">
-                        <VisaLogo className="h-4 w-auto" />
-                        <MastercardLogo className="h-4 w-auto" />
-                        <JcbLogo className="h-4 w-auto" />
-                        <AmexLogo className="h-4 w-auto" />
-                      </div>
-                      <span className="text-xs font-bold text-vj-text mt-2 line-clamp-2 leading-tight">
-                        Thẻ tín dụng / ghi nợ quốc tế
-                      </span>
-                    </button>
-
-                    {/* 5. Thanh toán nội địa VNPAY */}
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setSelectedMethodGroup('vnpay_dom');
-                        setPaymentMethod('vietqr');
-                      }}
-                      className={`p-3 rounded-vj border flex flex-col justify-between text-left transition-all cursor-pointer min-h-[96px] ${
-                        selectedMethodGroup === 'vnpay_dom'
-                          ? 'border-2 border-primary bg-[rgb(var(--vj-red-rgb))]/10 shadow-xs'
-                          : 'border-vj-border-light hover:border-vj-line bg-white'
-                      }`}
-                    >
-                      <div className="flex items-center h-8">
-                        <VnpayLogo className="h-4 w-auto max-w-[104px]" />
-                      </div>
-                      <span className="text-xs font-bold text-vj-text mt-2 line-clamp-2 leading-tight">
-                        Thanh toán nội địa VNPAY
-                      </span>
-                    </button>
-                  </div>
-                </div>
-
-                {/* 2. Ví điện tử (Screenshot 3) */}
-                <div className="mb-5">
-                  <h3 className="text-2xl3 font-semibold font-koho uppercase text-vj-text tracking-normal mb-2.5">
-                    Ví điện tử
-                  </h3>
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-                    {/* SkyJoy (ví tích lũy / điểm SkyPoint) */}
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setSelectedMethodGroup('skypay');
-                        setPaymentMethod('skypoint');
-                      }}
-                      className={`p-3 rounded-vj border flex flex-col justify-between text-left transition-all cursor-pointer min-h-[90px] ${
-                        selectedMethodGroup === 'skypay'
-                          ? 'border-2 border-primary bg-[rgb(var(--vj-red-rgb))]/10 shadow-xs'
-                          : 'border-vj-border-light hover:border-vj-line bg-white'
-                      }`}
-                    >
-                      <div className="flex items-center h-8">
-                        <SkyJoyLogo className="h-7 w-auto" />
-                      </div>
-                      <span className="text-xs font-bold text-vj-text mt-2">Ví SkyJoy</span>
-                    </button>
-
-                    {/* MoMo */}
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setSelectedMethodGroup('momo');
-                        setPaymentMethod('e_wallet');
-                      }}
-                      className={`p-3 rounded-vj border flex flex-col justify-between text-left transition-all cursor-pointer min-h-[90px] ${
-                        selectedMethodGroup === 'momo'
-                          ? 'border-2 border-primary bg-[rgb(var(--vj-red-rgb))]/10 shadow-xs'
-                          : 'border-vj-border-light hover:border-vj-line bg-white'
-                      }`}
-                    >
-                      <div className="flex items-center h-8">
-                        <MomoLogo className="h-7 w-auto" />
-                      </div>
-                      <span className="text-xs font-bold text-vj-text mt-2">Ví MoMo</span>
-                    </button>
-
-                    {/* ZaloPay */}
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setSelectedMethodGroup('zalopay');
-                        setPaymentMethod('e_wallet');
-                      }}
-                      className={`p-3 rounded-vj border flex flex-col justify-between text-left transition-all cursor-pointer min-h-[90px] ${
-                        selectedMethodGroup === 'zalopay'
-                          ? 'border-2 border-primary bg-[rgb(var(--vj-red-rgb))]/10 shadow-xs'
-                          : 'border-vj-border-light hover:border-vj-line bg-white'
-                      }`}
-                    >
-                      <div className="flex items-center h-8">
-                        <ZaloPayLogo className="h-5 w-auto max-w-[104px]" />
-                      </div>
-                      <span className="text-xs font-bold text-vj-text mt-2">Ví ZaloPay</span>
-                    </button>
-
-                    {/* Apple Pay */}
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setSelectedMethodGroup('applepay');
-                        setPaymentMethod('card');
-                      }}
-                      className={`p-3 rounded-vj border flex flex-col justify-between text-left transition-all cursor-pointer min-h-[90px] ${
-                        selectedMethodGroup === 'applepay'
-                          ? 'border-2 border-primary bg-[rgb(var(--vj-red-rgb))]/10 shadow-xs'
-                          : 'border-vj-border-light hover:border-vj-line bg-white'
-                      }`}
-                    >
-                      <div className="flex items-center h-8">
-                        <ApplePayLogo className="h-6 w-auto max-w-[104px]" />
-                      </div>
-                      <span className="text-xs font-bold text-vj-text mt-2">Apple Pay</span>
-                    </button>
-
-                    {/* Google Pay */}
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setSelectedMethodGroup('googlepay');
-                        setPaymentMethod('card');
-                      }}
-                      className={`p-3 rounded-vj border flex flex-col justify-between text-left transition-all cursor-pointer min-h-[90px] ${
-                        selectedMethodGroup === 'googlepay'
-                          ? 'border-2 border-primary bg-[rgb(var(--vj-red-rgb))]/10 shadow-xs'
-                          : 'border-vj-border-light hover:border-vj-line bg-white'
-                      }`}
-                    >
-                      <div className="flex items-center h-8">
-                        <GooglePayLogo className="h-5 w-auto max-w-[104px]" />
-                      </div>
-                      <span className="text-xs font-bold text-vj-text mt-2">Google Pay</span>
-                    </button>
-                  </div>
-                </div>
-
-                {/* 3. Giữ mã đặt chỗ & thanh toán sau (Screenshot 4) */}
-                <div className="mb-5">
-                  <h3 className="text-2xl3 font-semibold font-koho uppercase text-vj-text tracking-normal mb-2.5">
-                    Giữ mã đặt chỗ & thanh toán sau
-                  </h3>
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setSelectedMethodGroup('movi');
-                        setPaymentMethod('movi');
-                      }}
-                      className={`p-3 rounded-vj border flex flex-col justify-between text-left transition-all cursor-pointer min-h-[90px] ${
-                        selectedMethodGroup === 'movi'
-                          ? 'border-2 border-primary bg-[rgb(var(--vj-red-rgb))]/10 shadow-xs'
-                          : 'border-vj-border-light hover:border-vj-line bg-white'
-                      }`}
-                    >
-                      <div className="flex items-center h-8">
-                        <MoviLogo className="h-6 w-auto max-w-[104px]" />
-                      </div>
-                      <span className="text-4xs text-vj-gray font-medium block mt-0.5">
-                        Bay trước, trả sau
-                      </span>
-                      <span className="text-xs font-bold text-vj-text mt-1">Trả góp Movi</span>
-                    </button>
-                  </div>
-                </div>
-
-                {/* CTA dẫn sang cổng thanh toán riêng của từng phương thức */}
-                <div className="pt-4 border-t border-vj-border-light space-y-3">
-                  <button
-                    type="button"
-                    onClick={goToPaymentGateway}
-                    className="w-full py-3.5 rounded-vj bg-primary hover:bg-primary-dark text-white font-black text-sm uppercase tracking-wide transition-all shadow-vj-md cursor-pointer"
-                  >
-                    Tiếp tục thanh toán
-                    {total > 0 ? ` • ${total.toLocaleString('vi-VN')}₫` : ''}
-                  </button>
-                  <p className="text-3xs text-vj-muted text-center font-koho">
-                    Bạn sẽ được chuyển đến cổng bảo mật để hoàn tất thanh toán.
-                  </p>
-                </div>
-
-                {/* Security and Accepted Logos Footer - hidden on MOVI matching Image #1 */}
-                {paymentMethod !== 'movi' && <PaymentSecurityFooter />}
-              </div>
-
-              {/* Security note - hidden on MOVI matching Image #1 */}
-              {paymentMethod !== 'movi' && (
-                <div className="flex items-center gap-3 bg-[rgb(var(--vj-green-rgb))]/10 border border-[rgb(var(--vj-green-rgb))]/30 rounded-vj p-4 text-sm text-[var(--vj-green)]">
-                  <Icon
-                    name="ShieldCheckIcon"
-                    size={20}
-                    className="text-[var(--vj-green)] flex-shrink-0"
+                {/* Render categories dynamically */}
+                {activeCategories.map(category => (
+                  <PaymentCategorySection
+                    key={category.key}
+                    category={category.key}
+                    title={category.title}
+                    methods={methodsByCategory[category.key]}
+                    selectedGroup={selectedMethodGroup}
+                    onSelect={selectMethod}
                   />
-                  <span>
-                    Thanh toán được bảo mật bằng mã hóa SSL 256-bit. Thông tin thẻ của bạn an toàn
-                    tuyệt đối.
-                  </span>
-                </div>
-              )}
-            </div>
+                ))}
 
-            {/* Order Summary */}
-            <div className="space-y-4">
-              {/* Realistic Vietjet Ticket Card */}
-              <BookingTicketCard
-                flightNo={booking.flightNo}
-                from={booking.from}
-                to={booking.to}
-                fromCity={booking.fromCity}
-                toCity={booking.toCity}
-                departTime={booking.departTime}
-                arriveTime={booking.arriveTime}
-                date={booking.date ? formatBookingDay(booking.date) : ''}
-                bookingCode={bookingCodeLabel !== '—' ? bookingCodeLabel : undefined}
-                passengers={booking.passengers}
-                fareClass="Eco"
-                ancillaries={
-                  booking.ancillaries?.length
-                    ? (booking.ancillaries
-                        .map((id) => ANCILLARY_OPTIONS.find((o) => o.id === id)?.title)
-                        .filter(Boolean) as string[])
-                    : ['Hành lý xách tay 7kg']
-                }
-                fareSubtotal={booking.fareSubtotal ?? 1738800}
-                tax={booking.tax ?? 581581}
-                seatFee={booking.seatFee ?? 259200}
-                ancillaryFee={booking.ancillaryFee ?? 44000}
-                total={total}
-                onOpenDetails={() => setShowSummaryModal(true)}
-              />
-
-              <div className="bg-white rounded-2xl border border-[var(--border)] p-5 shadow-vj-sm">
-                <h3 className="font-extrabold text-sm text-[var(--foreground)] mb-3">
-                  Chi tiết giá & thanh toán
-                </h3>
-
-                {/* Promo code — chuẩn underline MUI 40px Vietjet live */}
-                <div className="mt-4">
-                  <label className="block text-xs font-semibold text-[var(--foreground-subtle)] uppercase tracking-wider mb-1.5">
-                    Mã khuyến mãi
-                  </label>
-                  <div className="flex items-center gap-2">
-                    <div className="vj-lookup-field relative flex-1 mt-2 flex items-center h-[42px] px-3 bg-white border border-vj-line rounded-vj shadow-2xs focus-within:border-primary focus-within:ring-1 focus-within:ring-primary transition-all">
-                      <input
-                        id="promo-code-input"
-                        name="promoCode"
-                        type="text"
-                        value={promoCode}
-                        onChange={(e) => {
-                          setPromoCode(e.target.value.toUpperCase());
-                          setPromoError('');
-                        }}
-                        placeholder=" "
-                        disabled={promoApplied}
-                        className={`vj-lookup-input font-mono uppercase font-bold text-black !text-black !border-b-0 w-full disabled:opacity-50 ${promoApplied ? 'form-input-valid' : ''}`}
-                      />
-                      <label
-                        htmlFor="promo-code-input"
-                        className={`vj-lookup-label font-medium font-koho pointer-events-none transition-all ${
-                          promoCode
-                            ? '-top-2 bg-white px-1 text-3xs font-medium text-vj-gray !text-vj-gray'
-                            : 'left-3 text-sm text-vj-muted !text-vj-muted'
-                        }`}
-                      >
-                        VJ2026
-                      </label>
-                    </div>
-                    <button
-                      onClick={applyPromo}
-                      disabled={promoApplied || !promoCode || isApplyingPromo}
-                      className="h-[40px] px-3 bg-accent text-[var(--foreground)] font-bold rounded-vj text-xs hover:bg-accent-dark transition-colors disabled:opacity-50 min-w-[80px] flex items-center justify-center shrink-0"
-                    >
-                      {isApplyingPromo ? (
-                        <div className="w-4 h-4 border-2 border-[rgb(var(--foreground-rgb))]/20 border-t-[var(--foreground)] rounded-full animate-spin" />
-                      ) : promoApplied ? (
-                        '✓'
-                      ) : (
-                        'Áp dụng'
-                      )}
-                    </button>
-                  </div>
-                  {promoError && <p className="text-xs text-primary mt-1">{promoError}</p>}
-                  {promoApplied && promoData && (
-                    <p className="text-xs text-[var(--vj-green)] mt-1 font-semibold">
-                      ✓ Đã áp dụng mã {promoData.code}
-                    </p>
-                  )}
-                </div>
-
-                {/* Price breakdown */}
-                <div className="mt-4 space-y-2 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-[var(--foreground-muted)]">Giá vé cơ bản</span>
-                    <span className="font-semibold">
-                      {booking?.fareSubtotal.toLocaleString('vi-VN')}₫
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-[var(--foreground-muted)]">
-                      Thuế &amp; phí sân bay ({Math.round(TAX_AND_FEE_RATE * 100)}%)
-                    </span>
-                    <span className="font-semibold">
-                      +{(booking?.tax ?? 0).toLocaleString('vi-VN')}₫
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-[var(--foreground-muted)]">Phí chọn chỗ</span>
-                    <span className="font-semibold">
-                      +{(booking?.seatFee ?? 0).toLocaleString('vi-VN')}₫
-                    </span>
-                  </div>
-                  {(booking?.ancillaryFee ?? 0) > 0 && (
-                    <div className="flex justify-between">
-                      <span className="text-[var(--foreground-muted)]">
-                        Dịch vụ bổ sung
-                        {booking?.ancillaries?.length
-                          ? ` (${booking.ancillaries
-                              .map((id) => ANCILLARY_OPTIONS.find((o) => o.id === id)?.title)
-                              .filter(Boolean)
-                              .join(', ')})`
-                          : ''}
-                      </span>
-                      <span className="font-semibold">
-                        +{booking!.ancillaryFee!.toLocaleString('vi-VN')}₫
-                      </span>
-                    </div>
-                  )}
-                  {promoApplied && (
-                    <div className="flex justify-between text-[var(--vj-green)] font-medium">
-                      <span>
-                        Giảm giá {promoData?.type === 'percentage' ? `(${promoData.value}%)` : ''}
-                      </span>
-                      <span className="font-bold">-{discountAmount.toLocaleString('vi-VN')}₫</span>
-                    </div>
-                  )}
-                  <div className="border-t border-[var(--border)] pt-2 flex justify-between font-bold text-[var(--foreground)]">
-                    <span>Tổng thanh toán</span>
-                    <span className="text-primary text-lg">{total.toLocaleString('vi-VN')}₫</span>
-                  </div>
-                </div>
-
-                <Link
-                  href="/tim-ve"
-                  className="mt-3 flex min-h-9 items-center gap-1.5 text-xs text-[var(--foreground-subtle)] hover:text-[var(--foreground-muted)] transition-colors"
-                >
-                  <Icon name="ArrowLeftIcon" size={12} />
-                  Quay lại chọn chuyến bay
-                </Link>
+                {/* Security Footer - hidden on MOVI (installments category) */}
+                <SecurityFooter hideOnMovi={true} isMovi={isMovi} />
               </div>
             </div>
+
           </div>
-
-          {/* Desktop Bottom Action Buttons matching Image #1 & Image #8 */}
-          {isPnrLookup ? (
-            <div className="hidden sm:flex justify-between items-center w-full pt-10 pb-6">
-              <button
-                type="button"
-                onClick={() =>
-                  router.push(bookingCode ? `/dat-ve/${bookingCode}` : '/chuyen-bay-cua-toi')
-                }
-                className="px-10 py-2.5 rounded-full border border-gray-300 bg-white text-gray-700 font-bold text-xs hover:bg-gray-50 shadow-2xs transition-all active:scale-98 cursor-pointer"
-              >
-                Quay lại
-              </button>
-              <div className="flex items-center gap-3">
-                <button
-                  type="button"
-                  onClick={() =>
-                    router.push(bookingCode ? `/dat-ve/${bookingCode}` : '/chuyen-bay-cua-toi')
-                  }
-                  className="px-8 py-2.5 rounded-full bg-vjgold hover:bg-vjamber text-black font-bold text-xs shadow-2xs transition-all active:scale-98 cursor-pointer"
-                >
-                  Hủy bỏ
-                </button>
-                <button
-                  type="button"
-                  onClick={goToPaymentGateway}
-                  className="px-8 py-2.5 rounded-full bg-vjyellow hover:bg-vjamber text-black font-bold text-xs shadow-2xs transition-all active:scale-98 cursor-pointer"
-                >
-                  Thanh toán
-                </button>
-              </div>
-            </div>
-          ) : (
-            <div className="hidden sm:flex justify-center items-center gap-4 pt-10 pb-6">
-              <button
-                type="button"
-                onClick={() => router.push('/tim-ve')}
-                className="px-10 py-2.5 rounded-full border border-gray-300 bg-white text-gray-700 font-bold text-xs hover:bg-gray-50 shadow-2xs transition-all active:scale-98 cursor-pointer"
-              >
-                Quay lại
-              </button>
-              <button
-                type="button"
-                onClick={() => router.push('/tim-ve')}
-                className="px-10 py-2.5 rounded-full bg-green-500 hover:bg-green-600 text-white font-bold text-xs shadow-2xs transition-all active:scale-98 cursor-pointer"
-              >
-                Mua Thêm
-              </button>
-            </div>
-          )}
         </div>
       </div>
 
@@ -1308,6 +804,8 @@ export default function PaymentClient() {
             <img
               src="/images/hero/amy-mascot.png"
               alt="Vietjet Mascot"
+              width={200}
+              height={100}
               className="w-10 h-10 object-contain drop-shadow"
             />
             <div className="text-left font-koho">
@@ -1334,22 +832,61 @@ export default function PaymentClient() {
       </div>
       <ToastContainer toasts={toast.toasts} onDismiss={toast.dismiss} position="top-right" />
 
-      {/* Mobile Sticky Bottom Bar matching Screenshots 3 & 4 */}
-      <div className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-vj-border-light px-4 py-3 shadow-vj-up-md flex items-center gap-3 sm:hidden">
-        <button
-          type="button"
-          onClick={() => router.push('/tim-ve')}
-          className="flex-1 bg-vj-pay-green hover:bg-vj-pay-green-hover text-white font-black italic text-sm py-3 rounded-vj shadow transition-all active:scale-98 cursor-pointer text-center"
-        >
-          Mua thêm
-        </button>
-        <button
-          type="button"
-          onClick={goToPaymentGateway}
-          className="flex-1 bg-vj-gold-button hover:bg-vj-gold-pure text-vj-dark font-black italic text-sm py-3 rounded-vj shadow transition-all active:scale-98 cursor-pointer text-center"
-        >
-          Thanh toán
-        </button>
+      {/* Sticky Bottom Bar — Duy nhất 1 vị trí thanh toán trên toàn giao diện (Desktop & Mobile) */}
+      <div
+        className="fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-t border-vj-border-light px-3 sm:px-6 py-2.5 sm:py-3 shadow-vj-up-md"
+        style={{ paddingBottom: 'max(0.75rem, env(safe-area-inset-bottom, 0.75rem))' }}
+      >
+        <div className="max-w-5xl mx-auto flex items-center justify-between gap-2.5 sm:gap-4 w-full">
+          {/* Cụm nút trái */}
+          <div className="flex items-center gap-2 shrink-0">
+            <button
+              type="button"
+              onClick={() => router.push(bookingCode ? `/dat-ve/${bookingCode}` : '/tim-ve')}
+              className="h-11 px-3.5 sm:px-6 rounded-full border border-gray-300 bg-white hover:bg-gray-50 text-vj-text font-koho font-bold text-xs uppercase tracking-wide transition-all active:scale-98 shadow-2xs inline-flex items-center justify-center cursor-pointer"
+            >
+              Quay lại
+            </button>
+            <button
+              type="button"
+              onClick={() => router.push('/tim-ve')}
+              className="h-11 px-4 sm:px-5 rounded-full border border-amber-300 bg-amber-50 hover:bg-amber-100 text-amber-900 font-koho font-bold text-xs uppercase tracking-wide shadow-2xs transition-all active:scale-98 cursor-pointer hidden sm:inline-flex items-center justify-center"
+            >
+              Mua thêm
+            </button>
+          </div>
+
+          {/* Hiển thị tổng tiền ở giữa (Desktop) */}
+          <div className="hidden sm:flex items-center gap-1.5 font-koho font-bold text-xs">
+            <span className="text-vj-text">Tổng tiền:</span>
+            <span className="text-vj-red-dark font-black text-sm">
+              {total > 0 ? `${total.toLocaleString('vi-VN')} VND` : '0 VND'}
+            </span>
+            <button
+              type="button"
+              onClick={() => setShowSummaryModal(true)}
+              className="text-3xs text-vj-gray hover:text-vj-text cursor-pointer ml-1 underline decoration-dotted font-koho"
+            >
+              Chi tiết ▾
+            </button>
+          </div>
+
+          {/* Nút hành động thanh toán duy nhất */}
+          <button
+            type="button"
+            onClick={goToPaymentGateway}
+            className="h-11 sm:h-12 flex-1 sm:flex-initial min-w-[170px] sm:min-w-[240px] px-4 sm:px-8 rounded-full bg-gradient-vj-yellow hover:brightness-105 active:scale-98 shadow-md hover:shadow-lg transition-all cursor-pointer flex items-center justify-center gap-2 text-center"
+          >
+            <span className="font-koho font-extrabold text-xs sm:text-sm uppercase tracking-wide text-vj-text whitespace-nowrap">
+              Tiếp tục thanh toán
+            </span>
+            {total > 0 && (
+              <span className="font-koho font-extrabold text-2xs text-vj-red-dark bg-white/90 px-2 py-0.5 rounded-full shadow-2xs shrink-0 tracking-normal">
+                {total.toLocaleString('vi-VN')}₫
+              </span>
+            )}
+          </button>
+        </div>
       </div>
 
       {/* VietQR Payment Modal */}

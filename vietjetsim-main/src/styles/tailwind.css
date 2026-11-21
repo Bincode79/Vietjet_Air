@@ -2234,7 +2234,7 @@ h6 {
   width: 420px;
   max-width: 100%;
   margin: 0 auto;
-  padding: 22px 28px 18px;
+  padding: 24px 28px 24px;
   border-radius: 16px;
   background-color: #ffffff;
   text-align: center;
@@ -3578,6 +3578,8 @@ h6 {
   justify-content: center;
   padding: 12px;
   background-color: var(--vj-skyid-overlay);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
   overflow-y: auto;
 }
 
@@ -5178,3 +5180,66 @@ select option {
     line-height: 12px;
   }
 }
+
+/* ─── Safe-area utility classes ─────────────────────────────────────────
+ * iOS Safari / notched Android: `.pb-safe` applies bottom padding equal to
+ * the OS safe-area inset (env(safe-area-inset-bottom)), with a fallback so
+ * the element never collapses on browsers that don’t support `env()`.
+ * Usage: add `class="pb-safe"` or `class="pb-safe min-h-[44px]"` to
+ * sticky footers / bottom action bars so they clear the home-indicator.
+ */
+.pb-safe {
+  padding-bottom: max(0.75rem, env(safe-area-inset-bottom, 0.75rem));
+}
+
+.pt-safe {
+  padding-top: max(0.75rem, env(safe-area-inset-top, 0.75rem));
+}
+
+.pl-safe {
+  padding-left: max(0.75rem, env(safe-area-inset-left, 0.75rem));
+}
+
+.pr-safe {
+  padding-right: max(0.75rem, env(safe-area-inset-right, 0.75rem));
+}
+
+/* ─── Focus-visible utilities ──────────────────────────────────────────
+ * Consistent focus styles for keyboard navigation.
+ * Use .focus-vj on interactive elements (buttons, links, inputs).
+ */
+.focus-vj:focus-visible {
+  outline: 2px solid #E83A3C;
+  outline-offset: 2px;
+}
+
+.focus-vj-ring:focus-visible {
+  box-shadow: 0 0 0 3px rgba(232, 58, 60, 0.4);
+  outline: none;
+}
+
+/* For dark mode / on-red backgrounds */
+.focus-vj-inverse:focus-visible {
+  outline: 2px solid white;
+  outline-offset: 2px;
+}
+
+/* Skip link for accessibility */
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 0.75rem 1.5rem;
+  background: #E83A3C;
+  color: white;
+  font-weight: 600;
+  border-radius: 0.5rem;
+  z-index: 1000;
+  transition: top 0.2s;
+}
+
+.skip-link:focus {
+  top: 1rem;
+}
+

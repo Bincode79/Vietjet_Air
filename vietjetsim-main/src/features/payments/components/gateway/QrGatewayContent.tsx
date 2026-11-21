@@ -52,7 +52,7 @@ export default function QrGatewayContent({
           </p>
         </div>
 
-        {/* QR Code Container */}
+        {/* QR Code Container - using VietQrBox with variant='compact' */}
         <div className="flex justify-center">
           <div className="w-full max-w-md">
             <VietQrBox
@@ -62,6 +62,13 @@ export default function QrGatewayContent({
               fallbackPnr={bookingCode || 'VJ'}
               fallbackAddInfo={effectiveNote}
               methodType={methodType}
+              variant="compact"
+              hideGatewayHeader
+              hidePaymentDetails
+              hidePollStatus
+              hideSteps
+              hideScanGuide
+              onCopyNote={handleCopyNote}
             />
           </div>
         </div>

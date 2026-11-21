@@ -60,6 +60,9 @@ export default function RootLayout({
           rel="stylesheet"
         />
 
+        {/* Preload hero image (chỉ 1 ảnh đầu — Phase 6: preload hero đúng một ảnh) */}
+        <link rel="preload" as="image" href="/images/hero/hero-tet-celebration.jpg" />
+
         {/* External scripts optimized */}
 
         {/* Vietjet Air is a local booking simulator and is intentionally not indexed as the official airline site. */}

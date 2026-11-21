@@ -118,58 +118,79 @@ export default function ReservationCountdown({
   return (
     <>
       <div
-        className={`w-full transition-all duration-300 rounded-2xl border shadow-vj-sm overflow-hidden mb-5 ${
+        className={`w-full transition-all duration-300 rounded-2xl border shadow-vj-sm overflow-hidden mb-4 sm:mb-5 ${
           isUrgent
             ? 'bg-gradient-to-r from-red-600 via-rose-600 to-amber-600 border-red-300 text-white shadow-red-200/50'
             : 'bg-gradient-to-r from-red-700 via-red-600 to-amber-500 border-red-400/40 text-white shadow-amber-100/50'
         }`}
       >
-        <div className="px-4 py-3 sm:px-6 sm:py-3.5 flex flex-col sm:flex-row items-center justify-between gap-3">
-          {/* Left: Icon & Text */}
-          <div className="flex items-center gap-3 w-full sm:w-auto">
-            <div
-              className={`w-9 h-9 rounded-vj flex items-center justify-center shrink-0 ${
-                isUrgent
-                  ? 'bg-white text-vj-red-dark animate-bounce'
-                  : 'bg-white/20 text-white backdrop-blur-xs'
-              }`}
-            >
-              <svg
-                className={`w-5 h-5 ${timeLeft > 0 ? 'animate-spin' : ''}`}
-                style={{ animationDuration: '6s' }}
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
+        <div className="px-3 py-2.5 sm:px-6 sm:py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3">
+          {/* Top row on mobile / Left group on desktop */}
+          <div className="flex items-center justify-between sm:justify-start gap-2.5 sm:gap-3 w-full sm:w-auto">
+            <div className="flex items-center gap-2.5 min-w-0">
+              <div
+                className={`w-8 h-8 sm:w-9 sm:h-9 rounded-vj flex items-center justify-center shrink-0 ${
+                  isUrgent
+                    ? 'bg-white text-vj-red-dark animate-bounce'
+                    : 'bg-white/20 text-white backdrop-blur-xs'
+                }`}
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-black uppercase tracking-wider text-amber-200">
-                  Thời gian giữ chỗ
-                </span>
-                {bookingCode && (
-                  <span className="text-3xs font-bold px-2 py-0.5 rounded-full bg-white/20 text-white">
-                    Mã đặt chỗ: {bookingCode}
-                  </span>
-                )}
+                <svg
+                  className={`w-4 h-4 sm:w-5 sm:h-5 ${timeLeft > 0 ? 'animate-spin' : ''}`}
+                  style={{ animationDuration: '6s' }}
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
               </div>
-              <p className="text-xs text-white/90 font-medium">
-                {isUrgent
-                  ? 'Sắp hết hạn giữ vé! Vui lòng hoàn tất thanh toán để đảm bảo giá vé này.'
-                  : 'Vé của bạn đang được Vietjet tạm giữ. Hoàn tất thanh toán trước khi hết giờ.'}
-              </p>
+              <div className="min-w-0">
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  <span className="text-2xs sm:text-xs font-black uppercase tracking-wider text-amber-200 whitespace-nowrap">
+                    Thời gian giữ chỗ
+                  </span>
+                  {bookingCode && (
+                    <span className="text-4xs sm:text-3xs font-bold px-1.5 py-0.5 rounded-full bg-white/20 text-white font-mono">
+                      {bookingCode}
+                    </span>
+                  )}
+                </div>
+                <p className="text-3xs sm:text-xs text-white/90 font-medium hidden sm:block mt-0.5">
+                  {isUrgent
+                    ? 'Sắp hết hạn giữ vé! Vui lòng hoàn tất thanh toán để đảm bảo giá vé này.'
+                    : 'Vé của bạn đang được Vietjet tạm giữ. Hoàn tất thanh toán trước khi hết giờ.'}
+                </p>
+              </div>
+            </div>
+
+            {/* Mobile-only Timer Badge placed next to title in header row */}
+            <div className="sm:hidden shrink-0">
+              <div className="flex items-center gap-1 bg-black/35 backdrop-blur-md px-2.5 py-1 rounded-vj border border-white/25 shadow-inner">
+                <span className="text-4xs font-bold uppercase text-amber-300">Còn</span>
+                <div className="font-mono font-black text-sm tracking-wider text-yellow-300 flex items-center">
+                  <span>{String(minutes).padStart(2, '0')}</span>
+                  <span className="animate-pulse mx-0.5">:</span>
+                  <span>{String(seconds).padStart(2, '0')}</span>
+                </div>
+              </div>
             </div>
           </div>
 
-          {/* Right: Digital Countdown Timer */}
-          <div className="flex items-center gap-3 self-end sm:self-auto">
+          {/* Mobile subtext underneath */}
+          <p className="text-3xs text-white/90 font-medium sm:hidden leading-tight">
+            {isUrgent
+              ? '⚠️ Sắp hết hạn giữ vé! Hoàn tất thanh toán ngay để giữ giá vé.'
+              : 'Vé đang được Vietjet tạm giữ. Vui lòng thanh toán trước khi hết hạn.'}
+          </p>
+
+          {/* Desktop Countdown Timer */}
+          <div className="hidden sm:flex items-center gap-3 shrink-0">
             <div className="flex items-center gap-1.5 bg-black/30 backdrop-blur-md px-3.5 py-1.5 rounded-vj border border-white/20 shadow-inner">
               <span className="text-3xs font-bold uppercase text-amber-300">Còn lại</span>
               <div className="font-mono font-black text-lg sm:text-xl tracking-wider text-yellow-300 flex items-center">

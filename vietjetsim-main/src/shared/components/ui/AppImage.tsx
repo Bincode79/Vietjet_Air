@@ -43,8 +43,8 @@ const AppImage = memo(function AppImage({
   className = '',
   priority = false,
   quality = 85,
-  placeholder = 'empty',
-  blurDataURL,
+  placeholder = 'blur',
+  blurDataURL = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==', // 1px transparent
   fill = false,
   sizes,
   onClick,

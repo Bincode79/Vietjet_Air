@@ -1807,6 +1807,8 @@ export default function FlightResultsStep({
                             <img
                               src="/images/vj-logo.svg"
                               alt="Vietjet Air"
+                              width={84}
+                              height={15}
                               className={`h-3 w-auto ${flight.class === 'business' ? '' : 'brightness-0 invert'}`}
                             />
                           </div>

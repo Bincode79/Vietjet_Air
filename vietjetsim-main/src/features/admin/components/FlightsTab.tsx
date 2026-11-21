@@ -743,6 +743,8 @@ export default function FlightsTab({ onToast }: { onToast?: ToastAPI }) {
                           <img
                             src="/images/vj-logo.svg"
                             alt="Vietjet Air"
+                            width={84}
+                            height={15}
                             className="h-3 w-auto brightness-0 invert"
                           />
                         </div>

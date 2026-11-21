@@ -57,6 +57,8 @@ export default function EBoardingPass({ data, passenger }: EBoardingPassProps) {
           <img
             src="/images/vj-logo.svg"
             alt="Vietjet Air"
+            width={84}
+            height={15}
             className="h-3.5 w-auto brightness-0 invert"
           />
         </div>

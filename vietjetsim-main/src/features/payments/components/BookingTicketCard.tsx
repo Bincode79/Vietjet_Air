@@ -1,10 +1,17 @@
 'use client';
 
 import React, { useState } from 'react';
+import Link from 'next/link';
+import { Icon } from '@/shared/components/ui';
 
 interface Passenger {
   name: string;
-  seat: string;
+  seat?: string;
+  type?: string;
+  baggage?: string;
+  idNumber?: string;
+  phone?: string;
+  email?: string;
 }
 
 interface BookingTicketCardProps {
@@ -25,7 +32,22 @@ interface BookingTicketCardProps {
   seatFee?: number;
   ancillaryFee?: number;
   total?: number;
+  terminal?: string;
+  aircraft?: string;
+  duration?: string;
+  contactEmail?: string;
+  contactPhone?: string;
   onOpenDetails?: () => void;
+  // Chi tiết giá & thanh toán props
+  promoCode?: string;
+  onPromoCodeChange?: (code: string) => void;
+  onApplyPromo?: () => void;
+  isApplyingPromo?: boolean;
+  promoApplied?: boolean;
+  promoData?: { code: string; type?: string; value: number } | null;
+  promoError?: string;
+  discountAmount?: number;
+  taxRate?: number;
 }
 
 export default function BookingTicketCard({
@@ -46,27 +68,43 @@ export default function BookingTicketCard({
   seatFee = 259200,
   ancillaryFee = 44000,
   total = 2677581,
+  terminal = 'Nhà ga 1',
+  aircraft = 'A321',
+  duration = '2 giờ 10 phút',
+  contactEmail,
+  contactPhone,
   onOpenDetails,
+  promoCode = '',
+  onPromoCodeChange,
+  onApplyPromo,
+  isApplyingPromo = false,
+  promoApplied = false,
+  promoData,
+  promoError = '',
+  discountAmount = 0,
+  taxRate = 0.15,
 }: BookingTicketCardProps) {
-  const [showPax, setShowPax] = useState(false);
-  const [showFare, setShowFare] = useState(false);
-  const [showTax, setShowTax] = useState(false);
-  const [showService, setShowService] = useState(false);
+  const [showFlightInfo, setShowFlightInfo] = useState(true);
+  const [showPax, setShowPax] = useState(true);
+  const [showPriceDetails, setShowPriceDetails] = useState(true);
+  const [showFareSub, setShowFareSub] = useState(false);
+  const [showTaxSub, setShowTaxSub] = useState(false);
+  const [showServiceSub, setShowServiceSub] = useState(false);
 
   // Tính tổng chuyến đi = giá vé + thuế phí + dịch vụ ghế
   const outboundTotal = fareSubtotal + tax + seatFee;
   const convenienceFee = 54000;
 
   return (
-    <div className="bg-white rounded-vj border border-vj-border-light shadow-vj-sm overflow-hidden sticky top-[120px] transition-all">
-      {/* 1. Header bar: Red with "THÔNG TIN ĐẶT CHỖ" and yellow pill "Chi Tiết" */}
-      <div className="bg-vj-red-dark px-4 py-3 text-white flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <h3 className="font-koho text-sm sm:text-base font-bold uppercase tracking-wide text-white">
+    <div className="bg-white rounded-vj border border-vj-border-light shadow-vj-sm overflow-hidden transition-all">
+      {/* 1. Header bar: Red with "THÔNG TIN ĐẶT CHỖ" and bookingCode + "Chi Tiết" pill */}
+      <div className="bg-vj-red-dark px-3 sm:px-4 py-2.5 sm:py-3 text-white flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2 min-w-0">
+          <h3 className="font-koho text-xs sm:text-base font-bold uppercase tracking-wide text-white truncate">
             THÔNG TIN ĐẶT CHỖ
           </h3>
           {bookingCode && (
-            <span className="text-3xs font-mono font-bold bg-white/20 px-1.5 py-0.5 rounded text-yellow-300">
+            <span className="text-3xs font-mono font-bold bg-white/20 px-1.5 py-0.5 rounded text-yellow-300 shrink-0">
               {bookingCode}
             </span>
           )}
@@ -75,200 +113,382 @@ export default function BookingTicketCard({
           <button
             type="button"
             onClick={onOpenDetails}
-            className="bg-vj-yellow hover:bg-vj-yellow text-black font-black text-3xs uppercase px-3 py-1 rounded-full shadow-2xs transition-transform active:scale-98 cursor-pointer font-koho"
+            className="bg-vj-yellow hover:bg-vj-yellow text-black font-black text-3xs uppercase px-2.5 sm:px-3 py-1 rounded-full shadow-2xs transition-transform active:scale-98 cursor-pointer font-koho shrink-0"
           >
             Chi Tiết
           </button>
         )}
       </div>
 
-      {/* 2. Accordion: Thông tin hành khách */}
+      {/* 2. Accordion: Thông tin chuyến bay (Chuyến đi) */}
+      <div className="border-b border-vj-border-light/90">
+        <div
+          className="bg-vj-bar-gray hover:bg-vj-surface-3/80 px-3 sm:px-4 py-2.5 flex items-center justify-between cursor-pointer transition-colors select-none gap-2"
+          onClick={() => setShowFlightInfo(!showFlightInfo)}
+        >
+          <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
+            <span className="font-koho text-xs sm:text-sm font-bold text-vj-text-strong truncate">
+              Chuyến bay: {from} ➔ {to}
+            </span>
+            <span className="text-3xs bg-red-100 text-red-700 font-bold px-1.5 py-0.5 rounded shrink-0">
+              {flightNo}
+            </span>
+          </div>
+          <div className="flex items-center gap-1 sm:gap-1.5 font-bold font-koho text-xs sm:text-sm shrink-0">
+            <span className="text-vj-blue">{outboundTotal.toLocaleString('vi-VN')} VND</span>
+            <span className="text-3xs text-vj-muted">{showFlightInfo ? '▲' : '▼'}</span>
+          </div>
+        </div>
+
+        {showFlightInfo && (
+          <div className="p-3 sm:p-4 bg-white text-xs space-y-3 border-t border-vj-border-light">
+            {/* Chi tiết lộ trình & số hiệu chuyến bay */}
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1.5 sm:gap-2 pb-2 border-b border-gray-100">
+              <div>
+                <div className="font-bold text-gray-900 text-xs sm:text-sm">
+                  Chuyến đi: {fromCity || from} ({from}) ➔ {toCity || to} ({to})
+                </div>
+                <div className="text-red-600 font-semibold text-2xs sm:text-xs mt-0.5">
+                  Số hiệu chuyến bay: {flightNo} &nbsp;|&nbsp; Hạng: {fareClass}
+                </div>
+              </div>
+              <div className="text-2xs sm:text-xs text-left sm:text-right font-medium text-gray-500">
+                Ngày bay: <span className="font-bold text-gray-800">{date}</span>
+              </div>
+            </div>
+
+            {/* Chi tiết giờ khởi hành và giờ đến */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
+              <div className="bg-gray-50/90 rounded-lg p-2.5 border border-gray-100">
+                <div className="text-red-600 font-bold text-xs flex items-center gap-1">
+                  <span>* Khởi hành:</span>
+                  <span className="text-gray-900 font-semibold">
+                    {departTime}, {date}
+                  </span>
+                </div>
+                <div className="text-gray-600 mt-1 pl-3 text-2xs sm:text-xs">
+                  {fromCity || from} - Sân bay ({from}) {terminal ? `- ${terminal}` : ''}
+                </div>
+                <div className="text-3xs text-gray-400 pl-3">(Giờ địa phương)</div>
+              </div>
+
+              <div className="bg-gray-50/90 rounded-lg p-2.5 border border-gray-100">
+                <div className="text-emerald-700 font-bold text-xs flex items-center gap-1">
+                  <span>• Đến:</span>
+                  <span className="text-gray-900 font-semibold">
+                    {arriveTime}, {date}
+                  </span>
+                </div>
+                <div className="text-gray-600 mt-1 pl-3 text-2xs sm:text-xs">
+                  {toCity || to} - Sân bay ({to})
+                </div>
+                <div className="text-3xs text-gray-400 pl-3">(Giờ địa phương)</div>
+              </div>
+            </div>
+
+            {/* Chi tiết máy bay & đơn vị khai thác */}
+            <div className="text-gray-500 text-3xs pt-1 flex flex-wrap items-center justify-between gap-1 border-t border-gray-100">
+              <span>Thời gian: {duration}</span>
+              <span>Airbus: {aircraft}</span>
+              <span>Khai thác bởi: Vietjet</span>
+            </div>
+
+            {/* Phân rã giá chuyến đi */}
+            <div className="pt-2 border-t border-gray-100 space-y-1 text-3xs sm:text-xs">
+              {/* Giá vé */}
+              <div
+                className="flex justify-between items-center text-vj-text-dim cursor-pointer hover:text-black py-1 border-t border-vj-border-light"
+                onClick={() => setShowFareSub(!showFareSub)}
+              >
+                <span className="font-medium flex items-center gap-1">
+                  Giá vé <span className="text-3xs text-vj-muted">{showFareSub ? '▲' : '▼'}</span>
+                </span>
+                <span className="font-semibold text-vj-text">
+                  {fareSubtotal.toLocaleString('vi-VN')} VND
+                </span>
+              </div>
+              {showFareSub && (
+                <div className="pl-3 py-1.5 text-vj-gray text-3xs space-y-1 bg-vj-surface-2 rounded">
+                  <div className="flex justify-between">
+                    <span>Người lớn x {passengers.length || 1}</span>
+                    <span>{fareSubtotal.toLocaleString('vi-VN')} VND</span>
+                  </div>
+                </div>
+              )}
+
+              {/* Thuế, phí */}
+              <div
+                className="flex justify-between items-center text-vj-text-dim cursor-pointer hover:text-black py-1 border-t border-vj-border-light"
+                onClick={() => setShowTaxSub(!showTaxSub)}
+              >
+                <span className="font-medium flex items-center gap-1">
+                  Thuế, phí <span className="text-3xs text-vj-muted">{showTaxSub ? '▲' : '▼'}</span>
+                </span>
+                <span className="font-semibold text-vj-text">
+                  {tax.toLocaleString('vi-VN')} VND
+                </span>
+              </div>
+              {showTaxSub && (
+                <div className="pl-3 py-1.5 text-vj-gray text-3xs space-y-1 bg-vj-surface-2 rounded">
+                  <div className="flex justify-between">
+                    <span>Phí an ninh soi chiếu</span>
+                    <span>{Math.round(tax * 0.15).toLocaleString('vi-VN')} VND</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Domestic airport tax</span>
+                    <span>{Math.round(tax * 0.25).toLocaleString('vi-VN')} VND</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Phí quản trị hệ thống</span>
+                    <span>{Math.round(tax * 0.45).toLocaleString('vi-VN')} VND</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Thuế VAT</span>
+                    <span>{Math.round(tax * 0.15).toLocaleString('vi-VN')} VND</span>
+                  </div>
+                </div>
+              )}
+
+              {/* Dịch vụ */}
+              <div
+                className="flex justify-between items-center text-vj-text-dim cursor-pointer hover:text-black py-1 border-t border-vj-border-light"
+                onClick={() => setShowServiceSub(!showServiceSub)}
+              >
+                <span className="font-medium flex items-center gap-1">
+                  Dịch vụ ghế &amp; tiện ích{' '}
+                  <span className="text-3xs text-vj-muted">{showServiceSub ? '▲' : '▼'}</span>
+                </span>
+                <span className="font-semibold text-vj-text">
+                  {seatFee.toLocaleString('vi-VN')} VND
+                </span>
+              </div>
+              {showServiceSub && (
+                <div className="pl-3 py-1.5 text-vj-gray text-3xs space-y-1 bg-vj-surface-2 rounded">
+                  <div className="flex justify-between">
+                    <span>Phí chọn chỗ ngồi</span>
+                    <span>{seatFee.toLocaleString('vi-VN')} VND</span>
+                  </div>
+                  {ancillaries.map((a, i) => (
+                    <div key={i} className="flex justify-between text-vj-muted">
+                      <span>• {a}</span>
+                      <span>Đã bao gồm</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* 3. Accordion: Thông tin hành khách */}
       <div className="border-b border-vj-border-light/90">
         <div
           className="bg-vj-bar-gray hover:bg-vj-surface-3/80 px-4 py-2.5 flex items-center justify-between cursor-pointer transition-colors select-none"
           onClick={() => setShowPax(!showPax)}
         >
           <span className="font-koho text-xs sm:text-sm font-semibold text-vj-text-strong">
-            Thông tin hành khách
+            Thông tin hành khách ({passengers.length || 1})
           </span>
           <div className="flex items-center gap-1 font-bold text-vj-text-strong text-xs font-koho">
-            <span className="sr-only">{passengers.map((p) => p.name).join(', ')}</span>
             <span className="text-3xs text-vj-muted">{showPax ? '▲' : '▼'}</span>
           </div>
         </div>
+
         {showPax && (
-          <div className="p-3 bg-white space-y-1.5 text-xs border-t border-vj-border-light">
+          <div className="p-3 sm:p-4 bg-white space-y-2.5 text-xs border-t border-vj-border-light">
             {(passengers.length > 0
               ? passengers
               : [{ name: 'NGUYEN VAN A', seat: 'Chưa chọn' }]
             ).map((p, idx) => (
-              <div key={idx} className="flex justify-between items-center text-vj-text-dim">
-                <span className="font-medium">
-                  {idx + 1}. {p.name || 'Hành khách'} (Người lớn)
-                </span>
-                <span className="text-3xs px-2 py-0.5 rounded bg-vj-pill text-vj-text-strong font-mono">
-                  Ghế: {p.seat || 'Chưa chọn'}
-                </span>
+              <div
+                key={idx}
+                className="bg-gray-50/70 border border-gray-200 rounded-lg p-3 space-y-2"
+              >
+                <div className="flex flex-wrap justify-between items-center gap-2">
+                  <div className="font-bold text-gray-900 flex items-center gap-1.5 text-xs sm:text-sm">
+                    <span className="text-base">👤</span>
+                    <span>
+                      {idx + 1}. {p.name || 'Hành khách'} ({p.type || 'Người lớn'})
+                    </span>
+                  </div>
+                  <span className="text-3xs px-2.5 py-1 rounded bg-amber-100 text-amber-900 font-bold font-mono">
+                    Ghế: {flightNo}-{p.seat || 'Chưa chọn'}
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-3xs sm:text-xs text-gray-600 pt-1 border-t border-gray-100">
+                  <div>
+                    <span className="font-semibold text-gray-700">Chặng bay: </span>
+                    <span>
+                      {from} ➔ {to}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="font-semibold text-gray-700">Hành lý ký gửi: </span>
+                    <span>
+                      {p.baggage || (ancillaries.length ? ancillaries.join(', ') : 'Gói 20kg')}
+                    </span>
+                  </div>
+                  {(p.phone || contactPhone) && (
+                    <div>
+                      <span className="font-semibold text-gray-700">Điện thoại: </span>
+                      <span>{p.phone || contactPhone}</span>
+                    </div>
+                  )}
+                  {(p.email || contactEmail) && (
+                    <div>
+                      <span className="font-semibold text-gray-700">Email: </span>
+                      <span>{p.email || contactEmail}</span>
+                    </div>
+                  )}
+                </div>
               </div>
             ))}
           </div>
         )}
       </div>
 
-      {/* 3. Accordion: Chuyến đi */}
+      {/* 4. Accordion: Chi tiết giá & thanh toán (gộp trực tiếp vào THÔNG TIN ĐẶT CHỖ) */}
       <div className="border-b border-vj-border-light/90">
-        <div className="bg-vj-bar-gray px-4 py-2.5 flex items-center justify-between text-xs sm:text-sm font-semibold text-vj-text-strong">
-          <span>Chuyến đi</span>
-          <div className="flex items-center gap-1.5 text-vj-blue font-bold font-koho text-xs sm:text-sm">
-            <span>{outboundTotal.toLocaleString('vi-VN')} VND</span>
-            <span className="text-vj-red text-xs">✎</span>
-          </div>
-        </div>
-
-        <div className="p-3 bg-white text-xs space-y-1.5 border-t border-vj-border-light">
-          <div className="font-bold text-vj-text flex items-center gap-1.5 text-xs sm:text-sm">
-            <span>
-              {fromCity || from} ({from})
-            </span>
-            <span className="text-vj-red-dark font-bold">➔</span>
-            <span>
-              {toCity || to} ({to})
-            </span>
-          </div>
-          <div className="text-vj-gray text-3xs sm:text-xs">
-            {date} | {departTime} - {arriveTime} | {flightNo} | {fareClass}
-          </div>
-
-          {/* Sub breakdowns */}
-          <div className="pt-2 space-y-1 text-3xs sm:text-xs">
-            {/* Giá vé */}
-            <div
-              className="flex justify-between items-center text-vj-text-dim cursor-pointer hover:text-black py-1 border-t border-vj-border-light"
-              onClick={() => setShowFare(!showFare)}
-            >
-              <span className="font-medium flex items-center gap-1">
-                Giá vé <span className="text-3xs text-vj-muted">{showFare ? '▲' : '▼'}</span>
-              </span>
-              <span className="font-semibold text-vj-text">
-                {fareSubtotal.toLocaleString('vi-VN')} VND
-              </span>
-            </div>
-            {showFare && (
-              <div className="pl-3 py-1.5 text-vj-gray text-3xs space-y-1 bg-vj-surface-2 rounded">
-                <div className="flex justify-between">
-                  <span>Người lớn x {passengers.length || 1}</span>
-                  <span>{fareSubtotal.toLocaleString('vi-VN')} VND</span>
-                </div>
-              </div>
-            )}
-
-            {/* Thuế, phí */}
-            <div
-              className="flex justify-between items-center text-vj-text-dim cursor-pointer hover:text-black py-1 border-t border-vj-border-light"
-              onClick={() => setShowTax(!showTax)}
-            >
-              <span className="font-medium flex items-center gap-1">
-                Thuế, phí <span className="text-3xs text-vj-muted">{showTax ? '▲' : '▼'}</span>
-              </span>
-              <span className="font-semibold text-vj-text">{tax.toLocaleString('vi-VN')} VND</span>
-            </div>
-            {showTax && (
-              <div className="pl-3 py-1.5 text-vj-gray text-3xs space-y-1 bg-vj-surface-2 rounded">
-                <div className="flex justify-between">
-                  <span>Phí an ninh soi chiếu</span>
-                  <span>{Math.round(tax * 0.15).toLocaleString('vi-VN')} VND</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Domestic airport tax</span>
-                  <span>{Math.round(tax * 0.25).toLocaleString('vi-VN')} VND</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Phí quản trị hệ thống</span>
-                  <span>{Math.round(tax * 0.45).toLocaleString('vi-VN')} VND</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Thuế VAT</span>
-                  <span>{Math.round(tax * 0.15).toLocaleString('vi-VN')} VND</span>
-                </div>
-              </div>
-            )}
-
-            {/* Dịch vụ */}
-            <div
-              className="flex justify-between items-center text-vj-text-dim cursor-pointer hover:text-black py-1 border-t border-vj-border-light"
-              onClick={() => setShowService(!showService)}
-            >
-              <span className="font-medium flex items-center gap-1">
-                Dịch vụ <span className="text-3xs text-vj-muted">{showService ? '▲' : '▼'}</span>
-              </span>
-              <span className="font-semibold text-vj-text">
-                {seatFee.toLocaleString('vi-VN')} VND
-              </span>
-            </div>
-            {showService && (
-              <div className="pl-3 py-1.5 text-vj-gray text-3xs space-y-1 bg-vj-surface-2 rounded">
-                <div className="flex justify-between">
-                  <span>Phí chọn chỗ ngồi &amp; tiện ích</span>
-                  <span>{seatFee.toLocaleString('vi-VN')} VND</span>
-                </div>
-                {ancillaries.map((a, i) => (
-                  <div key={i} className="flex justify-between text-vj-muted">
-                    <span>• {a}</span>
-                    <span>Đã bao gồm</span>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* 4. Section: Dịch vụ bổ sung */}
-      <div className="border-b border-vj-border-light/90">
-        <div className="bg-vj-bar-gray px-4 py-2.5 flex items-center justify-between text-xs sm:text-sm font-semibold text-vj-text-strong">
-          <span>Dịch vụ bổ sung</span>
-          <span className="text-vj-red-dark font-bold font-koho text-xs sm:text-sm">
-            {(ancillaryFee || 44000).toLocaleString('vi-VN')} VND
+        <div
+          className="bg-vj-bar-gray hover:bg-vj-surface-3/80 px-4 py-2.5 flex items-center justify-between cursor-pointer transition-colors select-none"
+          onClick={() => setShowPriceDetails(!showPriceDetails)}
+        >
+          <span className="font-koho text-xs sm:text-sm font-semibold text-vj-text-strong">
+            Chi tiết giá &amp; thanh toán
           </span>
+          <div className="flex items-center gap-1 font-bold text-vj-text-strong text-xs font-koho">
+            <span className="text-3xs text-vj-muted">{showPriceDetails ? '▲' : '▼'}</span>
+          </div>
         </div>
-        <div className="p-3 bg-white text-xs space-y-1.5 border-t border-vj-border-light">
-          <div className="flex justify-between items-center text-vj-text-strong">
-            <span className="font-medium">Bảo hiểm du lịch Vietjet Travel Safe</span>
-            <div className="flex items-center gap-1">
-              <span className="font-semibold">
-                {(ancillaryFee || 44000).toLocaleString('vi-VN')} VND
-              </span>
-              <span className="text-vj-red text-xs">✎</span>
+
+        {showPriceDetails && (
+          <div className="p-3 sm:p-4 bg-white space-y-4 border-t border-vj-border-light text-xs">
+            {/* Promo code form */}
+            {onApplyPromo && (
+              <div className="bg-gray-50/80 rounded-lg p-3 border border-gray-100">
+                <label className="block text-2xs font-semibold text-[var(--foreground-subtle)] uppercase tracking-wider mb-1">
+                  Mã khuyến mãi
+                </label>
+                <div className="flex items-center gap-2">
+                  <div className="vj-lookup-field relative flex-1 flex items-center h-[42px] sm:h-[38px] px-3 bg-white border border-vj-line rounded-vj shadow-2xs focus-within:border-primary focus-within:ring-1 focus-within:ring-primary transition-all">
+                    <input
+                      id="card-promo-code-input"
+                      name="cardPromoCode"
+                      type="text"
+                      value={promoCode}
+                      onChange={(e) => onPromoCodeChange?.(e.target.value.toUpperCase())}
+                      placeholder=" "
+                      disabled={promoApplied}
+                      className={`vj-lookup-input font-mono uppercase font-bold text-black !text-black !border-b-0 w-full text-sm disabled:opacity-50 ${
+                        promoApplied ? 'form-input-valid' : ''
+                      }`}
+                    />
+                    <label
+                      htmlFor="card-promo-code-input"
+                      className={`vj-lookup-label font-medium font-koho pointer-events-none transition-all ${
+                        promoCode
+                          ? '-top-2 bg-white px-1 text-3xs font-medium text-vj-gray !text-vj-gray'
+                          : 'left-3 text-xs text-vj-muted !text-vj-muted'
+                      }`}
+                    >
+                      VJ2026
+                    </label>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={onApplyPromo}
+                    disabled={promoApplied || !promoCode || isApplyingPromo}
+                    className="h-[42px] sm:h-[38px] px-3.5 bg-accent text-[var(--foreground)] font-bold rounded-vj text-xs hover:bg-accent-dark transition-colors disabled:opacity-50 min-w-[80px] flex items-center justify-center shrink-0 cursor-pointer active:scale-98"
+                  >
+                    {isApplyingPromo ? (
+                      <div className="w-4 h-4 border-2 border-[rgb(var(--foreground-rgb))]/20 border-t-[var(--foreground)] rounded-full animate-spin" />
+                    ) : promoApplied ? (
+                      '✓'
+                    ) : (
+                      'Áp dụng'
+                    )}
+                  </button>
+                </div>
+                {promoError && <p className="text-2xs text-primary mt-1">{promoError}</p>}
+                {promoApplied && promoData && (
+                  <p className="text-2xs text-[var(--vj-green)] mt-1 font-semibold">
+                    ✓ Đã áp dụng mã {promoData.code}
+                  </p>
+                )}
+              </div>
+            )}
+
+            {/* Price breakdown table */}
+            <div className="space-y-2 text-xs">
+              <div className="flex justify-between">
+                <span className="text-[var(--foreground-muted)]">Giá vé cơ bản</span>
+                <span className="font-semibold">{fareSubtotal.toLocaleString('vi-VN')}₫</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-[var(--foreground-muted)]">
+                  Thuế &amp; phí sân bay ({Math.round(taxRate * 100)}%)
+                </span>
+                <span className="font-semibold">+{(tax ?? 0).toLocaleString('vi-VN')}₫</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-[var(--foreground-muted)]">Phí chọn chỗ</span>
+                <span className="font-semibold">+{(seatFee ?? 0).toLocaleString('vi-VN')}₫</span>
+              </div>
+              {(ancillaryFee > 0 || ancillaries.length > 0) && (
+                <div className="flex justify-between">
+                  <span className="text-[var(--foreground-muted)]">
+                    Dịch vụ bổ sung {ancillaries.length ? `(${ancillaries.join(', ')})` : ''}
+                  </span>
+                  <span className="font-semibold">+{ancillaryFee.toLocaleString('vi-VN')}₫</span>
+                </div>
+              )}
+              {promoApplied && (
+                <div className="flex justify-between text-[var(--vj-green)] font-medium">
+                  <span>
+                    Giảm giá {promoData?.type === 'percentage' ? `(${promoData.value}%)` : ''}
+                  </span>
+                  <span className="font-bold">
+                    -{(discountAmount ?? 0).toLocaleString('vi-VN')}₫
+                  </span>
+                </div>
+              )}
+              <div className="flex justify-between text-vj-text-dim">
+                <span className="text-[var(--foreground-muted)]">Phí tiện ích</span>
+                <span className="font-semibold">+{convenienceFee.toLocaleString('vi-VN')}₫</span>
+              </div>
+              <div className="border-t border-[var(--border)] pt-2 flex justify-between font-bold text-[var(--foreground)] text-sm">
+                <span>Tổng thanh toán</span>
+                <span className="text-primary text-base font-black">
+                  {(
+                    total || outboundTotal + ancillaryFee + convenienceFee - (discountAmount ?? 0)
+                  ).toLocaleString('vi-VN')}
+                  ₫
+                </span>
+              </div>
             </div>
+
+            <Link
+              href="/tim-ve"
+              className="mt-2 flex min-h-8 items-center gap-1.5 text-2xs text-[var(--foreground-subtle)] hover:text-[var(--foreground-muted)] transition-colors"
+            >
+              <Icon name="ArrowLeftIcon" size={12} />
+              Quay lại chọn chuyến bay
+            </Link>
           </div>
-          <div className="flex justify-between text-3xs text-vj-gray pl-2">
-            <span>BaoViet Insurance</span>
-            <span>{(ancillaryFee || 44000).toLocaleString('vi-VN')}</span>
-          </div>
-          <div className="flex justify-between text-3xs text-vj-gray pl-2">
-            <span>Thuế VAT</span>
-            <span>0</span>
-          </div>
-        </div>
+        )}
       </div>
 
-      {/* 5. Section: Phí tiện ích */}
-      <div className="border-b border-vj-border-light/90 bg-vj-bar-gray px-4 py-2.5 flex items-center justify-between text-xs sm:text-sm font-semibold text-vj-text-strong">
-        <span>Phí tiện ích</span>
-        <span className="font-bold text-vj-text font-koho text-xs sm:text-sm">
-          {convenienceFee.toLocaleString('vi-VN')} VND
-        </span>
-      </div>
-
-      {/* 6. Section: Tổng tiền */}
+      {/* 5. Section: Tổng tiền */}
       <div className="bg-vj-red-dark text-white px-4 py-3 flex items-center justify-between font-bold">
         <span className="font-koho text-xs sm:text-sm font-bold text-white uppercase tracking-wider">
           Tổng tiền
         </span>
         <span className="font-koho text-base sm:text-lg font-black text-white">
-          {(total || outboundTotal + (ancillaryFee || 44000) + convenienceFee).toLocaleString(
-            'vi-VN'
-          )}{' '}
+          {(
+            total || outboundTotal + ancillaryFee + convenienceFee - (discountAmount ?? 0)
+          ).toLocaleString('vi-VN')}{' '}
           VND
         </span>
       </div>

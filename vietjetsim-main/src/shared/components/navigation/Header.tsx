@@ -311,6 +311,8 @@ export default function Header({
                 <img
                   src="/images/vj-logo.svg"
                   alt="Vietjet Air"
+                  width={84}
+                  height={15}
                   className="h-[15px] w-[84px] object-contain brightness-0 invert"
                 />
               </Link>
@@ -416,6 +418,8 @@ export default function Header({
                 <img
                   src="/images/vj-logo.svg"
                   alt="Vietjet Air"
+                  width={265}
+                  height={26}
                   className="h-[26px] w-auto brightness-0 invert"
                 />
               </Link>
@@ -463,6 +467,8 @@ export default function Header({
                   <img
                     src="/images/vj-logo.svg"
                     alt="Vietjet Air"
+                    width={265}
+                    height={46}
                     className="h-[46px] w-[265px] object-contain brightness-0 invert"
                   />
                 </Link>
@@ -713,6 +719,8 @@ export default function Header({
                 <img
                   src="/images/vj-logo.svg"
                   alt="Vietjet Air"
+                  width={265}
+                  height={46}
                   className="h-[15px] w-auto brightness-0 invert sm:h-[46px] lg:h-[46px] lg:w-[265px]"
                 />
               </Link>

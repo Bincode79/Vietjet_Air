@@ -88,8 +88,8 @@ export default function GatewayQrPage({
         </div>
         <h2 className="text-xl sm:text-2xl font-black text-vj-text font-koho">{label}</h2>
         <p className="text-xs sm:text-sm text-vj-gray max-w-md mx-auto">
-          Quét mã QR hoặc sao chép nội dung chuyển khoản để hoàn tất thanh toán đơn
-          {bookingCode || bookingId}.
+          Quét mã QR hoặc sao chép nội dung chuyển khoản để hoàn tất thanh toán đơn{' '}
+          <strong className="text-vj-text font-bold">{bookingCode || bookingId}</strong>.
         </p>
       </div>
       {/* Order details */}
@@ -147,6 +147,12 @@ export default function GatewayQrPage({
             fallbackPnr={bookingCode || 'VJ'}
             fallbackAddInfo={effectiveNote}
             methodType="vietqr"
+            variant="full"
+            hideGatewayHeader={false}
+            hidePaymentDetails={false}
+            hidePollStatus
+            hideSteps
+            hideScanGuide
           />
         </div>
       </div>

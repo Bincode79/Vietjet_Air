@@ -10,6 +10,8 @@ node_modules/
 .env
 .env.local
 .env.*.local
+.vietjet-seed.env
+*.env
 
 # IDEs
 .cursor/
@@ -41,3 +43,4 @@ Vietjet/
 
 # Headless browser binary on server
 chrome-bin/
+mobile-review.cjs

@@ -4,6 +4,7 @@ import { Icon } from '@/shared/components/ui';
 import { apiRequest, getApiErrorMessage } from '@/shared/services';
 import { renderTransferNote } from '@/lib/transfer-note';
 import { validateBankTransferInput } from '@/lib/bank-transfer';
+import VietQrBox from '@/features/payments/components/VietQrBox';
 
 interface BankAccount {
   id: string;
@@ -36,7 +37,7 @@ interface Props {
 }
 
 export default function BankGatewayContent({
-  bookingId: _bookingId,
+  bookingId,
   bookingCode,
   originalAmount,
   amount,
@@ -219,6 +220,36 @@ export default function BankGatewayContent({
                 <span>{selectedAccount.branch}</span>
               </div>
             )}
+          </div>
+        )}
+
+        {/* VietQR Code - unified component */}
+        {selectedAccount && (
+          <div className="flex justify-center">
+            <div className="w-full max-w-md">
+              <VietQrBox
+                bookingId={bookingId}
+                fallbackAmount={amount}
+                fallbackPnr={bookingCode || 'VJ'}
+                fallbackAddInfo={expectedNote}
+                fallbackAccount={{
+                  admin_bank_name: selectedAccount.admin_bank_name,
+                  admin_bank_account_number: selectedAccount.admin_bank_account_number,
+                  admin_bank_account_holder: selectedAccount.admin_bank_account_holder,
+                  bank_bin: selectedAccount.bank_bin,
+                  logo_url: selectedAccount.logo_url,
+                }}
+                methodType="bank"
+                variant="bank"
+                hideGatewayHeader
+                hidePaymentDetails
+                hidePollStatus
+                hideSteps
+                hideScanGuide
+                onCopyNote={(note) => handleCopy('note', note)}
+                onCopyAmount={(amt) => handleCopy('amount', String(amt))}
+              />
+            </div>
           </div>
         )}
 
