@@ -42,7 +42,6 @@ const STORAGE_KEY = 'vj_reservation_expire_time';
 export default function ReservationCountdown({
   initialMinutes = 15,
   onExpire,
-  bookingCode,
   expiresAt,
   storageKey = STORAGE_KEY,
   onRenew,
@@ -155,7 +154,6 @@ export default function ReservationCountdown({
                   <span className="text-2xs sm:text-xs font-black uppercase tracking-wider text-amber-200 whitespace-nowrap">
                     Thời gian giữ chỗ
                   </span>
-
                 </div>
                 <p className="text-3xs sm:text-xs text-white/90 font-medium hidden sm:block mt-0.5">
                   {isUrgent

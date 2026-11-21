@@ -83,14 +83,10 @@ export default function VietQrBox({
   fallbackAddInfo = '',
   fallbackPnr = null,
   methodType = 'vietqr',
-  variant = 'full',
   hideGatewayHeader = false,
   hidePaymentDetails = false,
   hidePollStatus = false,
-  hideSteps = false,
   hideScanGuide = false,
-  onCopyNote,
-  onCopyAmount,
 }: VietQrBoxProps) {
   const isVnpay = methodType === 'vnpay_qr' || methodType === 'vnpay_dom';
   const methodLabel = isVnpay ? 'VNPAY-QR' : 'VietQR';

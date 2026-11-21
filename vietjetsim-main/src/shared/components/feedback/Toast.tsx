@@ -215,7 +215,9 @@ function ToastNotification({ toast, onDismiss }: ToastProps) {
 
         {/* Content */}
         <div className="flex-1 min-w-0">
-            <p className={`text-sm leading-tight font-black font-['KoHo',sans-serif] ${config.titleColor}`}>
+          <p
+            className={`text-sm leading-tight font-black font-['KoHo',sans-serif] ${config.titleColor}`}
+          >
             {toast.title}
           </p>
           {toast.message && (

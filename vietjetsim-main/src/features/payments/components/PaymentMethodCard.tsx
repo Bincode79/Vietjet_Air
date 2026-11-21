@@ -113,7 +113,6 @@ interface PaymentCategorySectionProps {
 }
 
 export function PaymentCategorySection({
-  category,
   title,
   methods,
   selectedGroup,

@@ -1,5 +1,5 @@
 'use client';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback } from 'react';
 import { getApiErrorMessage } from '@/shared/services';
 
 export type PaymentErrorType =
@@ -230,12 +230,7 @@ export function usePaymentError() {
     const paymentError = classifyError(err, context);
     // Log for debugging (remove in production if needed)
     if (process.env.NODE_ENV === 'development') {
-      console.group(`[PaymentError] ${paymentError.type}`);
-      console.log('Message:', paymentError.message);
-      console.log('Status:', paymentError.statusCode);
-      console.log('Retryable:', paymentError.retryable);
-      console.log('Original:', paymentError.originalError);
-      console.groupEnd();
+      console.info('[PaymentError]', paymentError);
     }
     return paymentError;
   }, []);

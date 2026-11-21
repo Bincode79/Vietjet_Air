@@ -6,7 +6,6 @@ import { usePathname, useRouter } from 'next/navigation';
 import { HiOutlineChevronDown, HiOutlineMenu, HiOutlineUserCircle } from 'react-icons/hi';
 import { RiHeadphoneLine } from 'react-icons/ri';
 import { useAuth } from '@/contexts/AuthContext';
-import { useAuthModal } from '@/features/auth/components';
 import VietjetMobileDrawer from './VietjetMobileDrawer';
 
 /**
@@ -57,7 +56,6 @@ export default function SubpageHeader({
 }) {
   const { user, signOut } = useAuth();
   const pathname = usePathname();
-  const { openAuthModal } = useAuthModal();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [accountOpen, setAccountOpen] = useState(false);
   const [langOpen, setLangOpen] = useState(false);

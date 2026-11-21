@@ -15,7 +15,6 @@ import AnnouncementBar from './AnnouncementBar';
 import SubpageHeader from './SubpageHeader';
 import VietjetMobileDrawer from './VietjetMobileDrawer';
 import { useAuth } from '@/contexts/AuthContext';
-import { useAuthModal } from '@/features/auth/components';
 
 // Nav theo đúng bốn mục của vietjetair.com (site thật render uppercase qua CSS);
 // "Trang chủ" đi qua logo; thao tác đặt vé luôn dẫn về form booking trên trang chủ.
@@ -167,7 +166,6 @@ export default function Header({
 }) {
   const { user, signOut } = useAuth();
   const pathname = usePathname();
-  const { openAuthModal } = useAuthModal();
   const isHomepage = pathname === '/trang-chu' || pathname === '/vi' || pathname === '/';
   // The booking-lookup page mirrors vietjetair.com's single 94px red band:
   // logo + utility row on top, right-aligned primary nav underneath. It shares

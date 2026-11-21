@@ -67,13 +67,6 @@ export function getSeatSessionCookieOptions(request?: Request) {
   };
 }
 
-const SEAT_SESSION_COOKIE_OPTIONS = {
-  httpOnly: true,
-  sameSite: 'lax' as const,
-  path: '/',
-  maxAge: SEAT_SESSION_MAX_AGE,
-};
-
 /** Độ dài cookie (byte) trước khi băm. */
 const SESSION_BYTES = 32;
 

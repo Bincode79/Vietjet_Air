@@ -74,6 +74,6 @@ test.describe('E2E Flow: Booking with MOVI Buy-Now-Pay-Later', () => {
       .first()
       .isVisible()
       .catch(() => false);
-    console.log('MOVI booking code visible:', hasCode);
+    console.info('MOVI booking code visible:', hasCode);
   });
 });

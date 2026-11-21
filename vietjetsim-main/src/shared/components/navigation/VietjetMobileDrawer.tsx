@@ -25,7 +25,6 @@ import {
 } from 'react-icons/ri';
 import { MdFlightTakeoff } from 'react-icons/md';
 import { useAuth } from '@/contexts/AuthContext';
-import { useAuthModal } from '@/features/auth/components';
 
 interface VietjetMobileDrawerProps {
   isOpen: boolean;
@@ -51,7 +50,6 @@ const MENU_ITEMS = [
 
 export default function VietjetMobileDrawer({ isOpen, onClose }: VietjetMobileDrawerProps) {
   const { user, signOut } = useAuth();
-  const { openAuthModal } = useAuthModal();
   const pathname = usePathname();
   const router = useRouter();
 

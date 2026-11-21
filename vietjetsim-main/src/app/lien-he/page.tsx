@@ -37,7 +37,10 @@ export default function ContactPage() {
       />
 
       {/* Main Content */}
-      <main id="main-content" className="max-w-[1200px] mx-auto px-3 sm:px-4 py-8 sm:py-16 -mt-6 sm:-mt-10 relative z-20">
+      <main
+        id="main-content"
+        className="max-w-[1200px] mx-auto px-3 sm:px-4 py-8 sm:py-16 -mt-6 sm:-mt-10 relative z-20"
+      >
         <div className="grid lg:grid-cols-3 gap-6 sm:gap-8">
           {/* Contact Form */}
           <div className="lg:col-span-2 bg-white rounded-vj shadow-vj-lg p-4 sm:p-6 md:p-8">

@@ -61,7 +61,7 @@ export default function NotFound() {
           Trang bạn đang tìm kiếm không tồn tại. Hãy quay lại trang chủ!
         </p>
 
-        <div className="flex flex-col sm:flex_row gap-4 justify-center">
+        <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <button
             onClick={handleGoBack}
             className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-vj font-bold transition-all hover:opacity-90"

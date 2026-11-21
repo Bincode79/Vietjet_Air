@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbo -p 4028",
-    "build": "next build --webpack",
+    "build": "next build",
     "start": "node scripts/start-standalone.cjs --port 4028",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",

@@ -10,7 +10,6 @@ import { ToastContainer } from '@/shared/components/feedback';
 import { getAirportCity } from '@/features/flights';
 import { TAX_AND_FEE_RATE, ANCILLARY_OPTIONS, type AncillaryId } from '@/features/bookings/pricing';
 
-import type { PaymentMethod } from '@/features/payments/types';
 import { apiRequest, ApiRequestError } from '@/shared/services';
 import { MOVI_HOLD_MINUTES } from '@/lib/movi';
 import PaymentModal from './PaymentModal';
@@ -63,15 +62,10 @@ export default function PaymentClient() {
   const {
     selectedMethodGroup,
     paymentMethod,
-    currentMethod,
     isMovi,
-    isCardType,
-    isQrType,
-    isEwalletType,
     selectMethod,
     methodsByCategory,
     activeCategories,
-    gatewayRoute,
   } = usePaymentMethod();
   const [promoCode, setPromoCode] = useState('');
   const [promoApplied, setPromoApplied] = useState(false);

@@ -100,9 +100,7 @@ export default function MoviGatewayContent({
             <div className="w-6 h-0.5 bg-gray-200" />
             <div
               className={`flex items-center gap-1.5 text-xs font-bold px-3 py-1 rounded-full transition-all ${
-                step === 'otp'
-                  ? 'bg-primary text-white shadow-xs'
-                  : 'bg-gray-100 text-gray-400'
+                step === 'otp' ? 'bg-primary text-white shadow-xs' : 'bg-gray-100 text-gray-400'
               }`}
             >
               <span>2</span>
@@ -277,7 +275,9 @@ export default function MoviGatewayContent({
               <div className="space-y-2 py-1">
                 <div className="flex justify-between items-center text-xs">
                   <span className="text-vj-gray">Tổng tiền vé:</span>
-                  <span className="font-bold text-vj-text">{amount.toLocaleString('vi-VN')} VND</span>
+                  <span className="font-bold text-vj-text">
+                    {amount.toLocaleString('vi-VN')} VND
+                  </span>
                 </div>
                 <div className="flex justify-between items-center text-xs">
                   <span className="text-vj-gray">Kỳ hạn trả chậm:</span>
@@ -319,7 +319,9 @@ export default function MoviGatewayContent({
             <div className="bg-amber-50/70 rounded-2xl p-3.5 border border-amber-200/80 text-xs text-amber-900 flex items-start gap-2.5">
               <Icon name="ClockIcon" size={18} className="shrink-0 text-amber-600 mt-0.5" />
               <div className="leading-relaxed">
-                Vé của bạn được giữ chỗ an toàn trong vòng <strong>30 phút</strong>. Vui lòng bấm xác nhận để hoàn tất thủ tục cấp tín dụng và xuất vé điện tử cùng Bay trước - Trả sau MOVI!
+                Vé của bạn được giữ chỗ an toàn trong vòng <strong>30 phút</strong>. Vui lòng bấm
+                xác nhận để hoàn tất thủ tục cấp tín dụng và xuất vé điện tử cùng Bay trước - Trả
+                sau MOVI!
               </div>
             </div>
 

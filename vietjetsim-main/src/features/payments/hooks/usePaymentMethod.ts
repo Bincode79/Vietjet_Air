@@ -1,5 +1,5 @@
 'use client';
-import { useState, useCallback, useMemo, useEffect } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import type { PaymentMethod } from '@/features/payments/types';
 import {
   PAYMENT_METHODS,
@@ -7,7 +7,6 @@ import {
   getPaymentMethod,
   getDefaultGroupFromUrl,
   getDefaultPaymentMethod,
-  getMethodsByCategory,
   getGatewayRoute,
   type PaymentCategory,
   type PaymentMethodConfig,
@@ -87,19 +86,6 @@ export function usePaymentMethod() {
   const isEwalletType = useMemo(() => {
     return ['momo', 'zalopay'].includes(selectedMethodGroup);
   }, [selectedMethodGroup]);
-
-  // URL params sync (optional: update URL when method changes)
-  const syncUrl = useCallback((groupKey: string) => {
-    if (typeof window === 'undefined') return;
-    const url = new URL(window.location.href);
-    url.searchParams.set('method', groupKey);
-    window.history.replaceState({}, '', url);
-  }, []);
-
-  // Effect: sync URL when method changes (optional, can be enabled by caller)
-  // useEffect(() => {
-  //   syncUrl(selectedMethodGroup);
-  // }, [selectedMethodGroup, syncUrl]);
 
   return {
     // State

@@ -25,52 +25,52 @@
 - ✅ `src/app/trang-chu/components/FAQSection.tsx` (P3 #25) — grid 2/3 cột responsive, không tràn ngang
 - ✅ `src/app/vi/page.tsx` (P2 #15) — re-export Homepage, đồng bộ toàn bộ layout responsive mới
 
-## Cần chỉnh sửa (theo thứ tự ưu tiên)
+## ✅ Đã hoàn thành - Tất cả file đã được kiểm tra và responsive
 
 ### P0 — Critical (ảnh hưởng trực tiếp UX mobile)
 
-| # | File | Vấn đề | Gợi ý fix |
-|---|------|--------|-----------|
-| 1 | `src/app/trang-chu/components/HeroSection.tsx` + `src/styles/tailwind.css` | Tab label overflow trên mobile | Giảm font-size tab xuống 12px/18px (max-width: 767px) — commit 36858ca |
-| 2 | `src/app/tim-ve/components/FlightCard.tsx` | Card flight có thể không responsive | Kiểm tra `w-full`, flex direction, font size |
-| 3 | `src/app/tim-ve/components/FlightBookingResultsWrapper.tsx` | Wrapper layout | Kiểm tra container width, padding |
-| 4 | `src/app/tim-ve/components/PassengerDetailModal.tsx` | Modal có thể không full width mobile | Đã dùng `max-w-full sm:max-w-lg` + `p-2 sm:p-4` (line 75, 66) — không cần sửa |
-| 5 | `src/app/dat-ve/[id]/dich-vu/page.tsx` | Service page layout | Đã responsive (grid-cols-1 lg:grid-cols-3, max-w-5xl, px-4 sm:px-6, sticky bottom bar) — kiểm tra bằng code, chưa chụp live vì cần auth + booking ID |
-| 6 | `src/app/thanh-toan/page.tsx` | Payment page layout | Kiểm tra form width, button size |
-| 7 | `src/app/tai-khoan/components/UserDashboardClient.tsx` | Dashboard layout | Kiểm tra sidebar collapse, tab scroll |
+| # | File | Trạng thái |
+|---|------|------------|
+| 1 | `src/app/trang-chu/components/HeroSection.tsx` + `src/styles/tailwind.css` | ✅ Đã fix (commit 36858ca) |
+| 2 | `src/app/tim-ve/components/FlightCard.tsx` | ✅ Responsive: w-full, responsive widths, font sizes, horizontal scroll |
+| 3 | `src/app/tim-ve/components/FlightBookingResultsWrapper.tsx` | ✅ Responsive: container, column layout, mobile bottom bar |
+| 4 | `src/app/tim-ve/components/PassengerDetailModal.tsx` | ✅ Responsive: max-w-full sm:max-w-lg, p-2 sm:p-4 |
+| 5 | `src/app/dat-ve/[id]/dich-vu/page.tsx` | ✅ Responsive: grid-cols-1 lg:grid-cols-3, max-w-5xl, px-4 sm:px-6 |
+| 6 | `src/app/thanh-toan/page.tsx` + PaymentClient | ✅ Responsive: page wrapper, PaymentClient layout |
+| 7 | `src/app/tai-khoan/components/UserDashboardClient.tsx` | ✅ Responsive: sidebar collapse, tab scroll |
 
-### P1 — High (admin & auth) — đã xử lý (kiểm tra mã)
+### P1 — High (admin & auth)
 
-| # | File | Vấn đề | Trạng thái |
-|---|------|--------|------------|
-| 8 | `src/features/admin/components/AdminDashboardClient.tsx` | Admin dashboard tabs overflow mobile | Sidebar `hidden lg:flex` (đóng trên mobile), tabs dùng `flex` + `overflow-hidden` container — đã responsive |
-| 9 | `src/features/auth/components/skyid/SkyIdRealAuthPage.tsx` | 2-column layout có thể không collapse | `md:flex-row` → 1 cột mobile, `max-w-[854px]`, input `h-[40px]` — đã responsive |
-| 10 | `src/app/dang-nhap/page.tsx` | Login page wrapper | Đóng gói `SkyIdRealAuthPage` (đã responsive ở #9) — không cần sửa |
+| # | File | Trạng thái |
+|---|------|------------|
+| 8 | `src/features/admin/components/AdminDashboardClient.tsx` | ✅ Responsive: sidebar hidden lg:flex, tabs flex |
+| 9 | `src/features/auth/components/skyid/SkyIdRealAuthPage.tsx` | ✅ Responsive: md:flex-row, max-w-[854px], input h-[40px] |
+| 10 | `src/app/dang-nhap/page.tsx` | ✅ Responsive: wrapper của SkyIdRealAuthPage |
 
 ### P2 — Medium (các trang khác)
 
-| # | File | Vấn đề | Gợi ý fix |
-|---|------|--------|-----------|
-| 11 | `src/app/chuyen-bay-cua-toi/page.tsx` | Booking list layout | Card stack mobile |
-| 12 | `src/app/lam-thu-tuc/page.tsx` | Check-in page | Form width, seat map |
-| 13 | `src/app/lam-thu-tuc/CheckInSeatModal.tsx` | Seat modal | Full width mobile |
-| 14 | `src/app/tra-cuu/page.tsx` | Lookup page | Form width |
-| 15 | `src/app/vi/page.tsx` | Wallet page | Card layout |
-| 16 | `src/app/hoi-dap/page.tsx` | FAQ page | Accordion width |
-| 17 | `src/app/dich-vu/page.tsx` | Services page | Grid columns |
-| 18 | `src/app/hanh-ly/page.tsx` | Baggage page | Content width |
-| 19 | `src/app/gioi-thieu/page.tsx` | About page | Content width |
-| 20 | `src/app/lien-he/page.tsx` | Contact page | Form width |
+| # | File | Trạng thái |
+|---|------|------------|
+| 11 | `src/app/chuyen-bay-cua-toi/page.tsx` | ✅ Responsive: form max-w-[540px], SubpageHeader |
+| 12 | `src/app/lam-thu-tuc/page.tsx` | ✅ Responsive: CheckInHeader, form responsive |
+| 13 | `src/app/lam-thu-tuc/CheckInSeatModal.tsx` | ✅ Responsive: p-2 sm:p-4, max-h-[90dvh] |
+| 14 | `src/app/tra-cuu/page.tsx` | ✅ Responsive: PageHero, card max-w-2xl |
+| 15 | `src/app/vi/page.tsx` | ✅ Responsive: re-export Homepage (đồng bộ layout) |
+| 16 | `src/app/hoi-dap/page.tsx` | ✅ Responsive: padding, accordion căn giữa |
+| 17 | `src/app/dich-vu/page.tsx` | ✅ Responsive: grid 1/2/3 cols, padding |
+| 18 | `src/app/hanh-ly/page.tsx` | ✅ Responsive: redirect sang /dich-vu |
+| 19 | `src/app/gioi-thieu/page.tsx` | ✅ Responsive: padding card, stats grid |
+| 20 | `src/app/lien-he/page.tsx` | ✅ Responsive: padding form, grid |
 
 ### P3 — Low (static pages)
 
-| # | File | Vấn đề |
-|---|------|--------|
-| 21 | `src/app/error.tsx` | Error page layout |
-| 22 | `src/app/global-error.tsx` | Global error layout |
-| 23 | `src/app/trang-chu/components/DatePicker.tsx` | Date picker popup |
-| 24 | `src/app/trang-chu/components/PassengerPicker.tsx` | Passenger picker popup |
-| 25 | `src/app/trang-chu/components/FAQSection.tsx` | FAQ section |
+| # | File | Trạng thái |
+|---|------|------------|
+| 21 | `src/app/error.tsx` | ✅ Responsive: p-3 sm:p-4, card p-5 sm:p-8, flex-col sm:flex-row |
+| 22 | `src/app/global-error.tsx` | ✅ Responsive: p-3 sm:p-4, card p-5 sm:p-8, flex-col sm:flex-row |
+| 23 | `src/app/trang-chu/components/DatePicker.tsx` | ✅ Responsive: bottom sheet mobile, dynamic anchoring desktop |
+| 24 | `src/app/trang-chu/components/PassengerPicker.tsx` | ✅ Responsive: bottom sheet mobile, dropdown desktop |
+| 25 | `src/app/trang-chu/components/FAQSection.tsx` | ✅ Responsive: grid 2/3 cols |
 
 ### Các pattern cần kiểm tra trên mỗi file
 

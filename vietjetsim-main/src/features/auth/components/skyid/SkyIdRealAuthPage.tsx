@@ -1,13 +1,12 @@
 'use client';
 
 import React, { useCallback, useEffect, useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/useToast';
 import { flashToast } from '@/lib/toast';
 import { OTP_LENGTH, normalizePassportName } from '@/lib/skyjoy';
-import { SKY_ID_COUNTRY_CODES, type IdentifierMode, type SkyIdCountry } from './steps/types';
-import { useResendCountdown } from './useResendCountdown';
+import { SKY_ID_COUNTRY_CODES, type SkyIdCountry } from './steps/types';
 
 const COUNTRY_CODES = SKY_ID_COUNTRY_CODES;
 
@@ -45,7 +44,6 @@ export default function SkyIdRealAuthPage({
   const auth = useAuth();
   const toast = useToast();
   const router = useRouter();
-  const searchParams = useSearchParams();
 
   const [mode, setMode] = useState<'login' | 'register'>(initialMode);
   const [step, setStep] = useState<'phone' | 'password' | 'register-form' | 'login-otp' | 'otp'>(
@@ -57,9 +55,6 @@ export default function SkyIdRealAuthPage({
   const [countryOpen, setCountryOpen] = useState(false);
   const [langOpen, setLangOpen] = useState(false);
   const [currentLang, setCurrentLang] = useState('Tiếng Việt');
-
-  const [identifierMode, setIdentifierMode] = useState<IdentifierMode>('phone');
-  const [accountIdentifier, setAccountIdentifier] = useState('');
 
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -73,11 +68,9 @@ export default function SkyIdRealAuthPage({
 
   // OTP
   const [loginOtpCode, setLoginOtpCode] = useState('');
-  const [otpCode, setOtpCode] = useState('');
+  const otpCode = '';
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-
-  const [, startLoginOtpCountdown] = useResendCountdown();
 
   useEffect(() => {
     setMode(initialMode);
@@ -113,53 +106,16 @@ export default function SkyIdRealAuthPage({
   );
 
   const isEmailOrId = /[a-zA-Z@._-]/.test(phone);
-  const identifier =
-    identifierMode === 'phone'
-      ? isEmailOrId
-        ? phone.trim()
-        : phone.replace(/\D/g, '')
-      : accountIdentifier.trim();
+  const identifier = isEmailOrId ? phone.trim() : phone.replace(/\D/g, '');
   const canContinue = Boolean(identifier);
 
   const handlePhoneContinue = () => {
     if (!identifier) {
-      setError(
-        identifierMode === 'phone'
-          ? 'Vui lòng nhập số điện thoại hoặc tài khoản của bạn'
-          : 'Vui lòng nhập email hoặc mã hội viên SkyJoy'
-      );
+      setError('Vui lòng nhập số điện thoại hoặc tài khoản của bạn');
       return;
     }
     setError('');
     setStep(mode === 'register' ? 'register-form' : 'password');
-  };
-
-  const handleSendLoginOtp = async () => {
-    if (!identifier) {
-      setError('Vui lòng nhập số điện thoại của bạn');
-      return;
-    }
-    setLoading(true);
-    setError('');
-    try {
-      const challenge = await auth.getCaptcha();
-      const captchaAnswer = autoSolveCaptcha(challenge?.token);
-      await auth.requestOtp({
-        identifier,
-        purpose: 'login',
-        captchaToken: challenge?.token,
-        captchaAnswer,
-      });
-      setStep('login-otp');
-      startLoginOtpCountdown();
-      toast.info('Đã gửi mã xác thực', 'Mã OTP đã được gửi tới số điện thoại của bạn.');
-    } catch (err) {
-      const message = err instanceof Error ? err.message : 'Không gửi được mã xác thực';
-      setError(message);
-      toast.error('Lỗi gửi mã xác thực', message);
-    } finally {
-      setLoading(false);
-    }
   };
 
   const handleLogin = (e: React.FormEvent) => {
