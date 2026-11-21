@@ -2,6 +2,16 @@
 
 ## Đã chỉnh sửa
 - ✅ `src/features/bookings/components/SeatSelectionDrawer.tsx` — Drawer full width mobile, footer responsive, ghế nhỏ hơn
+- ✅ `src/app/tim-ve/` (FlightCard, FlightBookingResultsWrapper, FlightResultsStep, layout) — Phase 1 kết quả tìm vé: date strip không cắt mép, badge trễ/hủy không bị cắt, CTA cố định + safe-area, fare grid scrollable (commit a70cedd)
+- ✅ `src/app/thanh-toan/page.tsx` + gateway components (CardGatewayContent, QrGatewayContent, VietQrBox) — đã kiểm tra 375/390px: overflow 0, form width OK, button w-full, không cần sửa code
+- ✅ `src/app/tai-khoan/components/UserDashboardClient.tsx` — đã có UserDashboardMobileNav (drawer) + UserDashboardDesktopSidebar (hidden lg:flex), sidebar collapse, tab scroll OK
+- ✅ `src/app/chuyen-bay-cua-toi/page.tsx` — mobile form `max-w-[540px]`, SubpageHeader `mobileRed`, đã responsive cơ bản
+- ✅ `src/app/lam-thu-tuc/page.tsx` — CheckInHeader, form tra cứu responsive
+- ✅ `src/app/tra-cuu/page.tsx`, `src/app/hoi-dap/page.tsx`, `src/app/dich-vu/page.tsx`, `src/app/lien-he/page.tsx` — đã dùng PageHero + container `max-w-*` + grid responsive
+- ✅ `src/app/hanh-ly/page.tsx` — redirect sang `/dich-vu?service=baggage`, không cần sửa riêng
+- ✅ `src/features/admin/components/AdminDashboardClient.tsx` — sidebar `hidden lg:flex`, content responsive
+- ✅ `src/features/auth/components/skyid/SkyIdRealAuthPage.tsx` — `md:flex-row` (2 cột desktop → 1 cột mobile), input `h-[40px]`, container `max-w-[854px]`
+- ⏭️ `src/app/trang-chu/components/HeroSection.tsx` (P0 #1) — chưa bắt đầu
 
 ## Cần chỉnh sửa (theo thứ tự ưu tiên)
 
