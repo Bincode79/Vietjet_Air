@@ -19,21 +19,21 @@
 
 | # | File | Vấn đề | Gợi ý fix |
 |---|------|--------|-----------|
-| 1 | `src/app/trang-chu/components/HeroSection.tsx` | Search form có thể overflow trên mobile | Kiểm tra `max-w-*`, padding, grid columns |
+| 1 | `src/app/trang-chu/components/HeroSection.tsx` + `src/styles/tailwind.css` | Tab label overflow trên mobile | Giảm font-size tab xuống 12px/18px (max-width: 767px) — commit 36858ca |
 | 2 | `src/app/tim-ve/components/FlightCard.tsx` | Card flight có thể không responsive | Kiểm tra `w-full`, flex direction, font size |
 | 3 | `src/app/tim-ve/components/FlightBookingResultsWrapper.tsx` | Wrapper layout | Kiểm tra container width, padding |
-| 4 | `src/app/tim-ve/components/PassengerDetailModal.tsx` | Modal có thể không full width mobile | Đổi `max-w-lg` → `max-w-full sm:max-w-lg` |
-| 5 | `src/app/dat-ve/[id]/dich-vu/page.tsx` | Service page layout | Kiểm tra responsive grid |
+| 4 | `src/app/tim-ve/components/PassengerDetailModal.tsx` | Modal có thể không full width mobile | Đã dùng `max-w-full sm:max-w-lg` + `p-2 sm:p-4` (line 75, 66) — không cần sửa |
+| 5 | `src/app/dat-ve/[id]/dich-vu/page.tsx` | Service page layout | Đã responsive (grid-cols-1 lg:grid-cols-3, max-w-5xl, px-4 sm:px-6, sticky bottom bar) — kiểm tra bằng code, chưa chụp live vì cần auth + booking ID |
 | 6 | `src/app/thanh-toan/page.tsx` | Payment page layout | Kiểm tra form width, button size |
 | 7 | `src/app/tai-khoan/components/UserDashboardClient.tsx` | Dashboard layout | Kiểm tra sidebar collapse, tab scroll |
 
-### P1 — High (admin & auth)
+### P1 — High (admin & auth) — đã xử lý (kiểm tra mã)
 
-| # | File | Vấn đề | Gợi ý fix |
-|---|------|--------|-----------|
-| 8 | `src/features/admin/components/AdminDashboardClient.tsx` | Admin dashboard tabs overflow mobile | Horizontal scroll tabs, collapse sidebar |
-| 9 | `src/features/auth/components/skyid/SkyIdRealAuthPage.tsx` | 2-column layout có thể không collapse | Kiểm tra `md:` breakpoints, hide right column mobile |
-| 10 | `src/app/dang-nhap/page.tsx` | Login page wrapper | Kiểm tra min-height, padding |
+| # | File | Vấn đề | Trạng thái |
+|---|------|--------|------------|
+| 8 | `src/features/admin/components/AdminDashboardClient.tsx` | Admin dashboard tabs overflow mobile | Sidebar `hidden lg:flex` (đóng trên mobile), tabs dùng `flex` + `overflow-hidden` container — đã responsive |
+| 9 | `src/features/auth/components/skyid/SkyIdRealAuthPage.tsx` | 2-column layout có thể không collapse | `md:flex-row` → 1 cột mobile, `max-w-[854px]`, input `h-[40px]` — đã responsive |
+| 10 | `src/app/dang-nhap/page.tsx` | Login page wrapper | Đóng gói `SkyIdRealAuthPage` (đã responsive ở #9) — không cần sửa |
 
 ### P2 — Medium (các trang khác)
 
