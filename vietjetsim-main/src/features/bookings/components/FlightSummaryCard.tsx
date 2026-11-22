@@ -288,8 +288,8 @@ function FlightLegSection({
       <div className="sm:hidden mt-2">
         {/* Ticket notch cutouts */}
         <div className="relative my-2 -mx-4 h-2">
-          <div className="absolute -left-2.5 -top-1 w-4 h-4 bg-vj-purple-light rounded-full shadow-inner" />
-          <div className="absolute -right-2.5 -top-1 w-4 h-4 bg-vj-purple-light rounded-full shadow-inner" />
+          <div className="absolute -left-2.5 -top-1 w-4 h-4 bg-[var(--vj-purple-light)] rounded-full shadow-inner" />
+          <div className="absolute -right-2.5 -top-1 w-4 h-4 bg-[var(--vj-purple-light)] rounded-full shadow-inner" />
         </div>
 
         {/* Mobile bottom row: Logo - 1 hành khách - Giá tiền */}
