@@ -171,7 +171,7 @@ export default function UserDetailModal({ isOpen, onClose, userId }: UserDetailM
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-[var(--border)]">
           <div className="flex items-center gap-4">
-            <div className="w-16 h-16 rounded-full bg-[var(--primary)]/10 flex items-center justify-center">
+            <div className="w-16 h-16 rounded-full bg-[rgb(var(--primary-rgb))]/10 flex items-center justify-center">
               <span className="text-2xl font-bold text-[var(--primary)] font-[KoHo,sans-serif]">
                 {detail?.full_name?.charAt(0).toUpperCase() || 'U'}
               </span>
@@ -366,7 +366,7 @@ export default function UserDetailModal({ isOpen, onClose, userId }: UserDetailM
 
           {activeTab === 'loyalty' && (
             <div className="space-y-6">
-              <div className="bg-[var(--vj-purple)]/10 border border-[var(--vj-purple)]/30 rounded-2xl p-6">
+              <div className="bg-[rgb(var(--vj-purple-rgb))]/10 border-[rgb(var(--vj-purple-rgb))]/30 rounded-2xl p-6">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-[var(--vj-purple)] font-[Be_Vietnam_Pro,sans-serif]">

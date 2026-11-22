@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState } from 'react';
-import Image from 'next/image';
 import { getAirportCity } from '@/features/flights';
 import { resolveAircraft } from '@/features/flights/services';
 
@@ -166,7 +165,7 @@ interface FlightLegProps {
 
 function FlightLegSection({
   leg,
-  label,
+  label: _label,
   isFirst = true,
   paxCount = 1,
   totalPrice = 0,
@@ -189,115 +188,132 @@ function FlightLegSection({
   const duration = calcDuration(leg.depart_time, leg.arrive_time);
 
   const fare = getFareInfo(leg.class);
+  const fareKey =
+    (leg.class || 'eco').toLowerCase() === 'economy' ? 'eco' : (leg.class || 'eco').toLowerCase();
 
   return (
-    <div className={`p-4 sm:p-5 ${!isFirst ? 'border-t border-vj-border-light' : ''}`}>
-      {/* Header bar của chặng bay */}
-      <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
-        <div className="flex items-center gap-2">
-          <span className="px-2 py-0.5 rounded-sm bg-vj-pill text-vj-text-dim font-extrabold text-2xs uppercase tracking-wider">
-            {label}
-          </span>
-          <span className="text-xs font-extrabold text-vj-text">{dateFormatted}</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <span className="px-2 py-0.5 rounded-sm bg-red-50 text-primary border border-red-200 font-mono font-bold text-3xs">
-            {flightNo}
-          </span>
-          <span className="text-3xs text-vj-gray font-medium hidden sm:inline-block">
-            {aircraft}
-          </span>
-        </div>
+    <div className={`p-4 sm:p-5 relative ${!isFirst ? 'border-t border-vj-border-light' : ''}`}>
+      {/* Top date row */}
+      <div data-flight-date className="mb-3 text-sm font-bold text-gray-900">
+        {dateFormatted}
       </div>
 
       {/* Grid hành trình */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
-        {/* Điểm khởi hành */}
-        <div className="flex items-center sm:block gap-3">
-          <div className="flex flex-col sm:block">
-            <span className="text-2xl sm:text-3xl font-black text-vj-dark font-mono tracking-tight leading-none">
+        {/* Row chặng bay: SGN - DURATION/PLANE - VII */}
+        <div
+          data-flight-route
+          className="flex items-center justify-between sm:justify-start flex-1 sm:gap-6"
+        >
+          {/* Điểm khởi hành */}
+          <div className="flex flex-col text-left">
+            <span className="text-2xl sm:text-3xl font-black text-gray-900 font-mono tracking-tight leading-none">
               {fromCode}
             </span>
-            <span className="block text-sm sm:text-base font-bold text-vj-text-strong mt-1">
+            <span className="block text-sm sm:text-base font-bold text-gray-800 mt-1">
               {departTime}
             </span>
-            <span className="text-2xs text-vj-gray font-medium mt-0.5 block">{fromCity}</span>
+            <span className="text-2xs text-gray-500 font-medium mt-0.5 hidden sm:block">
+              {fromCity}
+            </span>
           </div>
-        </div>
 
-        {/* Cột giữa: thời gian bay, đường bay dashed, nút chi tiết */}
-        <div className="flex-1 px-1 sm:px-6 text-center">
-          <span className="text-3xs sm:text-2xs font-semibold text-vj-text-strong block mb-1">
-            {duration}
-          </span>
-          <div className="relative flex items-center justify-center my-1.5">
-            <div className="w-full border-t border-vj-line border-dashed" />
-            <div className="absolute px-2.5 bg-white text-primary">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth="1.75"
-                stroke="currentColor"
-                aria-hidden="true"
-                width="14"
-                height="14"
-                className="rotate-90 transform"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5"
-                />
-              </svg>
+          {/* Cột giữa: thời gian bay, máy bay, nút chi tiết */}
+          <div className="flex-1 px-2 sm:px-6 text-center">
+            <span className="text-2xs sm:text-xs font-semibold text-gray-600 block mb-1">
+              {duration}
+            </span>
+            <div className="flex items-center justify-center my-1 text-orange-500">
+              <span className="text-base font-bold transform inline-block">✈</span>
             </div>
+            <button
+              type="button"
+              onClick={() => setIsOpen(!isOpen)}
+              className="text-2xs sm:text-xs font-bold text-gray-600 hover:text-primary transition-colors cursor-pointer inline-flex items-center gap-1 active:scale-98"
+              aria-expanded={isOpen}
+            >
+              <span>Bay thẳng | Chi tiết</span>
+              <span className="text-3xs transition-transform duration-200">
+                {isOpen ? '▲' : '▾'}
+              </span>
+            </button>
           </div>
-          <button
-            type="button"
-            onClick={() => setIsOpen(!isOpen)}
-            className="text-3xs font-bold text-vj-text-dim hover:text-primary transition-colors cursor-pointer inline-flex items-center gap-1 active:scale-98"
-            aria-expanded={isOpen}
-          >
-            <span>Bay thẳng | Chi tiết</span>
-            <span className="text-3xs transition-transform duration-200">{isOpen ? '▲' : '▼'}</span>
-          </button>
-        </div>
 
-        {/* Điểm đến */}
-        <div className="flex items-center sm:block gap-3 sm:text-right">
-          <div className="flex flex-col sm:block sm:items-end">
-            <span className="text-2xl sm:text-3xl font-black text-vj-dark font-mono tracking-tight leading-none">
+          {/* Điểm đến */}
+          <div className="flex flex-col text-right sm:text-right">
+            <span className="text-2xl sm:text-3xl font-black text-gray-900 font-mono tracking-tight leading-none">
               {toCode}
             </span>
-            <span className="block text-sm sm:text-base font-bold text-vj-text-strong mt-1">
+            <span className="block text-sm sm:text-base font-bold text-gray-800 mt-1">
               {arriveTime}
             </span>
-            <span className="text-2xs text-vj-gray font-medium mt-0.5 block">{toCity}</span>
+            <span className="text-2xs text-gray-500 font-medium mt-0.5 hidden sm:block">
+              {toCity}
+            </span>
           </div>
         </div>
 
-        {/* Cột phải: Hạng vé, hành lý & Tổng tiền */}
-        <div className="sm:border-l sm:border-vj-border-light sm:pl-6 pt-3 sm:pt-0 text-left sm:text-right flex sm:flex-col justify-between sm:justify-center items-center sm:items-end border-t border-vj-border-light sm:border-t-0">
-          <div className="flex flex-col sm:items-end gap-1">
-            <div
-              className={`inline-block px-2.5 py-0.5 rounded-sm border text-xs tracking-wide ${fare.badgeClass}`}
-            >
-              {fare.label}
-            </div>
-            <div className="flex items-center gap-1 text-3xs text-vj-text-strong font-medium">
-              <span>🎒</span>
-              <span>{fare.cabinBaggage}</span>
-            </div>
+        {/* Desktop Cột phải: Hạng vé, hành lý & Tổng tiền */}
+        <div
+          data-flight-fare
+          className="hidden sm:flex sm:border-l sm:border-gray-200 sm:pl-6 text-right flex-col justify-center items-end"
+        >
+          <div className="flex items-center justify-end mb-1">
+            <img
+              src={
+                fareKey === 'eco'
+                  ? '/images/fare-classes/eco-logo-color.svg'
+                  : `/images/fare-classes/${fareKey}-logo.png`
+              }
+              alt={fare.label}
+              className="h-6 w-auto object-contain"
+              onError={(e) => {
+                (e.currentTarget as HTMLElement).style.display = 'none';
+              }}
+            />
           </div>
 
-          <div className="flex flex-col items-end sm:mt-1">
-            <span className="text-3xs font-semibold text-vj-gray">{paxCount} hành khách</span>
+          <div className="flex flex-col items-end">
+            <span className="text-xs font-semibold text-gray-500">{paxCount} hành khách</span>
             {showPrice && totalPrice > 0 && (
-              <span className="text-sm sm:text-base font-black text-primary tracking-tight">
+              <span className="text-base sm:text-lg font-black text-primary tracking-tight">
                 {totalPrice.toLocaleString('vi-VN')} VND
               </span>
             )}
           </div>
+        </div>
+      </div>
+
+      {/* Mobile Ticket Notch & Bottom Row */}
+      <div className="sm:hidden mt-2">
+        {/* Ticket notch cutouts */}
+        <div className="relative my-2 -mx-4 h-2">
+          <div className="absolute -left-2.5 -top-1 w-4 h-4 bg-vj-purple-light rounded-full shadow-inner" />
+          <div className="absolute -right-2.5 -top-1 w-4 h-4 bg-vj-purple-light rounded-full shadow-inner" />
+        </div>
+
+        {/* Mobile bottom row: Logo - 1 hành khách - Giá tiền */}
+        <div className="flex items-center justify-between pt-1">
+          <div className="flex items-center">
+            <img
+              src={
+                fareKey === 'eco'
+                  ? '/images/fare-classes/eco-logo-color.svg'
+                  : `/images/fare-classes/${fareKey}-logo.png`
+              }
+              alt={fare.label}
+              className="h-6 w-auto object-contain"
+              onError={(e) => {
+                (e.currentTarget as HTMLElement).style.display = 'none';
+              }}
+            />
+          </div>
+          <span className="text-xs text-gray-700 font-medium">{paxCount} hành khách</span>
+          {showPrice && totalPrice > 0 && (
+            <span className="text-sm font-black text-primary tracking-tight">
+              {totalPrice.toLocaleString('vi-VN')} VND
+            </span>
+          )}
         </div>
       </div>
 
@@ -380,39 +396,16 @@ export default function FlightSummaryCard({
   returnFlight,
   paxCount = 1,
   totalPrice = 0,
-  bookingCode,
-  title = 'Thông tin chuyến bay',
+  bookingCode: _bookingCode,
+  title: _title = 'Thông tin chuyến bay',
   className = '',
 }: FlightSummaryCardProps) {
   if (!flight) return null;
 
   return (
     <div
-      className={`bg-white rounded-vj border border-vj-border-light/90 shadow-vj-sm hover:shadow-vj-md transition-all duration-300 overflow-hidden ${className}`}
+      className={`bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden ${className}`}
     >
-      {/* Header Card với thương hiệu Vietjet Air */}
-      <div className="bg-gradient-to-r from-primary via-primary-dark to-primary-dark text-white px-4 sm:px-5 py-3 flex flex-wrap items-center justify-between gap-3 shadow-xs">
-        <div className="flex min-w-0 flex-col items-start gap-1 sm:flex-row sm:items-center sm:gap-3">
-          <Image
-            src="/images/brand/vietjet-logo-white.png"
-            alt="Vietjet Air"
-            width={223}
-            height={40}
-            className="h-auto w-28 max-w-full sm:w-36"
-          />
-          <span className="hidden sm:inline-block w-px h-6 bg-white/25" />
-          <span className="font-koho text-sm font-bold leading-tight sm:text-base">{title}</span>
-        </div>
-        {bookingCode && (
-          <div className="rounded-vj border border-white/25 px-3 py-1 text-center">
-            <span className="block font-koho text-xs leading-tight text-white">Mã đặt chỗ</span>
-            <span className="block font-mono text-base font-bold tracking-wider text-white">
-              {bookingCode}
-            </span>
-          </div>
-        )}
-      </div>
-
       {/* Chuyến đi */}
       <FlightLegSection
         leg={flight}

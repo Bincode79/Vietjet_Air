@@ -6,17 +6,8 @@ import { sql } from '@/lib/neon';
 import { findUserByEmail, createUser } from '@/lib/db';
 import { hashPassword, validatePassword } from '@/lib/auth';
 import { canManageRole } from '@/lib/rbac';
-import { isAssignableRole } from '@/lib/roles';
 import { writeAuditLog } from '@/lib/db';
 import { normalizePhone } from '@/lib/utils';
-
-interface ImportResult {
-  row: number;
-  email: string;
-  success: boolean;
-  error?: string;
-  userId?: string;
-}
 
 export async function POST(request: NextRequest) {
   try {
@@ -63,7 +54,6 @@ export async function POST(request: NextRequest) {
     // Parse header
     const header = lines[0].split(',').map((h) => h.trim().toLowerCase().replace(/"/g, ''));
     const requiredColumns = ['email', 'full_name'];
-    const optionalColumns = ['phone', 'role', 'password', 'skyjoy_member_id'];
 
     for (const col of requiredColumns) {
       if (!header.includes(col)) {

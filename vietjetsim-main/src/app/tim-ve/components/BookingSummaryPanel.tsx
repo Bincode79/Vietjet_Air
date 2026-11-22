@@ -445,6 +445,11 @@ export default function BookingSummaryPanel({
             VND
           </span>
         </div>
+
+        {/* Nút "Đi tiếp" ở dưới cùng panel desktop */}
+        <div className="p-3 bg-white border-t border-vj-border-light flex justify-end items-center">
+          <ContinueButton onClick={onContinue} disabled={!canContinue} label="Đi tiếp" />
+        </div>
       </aside>
 
       {/* Mobile Sticky Bottom Bar - hidden to avoid collision with wrapper floating button */}

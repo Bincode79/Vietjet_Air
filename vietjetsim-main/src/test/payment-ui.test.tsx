@@ -165,8 +165,8 @@ describe('PaymentClient Component UI & Interaction', () => {
     const cardBtns = screen.getAllByText(/Thẻ tín dụng \/ ghi nợ quốc tế/i);
     fireEvent.click(cardBtns[0]);
 
-    const cta = await screen.findAllByText(/Tiếp tục thanh toán/i);
-    fireEvent.click(cta[0]);
+    const cta = screen.getByTestId('pay-submit-button');
+    fireEvent.click(cta);
 
     // Trang cổng thẻ được hiển thị thay vì trang QR chung
     await waitFor(() => {
@@ -191,8 +191,8 @@ describe('PaymentClient Component UI & Interaction', () => {
     const moviBtns = screen.getAllByText(/Trả góp Movi/i);
     fireEvent.click(moviBtns[0]);
 
-    const cta = await screen.findAllByText(/Tiếp tục thanh toán/i);
-    fireEvent.click(cta[0]);
+    const cta = screen.getByTestId('pay-submit-button');
+    fireEvent.click(cta);
 
     // Trang cổng MOVI (hồ sơ tín dụng) được hiển thị thay vì trang QR chung
     await waitFor(() => {

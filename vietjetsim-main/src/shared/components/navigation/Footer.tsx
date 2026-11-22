@@ -121,13 +121,13 @@ export default function Footer() {
     // Nền trắng phủ pattern SVG (đo được trên site thật: background-color #fff
     // + footer-pattern.svg, background-size 300px cover).
     <footer className="vj-footer-sky relative overflow-hidden text-xs pb-24 lg:pb-0">
-      <div className="mx-auto w-full max-w-[1200px] px-4 pb-8 pt-15 sm:px-6 lg:px-0">
+      <div className="mx-auto w-full max-w-[1200px] px-4 pb-6 pt-10 sm:px-6 sm:pb-8 sm:pt-15 lg:px-0">
         {/* 5 cột — mỗi cột rộng 195px, cách nhau 98px. */}
-        <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-5 lg:gap-6">
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-8 lg:grid-cols-5 lg:gap-6">
           {/* Cột 1 — Để có chuyến bay tốt đẹp. */}
           <div>
             <h3 className="vj-footer-heading mb-3">{FOOTER_COLUMNS[0].title}</h3>
-            <ul className="space-y-1.5">
+            <ul className="space-y-1 sm:space-y-1.5">
               {FOOTER_COLUMNS[0].links.map(([title, href]) => (
                 <li key={`${FOOTER_COLUMNS[0].title}-${title}`}>
                   <Link href={href} className="vj-footer-link">
@@ -141,7 +141,7 @@ export default function Footer() {
           {/* Cột 2 — Mua hành lý, suất ăn, chọn chỗ ngồi và hơn thế nữa... */}
           <div>
             <h3 className="vj-footer-heading mb-3">{FOOTER_COLUMNS[1].title}</h3>
-            <ul className="space-y-1.5">
+            <ul className="space-y-1 sm:space-y-1.5">
               {FOOTER_COLUMNS[1].links.map(([title, href]) => (
                 <li key={`${FOOTER_COLUMNS[1].title}-${title}`}>
                   <Link href={href} className="vj-footer-link">
@@ -155,7 +155,7 @@ export default function Footer() {
           {/* Cột 3 — Dịch vụ cao cấp + Về Vietjet. */}
           <div>
             <h3 className="vj-footer-heading mb-3">{FOOTER_COLUMNS[2].title}</h3>
-            <ul className="space-y-1.5">
+            <ul className="space-y-1 sm:space-y-1.5">
               {FOOTER_COLUMNS[2].links.map(([title, href]) => (
                 <li key={`${FOOTER_COLUMNS[2].title}-${title}`}>
                   <Link href={href} className="vj-footer-link">
@@ -165,8 +165,8 @@ export default function Footer() {
               ))}
             </ul>
 
-            <h3 className="vj-footer-heading mb-3 mt-8">Về Vietjet</h3>
-            <ul className="space-y-1.5">
+            <h3 className="vj-footer-heading mb-3 mt-6 sm:mt-8">Về Vietjet</h3>
+            <ul className="space-y-1 sm:space-y-1.5">
               {ABOUT_LINKS.map(([title, href]) => (
                 <li key={title}>
                   <Link href={href} className="vj-footer-link">
@@ -180,7 +180,7 @@ export default function Footer() {
           {/* Cột 4 — Trung tâm phục vụ Khách hàng + Mua vé ở đâu? */}
           <div>
             <h3 className="vj-footer-heading mb-3">{FOOTER_COLUMNS[3].title}</h3>
-            <ul className="space-y-1.5">
+            <ul className="space-y-1 sm:space-y-1.5">
               {FOOTER_COLUMNS[3].links.map(([title, href]) => (
                 <li key={`${FOOTER_COLUMNS[3].title}-${title}`}>
                   <Link href={href} className="vj-footer-link">
@@ -190,8 +190,8 @@ export default function Footer() {
               ))}
             </ul>
 
-            <h3 className="vj-footer-heading mb-3 mt-8">{FOOTER_COLUMNS[4].title}</h3>
-            <ul className="space-y-1.5">
+            <h3 className="vj-footer-heading mb-3 mt-6 sm:mt-8">{FOOTER_COLUMNS[4].title}</h3>
+            <ul className="space-y-1 sm:space-y-1.5">
               {FOOTER_COLUMNS[4].links.map(([title, href]) => (
                 <li key={`${FOOTER_COLUMNS[4].title}-${title}`}>
                   <Link href={href} className="vj-footer-link">
@@ -204,7 +204,7 @@ export default function Footer() {
 
           {/* Cột 5 — Chính sách & bản đồ (site thật: cột này không có tiêu đề). */}
           <div>
-            <ul className="space-y-1.5">
+            <ul className="space-y-1 sm:space-y-1.5">
               {POLICY_LINKS.map(([title, href]) => (
                 <li key={title}>
                   <Link href={href} className="vj-footer-link">
@@ -218,7 +218,7 @@ export default function Footer() {
 
         {/* Kết nối với Vietjet + ứng dụng di động + thông tin pháp nhân.
             Site thật: hàng này nằm ở y=4398, cao 181px, container 1200px. */}
-        <div className="mt-10 grid grid-cols-1 gap-8 border-t border-[var(--border)] pt-8 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-8 grid grid-cols-1 gap-6 border-t border-[var(--border)] pt-6 sm:mt-10 sm:grid-cols-2 sm:gap-8 sm:pt-8 lg:grid-cols-4">
           <div>
             <h3 className="vj-footer-heading mb-3">Kết nối với Vietjet</h3>
             <div className="flex items-center gap-2">
@@ -266,7 +266,7 @@ export default function Footer() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={social.label}
-                  className={`w-7 h-7 rounded text-white flex items-center justify-center hover:opacity-90 transition-opacity ${social.className}`}
+                  className={`w-6 h-6 sm:w-7 sm:h-7 rounded text-white flex items-center justify-center hover:opacity-90 transition-opacity ${social.className}`}
                 >
                   {social.icon}
                 </a>
@@ -274,7 +274,14 @@ export default function Footer() {
             </div>
 
             <div className="mt-4">
-              <p className="mb-2 font-bold text-[var(--foreground)]">
+              <p className="mb-2 flex items-center gap-2 font-bold text-[var(--foreground)]">
+                <img
+                  src="/images/vj-logo.svg"
+                  alt="Vietjet Air"
+                  width={20}
+                  height={20}
+                  className="h-5 w-auto"
+                />
                 Tải ứng dụng di động Vietjet Air
               </p>
               <div className="flex items-center gap-2">

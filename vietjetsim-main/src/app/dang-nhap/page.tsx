@@ -4,6 +4,7 @@ export const dynamic = 'force-dynamic';
 
 import React from 'react';
 import { useSearchParams } from 'next/navigation';
+import { Header } from '@/shared/components/navigation';
 import SkyIdRealAuthPage from '@/features/auth/components/skyid/SkyIdRealAuthPage';
 
 /**
@@ -18,9 +19,12 @@ function LoginPageInner() {
   const mode = searchParams.get('tab') === 'register' ? 'register' : 'login';
 
   return (
-    <main id="main-content" className="min-h-screen">
-      <SkyIdRealAuthPage initialMode={mode} redirectTo={redirect} />
-    </main>
+    <>
+      <Header variant="compact" showQuickServices={false} mobileTitle="ĐĂNG NHẬP" hideMobileLogo />
+      <main id="main-content" className="min-h-screen">
+        <SkyIdRealAuthPage initialMode={mode} redirectTo={redirect} />
+      </main>
+    </>
   );
 }
 

@@ -435,6 +435,7 @@ export default function GatewayDispatcher() {
               bookingCode={effectiveCode}
               amount={effectiveAmount}
               onSuccess={handlePaymentSuccess}
+              onBack={() => router.push('/thanh-toan')}
             />
           )}
         </Suspense>

@@ -7,14 +7,9 @@ import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
-import { Footer, SubpageHeader } from '@/shared/components/navigation';
-import {
-  MdPrint,
-  MdQrCodeScanner,
-  MdLuggage,
-  MdConfirmationNumber,
-  MdPayment,
-} from 'react-icons/md';
+import { Footer, Header } from '@/shared/components/navigation';
+import styles from './MyFlights.module.css';
+import { MdLuggage } from 'react-icons/md';
 import { useToast } from '@/hooks/useToast';
 import { useAuthModal } from '@/features/auth/components';
 import { ToastContainer } from '@/shared/components/feedback';
@@ -25,6 +20,7 @@ import type { BookingListItem } from '@/features/bookings/types';
 import { apiRequest, getApiErrorMessage } from '@/shared/services';
 import { getAirportCity } from '@/features/flights';
 
+// Tab "Đặt chỗ của tôi" (tra cứu bằng mã) và "Vé điện tử (VDT)" (danh sách)
 const TABS = [
   { id: 'booking', label: 'Đặt chỗ của tôi' },
   { id: 'eticket', label: 'Vé điện tử (VDT)' },
@@ -66,44 +62,15 @@ function getFlight(b: RecentBooking): FlightInfo {
   return b.flight;
 }
 
-const STATUS_LABELS: Record<RecentBooking['status'], { label: string; color: string; bg: string }> =
-  {
-    pending: {
-      label: 'Chờ thanh toán',
-      color: 'text-[var(--vj-red)]',
-      bg: 'bg-[rgb(var(--vj-yellow-rgb))]/25',
-    },
-    confirmed: {
-      label: 'Đã xác nhận',
-      color: 'text-[var(--vj-red)]',
-      bg: 'bg-[rgb(var(--vj-red-rgb))]/10',
-    },
-    completed: {
-      label: 'Hoàn thành',
-      color: 'text-[var(--vj-blue)]',
-      bg: 'bg-[rgb(var(--vj-blue-rgb))]/10',
-    },
-    cancelled: {
-      label: 'Đã hủy',
-      color: 'text-[var(--foreground-muted)]',
-      bg: 'bg-[rgb(var(--foreground-muted-rgb))]/15',
-    },
-    refunded: {
-      label: 'Đã hoàn tiền',
-      color: 'text-[var(--vj-purple)]',
-      bg: 'bg-[rgb(var(--vj-purple-rgb))]/15',
-    },
-  };
-
 export default function MyFlightsPage() {
   const toast = useToast();
   const { openAuthModal } = useAuthModal();
+  // Tab "Đặt chỗ của tôi" (tra cứu bằng mã) và "Vé điện tử (VDT)" (danh sách)
   const [tab, setTab] = useState<'booking' | 'eticket'>('booking');
-  // Chip đầu trang "Tìm kiếm mã đặt chỗ" / "Chuyến bay của tôi" — bố cục của
-  // vietjetair.com/vi/my/search-booking (khối nào hiện do chip quyết định).
-  const [view, setView] = useState<'search' | 'list'>('search');
-  // Khách chưa bấm chip thì lần tải danh sách đầu tiên tự mở tab "Chuyến bay của
-  // tôi" khi tài khoản đã có đặt chỗ; khách vãng lai vẫn ở lại form tra cứu.
+  // Xác định view từ tab: 'booking' -> 'search', 'eticket' -> 'list'
+  const view = tab === 'booking' ? 'search' : 'list';
+  // Khách chưa bấm tab thì lần tải danh sách đầu tiên tự mở tab "Vé điện tử"
+  // khi tài khoản đã có đặt chỗ; khách vãng lai vẫn ở lại tab "Đặt chỗ của tôi".
   const viewPinned = useRef(false);
   const [bookingCode, setBookingCode] = useState('');
   const [surname, setSurname] = useState('');
@@ -124,7 +91,7 @@ export default function MyFlightsPage() {
       // được gộp vào query danh sách (`getBookingsByUserId` join `check_in`),
       // nên 100 đặt chỗ vẫn chỉ là 1 request thay vì 101.
       setBookings(records || []);
-      if ((records || []).length > 0 && !viewPinned.current) setView('list');
+      if ((records || []).length > 0 && !viewPinned.current) setTab('eticket');
     } catch {
       setBookings([]);
     } finally {
@@ -227,7 +194,7 @@ export default function MyFlightsPage() {
     return Array.from(byTrip.values());
   }, [bookings]);
 
-  const formatDate = (iso?: string) => {
+  const _formatDate = (iso?: string) => {
     try {
       return new Date(iso || '').toLocaleDateString('vi-VN', {
         weekday: 'short',
@@ -240,7 +207,7 @@ export default function MyFlightsPage() {
     }
   };
 
-  const formatTime = (iso?: string) => {
+  const _formatTime = (iso?: string) => {
     try {
       return new Date(iso || '').toLocaleTimeString('vi-VN', {
         hour: '2-digit',
@@ -331,7 +298,7 @@ export default function MyFlightsPage() {
     <div className="flex flex-col bg-[var(--background)]">
       {/* Nền mây phủ trọn vùng header + nội dung chính và chiếm đúng một
           viewport (`min-h-screen`), khớp ảnh chụp màn hình thực tế. */}
-      <div className="relative flex min-h-screen flex-col overflow-hidden bg-vj-red-dark bg-[url('/images/hero/hero-window-clouds.jpg')] bg-cover bg-center bg-no-repeat">
+      <div className={styles.page}>
         {/* Dải ruy-băng xanh/vàng/đỏ ở góc dưới phải, nằm sau thẻ tra cứu. */}
         <img
           src="/images/hero/chuyen-bay-ribbon.svg"
@@ -344,7 +311,12 @@ export default function MyFlightsPage() {
             dùng băng đỏ 48px với H1 trắng `16px/700` uppercase.
             Tiêu đề ở mobile của site thật là "ĐẶT CHỖ CỦA TÔI" (đo được ở
             `/vi/my/search-booking` 390×844), KHÔNG phải "CHUYẾN BAY CỦA TÔI". */}
-        <SubpageHeader title="ĐẶT CHỖ CỦA TÔI" mobileRed />
+        <Header
+          variant="compact"
+          showQuickServices={false}
+          mobileTitle="CHUYẾN BAY CỦA TÔI"
+          hideMobileLogo
+        />
 
         <main id="main-content" className="relative z-10 flex flex-1 flex-col">
           {/* ===== Khung tra cứu =====
@@ -364,40 +336,30 @@ export default function MyFlightsPage() {
                 ngang — site thật: `x=120`, `w=1200`). Ở MOBILE site thật dải rộng
                 `360px` tại `x=15` (padding ngang 15px của trang), cao `61px`,
                 bo góc `12px`, margin-bottom `16px`. */}
-            <div className="mx-auto w-full max-w-[1200px] px-3.75 sm:px-0">
+            <div className={styles.container}>
               {/* Mobile: khung pill `pt-0` để mép trên của thẻ trắng bám sát
                   băng đỏ header (feedback UI); desktop giữ `pt-4`. */}
               <div className="pt-0 sm:pt-4">
-                {/* Dải pill "Dịch vụ tra cứu" — 2 pill 164×36 bo 18px
-                    (ở mobile: 160×36, padding 0 10px, dải bo góc 12px). */}
-                <nav aria-label="Dịch vụ tra cứu" className="vj-pill-tabs">
-                  <button
-                    type="button"
-                    className="vj-pill-tab"
-                    role="tab"
-                    aria-selected={view === 'search'}
-                    onClick={() => {
-                      viewPinned.current = true;
-                      setView('search');
-                    }}
-                  >
-                    Chuyến bay của tôi
-                  </button>
-                  <button
-                    type="button"
-                    className="vj-pill-tab"
-                    role="tab"
-                    aria-selected={view === 'list'}
-                    onClick={() => {
-                      viewPinned.current = true;
-                      setView('list');
-                    }}
-                  >
-                    Đơn hàng SkyShop
-                  </button>
+                {/* Dải pill theo ảnh mẫu: "Đặt chỗ của tôi" và "Vé điện tử (VDT)" */}
+                <nav aria-label="Dịch vụ tra cứu" className={styles.tabs} role="tablist">
+                  {TABS.map((t) => (
+                    <button
+                      key={t.id}
+                      type="button"
+                      className="vj-pill-tab"
+                      role="tab"
+                      aria-selected={tab === t.id}
+                      onClick={() => {
+                        viewPinned.current = true;
+                        setTab(t.id);
+                      }}
+                    >
+                      {t.label}
+                    </button>
+                  ))}
                 </nav>
 
-                {/* Tab 1: Form tra cứu đặt chỗ */}
+                {/* Tab "Đặt chỗ của tôi": Form tra cứu bằng mã */}
                 {view === 'search' && (
                   <>
                     {/* Giao diện Mobile khớp 100% Ảnh mẫu tham chiếu */}
@@ -422,7 +384,7 @@ export default function MyFlightsPage() {
                               value={bookingCode}
                               onChange={(e) => setBookingCode(e.target.value)}
                               placeholder=" "
-                              className="vj-lookup-input font-heading-800 normal-case"
+                              className="vj-lookup-input font-bold normal-case"
                             />
                             <label htmlFor="mobi-booking-code" className="vj-lookup-label">
                               Mã đặt chỗ <span className="text-[var(--vj-red)]">*</span>
@@ -439,7 +401,7 @@ export default function MyFlightsPage() {
                               value={surname}
                               onChange={(e) => setSurname(e.target.value)}
                               placeholder=" "
-                              className="vj-lookup-input font-heading-800 normal-case"
+                              className="vj-lookup-input font-bold normal-case"
                             />
                             <label htmlFor="mobi-surname" className="vj-lookup-label">
                               Họ <span className="text-[var(--vj-red)]">*</span>
@@ -456,7 +418,7 @@ export default function MyFlightsPage() {
                               value={givenName}
                               onChange={(e) => setGivenName(e.target.value)}
                               placeholder=" "
-                              className="vj-lookup-input font-heading-800 normal-case"
+                              className="vj-lookup-input font-bold normal-case"
                             />
                             <label htmlFor="mobi-given-name" className="vj-lookup-label">
                               Tên đệm và tên <span className="text-[var(--vj-red)]">*</span>
@@ -513,14 +475,11 @@ export default function MyFlightsPage() {
                         - dòng "Bạn đã biết về Vietjet SkyJoy? Đăng ký ngay" lề trái
                           tại `x=240`, link `x=473` rộng `84`;
                         - banner cột phải `x=735`, `570×496` bo `5px`. */}
-                    <form
-                      onSubmit={handleSearchBooking}
-                      className="hidden xl:grid xl:grid-cols-[600px_600px] xl:gap-0 animate-fadeIn"
-                    >
+                    <form onSubmit={handleSearchBooking} className={styles.search}>
                       {/* Cột trái: tiêu đề + mô tả + ba trường nhập.
                           Cột bắt đầu tại `x=120`; H2 lệch `+105px`, khối ô nhập
                           lệch thêm `+15px` (site thật `x=240`). */}
-                      <div className="flex flex-col pt-10.5 xl:pl-26.25">
+                      <div className={styles.form}>
                         <h2 className="text-xl sm:text-2xl font-bold uppercase tracking-tight text-vj-dark">
                           CHUYẾN BAY CỦA TÔI
                         </h2>
@@ -528,8 +487,8 @@ export default function MyFlightsPage() {
                           Tra cứu đặt chỗ
                         </p>
                         <p className="mt-1 font-koho text-base font-normal leading-[24px] text-[var(--foreground-muted)]">
-                          Xem chuyến bay đã đặt, đổi lịch trình, mua thêm dịch vụ hành lý, chỗ ngồi,
-                          suất ăn...
+                          Bạn muốn xem chuyến bay đã đặt, đổi lịch trình bay hay mua thêm dịch vụ
+                          hành lý, chỗ ngồi, suất ăn..., vui lòng điền thông tin bên dưới:
                         </p>
 
                         <div className="mt-7 w-[360px] space-y-4.25 xl:ml-3.75">
@@ -543,7 +502,7 @@ export default function MyFlightsPage() {
                               value={bookingCode}
                               onChange={(e) => setBookingCode(e.target.value)}
                               placeholder=" "
-                              className="vj-lookup-input font-heading-800 normal-case"
+                              className="vj-lookup-input font-bold normal-case"
                             />
                             <label htmlFor="booking-code" className="vj-lookup-label">
                               Mã đặt chỗ <span className="text-[var(--vj-red)]">*</span>
@@ -560,7 +519,7 @@ export default function MyFlightsPage() {
                               value={surname}
                               onChange={(e) => setSurname(e.target.value)}
                               placeholder=" "
-                              className="vj-lookup-input font-heading-800 normal-case"
+                              className="vj-lookup-input font-bold normal-case"
                             />
                             <label htmlFor="surname" className="vj-lookup-label">
                               Họ <span className="text-[var(--vj-red)]">*</span>
@@ -577,7 +536,7 @@ export default function MyFlightsPage() {
                               value={givenName}
                               onChange={(e) => setGivenName(e.target.value)}
                               placeholder=" "
-                              className="vj-lookup-input font-heading-800 normal-case"
+                              className="vj-lookup-input font-bold normal-case"
                             />
                             <label htmlFor="given-name" className="vj-lookup-label">
                               Tên đệm và tên <span className="text-[var(--vj-red)]">*</span>
@@ -617,7 +576,7 @@ export default function MyFlightsPage() {
                       </div>
 
                       {/* Cột phải: banner ngoại tệ hiển thị theo đúng tỷ lệ ảnh 480:648 */}
-                      <div className="flex items-center justify-center pt-6 xl:pt-10.5 xl:pl-6">
+                      <div className={styles.banner}>
                         <div className="relative aspect-[480/648] w-full max-w-[420px] xl:max-w-[460px] overflow-hidden rounded-vj shadow-vj-blue-lg">
                           <AppImage
                             src="/images/hero/banner-chuyenbay-ngoai-te.jpg"
@@ -634,7 +593,7 @@ export default function MyFlightsPage() {
                   </>
                 )}
 
-                {/* Tab 2: Chuyến bay sắp tới (khi khách chưa đăng nhập -> hiển thị form đăng nhập theo Ảnh 2 & 4) */}
+                {/* Tab "Vé điện tử (VDT)": Chuyến bay sắp tới (khi khách chưa đăng nhập -> hiển thị form đăng nhập theo Ảnh 2 & 4) */}
                 {view === 'list' && !authUser && (
                   <div className="rounded-vj bg-[rgba(248,251,255,0.95)] px-4 pb-8 pt-6 shadow-vj-blue-xl ring-1 ring-white/70 backdrop-blur-[2px] sm:px-6 xl:rounded-l-xl xl:pb-9.75 xl:pl-11.5 xl:pr-0.75 xl:pt-8.5 animate-fadeIn">
                     <div className="grid grid-cols-1 gap-8 xl:grid-cols-[458px_minmax(0,1fr)] xl:gap-15">
@@ -723,7 +682,7 @@ export default function MyFlightsPage() {
             </div>
           </section>
 
-          {/* Danh sách chỉ hiện ở chip "Chuyến bay của tôi"; form tra cứu nằm ở chip đầu. */}
+          {/* Danh sách chỉ hiện ở tab "Vé điện tử (VDT)"; form tra cứu nằm ở tab "Đặt chỗ của tôi". */}
           <div
             className={`mx-auto w-full max-w-[1368px] px-4 py-8 sm:px-6 lg:px-0 ${view === 'list' ? '' : 'hidden'}`}
           >
@@ -734,179 +693,49 @@ export default function MyFlightsPage() {
               </section>
             )}
 
-            {/* ===== Tabs ===== */}
-            <div className="mb-6 border-b border-[var(--border)]">
-              <div role="tablist" className="flex gap-1">
-                {TABS.map((t) => {
-                  const active = tab === t.id;
-                  return (
-                    <button
-                      key={t.id}
-                      type="button"
-                      role="tab"
-                      aria-selected={active}
-                      onClick={() => setTab(t.id)}
-                      className={`relative px-4 py-2.5 text-sm font-bold transition-colors ${
-                        active
-                          ? 'text-[var(--vj-red)]'
-                          : 'text-[var(--foreground-muted)] hover:text-[var(--foreground)]'
-                      }`}
+            {/* ===== Danh sách vé điện tử (trong tab "Vé điện tử (VDT)") ===== */}
+            <section>
+              {bookingsLoading ? (
+                <div className="space-y-4">
+                  {[1, 2, 3].map((i) => (
+                    <div key={i} className="h-24 rounded-vj bg-[var(--surface)] animate-pulse" />
+                  ))}
+                </div>
+              ) : bookings.length === 0 ? (
+                <section className="vj-card p-10 text-center">
+                  <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[rgb(var(--vj-red-rgb))]/10 text-[var(--vj-red)]">
+                    <MdLuggage className="h-8 w-8" />
+                  </div>
+                  <h3 className="text-xl font-bold text-[var(--foreground)]">
+                    Chưa có đặt chỗ nào
+                  </h3>
+                  <p className="mt-1 text-sm text-[var(--foreground-muted)]">
+                    Tra cứu bằng mã đặt chỗ ở tab &quot;Đặt chỗ của tôi&quot;, hoặc đăng nhập để xem
+                    các chuyến bay của bạn.
+                  </p>
+                  <div className="mt-5 flex flex-wrap justify-center gap-3">
+                    <Link
+                      href="/dang-nhap?redirect=/chuyen-bay-cua-toi"
+                      className="vj-btn vj-btn-primary vj-btn-pill px-5 py-2.5 text-sm"
                     >
-                      {t.label}
-                      <span
-                        className={`absolute inset-x-0 -bottom-px h-0.5 rounded-full ${
-                          active ? 'bg-[var(--vj-red)]' : 'bg-transparent'
-                        }`}
-                      />
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* ===== Liste des réservations (cartes façon billet) ===== */}
-            {tab === 'booking' && (
-              <section>
-                {bookingsLoading ? (
-                  <div className="space-y-4">
-                    {[1, 2, 3].map((i) => (
-                      <div key={i} className="h-24 rounded-vj bg-[var(--surface)] animate-pulse" />
-                    ))}
+                      Đăng nhập
+                    </Link>
+                    <Link
+                      href="/tim-ve"
+                      className="vj-btn vj-btn-pill border border-[var(--border)] px-5 py-2.5 text-sm text-[var(--foreground)] hover:bg-[var(--surface-2)]"
+                    >
+                      Tìm chuyến bay
+                    </Link>
                   </div>
-                ) : bookings.length === 0 ? (
-                  <section className="vj-card p-10 text-center">
-                    <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[rgb(var(--vj-red-rgb))]/10 text-[var(--vj-red)]">
-                      <MdLuggage className="h-8 w-8" />
-                    </div>
-                    <h3 className="text-xl font-bold text-[var(--foreground)]">
-                      Chưa có đặt chỗ nào
-                    </h3>
-                    <p className="mt-1 text-sm text-[var(--foreground-muted)]">
-                      Tra cứu bằng mã đặt chỗ ở trên, hoặc đăng nhập để xem các chuyến bay của bạn.
-                    </p>
-                    <div className="mt-5 flex flex-wrap justify-center gap-3">
-                      <Link
-                        href="/dang-nhap?redirect=/chuyen-bay-cua-toi"
-                        className="vj-btn vj-btn-primary vj-btn-pill px-5 py-2.5 text-sm"
-                      >
-                        Đăng nhập
-                      </Link>
-                      <Link
-                        href="/tim-ve"
-                        className="vj-btn vj-btn-pill border border-[var(--border)] px-5 py-2.5 text-sm text-[var(--foreground)] hover:bg-[var(--surface-2)]"
-                      >
-                        Tìm chuyến bay
-                      </Link>
-                    </div>
-                  </section>
-                ) : (
-                  <div className="space-y-5">
-                    {trips.map((trip) => (
-                      <TripCard key={trip.tripId} trip={trip} />
-                    ))}
-                  </div>
-                )}
-              </section>
-            )}
-
-            {/* ===== Onglet Vé điện tử ===== */}
-            {tab === 'eticket' && (
-              <section className="mx-auto max-w-[900px]">
-                {bookings.length > 0 ? (
-                  <div className="space-y-5">
-                    {bookings.map((b) => {
-                      const f = getFlight(b);
-                      const st = STATUS_LABELS[b.status];
-                      const vdt = `VDT-${String(Math.abs([...b.id].reduce((a, c) => a + c.charCodeAt(0), 0))).slice(0, 6)}`;
-                      return (
-                        <div
-                          key={b.id}
-                          className="rounded-2xl border border-[var(--border)] bg-[var(--background)] p-5"
-                        >
-                          <div className="flex flex-wrap items-center justify-between gap-3">
-                            <div>
-                              <p className="text-lg font-black text-[var(--vj-yellow)]">{vdt}</p>
-                              <p className="text-xs2 text-[var(--foreground-muted)]">
-                                {f.flight_no || '—'} · {f.from_code || '--'} → {f.to_code || '--'}
-                              </p>
-                            </div>
-                            <span
-                              className={`text-xs font-semibold px-2.5 py-1 rounded-full ${st.bg} ${st.color}`}
-                            >
-                              {st.label}
-                            </span>
-                          </div>
-                          <div className="mt-3 grid grid-cols-2 gap-x-6 text-sm2">
-                            <div>
-                              <p className="text-2xs text-[var(--foreground-muted)]">Ngày</p>
-                              <p className="font-medium text-[var(--foreground)]">
-                                {formatDate(f.depart_time)}
-                              </p>
-                            </div>
-                            <div>
-                              <p className="text-2xs text-[var(--foreground-muted)]">Giờ</p>
-                              <p className="font-medium text-[var(--foreground)]">
-                                {formatTime(f.depart_time)} - {formatTime(f.arrive_time)}
-                              </p>
-                            </div>
-                            <div>
-                              <p className="text-2xs text-[var(--foreground-muted)]">Trạng thái</p>
-                              <p className="font-medium text-[var(--foreground)]">
-                                {b.status === 'completed'
-                                  ? 'Hoàn thành'
-                                  : b.status === 'confirmed'
-                                    ? 'Đã xác nhận'
-                                    : st.label}
-                              </p>
-                            </div>
-                            <div>
-                              <p className="text-2xs text-[var(--foreground-muted)]">Giá</p>
-                              <p className="font-black text-[var(--vj-red)]">
-                                {b.total_price.toLocaleString('vi-VN')}₫
-                              </p>
-                            </div>
-                          </div>
-                          <div className="mt-4 flex flex-wrap gap-2">
-                            {b.status === 'pending' && (
-                              <Link
-                                href={`/thanh-toan?bookingId=${b.booking_code || b.id}`}
-                                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-vj bg-[var(--vj-red)] text-white font-black hover:bg-vj-red-dark shadow-xs transition-colors"
-                              >
-                                <MdPayment className="h-3.5 w-3.5" /> Thanh toán ngay
-                              </Link>
-                            )}
-                            <button
-                              onClick={() => window.print()}
-                              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-vj bg-[var(--vj-yellow)] text-[var(--vj-red)] font-black hover:bg-[var(--vj-yellow-2)] transition-colors"
-                            >
-                              <MdPrint className="h-3.5 w-3.5" /> In vé
-                            </button>
-                            <Link
-                              href={`/dat-ve/${b.booking_code || b.id}`}
-                              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-vj border border-[var(--border)] font-semibold hover:bg-[rgb(var(--vj-yellow-rgb))]/10 transition-colors"
-                            >
-                              <MdQrCodeScanner className="h-3.5 w-3.5" /> Xem chi tiết
-                            </Link>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                ) : (
-                  <section className="vj-card p-10 text-center">
-                    <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[rgb(var(--vj-red-rgb))]/10 text-[var(--vj-red)]">
-                      <MdConfirmationNumber className="h-8 w-8" />
-                    </div>
-                    <h3 className="text-xl font-bold text-[var(--foreground)]">
-                      Chưa có vé điện tử
-                    </h3>
-                    <p className="text-sm text-[var(--foreground-muted)]">
-                      Vé điện tử của đặt chỗ sẽ hiển thị tại đây.
-                    </p>
-                  </section>
-                )}
-              </section>
-            )}
+                </section>
+              ) : (
+                <div className="space-y-5">
+                  {trips.map((trip) => (
+                    <TripCard key={trip.tripId} trip={trip} />
+                  ))}
+                </div>
+              )}
+            </section>
           </div>
 
           {/* Amy Mascot với tooltip "Xin chào!" khớp 100% Ảnh tham chiếu */}

@@ -157,12 +157,14 @@ export default function Header({
   mobileTitle,
   hideMobileLogo = false,
   mobileRed = false,
+  showQuickServices = true,
 }: {
   variant?: 'default' | 'compact' | 'subpage';
   mobileTitle?: string;
   hideMobileLogo?: boolean;
   /** Băng đỏ ở mobile (biến thể `subpage`). */
   mobileRed?: boolean;
+  showQuickServices?: boolean;
 }) {
   const { user, signOut } = useAuth();
   const pathname = usePathname();
@@ -412,9 +414,9 @@ export default function Header({
 
         {/* Mobile Header for compactMode (< lg) matching Screenshot 3 & 4 */}
         {compactMode && (
-          <div className="flex lg:hidden h-14 items-center justify-between px-4 bg-primary-dark text-white shadow-vj-md">
+          <div className="flex lg:hidden h-12 items-center justify-between px-4 bg-primary text-white shadow-vj-md">
             {hideMobileLogo ? (
-              <div className="w-8 shrink-0" aria-hidden="true" />
+              <div className="w-9 shrink-0" aria-hidden="true" />
             ) : (
               <Link
                 href="/trang-chu"
@@ -430,16 +432,16 @@ export default function Header({
                 />
               </Link>
             )}
-            <h1 className="font-koho font-black italic tracking-wide text-base2 sm:text-xl uppercase text-white text-center truncate">
+            <h1 className="font-bold tracking-wide text-base uppercase text-white text-center truncate flex-1 px-2">
               {dynamicTitle || mobileTitle || 'LỰA CHỌN CHUYẾN BAY'}
             </h1>
             <button
               type="button"
               onClick={() => setMobileMenuOpen(true)}
               aria-label="Mở menu"
-              className="flex h-10 w-10 -mr-2 items-center justify-center rounded-full text-white cursor-pointer active:bg-white/10 transition-colors"
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/20 hover:bg-white/30 text-white cursor-pointer active:bg-white/40 transition-colors"
             >
-              <HiOutlineMenu className="h-8 w-8" />
+              <HiOutlineMenu className="h-6 w-6" />
             </button>
           </div>
         )}
@@ -1134,7 +1136,7 @@ export default function Header({
             Site thật: cao 35px, cách logo 40px, chữ 16px/500, icon 25×25,
             mục active màu #F7C61A. Chỉ dùng cho biến thể compact — header
             trang chủ chỉ có một hàng 72px. */}
-        {compactMode && (
+        {compactMode && showQuickServices && (
           <div
             className={`hidden lg:block ${
               transparentMode

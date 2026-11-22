@@ -51,6 +51,7 @@
     "grapesjs": "^0.23.6",
     "iconv-lite": "^0.7.3",
     "jsonwebtoken": "^9.0.3",
+    "jszip": "^3.10.2",
     "next": "16.4.6",
     "nextjs-toploader": "^3.9.17",
     "nodemailer": "^10.0.16",

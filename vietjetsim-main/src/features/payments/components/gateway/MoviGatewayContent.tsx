@@ -17,6 +17,7 @@ interface Props {
   bookingCode?: string;
   amount: number;
   onSuccess: (payload: { movi: MoviGatewayApplication }) => void;
+  onBack?: () => void;
 }
 
 export default function MoviGatewayContent({
@@ -24,6 +25,7 @@ export default function MoviGatewayContent({
   bookingCode,
   amount,
   onSuccess,
+  onBack,
 }: Props) {
   const tenor = 3;
   const [fullName, setFullName] = useState('');
@@ -61,16 +63,29 @@ export default function MoviGatewayContent({
   };
 
   return (
-    <div className="max-w-xl mx-auto py-6 px-4 font-koho text-vj-text">
-      <div className="bg-white rounded-3xl border border-vj-border-light shadow-vj-sm p-5 sm:p-8 space-y-6">
+    <div className="max-w-lg mx-auto py-4 px-3 font-koho text-vj-text">
+      <div className="bg-white rounded-2xl border border-vj-border-light shadow-vj-sm p-4 sm:p-6 space-y-4">
+        {onBack && (
+          <button
+            type="button"
+            onClick={onBack}
+            className="inline-flex items-center gap-1.5 text-xs font-bold text-primary hover:underline transition-colors cursor-pointer"
+          >
+            <Icon name="ArrowLeftIcon" size={14} /> Quay lại chọn phương thức
+          </button>
+        )}
+
         {/* Top Header with Brand Logo & Stepper */}
-        <div className="text-center space-y-3">
+        <div className="text-center space-y-2">
           <div className="flex items-center justify-center gap-2">
-            <MoviLogo className="h-7 w-auto" />
+            <MoviLogo className="h-6 w-auto" />
           </div>
 
           <div>
-            <h2 className="text-xl sm:text-2xl font-black text-vj-text">
+            <div className="text-3xs uppercase tracking-wider font-bold text-gray-500 mb-0.5">
+              CỔNG BAY TRƯỚC TRẢ SAU
+            </div>
+            <h2 className="text-lg sm:text-xl font-black text-vj-text">
               {step === 'info' ? 'Trả chậm linh hoạt với MOVI' : 'Xác nhận khoản vay & Đặt chỗ'}
             </h2>
             <p className="text-xs sm:text-sm text-vj-text mt-1">
@@ -110,10 +125,10 @@ export default function MoviGatewayContent({
                 <input
                   type="text"
                   required
-                  placeholder="NGUYEN VAN A"
+                  placeholder="Nhập họ và tên"
                   value={fullName}
-                  onChange={(e) => setFullName(e.target.value.toUpperCase())}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-vj-line font-koho font-normal text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all bg-white"
+                  onChange={(e) => setFullName(e.target.value)}
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-vj-line font-koho font-bold text-sm text-gray-900 placeholder:text-gray-400 placeholder:font-normal focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all bg-white"
                 />
               </div>
 
@@ -125,10 +140,19 @@ export default function MoviGatewayContent({
                   <input
                     type="text"
                     required
-                    placeholder="DD/MM/YYYY"
+                    placeholder="dd/mm/yyyy"
                     value={birthDate}
-                    onChange={(e) => setBirthDate(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-vj-line font-koho font-normal text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all bg-white"
+                    onChange={(e) => {
+                      const digits = e.target.value.replace(/\D/g, '').slice(0, 8);
+                      let formatted = digits;
+                      if (digits.length > 4)
+                        formatted =
+                          digits.slice(0, 2) + '/' + digits.slice(2, 4) + '/' + digits.slice(4);
+                      else if (digits.length > 2)
+                        formatted = digits.slice(0, 2) + '/' + digits.slice(2);
+                      setBirthDate(formatted);
+                    }}
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-vj-line font-koho font-bold text-sm text-gray-900 placeholder:text-gray-400 placeholder:font-normal focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all bg-white"
                   />
                 </div>
 
@@ -139,19 +163,12 @@ export default function MoviGatewayContent({
                   <input
                     type="tel"
                     required
-                    placeholder="091 / 234 / 5678"
+                    placeholder="Nhập số điện thoại"
                     value={phone}
                     onChange={(e) => {
-                      const digits = e.target.value.replace(/\D/g, '').slice(0, 10);
-                      let formatted = digits;
-                      if (digits.length >= 3)
-                        formatted = digits.slice(0, 3) + ' / ' + digits.slice(3);
-                      if (digits.length >= 6)
-                        formatted =
-                          digits.slice(0, 3) + ' / ' + digits.slice(3, 6) + ' / ' + digits.slice(6);
-                      setPhone(formatted);
+                      setPhone(e.target.value.replace(/\D/g, '').slice(0, 10));
                     }}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-vj-line font-koho font-normal text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all bg-white"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-vj-line font-koho font-bold text-sm text-gray-900 placeholder:text-gray-400 placeholder:font-normal focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all bg-white"
                   />
                 </div>
               </div>
@@ -163,55 +180,20 @@ export default function MoviGatewayContent({
                 <input
                   type="text"
                   required
-                  placeholder="001 / 200 / 000 / 000"
+                  placeholder="Nhập số CCCD / hộ chiếu"
                   value={nationalId}
                   onChange={(e) => {
-                    const digits = e.target.value.replace(/\D/g, '').slice(0, 12);
-                    let formatted = digits;
-                    if (digits.length >= 3)
-                      formatted = digits.slice(0, 3) + ' / ' + digits.slice(3);
-                    if (digits.length >= 6)
-                      formatted =
-                        digits.slice(0, 3) + ' / ' + digits.slice(3, 6) + ' / ' + digits.slice(6);
-                    if (digits.length >= 9)
-                      formatted =
-                        digits.slice(0, 3) +
-                        ' / ' +
-                        digits.slice(3, 6) +
-                        ' / ' +
-                        digits.slice(6, 9) +
-                        ' / ' +
-                        digits.slice(9);
-                    setNationalId(formatted);
+                    setNationalId(e.target.value.replace(/\D/g, '').slice(0, 12));
                   }}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-vj-line font-koho font-normal text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all bg-white"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-vj-line font-koho font-bold text-sm text-gray-900 placeholder:text-gray-400 placeholder:font-normal focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all bg-white"
                 />
-              </div>
-            </div>
-
-            {/* Trust highlights */}
-            <div className="grid grid-cols-3 gap-2 py-1 text-center text-3xs text-vj-text">
-              <div className="flex flex-col items-center gap-1 p-2 bg-slate-50 rounded-xl border border-slate-100">
-                <span className="text-base">⚡</span>
-                <span className="font-semibold text-vj-text">Duyệt 3 phút</span>
-                <span>Tự động 24/7</span>
-              </div>
-              <div className="flex flex-col items-center gap-1 p-2 bg-slate-50 rounded-xl border border-slate-100">
-                <span className="text-base">🛡️</span>
-                <span className="font-semibold text-vj-text">Bảo mật</span>
-                <span>Chuẩn PCI-DSS</span>
-              </div>
-              <div className="flex flex-col items-center gap-1 p-2 bg-slate-50 rounded-xl border border-slate-100">
-                <span className="text-base">0️⃣</span>
-                <span className="font-semibold text-vj-text">Lãi suất 0%</span>
-                <span>Không phí ẩn</span>
               </div>
             </div>
 
             <button
               type="submit"
               disabled={isProcessing || !nationalId || !phone || !fullName || !birthDate}
-              className="w-full mt-2 py-3.5 rounded-xl bg-primary hover:bg-primary-dark text-white font-black text-sm uppercase tracking-wide transition-all shadow-vj-md disabled:opacity-50 cursor-pointer"
+              className="w-full mt-2 py-2.5 rounded-xl bg-gradient-to-b from-amber-300 via-yellow-400 to-amber-500 hover:from-amber-200 hover:via-yellow-300 hover:to-amber-400 text-black font-bold text-xs uppercase tracking-wide transition-all shadow-sm border border-amber-600/30 cursor-pointer disabled:opacity-50"
             >
               {isProcessing ? 'Đang gửi hồ sơ duyệt...' : 'Tiếp Tục'}
             </button>
@@ -221,7 +203,7 @@ export default function MoviGatewayContent({
         {step === 'otp' && (
           <div className="space-y-4">
             {/* Booking & Loan Summary Card */}
-            <div className="bg-slate-50/90 rounded-2xl p-5 space-y-3.5 border border-vj-border-light text-sm">
+            <div className="bg-slate-50/90 rounded-2xl p-4 space-y-3 border border-vj-border-light text-sm">
               <div className="flex justify-between items-center pb-2 border-b border-vj-border-light">
                 <div className="flex items-center gap-2">
                   <span className="text-vj-text font-semibold text-xs">Mã đặt chỗ:</span>
@@ -280,7 +262,7 @@ export default function MoviGatewayContent({
             </div>
 
             {/* Hold & Security Notice */}
-            <div className="bg-primary/10 rounded-2xl p-3.5 border border-primary/20 text-xs text-primary flex items-start gap-2.5">
+            <div className="bg-primary/10 rounded-2xl p-3 border border-primary/20 text-xs text-primary flex items-start gap-2">
               <Icon name="ClockIcon" size={18} className="shrink-0 text-primary mt-0.5" />
               <div className="leading-relaxed">
                 Vé của bạn được giữ chỗ an toàn trong vòng <strong>30 phút</strong>. Vui lòng bấm
@@ -295,7 +277,7 @@ export default function MoviGatewayContent({
                 type="button"
                 onClick={handleConfirm}
                 disabled={isProcessing}
-                className="w-full py-3.5 bg-primary hover:bg-primary-dark text-white rounded-xl font-black text-sm uppercase tracking-wide transition-all shadow-vj-md cursor-pointer disabled:opacity-50"
+                className="w-full py-2.5 bg-primary hover:bg-primary-dark text-white rounded-xl font-bold text-xs uppercase tracking-wide transition-all shadow-sm cursor-pointer disabled:opacity-50"
               >
                 {isProcessing ? 'Đang hoàn tất thanh toán...' : 'Xác nhận & Hoàn tất'}
               </button>

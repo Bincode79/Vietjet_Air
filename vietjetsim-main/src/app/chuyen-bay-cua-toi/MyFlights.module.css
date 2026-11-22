@@ -1,0 +1,157 @@
+.page {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+  overflow: hidden;
+  background:
+    linear-gradient(rgb(255 246 252 / 40%), rgb(244 249 255 / 40%)),
+    url('/sky-clouds.svg') center / 100% 100%;
+  font-family: var(--vj-font);
+  color: var(--foreground);
+}
+.container {
+  max-width: 1200px;
+  width: calc(100% - 48px);
+  margin: 42px auto 100px;
+}
+.tabs {
+  display: flex;
+  align-items: stretch;
+  background: transparent;
+  padding: 0;
+}
+.tabs button {
+  padding: 14px;
+  height: auto;
+  min-height: 48px;
+  border: 0;
+  border-radius: 10px 10px 0 0;
+  font: 700 18px/1.3 var(--vj-font);
+  color: #999;
+  background: transparent;
+  box-shadow: none;
+}
+.tabs button[aria-selected='true'] {
+  color: var(--primary);
+  background: rgb(255 255 255 / 65%);
+}
+.tabs button:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: -3px;
+}
+.search {
+  display: none;
+  grid-template-columns: 40% 60%;
+  padding: 30px 15px 32px 40px;
+  background: rgb(255 255 255 / 65%);
+  border-radius: 0 12px 12px;
+  min-height: 650px;
+}
+.form {
+  display: flex;
+  flex-direction: column;
+  padding: 10px 40px 0 0;
+}
+.form h2 {
+  font: 700 22px/1.4 var(--vj-font);
+  letter-spacing: 0;
+}
+.form h2 + p {
+  display: none;
+}
+.form h2 + p + p {
+  margin-top: 20px;
+  font: 500 18px/1.4 var(--vj-font);
+  color: var(--foreground);
+}
+.form > div {
+  width: 100%;
+  margin-left: 0;
+}
+.form :global(.vj-lookup-field) {
+  height: 42px;
+  margin-top: 16px;
+}
+.form :global(.vj-lookup-input) {
+  width: 100%;
+  height: 42px;
+  padding: 10px 20px;
+  border: 0;
+  border-radius: 6px;
+  background: white;
+  font: 500 18px/1.4 var(--vj-font);
+  box-shadow: 0 5px 12px rgb(0 0 0 / 8%);
+}
+.form :global(.vj-lookup-label) {
+  left: 20px;
+  font: 600 18px/1.4 var(--vj-font);
+  color: var(--foreground);
+}
+.form :global(.vj-lookup-btn) {
+  min-width: 127px;
+  min-height: 40px;
+  border-radius: 12px;
+  background: linear-gradient(110deg, #f9a51a, #ffdd00);
+  color: black;
+  font: 700 18px/1.4 var(--vj-font-cta);
+  transition: filter 150ms;
+}
+.form :global(.vj-lookup-btn):hover {
+  filter: brightness(1.05);
+}
+.form > div:last-child > div {
+  display: none;
+}
+.banner {
+  padding: 0 0 0 16px;
+  display: flex;
+  align-items: flex-start;
+}
+.banner > div {
+  width: 100%;
+  max-width: none;
+  aspect-ratio: 480 / 648;
+  border-radius: 5px;
+  box-shadow: none;
+}
+.banner img {
+  object-fit: cover;
+}
+@media (min-width: 1280px) {
+  .search {
+    display: grid;
+  }
+}
+@media (max-width: 1279px) {
+  .container {
+    max-width: 650px;
+    margin: 24px auto 48px;
+  }
+  .tabs button {
+    flex: 1;
+    font-size: 16px;
+    padding: 12px 8px;
+  }
+  .tabs + div {
+    background: rgb(255 255 255 / 65%);
+    border-radius: 0 10px 10px;
+    padding: 24px 16px;
+  }
+  .container :global(.vj-lookup-input) {
+    font-family: var(--vj-font);
+  }
+}
+@media (max-width: 479px) {
+  .container {
+    width: calc(100% - 24px);
+  }
+  .tabs button {
+    font-size: 14px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .form :global(.vj-lookup-btn) {
+    transition: none;
+  }
+}

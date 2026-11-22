@@ -499,7 +499,7 @@ export default function PaymentClient() {
     return (
       <main
         id="main-content"
-        className="min-h-screen bg-gradient-to-b from-vj-blue-tint-5 via-vj-blue-tint-4 to-vj-blue-tint-3 relative py-8 sm:py-12 px-4 sm:px-6"
+        className="min-h-screen bg-gradient-to-b from-vj-blue-tint-5 via-vj-blue-tint-4 to-vj-blue-tint-3 relative py-5 sm:py-8 px-3 sm:px-6"
       >
         {gatewaySuccess ? (
           <div className="mx-auto max-w-md rounded-2xl border border-vj-border-light bg-white px-5 py-8 text-center font-koho shadow-vj-sm sm:p-10">
@@ -539,6 +539,7 @@ export default function PaymentClient() {
                 onSuccess={() => {
                   setGatewaySuccess(true);
                 }}
+                onBack={() => setShowGateway(false)}
               />
             ) : (
               <GatewayQrPage
@@ -867,6 +868,7 @@ export default function PaymentClient() {
           {/* Nút hành động thanh toán duy nhất */}
           <button
             type="button"
+            data-testid="pay-submit-button"
             onClick={goToPaymentGateway}
             className="min-h-9 sm:min-h-10 px-4 sm:px-6 py-0.5 rounded-full bg-gradient-vj-yellow hover:brightness-105 active:scale-98 shadow-md transition-all cursor-pointer flex items-center justify-center gap-2 text-center font-koho"
           >

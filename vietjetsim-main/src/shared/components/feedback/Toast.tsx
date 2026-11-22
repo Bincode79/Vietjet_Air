@@ -42,9 +42,9 @@ const TYPE_CONFIG: Record<
 > = {
   // ── Thành công: nền vàng-brand rất nhạt, viền vàng-brand ──
   success: {
-    bar: 'bg-[#7aa52a]',
-    bg: 'bg-[#9acd32] border-2 border-[#7aa52a] shadow-xl shadow-lime-200/40',
-    iconBg: 'bg-[#7aa52a] shadow-vj-md shadow-lime-200/40',
+    bar: 'bg-success',
+    bg: 'bg-success-bg border-2 border-success shadow-sm shadow-success/40',
+    iconBg: 'bg-success shadow-vj-md shadow-success/40',
     iconColor: 'text-white',
     titleColor: 'text-white font-black',
     messageColor: 'text-white font-medium',

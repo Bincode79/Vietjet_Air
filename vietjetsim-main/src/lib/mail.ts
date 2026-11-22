@@ -1035,3 +1035,70 @@ export async function sendTempPasswordEmail(opts: {
     text,
   });
 }
+
+/** Gửi email thông báo đăng nhập mới (Login Notification). */
+export async function sendLoginNotificationEmail(opts: {
+  to: string;
+  userName: string;
+  deviceInfo: string;
+  ipAddress: string;
+  location: string;
+  timestamp: string;
+  isNewDevice: boolean;
+}): Promise<boolean> {
+  const subject = opts.isNewDevice
+    ? '⚠️ Cảnh báo: Đăng nhập từ thiết bị mới - Vietjet Air'
+    : '📱 Thông báo: Đăng nhập thành công - Vietjet Air';
+
+  const inner = `<p style="margin:0 0 16px;">Kính chào ${opts.userName},</p>
+<p style="margin:0 0 16px;">${opts.isNewDevice ? 'Chúng tôi phát hiện một lần đăng nhập từ thiết bị mới:' : 'Vừa có một lần đăng nhập vào tài khoản của bạn:'}</p>
+
+<div style="margin:24px 0;padding:20px;background:#f8f9fa;border-radius:10px;border:1px solid #e9ecef;">
+  <table style="width:100%;border-collapse:collapse;">
+    <tr><td style="padding:8px 0;font-weight:bold;color:#666;">Thiết bị:</td><td style="padding:8px 0;text-align:right;color:#333;">${opts.deviceInfo}</td></tr>
+    <tr><td style="padding:8px 0;font-weight:bold;color:#666;">Địa chỉ IP:</td><td style="padding:8px 0;text-align:right;color:#333;">${opts.ipAddress}</td></tr>
+    <tr><td style="padding:8px 0;font-weight:bold;color:#666;">Vị trí ước tính:</td><td style="padding:8px 0;text-align:right;color:#333;">${opts.location}</td></tr>
+    <tr><td style="padding:8px 0;font-weight:bold;color:#666;">Thời gian:</td><td style="padding:8px 0;text-align:right;color:#333;">${opts.timestamp}</td></tr>
+  </table>
+</div>
+
+${
+  opts.isNewDevice
+    ? `
+<p style="margin:16px 0;color:#EC2029;font-weight:bold;">⚠️ Nếu đây không phải bạn, vui lòng <strong>đổi mật khẩu ngay lập tức</strong> và liên hệ tổng đài 1900 1166.</p>
+`
+    : ''
+}
+
+<p style="margin:16px 0;color:#666;font-size:14px;">Nếu bạn không thực hiện đăng nhập này, vui lòng đổi mật khẩu ngay và liên hệ tổng đài 1900 1166 để được hỗ trợ.</p>`;
+
+  const text = [
+    subject,
+    '',
+    `Kính chào ${opts.userName},`,
+    opts.isNewDevice
+      ? 'Chúng tôi phát hiện một lần đăng nhập từ thiết bị mới:'
+      : 'Vừa có một lần đăng nhập vào tài khoản của bạn:',
+    `Thiết bị: ${opts.deviceInfo}`,
+    `Địa chỉ IP: ${opts.ipAddress}`,
+    `Vị trí ước tính: ${opts.location}`,
+    `Thời gian: ${opts.timestamp}`,
+    opts.isNewDevice ? 'Nếu đây không phải bạn, vui lòng đổi mật khẩu ngay lập tức!' : '',
+    'Nếu bạn không thực hiện đăng nhập này, vui lòng đổi mật khẩu ngay và liên hệ tổng đài 1900 1166.',
+  ].join('\n');
+
+  return sendMail({
+    to: opts.to,
+    subject,
+    html: `<!DOCTYPE html><html><body style="font-family:Arial,sans-serif;line-height:1.6;color:#333;max-width:600px;margin:0 auto;padding:20px;">${inner}</body></html>`,
+    text,
+  });
+}
+
+/** Kiểm tra cấu hình login notification cho user. */
+export async function checkLoginNotificationSettings(
+  _userId: string
+): Promise<{ enabled: boolean; newDeviceOnly: boolean }> {
+  // TODO: Implement when user settings table has notification_preferences column
+  return { enabled: true, newDeviceOnly: true };
+}

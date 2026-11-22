@@ -154,7 +154,7 @@ export default function SkyJoyLink({ initialSkyjoyId, onLink, onUnlink }: SkyJoy
 
       {skyjoyId ? (
         // Linked state
-        <div className="bg-[var(--vj-purple)]/10 border border-[var(--vj-purple)]/30 rounded-vj p-4">
+        <div className="bg-[rgb(var(--vj-purple-rgb))]/10 border-[rgb(var(--vj-purple-rgb))]/30 rounded-vj p-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="w-12 h-12 bg-[var(--vj-purple)] rounded-full flex items-center justify-center">
@@ -210,7 +210,7 @@ export default function SkyJoyLink({ initialSkyjoyId, onLink, onUnlink }: SkyJoy
               <button
                 type="submit"
                 disabled={isLinking || !pendingId || !/^SJ\d{8,10}$/.test(pendingId)}
-                className="w-full px-6 py-3 bg-[var(--vj-purple)] text-white rounded-vj font-semibold font-[KoHo,sans-serif] hover:bg-[var(--vj-purple)]/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full px-6 py-3 bg-[var(--vj-purple)] text-white rounded-vj font-semibold font-[KoHo,sans-serif] hover:bg-[rgb(var(--vj-purple-rgb))]/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isLinking ? (
                   <>

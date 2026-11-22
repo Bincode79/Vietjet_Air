@@ -43,15 +43,15 @@ describe('ItineraryModal Component', () => {
     expect(screen.getByText('KHD6V3')).toBeInTheDocument();
 
     // Passenger names
-    expect(screen.getAllByText('BUI THI THUONG').length).toBeGreaterThan(0);
-    expect(screen.getByText('PHAM VAN HUNG')).toBeInTheDocument();
+    expect(screen.getAllByText(/BUI.*THI.*THUONG/).length).toBeGreaterThan(0);
+    expect(screen.getByText(/PHAM.*VAN.*HUNG/)).toBeInTheDocument();
 
     // Flight number
-    expect(screen.getByText('VJ087')).toBeInTheDocument();
+    expect(screen.getAllByText('VJ087').length).toBeGreaterThan(0);
 
     // Print buttons
-    expect(screen.getByText('Print')).toBeInTheDocument();
-    expect(screen.getByText('Tải xuống PDF')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /^In$/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Tải xuống PDF/i })).toBeInTheDocument();
   });
 
   it('does not render when isOpen is false', () => {

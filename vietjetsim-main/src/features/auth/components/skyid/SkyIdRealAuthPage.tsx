@@ -216,7 +216,7 @@ export default function SkyIdRealAuthPage({
       className={
         isModal
           ? 'fixed inset-0 z-[1000] flex items-center justify-center bg-black/60 p-4 backdrop-blur-xs overflow-y-auto'
-          : 'min-h-screen bg-[#EAF3FC] flex flex-col justify-between items-center py-8 px-4 sm:px-6'
+          : 'min-h-screen bg-vj-bgs flex flex-col justify-between items-center py-8 px-4 sm:px-6'
       }
     >
       {/* Top spacer */}
@@ -225,7 +225,7 @@ export default function SkyIdRealAuthPage({
       {/* Main Authentic 2-Column Card */}
       <div
         data-testid="skyid-card"
-        className="w-full max-w-[854px] bg-white rounded-[20px] shadow-[0_16px_45px_rgba(0,0,0,0.06)] border border-slate-100 overflow-hidden flex flex-col md:flex-row relative my-auto"
+        className="w-full max-w-[854px] bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden flex flex-col md:flex-row relative my-auto"
       >
         {onClose && (
           <button
@@ -262,11 +262,11 @@ export default function SkyIdRealAuthPage({
                   onClick={() => setLangOpen(!langOpen)}
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-slate-300 bg-white text-sm font-bold text-slate-800 hover:bg-slate-50 transition shadow-2xs cursor-pointer"
                 >
-                  <span className="w-4 h-4 rounded-full bg-red-600 flex items-center justify-center text-[11px] text-yellow-300">
+                  <span className="w-4 h-4 rounded-full bg-red-600 flex items-center justify-center text-xs text-yellow-300">
                     ★
                   </span>
                   <span>{currentLang}</span>
-                  <span className="text-[11px] text-slate-500">▾</span>
+                  <span className="text-xs text-slate-500">▾</span>
                 </button>
                 {langOpen && (
                   <div className="absolute right-0 top-full mt-1 w-32 bg-white rounded-lg shadow-lg border border-slate-200 py-1 z-30 text-xs">
@@ -298,7 +298,7 @@ export default function SkyIdRealAuthPage({
             {/* Error message */}
             {error && (
               <div className="mt-3 p-2.5 rounded-lg bg-red-50 border border-red-200 text-xs text-red-600 font-medium flex items-center gap-2">
-                <span className="w-4 h-4 rounded-full bg-red-500 text-white flex items-center justify-center text-[10px] font-bold">
+                <span className="w-4 h-4 rounded-full bg-red-500 text-white flex items-center justify-center text-xs font-bold">
                   !
                 </span>
                 <span>{error}</span>
@@ -309,12 +309,12 @@ export default function SkyIdRealAuthPage({
             {step === 'phone' && (
               <>
                 <h1
-                  className="text-[22px] sm:text-[23px] font-bold text-[#2D2D2D] mt-4 leading-tight tracking-tight"
+                  className="text-2xl sm:text-3xl font-bold text-slate-800 mt-4 leading-tight tracking-tight"
                   aria-label="Đăng nhập"
                 >
                   {mode === 'register' ? 'Đăng ký tài khoản' : 'Nhập số điện thoại'}
                 </h1>
-                <p className="text-xs text-[#6F6F6F] mt-1 leading-relaxed">
+                <p className="text-xs text-slate-500 mt-1 leading-relaxed">
                   {mode === 'register'
                     ? 'Tạo tài khoản SkyJoy để tích điểm đổi vé bay và nhận ưu đãi.'
                     : 'Vui lòng cung cấp số điện thoại chính chủ của bạn để tiếp tục.'}
@@ -327,11 +327,11 @@ export default function SkyIdRealAuthPage({
                     <button
                       type="button"
                       onClick={() => setCountryOpen(!countryOpen)}
-                      className="h-[40px] px-2 rounded-md border border-slate-300 bg-white flex items-center gap-1 text-xs font-semibold text-slate-800 hover:border-slate-400 transition cursor-pointer"
+                      className="h-10 px-2 rounded-md border border-slate-300 bg-white flex items-center gap-1 text-xs font-semibold text-slate-800 hover:border-slate-400 transition cursor-pointer"
                     >
                       <span className="text-sm">{country.flag}</span>
                       <span>{country.dial}</span>
-                      <span className="text-[10px] text-slate-400">▾</span>
+                      <span className="text-xs text-slate-400">▾</span>
                     </button>
                     {countryOpen && (
                       <div className="absolute left-0 top-full mt-1 w-44 max-h-48 overflow-y-auto bg-white rounded-lg shadow-xl border border-slate-200 py-1 z-30">
@@ -356,10 +356,10 @@ export default function SkyIdRealAuthPage({
                   </div>
 
                   {/* Phone Input Box with Floating Notched Label */}
-                  <div className="relative flex-1 min-w-0 h-[40px] border border-slate-300 rounded-md px-2 bg-white flex items-center transition focus-within:border-slate-800">
+                  <div className="relative flex-1 min-w-0 h-10 border border-slate-300 rounded-md px-2 bg-white flex items-center transition focus-within:border-slate-800">
                     <label
                       htmlFor="skyid-phone"
-                      className="vj-skyid-label vj-skyid-label-phone absolute -top-2 left-2 px-1 bg-white text-[10px] font-medium text-slate-600 leading-none whitespace-nowrap pointer-events-none"
+                      className="vj-skyid-label vj-skyid-label-phone absolute -top-2 left-2 px-1 bg-white text-xs font-medium text-slate-600 leading-none whitespace-nowrap pointer-events-none"
                     >
                       Số điện thoại <span className="text-red-500">*</span>
                     </label>
@@ -382,10 +382,10 @@ export default function SkyIdRealAuthPage({
                     type="button"
                     disabled={!canContinue || loading}
                     onClick={handlePhoneContinue}
-                    className={`vj-skyid-btn vj-skyid-btn-yellow !min-w-0 !min-h-0 !w-auto h-[34px] px-4 rounded-md font-extrabold text-xs tracking-wide transition-all flex items-center justify-center whitespace-nowrap shrink-0 ${
+                    className={`vj-skyid-btn vj-skyid-btn-yellow !min-w-0 !min-h-0 !w-auto h-9 px-4 rounded-md font-extrabold text-xs tracking-wide transition-all flex items-center justify-center whitespace-nowrap shrink-0 ${
                       canContinue && !loading
                         ? 'shadow-md hover:shadow-lg active:scale-98 cursor-pointer'
-                        : '!bg-[#f7f7f7] !text-[#c7c7c7] border border-slate-200/60 cursor-not-allowed'
+                        : '!bg-slate-100 !text-slate-400 border border-slate-200/60 cursor-not-allowed'
                     }`}
                   >
                     Tiếp tục
@@ -397,7 +397,7 @@ export default function SkyIdRealAuthPage({
             {/* STEP 2: Nhập mật khẩu */}
             {step === 'password' && (
               <form onSubmit={handleLogin} className="mt-5">
-                <h1 className="text-2xl sm:text-[26px] font-bold text-[#1e1e1e] leading-tight tracking-tight">
+                <h1 className="text-2xl sm:text-2xl font-bold text-slate-900 leading-tight tracking-tight">
                   Nhập mật khẩu
                 </h1>
                 <p className="text-xs sm:text-sm text-slate-500 mt-1.5 leading-relaxed">
@@ -406,7 +406,7 @@ export default function SkyIdRealAuthPage({
 
                 {/* Read-only Identifier */}
                 <div className="mt-4 border border-slate-200 rounded-lg px-3 py-2 bg-slate-50">
-                  <span className="text-[11px] text-slate-400 block">Tài khoản</span>
+                  <span className="text-xs text-slate-400 block">Tài khoản</span>
                   <span className="text-sm font-bold text-slate-800">{identifier}</span>
                 </div>
 
@@ -414,7 +414,7 @@ export default function SkyIdRealAuthPage({
                 <div className="mt-3 relative border border-slate-300 rounded-lg px-3 py-1.5 bg-white focus-within:border-slate-800 transition">
                   <label
                     htmlFor="skyid-password"
-                    className="text-[11px] font-medium text-slate-500 block leading-tight"
+                    className="text-xs font-medium text-slate-500 block leading-tight"
                   >
                     Mật khẩu <span className="text-red-500">*</span>
                   </label>
@@ -439,7 +439,7 @@ export default function SkyIdRealAuthPage({
                   <button
                     type="submit"
                     disabled={loading}
-                    className="flex-1 h-[46px] rounded-lg bg-gradient-to-r from-[#FFD200] to-[#F7931E] text-slate-900 font-bold text-sm shadow-sm hover:brightness-105 active:scale-98 transition flex items-center justify-center cursor-pointer"
+                    className="flex-1 h-11 rounded-lg bg-gradient-to-r from-amber-400 to-orange-500 text-slate-900 font-bold text-sm shadow-sm hover:brightness-105 active:scale-98 transition flex items-center justify-center cursor-pointer"
                   >
                     {loading ? 'Đang đăng nhập…' : 'Đăng nhập'}
                   </button>
@@ -461,7 +461,7 @@ export default function SkyIdRealAuthPage({
             {/* STEP 3: OTP Login */}
             {step === 'login-otp' && (
               <form onSubmit={handleVerifyLoginOtp} className="mt-5">
-                <h1 className="text-2xl sm:text-[26px] font-bold text-[#1e1e1e] leading-tight tracking-tight">
+                <h1 className="text-2xl sm:text-2xl font-bold text-slate-900 leading-tight tracking-tight">
                   Nhập mã xác thực
                 </h1>
                 <p className="text-xs sm:text-sm text-slate-500 mt-1.5 leading-relaxed">
@@ -469,10 +469,7 @@ export default function SkyIdRealAuthPage({
                 </p>
 
                 <div className="mt-4 border border-slate-300 rounded-lg px-3 py-2 bg-white focus-within:border-slate-800 transition">
-                  <label
-                    htmlFor="skyid-otp"
-                    className="text-[11px] font-medium text-slate-500 block"
-                  >
+                  <label htmlFor="skyid-otp" className="text-xs font-medium text-slate-500 block">
                     Mã xác thực OTP (6 chữ số)
                   </label>
                   <input
@@ -490,7 +487,7 @@ export default function SkyIdRealAuthPage({
                   <button
                     type="submit"
                     disabled={loading || loginOtpCode.length !== 6}
-                    className="flex-1 h-[46px] rounded-lg bg-gradient-to-r from-[#FFD200] to-[#F7931E] text-slate-900 font-bold text-sm shadow-sm hover:brightness-105 active:scale-98 transition flex items-center justify-center cursor-pointer disabled:opacity-50"
+                    className="flex-1 h-11 rounded-lg bg-gradient-to-r from-amber-400 to-orange-500 text-slate-900 font-bold text-sm shadow-sm hover:brightness-105 active:scale-98 transition flex items-center justify-center cursor-pointer disabled:opacity-50"
                   >
                     {loading ? 'Đang xác thực…' : 'Xác nhận OTP'}
                   </button>
@@ -508,13 +505,13 @@ export default function SkyIdRealAuthPage({
             {/* STEP 4: Form Đăng ký */}
             {step === 'register-form' && (
               <form onSubmit={handleRegister} className="mt-5 space-y-3">
-                <h1 className="text-xl sm:text-2xl font-bold text-[#1e1e1e] leading-tight tracking-tight">
+                <h1 className="text-xl sm:text-2xl font-bold text-slate-900 leading-tight tracking-tight">
                   Thông tin hội viên SkyJoy
                 </h1>
 
                 <div className="grid grid-cols-2 gap-2">
                   <div className="border border-slate-300 rounded-lg px-3 py-1 bg-white">
-                    <label className="text-[10px] text-slate-400 block">Họ *</label>
+                    <label className="text-xs text-slate-400 block">Họ *</label>
                     <input
                       type="text"
                       placeholder="NGUYEN"
@@ -524,7 +521,7 @@ export default function SkyIdRealAuthPage({
                     />
                   </div>
                   <div className="border border-slate-300 rounded-lg px-3 py-1 bg-white">
-                    <label className="text-[10px] text-slate-400 block">Tên đệm & Tên *</label>
+                    <label className="text-xs text-slate-400 block">Tên đệm & Tên *</label>
                     <input
                       type="text"
                       placeholder="VAN A"
@@ -536,7 +533,7 @@ export default function SkyIdRealAuthPage({
                 </div>
 
                 <div className="border border-slate-300 rounded-lg px-3 py-1 bg-white">
-                  <label className="text-[10px] text-slate-400 block">Email</label>
+                  <label className="text-xs text-slate-400 block">Email</label>
                   <input
                     type="email"
                     placeholder="email@example.com"
@@ -547,7 +544,7 @@ export default function SkyIdRealAuthPage({
                 </div>
 
                 <div className="border border-slate-300 rounded-lg px-3 py-1 bg-white">
-                  <label className="text-[10px] text-slate-400 block">Mật khẩu mới *</label>
+                  <label className="text-xs text-slate-400 block">Mật khẩu mới *</label>
                   <input
                     type="password"
                     placeholder="Tối thiểu 8 ký tự"
@@ -558,7 +555,7 @@ export default function SkyIdRealAuthPage({
                 </div>
 
                 <div className="border border-slate-300 rounded-lg px-3 py-1 bg-white">
-                  <label className="text-[10px] text-slate-400 block">
+                  <label className="text-xs text-slate-400 block">
                     Mã giới thiệu (không bắt buộc)
                   </label>
                   <input
@@ -570,7 +567,7 @@ export default function SkyIdRealAuthPage({
                   />
                 </div>
 
-                <label className="flex items-start gap-2 pt-1 text-[11px] text-slate-600 cursor-pointer">
+                <label className="flex items-start gap-2 pt-1 text-xs text-slate-600 cursor-pointer">
                   <input
                     type="checkbox"
                     checked={agree}
@@ -584,7 +581,7 @@ export default function SkyIdRealAuthPage({
                   <button
                     type="submit"
                     disabled={loading}
-                    className="flex-1 h-[44px] rounded-lg bg-gradient-to-r from-[#FFD200] to-[#F7931E] text-slate-900 font-bold text-xs uppercase shadow-sm hover:brightness-105 active:scale-98 transition flex items-center justify-center cursor-pointer"
+                    className="flex-1 h-11 rounded-lg bg-gradient-to-r from-amber-400 to-orange-500 text-slate-900 font-bold text-xs uppercase shadow-sm hover:brightness-105 active:scale-98 transition flex items-center justify-center cursor-pointer"
                   >
                     {loading ? 'Đang tạo tài khoản…' : 'Hoàn tất đăng ký'}
                   </button>
@@ -604,7 +601,7 @@ export default function SkyIdRealAuthPage({
               <div className="absolute inset-0 flex items-center">
                 <div className="w-full border-t border-slate-200" />
               </div>
-              <span className="relative bg-white px-2.5 text-[11px] text-slate-400">
+              <span className="relative bg-white px-2.5 text-xs text-slate-400">
                 hoặc tiếp tục với
               </span>
             </div>
@@ -614,7 +611,7 @@ export default function SkyIdRealAuthPage({
               <button
                 type="button"
                 onClick={() => openSocial('apple')}
-                className="h-[38px] rounded-lg border border-slate-200 bg-white font-semibold text-xs text-slate-800 flex items-center justify-center gap-2 hover:bg-slate-50 transition shadow-2xs active:scale-98 cursor-pointer"
+                className="h-10 rounded-lg border border-slate-200 bg-white font-semibold text-xs text-slate-800 flex items-center justify-center gap-2 hover:bg-slate-50 transition shadow-2xs active:scale-98 cursor-pointer"
               >
                 <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 170 170">
                   <path d="M150.37 130.25c-2.45 5.66-5.35 10.87-8.71 15.66-4.58 6.53-8.33 11.05-11.22 13.56-4.48 4.12-9.28 6.23-14.42 6.35-3.69 0-8.14-1.05-13.32-3.18-5.19-2.12-9.97-3.17-14.34-3.17-4.58 0-9.49 1.05-14.75 3.17-5.26 2.13-9.5 3.24-12.74 3.35-4.35.13-9.16-1.9-14.42-6.08-3.7-3.04-7.64-7.85-11.83-14.42-5.45-8.49-9.82-18.23-13.12-29.23-3.3-11-4.95-21.46-4.95-31.39 0-14.36 3.63-26.33 10.88-35.91 7.25-9.58 16.48-14.48 27.69-14.7 4.8 0 10.15 1.25 16.05 3.75 5.9 2.5 9.77 3.86 11.61 4.08 1.48-.34 5.48-1.78 12-4.32 6.53-2.55 12.1-3.69 16.71-3.41 12.5.64 22.5 4.9 30 12.79-10.9 6.64-16.23 15.77-16 27.38.23 9.07 3.62 16.63 10.16 22.68 6.54 6.05 14.37 9.47 23.49 10.27-2.3 6.94-5.06 13.91-8.28 20.91zM119.22 31.84c0-7.39 2.66-14.41 7.98-21.06 5.32-6.65 11.93-10.78 19.82-12.39.22 1.4.33 2.7.33 3.91 0 7.39-2.73 14.37-8.19 20.95-5.46 6.58-12.09 10.6-19.89 12.06-.05-1.15-.05-2.31-.05-3.47z" />
@@ -625,7 +622,7 @@ export default function SkyIdRealAuthPage({
               <button
                 type="button"
                 onClick={() => openSocial('google')}
-                className="h-[38px] rounded-lg border border-slate-200 bg-white font-semibold text-xs text-slate-800 flex items-center justify-center gap-2 hover:bg-slate-50 transition shadow-2xs active:scale-98 cursor-pointer"
+                className="h-10 rounded-lg border border-slate-200 bg-white font-semibold text-xs text-slate-800 flex items-center justify-center gap-2 hover:bg-slate-50 transition shadow-2xs active:scale-98 cursor-pointer"
               >
                 <svg className="w-3.5 h-3.5" viewBox="0 0 24 24">
                   <path
@@ -655,7 +652,7 @@ export default function SkyIdRealAuthPage({
             {!isModal && (
               <Link
                 href="/"
-                className="mb-3 inline-flex items-center gap-1 text-xs font-semibold text-[#2B6CB0] hover:underline"
+                className="mb-3 inline-flex items-center gap-1 text-xs font-semibold text-blue-500 hover:underline"
               >
                 <span aria-hidden="true">←</span> Quay lại trang chủ
               </Link>
@@ -682,7 +679,7 @@ export default function SkyIdRealAuthPage({
                       setStep('phone');
                       setError('');
                     }}
-                    className="font-bold text-[#2F6BFF] hover:underline cursor-pointer"
+                    className="font-bold text-blue-500 hover:underline cursor-pointer"
                   >
                     Đăng ký ngay
                   </button>
@@ -697,7 +694,7 @@ export default function SkyIdRealAuthPage({
                       setStep('phone');
                       setError('');
                     }}
-                    className="font-bold text-[#2F6BFF] hover:underline cursor-pointer"
+                    className="font-bold text-blue-500 hover:underline cursor-pointer"
                   >
                     Đăng nhập ngay
                   </button>
@@ -719,7 +716,7 @@ export default function SkyIdRealAuthPage({
 
       {/* Footer Links below Card matching Image #1 */}
       {!isModal && (
-        <div className="flex items-center justify-center gap-6 mt-5 text-xs text-[#2B6CB0] font-medium">
+        <div className="flex items-center justify-center gap-6 mt-5 text-xs text-blue-500 font-medium">
           <a href="https://skyjoy.vn" target="_blank" rel="noreferrer" className="hover:underline">
             Về SkyJoy
           </a>

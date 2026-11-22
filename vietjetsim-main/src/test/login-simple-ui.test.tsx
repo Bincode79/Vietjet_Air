@@ -12,10 +12,9 @@ const mockToast = vi.hoisted(() => ({
   dismissAll: vi.fn(),
 }));
 
-vi.mock('@/shared/components/navigation', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('@/shared/components/navigation')>();
-  return { ...actual, CheckInHeader: () => <div data-testid="checkin-header">Header đỏ</div> };
-});
+vi.mock('@/shared/components/navigation', () => ({
+  Header: () => <header data-testid="login-header">Header đỏ</header>,
+}));
 
 vi.mock('@/hooks/useToast', () => ({
   useToast: vi.fn(() => ({
@@ -49,22 +48,18 @@ beforeEach(() => {
   mockAuth.getSocialProviders.mockResolvedValue([]);
 });
 
-describe('LoginPage — form SkyID trong popup 622×664', () => {
-  it('render popup của site thật: khung form, tiêu đề và nút bấm', () => {
-    const { container } = render(<LoginPage />);
+describe('LoginPage — trang đăng nhập hai cột', () => {
+  it('hiển thị banner, nhãn điện thoại và nút Tiếp tục vô hiệu hóa khi trống', () => {
+    render(<LoginPage />);
 
-    // Bản popup: KHÔNG còn header đỏ `CheckInHeader` (site thật không có
-    // subheader ở màn này) và KHÔNG còn modal 2 cột + hero ảnh 600×600.
-    expect(screen.queryByTestId('checkin-header')).not.toBeInTheDocument();
-    expect(screen.queryByAltText('Khoang cabin Vietjet Air')).not.toBeInTheDocument();
+    expect(screen.getByTestId('login-header')).toBeInTheDocument();
+    expect(screen.getByAltText('Tích điểm SkyJoy - Đổi vé bay thỏa thích')).toBeInTheDocument();
 
-    // Khung popup 622×664 + khung form SkyID 500×208.
-    expect(container.querySelector('.vj-popup-frame')).toBeInTheDocument();
-    expect(container.querySelector('.vj-popup-viewport')).toBeInTheDocument();
-
+    // Heading có aria-label "Đăng nhập" và nội dung "Nhập số điện thoại"
     expect(screen.getByRole('heading', { name: 'Đăng nhập' })).toBeInTheDocument();
+    expect(screen.getByText('Nhập số điện thoại')).toBeInTheDocument();
 
-    // Ô điện thoại có nhãn "Số điện thoại" và placeholder đúng site thật.
+    // Ô điện thoại có nhãn "Số điện thoại" và placeholder đúng component thực tế.
     expect(screen.getByLabelText('Số điện thoại')).toBeInTheDocument();
     expect(screen.getByPlaceholderText('Nhập số điện thoại của bạn')).toBeInTheDocument();
 
@@ -72,12 +67,9 @@ describe('LoginPage — form SkyID trong popup 622×664', () => {
     const continueBtn = screen.getByRole('button', { name: 'Tiếp tục' });
     expect(continueBtn).toBeDisabled();
 
-    // Nút social.
+    // Nút social hiển thị trong SkyIdRealAuthPage
     expect(screen.getByRole('button', { name: 'Apple' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Google' })).toBeInTheDocument();
-
-    // Link sang đăng ký.
-    expect(screen.getByRole('button', { name: 'Đăng ký ngay' })).toBeInTheDocument();
   });
 
   it('bấm "Tiếp tục" chuyển sang bước nhập mật khẩu và đăng nhập qua API', async () => {
@@ -104,10 +96,10 @@ describe('LoginPage — form SkyID trong popup 622×664', () => {
     });
   });
 
-  it('báo lỗi khi bỏ trống số điện thoại', () => {
+  it('nút Tiếp tục bị vô hiệu hóa khi bỏ trống số điện thoại', () => {
     render(<LoginPage />);
 
-    // Nút "Tiếp tục" disabled nên bấm không làm gì; kiểm tra trạng thái disabled.
+    // Nút "Tiếp tục" disabled khi ô trống
     expect(screen.getByRole('button', { name: 'Tiếp tục' })).toBeDisabled();
   });
 });

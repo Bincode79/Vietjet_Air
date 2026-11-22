@@ -386,7 +386,7 @@ export default function AncillaryServicesPage() {
   if (loading) {
     return (
       <div className="relative min-h-screen bg-vj-surface-cool flex flex-col font-sans">
-        <Header />
+        <Header variant="compact" hideMobileLogo={true} mobileTitle="DỊCH VỤ BỔ SUNG" />
         <main id="main-content" className="flex-1 flex items-center justify-center p-8">
           <div className="text-center">
             <div className="w-12 h-12 border-4 border-red-200 border-t-red-600 rounded-full animate-spin mx-auto mb-3" />
@@ -401,7 +401,7 @@ export default function AncillaryServicesPage() {
   if (error) {
     return (
       <div className="min-h-screen flex flex-col bg-gray-50">
-        <Header />
+        <Header variant="compact" hideMobileLogo={true} mobileTitle="DỊCH VỤ BỔ SUNG" />
         <main className="flex-1 flex items-center justify-center p-4">
           <div className="bg-white rounded-vj shadow-lg p-8 max-w-md text-center space-y-4">
             <p className="text-vj-red-dark font-bold">{error}</p>
@@ -421,11 +421,11 @@ export default function AncillaryServicesPage() {
 
   return (
     <div className="relative min-h-screen bg-vj-surface-2 flex flex-col font-koho text-vj-text-strong">
-      <Header />
+      <Header variant="compact" hideMobileLogo={true} mobileTitle="DỊCH VỤ BỔ SUNG" />
       <ToastContainer toasts={toast.toasts} onDismiss={toast.dismiss} position="top-right" />
 
       {/* 1. Yellow PNR Subheader Bar matching Image #6 */}
-      <div className="w-full bg-vj-yellow text-vj-text border-b border-vj-yellow py-2.5 px-3 sm:px-6 shadow-xs sticky top-[74px] z-20">
+      <div className="w-full bg-vj-yellow text-vj-text border-b border-vj-yellow py-2.5 px-3 sm:px-6 shadow-xs sticky top-[48px] lg:top-[74px] z-20">
         <div className="max-w-5xl mx-auto flex flex-wrap items-center justify-between gap-y-1 text-2xs sm:text-xs">
           <div className="flex items-center gap-1.5 font-bold">
             <span>Mã đặt chỗ :</span>

@@ -80,8 +80,11 @@ export default function PageTransition({ children }: PageTransitionProps) {
       setDisplayChildren(children);
       setStage(enterStage);
 
-      // Scroll to top on page change
+      // Scroll to top on page change — cả window lẫn scrollingElement để
+      // chắc chắn đứng đầu trang kể cả khi scroll container là documentElement.
       window.scrollTo({ top: 0, behavior: 'instant' });
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
 
       // Reset to idle after enter animation completes
       const enterTimeout = setTimeout(() => setStage('idle'), 250);
@@ -90,6 +93,18 @@ export default function PageTransition({ children }: PageTransitionProps) {
 
     return () => clearTimeout(timeout);
   }, [pathname, children]);
+
+  // Back/forward của trình duyệt: Next.js cố tình khôi phục vị trí cuộn cũ,
+  // nhưng yêu cầu UX là mọi lần chuyển trang đều đứng đầu trang.
+  useEffect(() => {
+    const handlePopState = () => {
+      window.scrollTo({ top: 0, behavior: 'instant' });
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
 
   const stageClass: Record<TransitionStage, string> = {
     idle: '',

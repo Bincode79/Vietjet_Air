@@ -100,6 +100,11 @@ export default function BookingTicketCard({
           <h3 className="font-koho text-xs sm:text-base font-bold uppercase tracking-wide text-white truncate">
             THÔNG TIN ĐẶT CHỖ
           </h3>
+          {_bookingCode && _bookingCode !== '—' && (
+            <span className="text-3xs bg-white/20 text-white font-mono font-bold px-2 py-0.5 rounded">
+              {_bookingCode}
+            </span>
+          )}
         </div>
         {onOpenDetails && (
           <button
@@ -143,6 +148,11 @@ export default function BookingTicketCard({
                 <div className="text-red-600 font-semibold text-2xs sm:text-xs mt-0.5">
                   Số hiệu chuyến bay: {flightNo} &nbsp;|&nbsp; Hạng: {fareClass}
                 </div>
+                {passengers && passengers.length > 0 && (
+                  <div className="text-2xs text-gray-700 font-medium mt-1">
+                    Hành khách: {passengers.map((p) => p.name).join(', ')}
+                  </div>
+                )}
               </div>
               <div className="text-2xs sm:text-xs text-left sm:text-right font-medium text-gray-500">
                 Ngày bay: <span className="font-bold text-gray-800">{date}</span>
