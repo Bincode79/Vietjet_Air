@@ -212,18 +212,18 @@ export default function BaggageSelectionDrawer({
               <RiSuitcaseLine size={28} className="text-yellow-300" />
             </div>
             <div>
-              <h3 className="text-sm font-black">
+              <h3 className="text-base font-black">
                 {activeLeg === 'outbound' ? 'Hành lý chuyến đi' : 'Hành lý chuyến về'}
               </h3>
-              <p className="text-xs2 text-red-100">
+              <p className="text-xs text-red-100">
                 Tiết kiệm đến 40% so với mua trực tiếp tại sân bay
               </p>
             </div>
           </div>
 
           {/* Included note */}
-          <div className="flex items-center gap-2 text-xs text-black bg-vj-pay-green border border-vj-pay-green rounded-vj p-2.5">
-            <RiInformationLine size={18} className="text-black shrink-0" />
+          <div className="flex items-center gap-2 text-xs text-white bg-vj-pay-green border border-vj-pay-green rounded-vj p-2.5">
+            <RiInformationLine size={18} className="text-white shrink-0" />
             <span>
               Hạng vé của bạn đã bao gồm <strong>7kg hành lý xách tay</strong>
             </span>
@@ -375,7 +375,7 @@ export default function BaggageSelectionDrawer({
                   ? outboundPackage.label
                   : 'Hành lý 7kg'}
             </span>
-            <span className="text-base sm:text-lg font-bold font-jambono text-white leading-tight">
+            <span className="text-base sm:text-lg font-bold font-koho text-white leading-tight">
               {totalFee > 0 ? `${totalFee.toLocaleString('vi-VN')} VND` : '0 VND'}
             </span>
           </div>

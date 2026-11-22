@@ -555,7 +555,7 @@ export default function PassengerInfoStep({
                           hasPrefix
                           muted
                         >
-                          <span className="flex items-center gap-1 pr-2 text-base font-medium text-vj-gray select-none shrink-0">
+                          <span className="flex items-center gap-1 pr-2 text-base font-medium text-vj-text select-none shrink-0">
                             {getCountryDialCode(p.countryCode)}{' '}
                             <span className="text-3xs text-vj-muted">▾</span>
                           </span>

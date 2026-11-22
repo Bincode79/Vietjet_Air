@@ -23,6 +23,7 @@ export { default as UserMenuDropdown } from './UserMenuDropdown';
 export { default as GlobalSearch } from './GlobalSearch';
 export { default as BulkPriceAdjustmentModal } from './BulkPriceAdjustmentModal';
 export { default as SendBookingEmailModal } from './SendBookingEmailModal';
+export { default as UserDetailModal } from './UserDetailModal';
 
 // Phase 1 Dashboard Recharts & KPI Components
 export { KPIWidget } from './KPIWidget';

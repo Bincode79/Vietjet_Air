@@ -1891,11 +1891,10 @@ h6 {
 }
 
 /* Biến thể chữ nhạt — dùng cho nhóm Ngày sinh/Quốc gia và ô Số điện thoại
- * theo yêu cầu thiết kế: giá trị nhập, select và cả nhãn đều dùng tông xám
- * nhạt thay vì `--foreground` / `#111827`. */
+ * Chỉ nhãn dùng tông xám nhạt, giá trị nhập vẫn dùng màu bình thường để dễ đọc. */
 .vj-underline-field.vj-underline-field-muted input,
 .vj-underline-field.vj-underline-field-muted select {
-  color: var(--vj-field-placeholder);
+  color: var(--foreground);
 }
 
 .vj-underline-field[data-has-prefix='true'] input[type='tel'] {
@@ -1903,12 +1902,10 @@ h6 {
 }
 
 /* Ô ngày đã có giá trị: phần text của `::-webkit-datetime-edit` kế thừa màu
- * input — tô nhạt theo biến thể muted. Ô ngày RỖNG thì không đụng vào: rule
- * `data-filled='false'` phía trên vẫn giữ nó `transparent` để không đè lên
- * nhãn nổi giữa ô. */
+ * input — dùng màu bình thường để dễ đọc. */
 .vj-underline-field.vj-underline-field-muted[data-filled='true']
   input[type='date']::-webkit-datetime-edit {
-  color: var(--vj-field-placeholder);
+  color: var(--foreground);
 }
 
 .vj-underline-field.vj-underline-field-muted .vj-underline-label {
@@ -1922,10 +1919,10 @@ h6 {
   color: var(--vj-field-placeholder);
 }
 
-/* Ô ngày rỗng khi đang focus: Chrome vẫn hiện "mm/dd/yyyy" — giữ tông nhạt. */
+/* Ô ngày rỗng khi đang focus: Chrome vẫn hiện "mm/dd/yyyy" — dùng màu bình thường. */
 .vj-underline-field.vj-underline-field-muted[data-filled='false']:focus-within
   input[type='date']::-webkit-datetime-edit {
-  color: var(--vj-field-placeholder);
+  color: var(--foreground);
 }
 
 /* Dải tab trắng 50px của trang tra cứu (site thật: 16px/700 uppercase). */

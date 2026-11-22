@@ -507,7 +507,7 @@ export default function UserDetailModal({ isOpen, onClose, userId }: UserDetailM
   );
 }
 
-function InfoCard({ label, value }: { label: string; value: string }) {
+function InfoCard({ label, value }: { label: string; value: string | null }) {
   return (
     <div className="bg-[var(--surface)] rounded-vj border border-[var(--border)] p-4">
       <p className="text-xs text-[var(--foreground-muted)] font-[Be_Vietnam_Pro,sans-serif]">

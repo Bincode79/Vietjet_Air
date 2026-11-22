@@ -97,17 +97,12 @@ export default function BookingTicketCard({
 
   return (
     <div className="bg-white rounded-vj border border-vj-border-light shadow-vj-sm overflow-hidden transition-all">
-      {/* 1. Header bar: Red with "THÔNG TIN ĐẶT CHỖ" and bookingCode + "Chi Tiết" pill */}
+      {/* 1. Header bar: Red with "THÔNG TIN ĐẶT CHỖ" and "Chi Tiết" pill */}
       <div className="bg-vj-red-dark px-3 sm:px-4 py-2.5 sm:py-3 text-white flex items-center justify-between gap-2">
         <div className="flex items-center gap-2 min-w-0">
           <h3 className="font-koho text-xs sm:text-base font-bold uppercase tracking-wide text-white truncate">
             THÔNG TIN ĐẶT CHỖ
           </h3>
-          {bookingCode && (
-            <span className="text-3xs font-mono font-bold bg-white/20 px-1.5 py-0.5 rounded text-yellow-300 shrink-0">
-              {bookingCode}
-            </span>
-          )}
         </div>
         {onOpenDetails && (
           <button
@@ -400,7 +395,7 @@ export default function BookingTicketCard({
                     type="button"
                     onClick={onApplyPromo}
                     disabled={promoApplied || !promoCode || isApplyingPromo}
-                    className="h-[44px] sm:h-[42px] px-4 sm:px-5 bg-vj-yellow text-vj-navy font-koho font-black uppercase text-sm tracking-wide hover:bg-vj-yellow-dark transition-all disabled:opacity-50 min-w-[100px] flex items-center justify-center shrink-0 cursor-pointer active:scale-98 shadow-lg shadow-amber-200/40 border-2 border-amber-300 ring-2 ring-amber-200/50"
+                    className="h-[44px] sm:h-[42px] px-4 sm:px-5 bg-gradient-to-r from-yellow-400 to-yellow-500 text-vj-navy font-koho font-black uppercase text-sm tracking-wide hover:from-yellow-500 hover:to-yellow-600 transition-all disabled:opacity-50 min-w-[100px] flex items-center justify-center shrink-0 cursor-pointer active:scale-98 shadow-xl shadow-yellow-400/50 border-2 border-yellow-600 ring-2 ring-yellow-400/30"
                   >
                     {isApplyingPromo ? (
                       <div className="w-4 h-4 border-2 border-[rgb(var(--foreground-rgb))]/20 border-t-[var(--foreground)] rounded-full animate-spin" />

@@ -89,7 +89,7 @@ export default function BookingBottomBar({
           <span className="text-xs font-semibold uppercase tracking-wide text-vj-text-dim font-koho sm:text-sm">
             Tổng tiền
           </span>
-          <span className="w-full truncate text-center text-base font-bold text-black font-jambono sm:text-xl4">
+          <span className="w-full truncate text-center text-base font-bold text-black font-koho sm:text-xl4">
             {total.toLocaleString('vi-VN')} VND
           </span>
         </div>

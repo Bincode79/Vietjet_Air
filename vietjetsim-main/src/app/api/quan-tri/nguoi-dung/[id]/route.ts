@@ -9,7 +9,7 @@ import { LOCKED_UNTIL_SENTINEL } from '@/lib/account-lock';
 import { normalizePhone } from '@/lib/utils';
 import { sql } from '@/lib/neon';
 
-// ─── GET: Get specific user ──────────────────────────────────────────────────
+// ─── GET: Get specific user (with detailed data for modal) ────────────────────
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -23,7 +23,91 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       return NextResponse.json({ error: 'Not Found', message: 'User not found' }, { status: 404 });
     }
 
-    return NextResponse.json(user);
+    // Fetch additional data for modal
+    const [
+      walletRows,
+      loyaltyRows,
+      sessionRows,
+      bookingRows,
+      paymentRows,
+      chatRows,
+    ] = await Promise.all([
+      // Wallet
+      sql`
+        SELECT balance FROM user_wallets WHERE user_id = ${id}
+      `,
+      // Loyalty
+      sql`
+        SELECT ul.tier, ul.available_points, lp.name as tier_name
+        FROM user_loyalty ul
+        LEFT JOIN loyalty_tiers lp ON ul.tier = lp.name AND ul.program_id = lp.program_id
+        WHERE ul.user_id = ${id}
+      `,
+      // Sessions
+      sql`
+        SELECT id, device_name, device_type, browser, os, ip_address, last_active
+        FROM user_sessions
+        WHERE user_id = ${id}
+        ORDER BY last_active DESC
+        LIMIT 20
+      `,
+      // Recent bookings
+      sql`
+        SELECT b.id, b.booking_code, b.status, b.total_price, b.created_at,
+               f.flight_number as flight_no,
+               CONCAT(f.departure_airport, ' - ', f.arrival_airport) as route
+        FROM bookings b
+        LEFT JOIN flights f ON b.flight_id = f.flight_id
+        WHERE b.user_id = ${id}
+        ORDER BY b.created_at DESC
+        LIMIT 10
+      `,
+      // Recent payments
+      sql`
+        SELECT id, amount, method, status, created_at
+        FROM payments
+        WHERE user_id = ${id}
+        ORDER BY created_at DESC
+        LIMIT 10
+      `,
+      // Chat conversations
+      sql`
+        SELECT id, status, last_message, updated_at
+        FROM chat_conversations
+        WHERE user_id = ${id}
+        ORDER BY updated_at DESC
+        LIMIT 10
+      `,
+    ]);
+
+    const wallet = (walletRows as { balance: number }[])[0]?.balance ?? 0;
+    const loyalty = (loyaltyRows as { tier: string; available_points: number; tier_name: string }[])[0];
+    const sessions = (sessionRows as {
+      id: string; device_name: string | null; device_type: string | null;
+      browser: string | null; os: string | null; ip_address: string;
+      last_active: string; is_current: boolean;
+    }[]).map(s => ({ ...s, is_current: false })); // is_current determined by frontend
+    const recent_bookings = (bookingRows as {
+      id: string; booking_code: string; status: string; total_price: number;
+      created_at: string; flight_no: string; route: string;
+    }[]);
+    const recent_payments = (paymentRows as {
+      id: string; amount: number; method: string; status: string; created_at: string;
+    }[]);
+    const chat_conversations = (chatRows as {
+      id: string; status: string; last_message: string | null; updated_at: string;
+    }[]);
+
+    return NextResponse.json({
+      ...user,
+      wallet_balance: wallet,
+      loyalty_tier: loyalty?.tier_name || loyalty?.tier || 'Bronze',
+      loyalty_points: loyalty?.available_points ?? 0,
+      sessions,
+      recent_bookings,
+      recent_payments,
+      chat_conversations,
+    });
   } catch (error) {
     console.error('Error fetching user:', error);
     return NextResponse.json(
