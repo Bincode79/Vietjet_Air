@@ -2,10 +2,21 @@
 -- FLIGHT OPERATIONS: Real-time tracking, Delay/Cancellation, Aircraft Rotation
 -- ============================================================================
 
+-- Bảng lịch trình chuyến bay (schedule) — được dùng cho real-time tracking,
+-- disruption và rotation. Có thể cần cho các tính năng ops sau này.
+CREATE TABLE IF NOT EXISTS flight_schedules (
+    schedule_id BIGSERIAL PRIMARY KEY,
+    flight_id UUID NOT NULL REFERENCES flights(id) ON DELETE CASCADE,
+    depart_time TIMESTAMPTZ NOT NULL,
+    arrive_time TIMESTAMPTZ NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
 -- 1. Flight Events - Real-time status changes
 CREATE TABLE IF NOT EXISTS flight_events (
     event_id BIGSERIAL PRIMARY KEY,
-    flight_id VARCHAR(20) NOT NULL REFERENCES flights(flight_id),
+    flight_id UUID NOT NULL REFERENCES flights(id) ON DELETE CASCADE,
     schedule_id BIGINT REFERENCES flight_schedules(schedule_id),
     event_type VARCHAR(50) NOT NULL, -- scheduled, delayed, boarding, departed, arrived, cancelled, diverted, gate_change, terminal_change
     event_time TIMESTAMPTZ NOT NULL DEFAULT NOW(),
@@ -13,13 +24,13 @@ CREATE TABLE IF NOT EXISTS flight_events (
     new_value JSONB, -- New status/data
     reason TEXT, -- Reason for change
     source VARCHAR(50) DEFAULT 'manual', -- manual, acars, ops_system, airport_feed
-    created_by UUID REFERENCES user_profiles(id),
+    created_by TEXT REFERENCES user_profiles(id),
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX idx_flight_events_flight_time ON flight_events(flight_id, event_time DESC);
-CREATE INDEX idx_flight_events_schedule ON flight_events(schedule_id);
-CREATE INDEX idx_flight_events_type ON flight_events(event_type);
+CREATE INDEX IF NOT EXISTS idx_flight_events_flight_time ON flight_events(flight_id, event_time DESC);
+CREATE INDEX IF NOT EXISTS idx_flight_events_schedule ON flight_events(schedule_id);
+CREATE INDEX IF NOT EXISTS idx_flight_events_type ON flight_events(event_type);
 
 -- 2. Delay Codes - Standardized IATA delay codes
 CREATE TABLE IF NOT EXISTS delay_codes (
@@ -75,7 +86,7 @@ CREATE TABLE IF NOT EXISTS flight_disruptions (
     reason TEXT,
     impact_assessment JSONB, -- {passengers_affected, connections_missed, revenue_impact}
     status VARCHAR(20) DEFAULT 'open', -- open, managing, resolved, closed
-    assigned_to UUID REFERENCES user_profiles(id),
+    assigned_to TEXT REFERENCES user_profiles(id),
     notified_passengers BOOLEAN DEFAULT FALSE,
     rebooked_passengers INTEGER DEFAULT 0,
     refunded_passengers INTEGER DEFAULT 0,
@@ -85,9 +96,9 @@ CREATE TABLE IF NOT EXISTS flight_disruptions (
     resolved_at TIMESTAMPTZ
 );
 
-CREATE INDEX idx_disruptions_schedule ON flight_disruptions(schedule_id);
-CREATE INDEX idx_disruptions_status ON flight_disruptions(status);
-CREATE INDEX idx_disruptions_type ON flight_disruptions(disruption_type);
+CREATE INDEX IF NOT EXISTS idx_disruptions_schedule ON flight_disruptions(schedule_id);
+CREATE INDEX IF NOT EXISTS idx_disruptions_status ON flight_disruptions(status);
+CREATE INDEX IF NOT EXISTS idx_disruptions_type ON flight_disruptions(disruption_type);
 
 -- 4. Aircraft Rotation - Aircraft scheduling
 CREATE TABLE IF NOT EXISTS aircraft_rotations (
@@ -106,11 +117,11 @@ CREATE TABLE IF NOT EXISTS aircraft_rotations (
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW(),
     UNIQUE(schedule_id),
-    UNIQUE(aircraft_registration, position, scheduled_depart::date)
+    UNIQUE(aircraft_registration, position, scheduled_depart)
 );
 
-CREATE INDEX idx_rotations_aircraft_date ON aircraft_rotations(aircraft_registration, scheduled_depart);
-CREATE INDEX idx_rotations_status ON aircraft_rotations(status);
+CREATE INDEX IF NOT EXISTS idx_rotations_aircraft_date ON aircraft_rotations(aircraft_registration, scheduled_depart);
+CREATE INDEX IF NOT EXISTS idx_rotations_status ON aircraft_rotations(status);
 
 -- 5. Passenger Rebooking - For disruption management
 CREATE TABLE IF NOT EXISTS passenger_rebookings (
@@ -129,8 +140,8 @@ CREATE TABLE IF NOT EXISTS passenger_rebookings (
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX idx_rebookings_disruption ON passenger_rebookings(disruption_id);
-CREATE INDEX idx_rebookings_booking ON passenger_rebookings(booking_id);
+CREATE INDEX IF NOT EXISTS idx_rebookings_disruption ON passenger_rebookings(disruption_id);
+CREATE INDEX IF NOT EXISTS idx_rebookings_booking ON passenger_rebookings(booking_id);
 
 -- 6. Compensation Rules - EU261/CAAV compliant
 CREATE TABLE IF NOT EXISTS compensation_rules (
@@ -171,16 +182,16 @@ CREATE TABLE IF NOT EXISTS operational_alerts (
     related_aircraft VARCHAR(20),
     metadata JSONB,
     acknowledged BOOLEAN DEFAULT FALSE,
-    acknowledged_by UUID REFERENCES user_profiles(id),
+    acknowledged_by TEXT REFERENCES user_profiles(id),
     acknowledged_at TIMESTAMPTZ,
     resolved BOOLEAN DEFAULT FALSE,
     resolved_at TIMESTAMPTZ,
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX idx_alerts_severity ON operational_alerts(severity, acknowledged);
-CREATE INDEX idx_alerts_flight ON operational_alerts(related_flight_id);
-CREATE INDEX idx_alerts_created ON operational_alerts(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_alerts_severity ON operational_alerts(severity, acknowledged);
+CREATE INDEX IF NOT EXISTS idx_alerts_flight ON operational_alerts(related_flight_id);
+CREATE INDEX IF NOT EXISTS idx_alerts_created ON operational_alerts(created_at DESC);
 
 -- Triggers for updated_at
 CREATE OR REPLACE FUNCTION update_flight_ops_updated_at()
@@ -191,10 +202,10 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER update_flight_disruptions_updated_at BEFORE UPDATE ON flight_disruptions
+CREATE OR REPLACE TRIGGER update_flight_disruptions_updated_at BEFORE UPDATE ON flight_disruptions
     FOR EACH ROW EXECUTE FUNCTION update_flight_ops_updated_at();
 
-CREATE TRIGGER update_aircraft_rotations_updated_at BEFORE UPDATE ON aircraft_rotations
+CREATE OR REPLACE TRIGGER update_aircraft_rotations_updated_at BEFORE UPDATE ON aircraft_rotations
     FOR EACH ROW EXECUTE FUNCTION update_flight_ops_updated_at();
 
 COMMIT;
