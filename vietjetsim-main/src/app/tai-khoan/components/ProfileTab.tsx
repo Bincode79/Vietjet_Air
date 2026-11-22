@@ -123,7 +123,9 @@ export default function ProfileTab({ user }: { user: User }) {
       try {
         const [profileData, skyjoyData] = await Promise.all([
           apiRequest<ProfileApiResponse>('/api/nguoi-dung/profile'),
-          apiRequest<{ skyjoyMemberId: string | null; isLinked: boolean }>('/api/nguoi-dung/profile/skyjoy').catch(() => ({ skyjoyMemberId: null })),
+          apiRequest<{ skyjoyMemberId: string | null; isLinked: boolean }>(
+            '/api/nguoi-dung/profile/skyjoy'
+          ).catch(() => ({ skyjoyMemberId: null })),
         ]);
         if (cancelled) return;
         setProfile({
@@ -293,10 +295,7 @@ export default function ProfileTab({ user }: { user: User }) {
             style={{ boxShadow: '0 4px 16px rgba(0,0,0,0.08)' }}
           >
             {/* Avatar - using AvatarUpload component */}
-            <AvatarUpload
-              currentAvatarUrl={avatarPreview}
-              onAvatarChange={handleAvatarChange}
-            />
+            <AvatarUpload currentAvatarUrl={avatarPreview} onAvatarChange={handleAvatarChange} />
 
             <h3 className="text-lg font-bold font-[KoHo,sans-serif] text-[var(--foreground)] mt-4">
               {user.fullName || 'Người dùng'}

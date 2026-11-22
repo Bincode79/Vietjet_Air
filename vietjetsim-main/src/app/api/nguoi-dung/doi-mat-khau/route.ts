@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { sql } from '@/lib/neon';
 import { verifyAuthRequest } from '@/lib/auth';
 import { validateCsrfOrReject } from '@/lib/csrf';
 import { rateLimit } from '@/lib/rate-limit';
@@ -34,10 +35,7 @@ export async function PUT(request: NextRequest) {
     // Validate new password strength
     const passwordCheck = validatePassword(newPassword);
     if (!passwordCheck.valid) {
-      return NextResponse.json(
-        { error: passwordCheck.errors.join('; ') },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: passwordCheck.errors.join('; ') }, { status: 400 });
     }
 
     // Verify current password
@@ -52,10 +50,7 @@ export async function PUT(request: NextRequest) {
     const bcrypt = await import('bcryptjs');
     const isValid = await bcrypt.default.compare(currentPassword, user.password_hash);
     if (!isValid) {
-      return NextResponse.json(
-        { error: 'Mật khẩu hiện tại không đúng.' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Mật khẩu hiện tại không đúng.' }, { status: 401 });
     }
 
     // Hash and update new password
@@ -97,9 +92,6 @@ export async function PUT(request: NextRequest) {
     });
   } catch (error) {
     console.error('Error changing password:', error);
-    return NextResponse.json(
-      { error: 'Đã xảy ra lỗi. Vui lòng thử lại.' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Đã xảy ra lỗi. Vui lòng thử lại.' }, { status: 500 });
   }
 }

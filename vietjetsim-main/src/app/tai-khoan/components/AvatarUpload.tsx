@@ -16,47 +16,53 @@ export default function AvatarUpload({ currentAvatarUrl, onAvatarChange }: Avata
   const [isUploading, setIsUploading] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const handleFileChange = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  const handleFileChange = useCallback(
+    async (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
 
-    // Client-side validation
-    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
-    if (!allowedTypes.includes(file.type)) {
-      toast.error('Lỗi', 'Chỉ chấp nhận file JPEG, PNG, WebP.');
-      return;
-    }
-    if (file.size > 5 * 1024 * 1024) {
-      toast.error('Lỗi', 'File quá lớn. Tối đa 5MB.');
-      return;
-    }
+      // Client-side validation
+      const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+      if (!allowedTypes.includes(file.type)) {
+        toast.error('Lỗi', 'Chỉ chấp nhận file JPEG, PNG, WebP.');
+        return;
+      }
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error('Lỗi', 'File quá lớn. Tối đa 5MB.');
+        return;
+      }
 
-    // Preview
-    const reader = new FileReader();
-    reader.onloadend = () => setPreview(reader.result as string);
-    reader.readAsDataURL(file);
+      // Preview
+      const reader = new FileReader();
+      reader.onloadend = () => setPreview(reader.result as string);
+      reader.readAsDataURL(file);
 
-    // Upload
-    setIsUploading(true);
-    try {
-      const formData = new FormData();
-      formData.append('avatar', file);
+      // Upload
+      setIsUploading(true);
+      try {
+        const formData = new FormData();
+        formData.append('avatar', file);
 
-      const data = await apiRequest<{ success: boolean; avatarUrl: string }>('/api/nguoi-dung/avatar', {
-        method: 'POST',
-        body: formData,
-        // Don't set Content-Type - browser will set multipart/form-data with boundary
-      });
+        const data = await apiRequest<{ success: boolean; avatarUrl: string }>(
+          '/api/nguoi-dung/avatar',
+          {
+            method: 'POST',
+            body: formData,
+            // Don't set Content-Type - browser will set multipart/form-data with boundary
+          }
+        );
 
-      onAvatarChange(data.avatarUrl);
-      toast.success('Thành công', 'Đã cập nhật avatar.');
-    } catch (error) {
-      setPreview(currentAvatarUrl);
-      toast.error('Lỗi', getApiErrorMessage(error, 'Không thể tải lên avatar.'));
-    } finally {
-      setIsUploading(false);
-    }
-  }, [currentAvatarUrl, onAvatarChange, toast]);
+        onAvatarChange(data.avatarUrl);
+        toast.success('Thành công', 'Đã cập nhật avatar.');
+      } catch (error) {
+        setPreview(currentAvatarUrl);
+        toast.error('Lỗi', getApiErrorMessage(error, 'Không thể tải lên avatar.'));
+      } finally {
+        setIsUploading(false);
+      }
+    },
+    [currentAvatarUrl, onAvatarChange, toast]
+  );
 
   const handleDelete = useCallback(async () => {
     if (!confirm('Bạn có chắc muốn xóa avatar?')) return;
@@ -74,7 +80,7 @@ export default function AvatarUpload({ currentAvatarUrl, onAvatarChange }: Avata
     }
   }, [onAvatarChange, toast]);
 
-  const getInitials = (url: string | null) => {
+  const getInitials = (_url: string | null) => {
     // This would need user name passed as prop in real usage
     return 'U';
   };

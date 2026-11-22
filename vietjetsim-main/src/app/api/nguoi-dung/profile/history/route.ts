@@ -51,13 +51,15 @@ export async function GET(request: NextRequest) {
     const total = parseInt(String((countResult as { total: string }[])[0]?.total ?? 0), 10);
 
     // Parse details_json for display
-    const history = (results as {
-      id: string;
-      action: string;
-      details_json: string;
-      status: string;
-      created_at: string;
-    }[]).map((row) => {
+    const history = (
+      results as {
+        id: string;
+        action: string;
+        details_json: string;
+        status: string;
+        created_at: string;
+      }[]
+    ).map((row) => {
       let details: Record<string, unknown> = {};
       try {
         details = JSON.parse(row.details_json);
@@ -80,10 +82,7 @@ export async function GET(request: NextRequest) {
     });
   } catch (error) {
     console.error('Error fetching profile history:', error);
-    return NextResponse.json(
-      { error: 'Không thể tải lịch sử thay đổi.' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Không thể tải lịch sử thay đổi.' }, { status: 500 });
   }
 }
 

@@ -7,7 +7,6 @@ import { updateUserPassword, invalidateUserRefreshTokens, findUserById } from '@
 import { deleteAllUserSessions } from '@/lib/security-db';
 import { sendTempPasswordEmail } from '@/lib/mail';
 import { writeAuditLog } from '@/lib/db';
-import { sql } from '@/lib/neon';
 
 function generateTempPassword(): string {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789';
@@ -16,10 +15,7 @@ function generateTempPassword(): string {
   return Array.from(bytes, (b) => chars[b % chars.length]).join('');
 }
 
-export async function POST(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const csrfError = await validateCsrfOrReject(request);
     if (csrfError) return csrfError;
@@ -27,21 +23,23 @@ export async function POST(
     const limited = rateLimit(request, { windowMs: 60_000, maxRequests: 10 });
     if (limited) return limited;
 
-    const { payload: admin, error, response } = await verifyAdminRequest(request, 'user:password_reset');
+    const {
+      payload: admin,
+      error,
+      response,
+    } = await verifyAdminRequest(request, 'user:password_reset');
     if (error) return response!;
 
     const { id } = await params;
     const body = await request.json().catch(() => ({}));
     const sendEmail = body?.send_email !== false; // default true
-    const customTempPassword = typeof body?.temp_password === 'string' ? body.temp_password.trim() : '';
+    const customTempPassword =
+      typeof body?.temp_password === 'string' ? body.temp_password.trim() : '';
 
     // Verify target user exists
     const targetUser = await findUserById(id);
     if (!targetUser) {
-      return NextResponse.json(
-        { error: 'Không tìm thấy người dùng.' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Không tìm thấy người dùng.' }, { status: 404 });
     }
 
     // RBAC: Admin cannot reset password for higher/equal level user
@@ -108,9 +106,6 @@ export async function POST(
     });
   } catch (error) {
     console.error('Error resetting user password (admin):', error);
-    return NextResponse.json(
-      { error: 'Đã xảy ra lỗi. Vui lòng thử lại.' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Đã xảy ra lỗi. Vui lòng thử lại.' }, { status: 500 });
   }
 }

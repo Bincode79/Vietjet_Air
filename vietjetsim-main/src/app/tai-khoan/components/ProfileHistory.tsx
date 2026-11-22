@@ -3,8 +3,39 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Icon } from '@/shared/components/ui';
 import { apiRequest } from '@/shared/services';
+import ProfileHistoryItem from './ProfileHistoryItem';
 
-interface HistoryItem {
+function getActionIcon(action: string): string {
+  if (action.includes('delete') || action.includes('unlink')) return 'TrashIcon';
+  if (action.includes('update') || action.includes('change')) return 'PencilIcon';
+  if (action.includes('link')) return 'LinkIcon';
+  if (action.includes('avatar')) return 'PhotoIcon';
+  if (action.includes('password')) return 'KeyIcon';
+  return 'ShieldCheckIcon';
+}
+
+function getStatusColor(status: string): string {
+  switch (status) {
+    case 'success':
+      return 'text-green-600 bg-green-50';
+    case 'failed':
+      return 'text-red-600 bg-red-50';
+    default:
+      return 'text-gray-600 bg-gray-50';
+  }
+}
+
+function formatDateTime(dateStr: string): string {
+  return new Date(dateStr).toLocaleString('vi-VN', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+}
+
+export interface HistoryItem {
   id: string;
   action: string;
   actionLabel: string;
@@ -53,24 +84,6 @@ export default function ProfileHistory({ className = '' }: ProfileHistoryProps) 
   useEffect(() => {
     fetchHistory();
   }, [fetchHistory]);
-
-  const formatDate = (dateStr: string) => {
-    return new Date(dateStr).toLocaleString('vi-VN', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'success': return 'text-green-600 bg-green-50';
-      case 'failed': return 'text-red-600 bg-red-50';
-      default: return 'text-gray-600 bg-gray-50';
-    }
-  };
 
   const renderDetails = (details: Record<string, unknown>) => {
     if (!details || Object.keys(details).length === 0) return null;
@@ -126,78 +139,40 @@ export default function ProfileHistory({ className = '' }: ProfileHistoryProps) 
           </div>
         ) : (
           history.map((item) => (
-            <div
+            <ProfileHistoryItem
               key={item.id}
-              className="bg-[var(--surface)] rounded-vj border border-[var(--border)] p-4 transition-all hover:border-[rgb(var(--primary-rgb))]/30"
-            >
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="font-semibold text-[var(--foreground)] font-[KoHo,sans-serif]">
-                      {item.actionLabel}
-                    </span>
-                    <span
-                      className={`px-2 py-0.5 rounded text-xs font-semibold ${getStatusColor(item.status)}`}
-                    >
-                      {item.status === 'success' ? 'Thành công' : 'Thất bại'}
-                    </span>
-                  </div>
-                  <p className="text-sm text-[var(--foreground-muted)] font-[Be_Vietnam_Pro,sans-serif]">
-                    {formatDateTime(item.createdAt)}
-                  </p>
-                  {renderDetails(item.details)}
-                </div>
-                <Icon
-                  name={getActionIcon(item.action)}
-                  size={20}
-                  className="text-[var(--foreground-muted)] shrink-0 mt-1"
-                />
-              </div>
-            </div>
-          ))}
-        )}
-
-        {/* Pagination */}
-        {totalPages > 1 && (
-          <div className="flex items-center justify-center gap-2 mt-6">
-            <button
-              onClick={() => setPage((p) => Math.max(1, p - 1))}
-              disabled={page === 1}
-              className="px-4 py-2 bg-[var(--surface)] border border-[var(--border)] rounded-vj text-sm font-[Be_Vietnam_Pro,sans-serif] disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <Icon name="ChevronLeftIcon" size={16} />
-            </button>
-            <span className="px-4 text-sm font-[Be_Vietnam_Pro,sans-serif] text-[var(--foreground)]">
-              Trang {page} / {totalPages} ({total} bản ghi)
-            </span>
-            <button
-              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-              disabled={page === totalPages}
-              className="px-4 py-2 bg-[var(--surface)] border border-[var(--border)] rounded-vj text-sm font-[Be_Vietnam_Pro,sans-serif] disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <Icon name="ChevronRightIcon" size={16} />
-            </button>
-          </div>
+              item={item}
+              formatDateTime={formatDateTime}
+              getStatusColor={getStatusColor}
+              getActionIcon={getActionIcon}
+              renderDetails={renderDetails}
+            />
+          ))
         )}
       </div>
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-center gap-2 mt-6">
+          <button
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
+            disabled={page === 1}
+            className="px-4 py-2 bg-[var(--surface)] border border-[var(--border)] rounded-vj text-sm font-[Be_Vietnam_Pro,sans-serif] disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <Icon name="ChevronLeftIcon" size={16} />
+          </button>
+          <span className="px-4 text-sm font-[Be_Vietnam_Pro,sans-serif] text-[var(--foreground)]">
+            Trang {page} / {totalPages} ({total} bản ghi)
+          </span>
+          <button
+            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+            disabled={page === totalPages}
+            className="px-4 py-2 bg-[var(--surface)] border border-[var(--border)] rounded-vj text-sm font-[Be_Vietnam_Pro,sans-serif] disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <Icon name="ChevronRightIcon" size={16} />
+          </button>
+        </div>
+      )}
     </div>
   );
-}
-
-function formatDateTime(dateStr: string): string {
-  return new Date(dateStr).toLocaleString('vi-VN', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  });
-}
-
-function getStatusColor(status: string): string {
-  switch (status) {
-    case 'success': return 'text-green-600 bg-green-50';
-    case 'failed': return 'text-red-600 bg-red-50';
-    default: return 'text-gray-600 bg-gray-50';
-  }
 }

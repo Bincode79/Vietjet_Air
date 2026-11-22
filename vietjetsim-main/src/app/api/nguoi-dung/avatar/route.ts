@@ -31,10 +31,7 @@ export async function POST(request: NextRequest) {
     const file = formData.get('avatar') as File | null;
 
     if (!file) {
-      return NextResponse.json(
-        { error: 'Không có file được tải lên.' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Không có file được tải lên.' }, { status: 400 });
     }
 
     // Validate file type
@@ -47,10 +44,7 @@ export async function POST(request: NextRequest) {
 
     // Validate file size
     if (file.size > MAX_FILE_SIZE) {
-      return NextResponse.json(
-        { error: 'File quá lớn. Kích thước tối đa 5MB.' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'File quá lớn. Kích thước tối đa 5MB.' }, { status: 400 });
     }
 
     await ensureUploadDir();
@@ -104,10 +98,7 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error('Error uploading avatar:', error);
-    return NextResponse.json(
-      { error: 'Đã xảy ra lỗi khi tải lên avatar.' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Đã xảy ra lỗi khi tải lên avatar.' }, { status: 500 });
   }
 }
 
@@ -126,10 +117,7 @@ export async function DELETE(request: NextRequest) {
     const avatarUrl = (current as { avatar_url: string | null }[])[0]?.avatar_url;
 
     if (!avatarUrl) {
-      return NextResponse.json(
-        { error: 'Không có avatar để xóa.' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Không có avatar để xóa.' }, { status: 404 });
     }
 
     // Delete file if local upload
@@ -163,9 +151,6 @@ export async function DELETE(request: NextRequest) {
     });
   } catch (error) {
     console.error('Error deleting avatar:', error);
-    return NextResponse.json(
-      { error: 'Đã xảy ra lỗi khi xóa avatar.' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Đã xảy ra lỗi khi xóa avatar.' }, { status: 500 });
   }
 }

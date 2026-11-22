@@ -21,11 +21,6 @@ export default function SkyJoyLink({ initialSkyjoyId, onLink, onUnlink }: SkyJoy
   const [pendingId, setPendingId] = useState<string>('');
   const [error, setError] = useState<string>('');
 
-  // Fetch current status on mount
-  useEffect(() => {
-    checkStatus();
-  }, []);
-
   const checkStatus = useCallback(async () => {
     try {
       const data = await apiRequest<{ skyjoyMemberId: string | null; isLinked: boolean }>(
@@ -36,6 +31,11 @@ export default function SkyJoyLink({ initialSkyjoyId, onLink, onUnlink }: SkyJoy
       // Ignore
     }
   }, []);
+
+  // Fetch current status on mount
+  useEffect(() => {
+    checkStatus();
+  }, [checkStatus]);
 
   const handleLink = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -203,7 +203,9 @@ export default function SkyJoyLink({ initialSkyjoyId, onLink, onUnlink }: SkyJoy
                 <p className="text-xs text-[var(--foreground-muted)] font-[Be_Vietnam_Pro,sans-serif]">
                   Định dạng: SJ + 8-10 chữ số (VD: SJ12345678)
                 </p>
-                {error && <p className="text-xs text-red-500 font-[Be_Vietnam_Pro,sans-serif]">{error}</p>}
+                {error && (
+                  <p className="text-xs text-red-500 font-[Be_Vietnam_Pro,sans-serif]">{error}</p>
+                )}
               </div>
               <button
                 type="submit"
@@ -259,7 +261,11 @@ export default function SkyJoyLink({ initialSkyjoyId, onLink, onUnlink }: SkyJoy
                   />
                 ))}
               </div>
-              {error && <p className="text-xs text-red-500 text-center font-[Be_Vietnam_Pro,sans-serif]">{error}</p>}
+              {error && (
+                <p className="text-xs text-red-500 text-center font-[Be_Vietnam_Pro,sans-serif]">
+                  {error}
+                </p>
+              )}
               <div className="flex items-center justify-center gap-4">
                 <button
                   onClick={handleVerify}

@@ -26,7 +26,7 @@ export async function sendOtpSms(opts: SmsOptions): Promise<SmsResult> {
 
   // Development mode: log to console instead of sending real SMS
   if (process.env.NODE_ENV !== 'production') {
-    console.log('[SMS-DEV]', {
+    console.info('[SMS-DEV]', {
       to,
       code,
       purpose,
@@ -66,7 +66,7 @@ export async function sendNotificationSms(opts: {
   const { to, message } = opts;
 
   if (process.env.NODE_ENV !== 'production') {
-    console.log('[SMS-DEV-NOTIFICATION]', { to, message });
+    console.info('[SMS-DEV-NOTIFICATION]', { to, message });
     return { success: true, messageId: `dev-${Date.now()}` };
   }
 

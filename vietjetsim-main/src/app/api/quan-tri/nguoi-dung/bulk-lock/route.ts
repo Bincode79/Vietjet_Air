@@ -17,7 +17,11 @@ export async function PATCH(request: NextRequest) {
     const limited = rateLimit(request, { windowMs: 60_000, maxRequests: 10 });
     if (limited) return limited;
 
-    const { payload: admin, error, response } = await verifyAdminRequest(request, 'user:role_change');
+    const {
+      payload: admin,
+      error,
+      response,
+    } = await verifyAdminRequest(request, 'user:role_change');
     if (error) return response!;
 
     const body = await request.json();
@@ -26,17 +30,11 @@ export async function PATCH(request: NextRequest) {
     const reason = typeof body?.reason === 'string' ? body.reason.trim() : '';
 
     if (userIds.length === 0) {
-      return NextResponse.json(
-        { error: 'Danh sách user_ids không được rỗng.' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Danh sách user_ids không được rỗng.' }, { status: 400 });
     }
 
     if (userIds.length > 100) {
-      return NextResponse.json(
-        { error: 'Tối đa 100 người dùng mỗi lần.' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Tối đa 100 người dùng mỗi lần.' }, { status: 400 });
     }
 
     const results: Array<{ userId: string; success: boolean; error?: string }> = [];
@@ -104,9 +102,6 @@ export async function PATCH(request: NextRequest) {
     });
   } catch (error) {
     console.error('Error bulk lock/unlock users:', error);
-    return NextResponse.json(
-      { error: 'Đã xảy ra lỗi. Vui lòng thử lại.' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Đã xảy ra lỗi. Vui lòng thử lại.' }, { status: 500 });
   }
 }
