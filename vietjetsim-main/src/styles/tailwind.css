@@ -226,8 +226,6 @@ input[type='date'].vj-no-native-icon::-moz-calendar-picker-indicator {
   /* Nền card điểm đến: #DCE0F2. */
   --vj-sky-card: #dce0f2;
   --vj-sky-card-rgb: 220 224 242;
-  /* Nền thẻ dịch vụ nhỏ: rgba(161,117,117,0.07). */
-  --vj-service-tint-rgb: 161 117 117;
   /* Nền panel đặt vé: rgba(255,255,255,0.9). */
   --vj-hero-panel: rgba(255, 255, 255, 0.9);
   /* Nút "Đăng nhập" trên header: gradient #FFEB63 → #F5D200, chữ #E31E24. */
@@ -699,9 +697,11 @@ h6 {
   padding-right: 20px;
 }
 
-/* Dải dịch vụ nhỏ (SkyJoy / Swift 247 / E-Sim / E-Visa): ~160×88 px mobile, ~178×96 px desktop, bo góc 12px, nền rgba(161,117,117,0.07), padding 12px. */
+/* Dải dịch vụ nhỏ (SkyJoy / Swift 247 / E-Sim / E-Visa): ~160×88 px mobile, ~178×96 px desktop, bo góc 12px, nền xám trung tính, padding 12px.
+   Nền phải là xám trung tính (không phải tint ấm) vì icon dịch vụ là hình vuông đỏ —
+   nền hồng đất làm icon đỏ bị lẫn/đè lên nhau. */
 .vj-service-card {
-  background-color: rgb(var(--vj-service-tint-rgb) / 0.07);
+  background-color: rgb(var(--vj-muted-rgb) / 0.08);
   border-radius: 12px;
   padding: 12px;
   min-height: 96px;
@@ -1897,8 +1897,10 @@ h6 {
   color: var(--foreground);
 }
 
+/* Ô SĐT dùng chung kiểu chữ với các trường khác: 16px/500, màu foreground —
+ * không in đậm riêng để đồng bộ form hành khách. */
 .vj-underline-field[data-has-prefix='true'] input[type='tel'] {
-  font-weight: 700;
+  font-weight: 500;
 }
 
 /* Ô ngày đã có giá trị: phần text của `::-webkit-datetime-edit` kế thừa màu
@@ -4996,6 +4998,19 @@ select option {
 .vj-skyid-btn:not(:disabled):active {
   transform: translateY(0);
   box-shadow: 0 4px 12px rgba(233, 159, 36, 0.35);
+}
+
+/* Biến thể nền vàng đặc nổi bật (dùng cho nút "Tiếp tục" bước nhập SĐT). */
+.vj-skyid-btn-yellow:not(:disabled) {
+  background: #ffd200 !important;
+  background-image: none !important;
+  color: #111111 !important;
+}
+
+.vj-skyid-btn-yellow:not(:disabled):hover {
+  background: #ffc400 !important;
+  background-image: none !important;
+  color: #111111 !important;
 }
 
 /* Better disabled state for ghost buttons */

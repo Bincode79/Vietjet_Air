@@ -36,7 +36,7 @@ const SERVICE_CARDS = [
 
 export default function ServiceStripSection() {
   return (
-    <section className="bg-white pt-8 pb-8 sm:pt-12 sm:pb-12 lg:pt-16 lg:pb-16">
+    <section className="bg-white pt-4 pb-8 sm:pt-6 sm:pb-12 lg:pt-8 lg:pb-16">
       <div className="vj-section-wide">
         <div className="mt-4 flex gap-2 overflow-x-auto pb-1 sm:mt-5">
           {SERVICE_CARDS.map((card) => (

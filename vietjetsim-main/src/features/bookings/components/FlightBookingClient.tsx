@@ -239,10 +239,6 @@ function FlightBookingClientInner({
       if (isUserAction) {
         if (isRoundTrip) {
           setCurrentLeg('inbound');
-          toast.success(
-            'Đã chọn chuyến bay đi!',
-            `${flight.flightNo}: ${flight.fromCity} → ${flight.toCity} lúc ${flight.departTime}. Vui lòng chọn chuyến bay về.`
-          );
         } else {
           if (continueSignal === undefined) {
             goStep(2);
@@ -268,10 +264,6 @@ function FlightBookingClientInner({
         'inbound'
       );
       if (isUserAction) {
-        toast.success(
-          'Đã chọn chuyến bay về!',
-          `${flight.flightNo}: ${flight.fromCity} → ${flight.toCity} lúc ${flight.departTime}`
-        );
         if (continueSignal === undefined) {
           goStep(2);
         }
@@ -289,10 +281,6 @@ function FlightBookingClientInner({
     setConsents(newConsents);
     onPaxCountsChange?.(countByType(passengers));
     goStep(3);
-    toast.success(
-      'Đã lưu thông tin hành khách!',
-      'Vui lòng chọn dịch vụ bổ sung trước khi hoàn tất đặt vé.'
-    );
   };
 
   const handleConfirmSeats = (seats: string[], seatFee: number, returnSeats?: string[]) => {

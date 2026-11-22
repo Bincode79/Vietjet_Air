@@ -8,7 +8,7 @@ import {
   RiRadarLine,
   RiFolderShield2Line,
 } from 'react-icons/ri';
-import { SiLine, SiZalo, SiApple, SiGoogleplay } from 'react-icons/si';
+import { SiLine, SiZalo } from 'react-icons/si';
 import {
   FlightPlaneIcon,
   CreditCardPaymentIcon,
@@ -282,29 +282,31 @@ export default function Footer() {
                   href="https://apps.apple.com"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-1.5 bg-black text-white px-2.5 py-1.5 rounded-vj hover:bg-gray-800 transition-colors shadow-vj-sm"
+                  aria-label="Download on the App Store"
+                  className="block hover:opacity-90 transition-opacity"
                 >
-                  <SiApple size={16} />
-                  <div className="leading-tight text-left">
-                    <span className="block text-4xs uppercase tracking-wider text-vj-muted">
-                      Available on the
-                    </span>
-                    <span className="block text-xs2 font-bold">App Store</span>
-                  </div>
+                  <img
+                    src="/images/badges/app-store-badge.svg"
+                    alt="Download on the App Store"
+                    width={120}
+                    height={40}
+                    className="h-10 w-auto"
+                  />
                 </a>
                 <a
                   href="https://play.google.com"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-1.5 bg-black text-white px-2.5 py-1.5 rounded-vj hover:bg-gray-800 transition-colors shadow-vj-sm"
+                  aria-label="Get it on Google Play"
+                  className="block hover:opacity-90 transition-opacity"
                 >
-                  <SiGoogleplay size={14} className="text-vj-pay-green" />
-                  <div className="leading-tight text-left">
-                    <span className="block text-4xs uppercase tracking-wider text-vj-muted">
-                      GET IT ON
-                    </span>
-                    <span className="block text-xs2 font-bold">Google Play</span>
-                  </div>
+                  <img
+                    src="/images/badges/google-play-badge.svg"
+                    alt="Get it on Google Play"
+                    width={150}
+                    height={48}
+                    className="h-10 w-auto"
+                  />
                 </a>
               </div>
             </div>

@@ -563,7 +563,7 @@ export default function PassengerInfoStep({
                             id={`passenger-${i}-phone`}
                             name={`passenger-${i}-phone`}
                             type="tel"
-                            className="font-bold font-koho"
+                            className="font-medium font-koho"
                             value={p.phone}
                             onChange={(event) =>
                               updatePassenger(

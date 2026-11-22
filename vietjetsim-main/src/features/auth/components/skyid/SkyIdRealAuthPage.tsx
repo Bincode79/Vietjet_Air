@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useCallback, useEffect, useState } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/useToast';
@@ -259,13 +260,13 @@ export default function SkyIdRealAuthPage({
                 <button
                   type="button"
                   onClick={() => setLangOpen(!langOpen)}
-                  className="flex items-center gap-1.5 px-3 py-1 rounded-full border border-slate-200 bg-white text-xs font-semibold text-slate-700 hover:bg-slate-50 transition shadow-2xs cursor-pointer"
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-slate-300 bg-white text-sm font-bold text-slate-800 hover:bg-slate-50 transition shadow-2xs cursor-pointer"
                 >
-                  <span className="w-4 h-4 rounded-full bg-red-600 flex items-center justify-center text-[10px] text-yellow-300">
+                  <span className="w-4 h-4 rounded-full bg-red-600 flex items-center justify-center text-[11px] text-yellow-300">
                     ★
                   </span>
                   <span>{currentLang}</span>
-                  <span className="text-[10px] text-slate-400">▾</span>
+                  <span className="text-[11px] text-slate-500">▾</span>
                 </button>
                 {langOpen && (
                   <div className="absolute right-0 top-full mt-1 w-32 bg-white rounded-lg shadow-lg border border-slate-200 py-1 z-30 text-xs">
@@ -320,13 +321,13 @@ export default function SkyIdRealAuthPage({
                 </p>
 
                 {/* Input Row matching Image #1 */}
-                <div className="mt-5 flex items-center gap-1.5">
+                <div className="mt-5 flex items-center gap-1">
                   {/* Country Code Picker */}
                   <div className="relative">
                     <button
                       type="button"
                       onClick={() => setCountryOpen(!countryOpen)}
-                      className="h-[40px] px-2.5 rounded-md border border-slate-300 bg-white flex items-center gap-1 text-xs font-semibold text-slate-800 hover:border-slate-400 transition cursor-pointer"
+                      className="h-[40px] px-2 rounded-md border border-slate-300 bg-white flex items-center gap-1 text-xs font-semibold text-slate-800 hover:border-slate-400 transition cursor-pointer"
                     >
                       <span className="text-sm">{country.flag}</span>
                       <span>{country.dial}</span>
@@ -355,7 +356,7 @@ export default function SkyIdRealAuthPage({
                   </div>
 
                   {/* Phone Input Box with Floating Notched Label */}
-                  <div className="relative flex-1 h-[40px] border border-slate-300 rounded-md px-2.5 bg-white flex items-center transition focus-within:border-slate-800">
+                  <div className="relative flex-1 min-w-0 h-[40px] border border-slate-300 rounded-md px-2 bg-white flex items-center transition focus-within:border-slate-800">
                     <label
                       htmlFor="skyid-phone"
                       className="vj-skyid-label vj-skyid-label-phone absolute -top-2 left-2 px-1 bg-white text-[10px] font-medium text-slate-600 leading-none whitespace-nowrap pointer-events-none"
@@ -381,9 +382,9 @@ export default function SkyIdRealAuthPage({
                     type="button"
                     disabled={!canContinue || loading}
                     onClick={handlePhoneContinue}
-                    className={`vj-skyid-btn !min-w-0 !w-auto h-[40px] px-5 rounded-md font-extrabold text-base tracking-wide transition-all flex items-center justify-center whitespace-nowrap shrink-0 ${
+                    className={`vj-skyid-btn vj-skyid-btn-yellow !min-w-0 !min-h-0 !w-auto h-[34px] px-4 rounded-md font-extrabold text-xs tracking-wide transition-all flex items-center justify-center whitespace-nowrap shrink-0 ${
                       canContinue && !loading
-                        ? '!bg-gradient-to-r !from-[#FFD200] !to-[#F7931E] !text-slate-900 shadow-md hover:brightness-105 hover:shadow-lg active:scale-98 cursor-pointer'
+                        ? 'shadow-md hover:shadow-lg active:scale-98 cursor-pointer'
                         : '!bg-[#f7f7f7] !text-[#c7c7c7] border border-slate-200/60 cursor-not-allowed'
                     }`}
                   >
@@ -651,7 +652,15 @@ export default function SkyIdRealAuthPage({
 
           {/* Endorsement & Register link at bottom of left column */}
           <div className="mt-6 pt-3 border-t border-slate-100 text-center">
-            <p className="text-[11px] text-slate-400">Được cung cấp và xác thực bởi SkyJoy ID</p>
+            {!isModal && (
+              <Link
+                href="/"
+                className="mb-3 inline-flex items-center gap-1 text-xs font-semibold text-[#2B6CB0] hover:underline"
+              >
+                <span aria-hidden="true">←</span> Quay lại trang chủ
+              </Link>
+            )}
+            <p className="text-xs text-slate-500">Được cung cấp và xác thực bởi SkyJoy ID</p>
             <div className="mt-1.5 flex items-center justify-center">
               <img
                 src="/images/skyid/endorsement-logos.png"

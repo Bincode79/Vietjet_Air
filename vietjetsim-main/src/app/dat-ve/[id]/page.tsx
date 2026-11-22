@@ -350,7 +350,7 @@ export default function BookingDetailPage() {
                 </div>
               )}
 
-              {/* Danh sách thẻ hành khách (grid 2 cột) */}
+              {/* Danh sách thẻ hành khách — chuẩn site thật: chỉ tên + route + ghế */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
                 {passengersList.map((passenger, idx) => {
                   const title = passenger.gender === 'female' ? 'Mrs' : 'Mr';
@@ -380,15 +380,7 @@ export default function BookingDetailPage() {
                         <div className="font-extrabold text-vj-text flex items-center gap-1.5">
                           <span className="font-mono text-xs">{flight?.from_code || 'SGN'}</span>
                           <span className="text-vj-booking-red">➔</span>
-                          <span className="font-mono text-xs">{flight?.to_code || 'WSI'}</span>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <span className="text-vj-gray">Deluxe ancillary:</span>
-                          <span className="font-semibold text-vj-text">Gói 20kg</span>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <span className="text-vj-gray">Dịch vụ miễn phí:</span>
-                          <span className="font-semibold text-vj-text">Combo Meal (LR)</span>
+                          <span className="font-mono text-xs">{flight?.to_code || 'HAN'}</span>
                         </div>
                         <div className="flex items-center justify-between">
                           <span className="text-vj-gray">Chỗ ngồi:</span>
@@ -401,10 +393,6 @@ export default function BookingDetailPage() {
                           >
                             {seatCode}
                           </span>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <span className="text-vj-gray">Special change:</span>
-                          <span className="font-semibold text-vj-text">Special Change</span>
                         </div>
                       </div>
                     </div>
@@ -459,27 +447,80 @@ export default function BookingDetailPage() {
                   </button>
 
                   {isOpen && (
-                    <div className="px-4 sm:px-5 pb-3.5 pt-1.5 bg-vj-surface-2/50 text-2xs space-y-2 text-vj-text-strong border-t border-vj-border-light animate-fadeIn">
-                      <div className="flex justify-between">
-                        <span>Giá vé cơ bản:</span>
-                        <span className="font-semibold text-vj-text tabular-nums">
-                          {Math.round(paxShare * 0.65).toLocaleString('vi-VN')} VND
+                    <div className="px-4 sm:px-5 pb-3.5 pt-1.5 bg-vj-surface-2/50 text-2xs space-y-1 text-vj-text-strong border-t border-vj-border-light animate-fadeIn">
+                      {/* Tiêu đề chặng bay */}
+                      <div className="flex items-center gap-2 pb-1.5 mb-1 text-xs">
+                        <span className="text-primary font-bold">Chi tiết chuyến đi</span>
+                        <span className="font-mono font-extrabold text-vj-text">
+                          {flight?.from_code || 'SGN'}
+                        </span>
+                        <span className="text-vj-booking-red text-xs">➔</span>
+                        <span className="font-mono font-extrabold text-vj-text">
+                          {flight?.to_code || 'HAN'}
                         </span>
                       </div>
-                      <div className="flex justify-between">
-                        <span>Thuế & Phí sân bay:</span>
-                        <span className="font-semibold text-vj-text tabular-nums">
-                          {Math.round(paxShare * 0.25).toLocaleString('vi-VN')} VND
+
+                      {/* Giá vé */}
+                      <div className="flex justify-between font-bold text-vj-text">
+                        <span>Giá vé</span>
+                        <span className="tabular-nums">
+                          {Math.round(paxShare * 0.749).toLocaleString('vi-VN')} VND
                         </span>
                       </div>
-                      <div className="flex justify-between">
-                        <span>Dịch vụ & Tiện ích bổ sung:</span>
+                      <div className="flex justify-between pl-3">
+                        <span>B1ECO - {flight?.class ? flight.class.charAt(0).toUpperCase() + flight.class.slice(1) : 'Eco1'}</span>
                         <span className="font-semibold text-vj-text tabular-nums">
-                          {Math.round(paxShare * 0.1).toLocaleString('vi-VN')} VND
+                          {Math.round(paxShare * 0.694).toLocaleString('vi-VN')}
                         </span>
                       </div>
+                      <div className="flex justify-between pl-3">
+                        <span>Thuế VAT</span>
+                        <span className="font-semibold text-vj-text tabular-nums">
+                          {Math.round(paxShare * 0.055).toLocaleString('vi-VN')}
+                        </span>
+                      </div>
+
+                      {/* Thuế, phí */}
+                      <div className="flex justify-between font-bold text-vj-text pt-1.5">
+                        <span>Thuế, phí</span>
+                        <span className="tabular-nums">
+                          {Math.round(paxShare * 0.251).toLocaleString('vi-VN')} VND
+                        </span>
+                      </div>
+                      <div className="flex justify-between pl-3">
+                        <span>Phí quản trị hệ thống</span>
+                        <span className="font-semibold text-vj-text tabular-nums">
+                          {(215000).toLocaleString('vi-VN')}
+                        </span>
+                      </div>
+                      <div className="flex justify-between pl-3">
+                        <span>Phí an ninh soi chiếu</span>
+                        <span className="font-semibold text-vj-text tabular-nums">
+                          {(18181).toLocaleString('vi-VN')}
+                        </span>
+                      </div>
+                      <div className="flex justify-between pl-3">
+                        <span>Domestic airport tax</span>
+                        <span className="font-semibold text-vj-text tabular-nums">
+                          {(99000).toLocaleString('vi-VN')}
+                        </span>
+                      </div>
+                      <div className="flex justify-between pl-3">
+                        <span>DOM management fee</span>
+                        <span className="font-semibold text-vj-text tabular-nums">
+                          {Math.max(0, Math.round(paxShare * 0.251) - 215000 - 18181 - 99000 - Math.round(Math.max(0, paxShare * 0.251 - 215000 - 18181 - 99000) * 0.12)).toLocaleString('vi-VN')}
+                        </span>
+                      </div>
+                      <div className="flex justify-between pl-3">
+                        <span>Thuế VAT</span>
+                        <span className="font-semibold text-vj-text tabular-nums">
+                          {Math.round(Math.max(0, paxShare * 0.251 - 215000 - 18181 - 99000) * 0.12).toLocaleString('vi-VN')}
+                        </span>
+                      </div>
+
+                      {/* Tổng tiền */}
                       <div className="flex justify-between pt-2 border-t border-vj-border-light font-black text-vj-text text-xs">
-                        <span>Tổng tiền vé:</span>
+                        <span className="text-primary italic">Tổng tiền</span>
                         <span className="text-vj-booking-red text-sm tabular-nums">
                           {paxShare.toLocaleString('vi-VN')} VND
                         </span>

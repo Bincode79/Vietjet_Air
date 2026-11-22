@@ -77,9 +77,9 @@ export default function PaymentMethodCard({
         </div>
       )}
 
-      {/* Logo */}
-      <div className="flex items-center h-8">
-        <DynamicLogo logo={method.logo} className={method.logoClassName} />
+      {/* Logo — kích thước đồng nhất h-6 */}
+      <div className="flex items-center justify-center h-8">
+        <DynamicLogo logo={method.logo} className="h-6 w-auto" />
       </div>
 
       {/* Label */}
@@ -158,12 +158,12 @@ export function SecurityFooter({ hideOnMovi = true, isMovi = false }: SecurityFo
         <span className="text-3xs font-bold text-vj-gray uppercase tracking-wider w-full sm:w-auto">
           Được bảo vệ bởi
         </span>
-        <div className="flex items-center gap-2 sm:gap-3">
+        <div className="flex items-center gap-3">
           <VisaLogo className="h-4 w-auto" />
           <MastercardLogo className="h-4 w-auto" />
           <JcbLogo className="h-4 w-auto" />
           <AmexLogo className="h-4 w-auto" />
-          <NapasLogo className="h-3.5 w-auto" />
+          <NapasLogo className="h-4 w-auto" />
           <VietQrLogo className="h-4 w-auto" />
         </div>
       </div>

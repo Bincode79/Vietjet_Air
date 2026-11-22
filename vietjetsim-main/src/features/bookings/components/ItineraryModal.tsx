@@ -150,8 +150,8 @@ export default function ItineraryModal({ isOpen, onClose, booking }: ItineraryMo
       aria-label="Thông tin hành trình của bạn"
     >
       <div className="relative flex max-h-[92dvh] w-full max-w-3xl flex-col overflow-hidden rounded-t-vj bg-white shadow-2xl border border-vj-border-light animate-fadeIn print:max-h-none print:overflow-visible sm:my-6 sm:max-h-[88dvh] sm:rounded-vj">
-        {/* Thanh tiêu đề Modal màu đỏ */}
-        <div className="shrink-0 bg-primary text-white px-4 py-2.5 sm:py-3 flex items-center justify-between">
+        {/* Thanh tiêu đề Modal màu xám đen — chuẩn screenshot thực tế */}
+        <div className="shrink-0 bg-[#333] text-white px-4 py-2.5 sm:py-3 flex items-center justify-between">
           <h3 className="font-bold text-sm sm:text-base tracking-wide flex items-center gap-2">
             <span>Thông tin hành trình của bạn</span>
           </h3>
@@ -345,11 +345,11 @@ export default function ItineraryModal({ isOpen, onClose, booking }: ItineraryMo
                       {fareClassLabel}
                     </td>
                     <td className="py-2.5 px-2.5 sm:px-3 text-vj-text">
-                      <span className="font-bold">{departTimeFormatted}</span> - {fromCity} (
-                      {fromCode})
+                      <div><span className="font-bold">{departTimeFormatted}</span> - {fromCity}</div>
+                      <div className="text-vj-text-dim">Nhà ga 1</div>
                     </td>
                     <td className="py-2.5 px-2.5 sm:px-3 text-vj-text">
-                      <span className="font-bold">{arriveTimeFormatted}</span> - {toCity} ({toCode})
+                      <span className="font-bold">{arriveTimeFormatted}</span> - {toCity}
                     </td>
                   </tr>
                 </tbody>
@@ -357,19 +357,19 @@ export default function ItineraryModal({ isOpen, onClose, booking }: ItineraryMo
             </div>
           </div>
 
-          {/* Nút Print / Tải xuống PDF */}
+          {/* Nút Print / Tải xuống PDF — chuẩn screenshot: Print vàng, PDF viền */}
           <div className="pt-3 flex items-center justify-center gap-3">
             <button
               type="button"
               onClick={handlePrint}
-              className="px-6 py-2 vj-cta font-bold rounded-vj text-xs sm:text-sm tracking-wide shadow-xs active:scale-98 transition-all cursor-pointer flex items-center gap-1.5"
+              className="px-6 py-2 bg-vjyellow hover:bg-vjamber text-vj-dark font-bold rounded-vj text-xs sm:text-sm tracking-wide shadow-xs active:scale-98 transition-all cursor-pointer flex items-center gap-1.5 border border-red-400"
             >
               <span>Print</span>
             </button>
             <button
               type="button"
               onClick={handlePrint}
-              className="px-6 py-2 vj-cta font-bold rounded-vj text-xs sm:text-sm tracking-wide shadow-xs active:scale-98 transition-all cursor-pointer flex items-center gap-1.5"
+              className="px-6 py-2 bg-white hover:bg-gray-50 text-vj-text font-bold rounded-vj text-xs sm:text-sm tracking-wide shadow-xs active:scale-98 transition-all cursor-pointer flex items-center gap-1.5 border border-vj-border-light"
             >
               <span>Tải xuống PDF</span>
             </button>

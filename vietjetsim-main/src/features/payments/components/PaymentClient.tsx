@@ -261,7 +261,7 @@ export default function PaymentClient() {
   const [pageLoading, setPageLoading] = useState(true);
   const [showVietQrModal, setShowVietQrModal] = useState(false);
   const [gatewaySuccess, setGatewaySuccess] = useState(false);
-  const [gatewayDownloaded, setGatewayDownloaded] = useState(false);
+  // const [gatewayDownloaded, setGatewayDownloaded] = useState(false);
   const [showGateway, setShowGateway] = useState(false);
   const [gatewayMethod, setGatewayMethod] = useState<string>('qr');
   const toast = useToast();
@@ -388,7 +388,7 @@ export default function PaymentClient() {
     const gw = GATEWAY_METHOD_BY_GROUP[selectedMethodGroup] || 'qr';
     setGatewayMethod(gw);
     setGatewaySuccess(false);
-    setGatewayDownloaded(false);
+    // setGatewayDownloaded(false);
     setShowGateway(true);
   };
 
@@ -511,7 +511,8 @@ export default function PaymentClient() {
               Đơn hàng <strong className="text-vj-text">{bookingCodeLabel}</strong> đã được xác
               nhận.
             </p>
-            <button
+            {/* Nút tải vé điện tử tạm ẩn vì chưa có chức năng tải vé thực tế */}
+            {/* <button
               type="button"
               onClick={() => setGatewayDownloaded(true)}
               disabled={gatewayDownloaded}
@@ -519,7 +520,7 @@ export default function PaymentClient() {
             >
               <Icon name={gatewayDownloaded ? 'CheckCircleIcon' : 'ArrowDownTrayIcon'} size={16} />
               {gatewayDownloaded ? 'Đã tải vé điện tử' : 'Tải vé điện tử'}
-            </button>
+            </button> */}
           </div>
         ) : (
           <>
@@ -545,11 +546,6 @@ export default function PaymentClient() {
                 bookingId={booking?.bookingId || bookingId || ''}
                 bookingCode={booking?.bookingCode ?? bookingCodeLabel}
                 amount={total}
-                flightNo={booking?.flightNo}
-                from={booking?.from}
-                to={booking?.to}
-                departTime={booking?.departTime}
-                date={booking?.date}
                 onBack={() => setShowGateway(false)}
               />
             )}
@@ -875,7 +871,7 @@ export default function PaymentClient() {
             className="min-h-9 sm:min-h-10 px-4 sm:px-6 py-0.5 rounded-full bg-gradient-vj-yellow hover:brightness-105 active:scale-98 shadow-md transition-all cursor-pointer flex items-center justify-center gap-2 text-center font-koho"
           >
             <span className="font-bold text-xs sm:text-sm leading-tight text-vj-text">
-              Tiếp tục thanh toán
+              Thanh Toán
             </span>
           </button>
         </div>

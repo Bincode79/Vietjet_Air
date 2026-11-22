@@ -402,9 +402,12 @@ export default function MyFlightsPage() {
                   <>
                     {/* Giao diện Mobile khớp 100% Ảnh mẫu tham chiếu */}
                     <div className="xl:hidden w-full max-w-[540px] mx-auto pt-2 pb-28 sm:pb-24">
-                      <p className="mb-4 w-full font-koho text-base font-normal leading-[24px] text-black">
-                        Bạn muốn xem chuyến bay đã đặt, đổi lịch trình bay hay mua thêm dịch vụ hành
-                        lý, chỗ ngồi, suất ăn..., vui lòng điền thông tin bên dưới:
+                      <p className="mb-1 w-full font-koho text-base font-semibold leading-[24px] text-black">
+                        Tra cứu đặt chỗ
+                      </p>
+                      <p className="mb-4 w-full font-koho text-base font-normal leading-[24px] text-[var(--foreground-muted)]">
+                        Xem chuyến bay đã đặt, đổi lịch trình, mua thêm dịch vụ hành lý, chỗ ngồi,
+                        suất ăn...
                       </p>
 
                       <form onSubmit={handleSearchBooking} noValidate>
@@ -415,11 +418,11 @@ export default function MyFlightsPage() {
                               type="text"
                               required
                               autoComplete="off"
-                              autoCapitalize="characters"
+                              autoCapitalize="none"
                               value={bookingCode}
-                              onChange={(e) => setBookingCode(e.target.value.toUpperCase())}
+                              onChange={(e) => setBookingCode(e.target.value)}
                               placeholder=" "
-                              className="vj-lookup-input font-heading-800 uppercase tracking-wide"
+                              className="vj-lookup-input font-heading-800 normal-case"
                             />
                             <label htmlFor="mobi-booking-code" className="vj-lookup-label">
                               Mã đặt chỗ <span className="text-[var(--vj-red)]">*</span>
@@ -432,10 +435,11 @@ export default function MyFlightsPage() {
                               type="text"
                               required
                               autoComplete="family-name"
+                              autoCapitalize="none"
                               value={surname}
                               onChange={(e) => setSurname(e.target.value)}
                               placeholder=" "
-                              className="vj-lookup-input"
+                              className="vj-lookup-input font-heading-800 normal-case"
                             />
                             <label htmlFor="mobi-surname" className="vj-lookup-label">
                               Họ <span className="text-[var(--vj-red)]">*</span>
@@ -448,10 +452,11 @@ export default function MyFlightsPage() {
                               type="text"
                               required
                               autoComplete="given-name"
+                              autoCapitalize="none"
                               value={givenName}
                               onChange={(e) => setGivenName(e.target.value)}
                               placeholder=" "
-                              className="vj-lookup-input"
+                              className="vj-lookup-input font-heading-800 normal-case"
                             />
                             <label htmlFor="mobi-given-name" className="vj-lookup-label">
                               Tên đệm và tên <span className="text-[var(--vj-red)]">*</span>
@@ -519,9 +524,12 @@ export default function MyFlightsPage() {
                         <h2 className="text-xl sm:text-2xl font-bold uppercase tracking-tight text-vj-dark">
                           CHUYẾN BAY CỦA TÔI
                         </h2>
-                        <p className="mt-3 font-koho text-base font-semibold leading-[24px] text-vj-text-strong">
-                          Bạn muốn xem chuyến bay đã đặt, đổi lịch trình bay hay mua thêm dịch vụ
-                          hành lý, chỗ ngồi, suất ăn..., vui lòng điền thông tin bên dưới:
+                        <p className="mt-1 font-koho text-base font-semibold leading-[24px] text-vj-text-strong">
+                          Tra cứu đặt chỗ
+                        </p>
+                        <p className="mt-1 font-koho text-base font-normal leading-[24px] text-[var(--foreground-muted)]">
+                          Xem chuyến bay đã đặt, đổi lịch trình, mua thêm dịch vụ hành lý, chỗ ngồi,
+                          suất ăn...
                         </p>
 
                         <div className="mt-7 w-[360px] space-y-4.25 xl:ml-3.75">
@@ -531,11 +539,11 @@ export default function MyFlightsPage() {
                               type="text"
                               required
                               autoComplete="off"
-                              autoCapitalize="characters"
+                              autoCapitalize="none"
                               value={bookingCode}
-                              onChange={(e) => setBookingCode(e.target.value.toUpperCase())}
+                              onChange={(e) => setBookingCode(e.target.value)}
                               placeholder=" "
-                              className="vj-lookup-input font-heading-800 uppercase tracking-wide"
+                              className="vj-lookup-input font-heading-800 normal-case"
                             />
                             <label htmlFor="booking-code" className="vj-lookup-label">
                               Mã đặt chỗ <span className="text-[var(--vj-red)]">*</span>
@@ -548,10 +556,11 @@ export default function MyFlightsPage() {
                               type="text"
                               required
                               autoComplete="family-name"
+                              autoCapitalize="none"
                               value={surname}
                               onChange={(e) => setSurname(e.target.value)}
                               placeholder=" "
-                              className="vj-lookup-input"
+                              className="vj-lookup-input font-heading-800 normal-case"
                             />
                             <label htmlFor="surname" className="vj-lookup-label">
                               Họ <span className="text-[var(--vj-red)]">*</span>
@@ -564,10 +573,11 @@ export default function MyFlightsPage() {
                               type="text"
                               required
                               autoComplete="given-name"
+                              autoCapitalize="none"
                               value={givenName}
                               onChange={(e) => setGivenName(e.target.value)}
                               placeholder=" "
-                              className="vj-lookup-input"
+                              className="vj-lookup-input font-heading-800 normal-case"
                             />
                             <label htmlFor="given-name" className="vj-lookup-label">
                               Tên đệm và tên <span className="text-[var(--vj-red)]">*</span>

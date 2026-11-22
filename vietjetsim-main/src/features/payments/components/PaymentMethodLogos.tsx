@@ -225,13 +225,13 @@ export function PaymentSecurityFooter() {
         </div>
       </div>
 
-      {/* Accepted logos row */}
-      <div className="flex items-center gap-2.5 opacity-90 grayscale-25 hover:grayscale-0 transition-all flex-wrap">
+      {/* Accepted logos row — kích thước đồng nhất h-4 */}
+      <div className="flex items-center gap-3 opacity-90 grayscale-25 hover:grayscale-0 transition-all flex-wrap">
         <VisaLogo className="h-4 w-auto" />
         <MastercardLogo className="h-4 w-auto" />
         <JcbLogo className="h-4 w-auto" />
         <AmexLogo className="h-4 w-auto" />
-        <NapasLogo className="h-3.5 w-auto" />
+        <NapasLogo className="h-4 w-auto" />
         <VietQrLogo className="h-4 w-auto" />
       </div>
     </div>

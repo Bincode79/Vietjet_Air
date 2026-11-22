@@ -23,7 +23,7 @@ interface BookingTicketCardProps {
   departTime?: string;
   arriveTime?: string;
   date?: string;
-  bookingCode?: string | null;
+  bookingCode?: string | null; // kept for API compatibility
   passengers?: Passenger[];
   fareClass?: string;
   ancillaries?: string[];
@@ -59,7 +59,7 @@ export default function BookingTicketCard({
   departTime = '05:00',
   arriveTime = '07:10',
   date = 'T2, 30/11/2026',
-  bookingCode,
+  bookingCode: _bookingCode, // kept for API compatibility
   passengers = [],
   fareClass = 'Eco',
   ancillaries = ['Hành lý xách tay 7kg'],
@@ -71,8 +71,6 @@ export default function BookingTicketCard({
   terminal = 'Nhà ga 1',
   aircraft = 'A321',
   duration = '2 giờ 10 phút',
-  contactEmail,
-  contactPhone,
   onOpenDetails,
   promoCode = '',
   onPromoCodeChange,
@@ -85,7 +83,6 @@ export default function BookingTicketCard({
   taxRate = 0.15,
 }: BookingTicketCardProps) {
   const [showFlightInfo, setShowFlightInfo] = useState(true);
-  const [showPax, setShowPax] = useState(true);
   const [showPriceDetails, setShowPriceDetails] = useState(true);
   const [showFareSub, setShowFareSub] = useState(false);
   const [showTaxSub, setShowTaxSub] = useState(false);
@@ -276,75 +273,7 @@ export default function BookingTicketCard({
         )}
       </div>
 
-      {/* 3. Accordion: Thông tin hành khách */}
-      <div className="border-b border-vj-border-light/90">
-        <div
-          className="bg-vj-bar-gray hover:bg-vj-surface-3/80 px-4 py-2.5 flex items-center justify-between cursor-pointer transition-colors select-none"
-          onClick={() => setShowPax(!showPax)}
-        >
-          <span className="font-koho text-xs sm:text-sm font-semibold text-vj-text-strong">
-            Thông tin hành khách ({passengers.length || 1})
-          </span>
-          <div className="flex items-center gap-1 font-bold text-vj-text-strong text-xs font-koho">
-            <span className="text-3xs text-vj-muted">{showPax ? '▲' : '▼'}</span>
-          </div>
-        </div>
-
-        {showPax && (
-          <div className="p-3 sm:p-4 bg-white space-y-2.5 text-xs border-t border-vj-border-light">
-            {(passengers.length > 0
-              ? passengers
-              : [{ name: 'NGUYEN VAN A', seat: 'Chưa chọn' }]
-            ).map((p, idx) => (
-              <div
-                key={idx}
-                className="bg-gray-50/70 border border-gray-200 rounded-lg p-3 space-y-2"
-              >
-                <div className="flex flex-wrap justify-between items-center gap-2">
-                  <div className="font-bold text-gray-900 flex items-center gap-1.5 text-xs sm:text-sm">
-                    <span className="text-base">👤</span>
-                    <span>
-                      {idx + 1}. {p.name || 'Hành khách'} ({p.type || 'Người lớn'})
-                    </span>
-                  </div>
-                  <span className="text-3xs px-2.5 py-1 rounded bg-vj-surface-2 text-vj-text-strong font-semibold">
-                    Ghế: {flightNo}-{p.seat || 'Chưa chọn'}
-                  </span>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-3xs sm:text-xs text-gray-600 pt-1 border-t border-gray-100">
-                  <div>
-                    <span className="font-semibold text-gray-700">Chặng bay: </span>
-                    <span>
-                      {from} ➔ {to}
-                    </span>
-                  </div>
-                  <div>
-                    <span className="font-semibold text-gray-700">Hành lý ký gửi: </span>
-                    <span>
-                      {p.baggage || (ancillaries.length ? ancillaries.join(', ') : 'Gói 20kg')}
-                    </span>
-                  </div>
-                  {(p.phone || contactPhone) && (
-                    <div>
-                      <span className="font-semibold text-gray-700">Điện thoại: </span>
-                      <span>{p.phone || contactPhone}</span>
-                    </div>
-                  )}
-                  {(p.email || contactEmail) && (
-                    <div>
-                      <span className="font-semibold text-gray-700">Email: </span>
-                      <span>{p.email || contactEmail}</span>
-                    </div>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-
-      {/* 4. Accordion: Chi tiết giá & thanh toán (gộp trực tiếp vào THÔNG TIN ĐẶT CHỖ) */}
+      {/* 3. Accordion: Chi tiết giá & thanh toán (gộp trực tiếp vào THÔNG TIN ĐẶT CHỖ) */}
       <div className="border-b border-vj-border-light/90">
         <div
           className="bg-vj-bar-gray hover:bg-vj-surface-3/80 px-4 py-2.5 flex items-center justify-between cursor-pointer transition-colors select-none"
@@ -373,10 +302,10 @@ export default function BookingTicketCard({
                       name="cardPromoCode"
                       type="text"
                       value={promoCode}
-                      onChange={(e) => onPromoCodeChange?.(e.target.value.toUpperCase())}
+                      onChange={(e) => onPromoCodeChange?.(e.target.value)}
                       placeholder=" "
                       disabled={promoApplied}
-                      className={`vj-lookup-input font-mono uppercase font-bold text-black !text-black !border-b-0 w-full text-sm disabled:opacity-50 ${
+                      className={`vj-lookup-input normal-case !font-normal !text-vj-muted !border-b-0 w-full text-sm disabled:opacity-50 ${
                         promoApplied ? 'form-input-valid' : ''
                       }`}
                     />
@@ -395,7 +324,7 @@ export default function BookingTicketCard({
                     type="button"
                     onClick={onApplyPromo}
                     disabled={promoApplied || !promoCode || isApplyingPromo}
-                    className="h-[44px] sm:h-[42px] px-4 sm:px-5 bg-gradient-to-r from-yellow-400 to-yellow-500 text-vj-navy font-koho font-black uppercase text-sm tracking-wide hover:from-yellow-500 hover:to-yellow-600 transition-all disabled:opacity-50 min-w-[100px] flex items-center justify-center shrink-0 cursor-pointer active:scale-98 shadow-xl shadow-yellow-400/50 border-2 border-yellow-600 ring-2 ring-yellow-400/30"
+                    className="h-[38px] sm:h-[36px] px-4 sm:px-5 bg-gradient-to-b from-yellow-300 via-yellow-400 to-yellow-500 text-black font-koho font-black uppercase text-sm tracking-wide hover:from-yellow-200 hover:via-yellow-300 hover:to-yellow-400 transition-all disabled:opacity-50 min-w-[80px] flex items-center justify-center shrink-0 cursor-pointer active:scale-98 shadow-xl shadow-yellow-400/60 border-2 border-yellow-500 ring-2 ring-yellow-300/40"
                   >
                     {isApplyingPromo ? (
                       <div className="w-4 h-4 border-2 border-[rgb(var(--foreground-rgb))]/20 border-t-[var(--foreground)] rounded-full animate-spin" />

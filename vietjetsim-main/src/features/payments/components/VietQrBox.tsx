@@ -63,7 +63,7 @@ interface VietQrBoxProps {
   hidePollStatus?: boolean;
   /** Ẩn 3 bước hướng dẫn */
   hideSteps?: boolean;
-  /** Ẩn hướng dẫn quét mã */
+  /** Ẩn hướng dẫn quét mã — deprecated, use hideSteps instead */
   hideScanGuide?: boolean;
   /** Callback khi copy nội dung chuyển khoản */
   onCopyNote?: (note: string) => void;
@@ -86,7 +86,7 @@ export default function VietQrBox({
   hideGatewayHeader = false,
   hidePaymentDetails = false,
   hidePollStatus = false,
-  hideScanGuide = false,
+  hideScanGuide: _hideScanGuide = false, // deprecated, handled in parent
 }: VietQrBoxProps) {
   const isVnpay = methodType === 'vnpay_qr' || methodType === 'vnpay_dom';
   const methodLabel = isVnpay ? 'VNPAY-QR' : 'VietQR';
@@ -265,17 +265,14 @@ export default function VietQrBox({
         <div className="p-4 sm:p-5 bg-gradient-to-r from-vj-bank-blue via-vj-bank-blue-dark to-vjred text-white shadow-vj-md">
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-3 min-w-0">
-              <div className="min-w-0">
-                <div className="flex items-center gap-2">
-                  <span className="text-xs sm:text-sm font-black uppercase tracking-wider text-amber-300 font-koho">
-                    {isVnpay
-                      ? 'CỔNG THANH TOÁN VNPAY-QR • NAPAS 247'
-                      : 'CỔNG THANH TOÁN VIETQR • NAPAS 247'}
-                  </span>
-                  <span className="hidden sm:inline-block px-2 py-0.2 text-3xs font-black uppercase tracking-wide bg-white/20 rounded-full text-white">
-                    Tự động 24/7
-                  </span>
-                </div>
+              <div className="min-w-0 flex items-center gap-3 bg-white/95 rounded-vj px-3 py-1.5 shadow-2xs">
+                {isVnpay ? (
+                  <VnpayLogo className="h-6 w-auto" />
+                ) : (
+                  <VietQrLogo className="h-7 w-auto" />
+                )}
+                <span className="h-5 w-px bg-slate-200" />
+                <NapasLogo className="h-6 w-auto" />
               </div>
             </div>
 
@@ -292,6 +289,21 @@ export default function VietQrBox({
         </div>
       )}
 
+      {/* Dải logo phương thức — đặt ngay dưới header/tiêu đề cổng thanh toán */}
+      {!hidePaymentDetails && (
+        <div className="px-5 sm:px-7 pt-4 flex items-center justify-center gap-3">
+          <div className="flex items-center justify-center gap-3 rounded-vj border border-vj-border-light bg-white px-4 py-2.5 shadow-vj-sm">
+            {isVnpay ? (
+              <VnpayLogo className="h-5 sm:h-6 w-auto" />
+            ) : (
+              <VietQrLogo className="h-6 sm:h-7 w-auto" />
+            )}
+            <span className="h-4 w-px bg-vj-surface-3" />
+            <NapasLogo className="h-5 sm:h-6 w-auto" />
+          </div>
+        </div>
+      )}
+
       {/* QR payload EMVCo / VietQR render trực tiếp */}
       <div className="flex flex-col items-center p-5 sm:p-7">
         <div className="relative group">
@@ -299,18 +311,6 @@ export default function VietQrBox({
           <div className="absolute -inset-2 bg-gradient-to-r from-vj-bank-blue to-vjred rounded-3xl blur-md opacity-25 group-hover:opacity-40 transition duration-300" />
 
           <div className="relative p-4 sm:p-5 bg-white rounded-2xl border border-vj-border-light shadow-vj-md flex flex-col items-center">
-            {/* Tag chuẩn */}
-            <div className="flex items-center gap-2 mb-2.5 px-4 py-1.5 rounded-full bg-blue-50 border border-blue-200">
-              {isVnpay ? (
-                <VnpayLogo className="h-4.5 w-auto" />
-              ) : (
-                <VietQrLogo className="h-5 w-auto" />
-              )}
-              <span className="text-2xs sm:text-xs font-black text-vj-bank-blue uppercase tracking-wider">
-                {isVnpay ? 'Mã QR chuẩn VNPAY-QR • NAPAS 247' : 'Mã QR chuẩn VietQR • NAPAS 247'}
-              </span>
-            </div>
-
             {/* QR SVG */}
             {qrSvg ? (
               <div
@@ -336,74 +336,68 @@ export default function VietQrBox({
 
         {!hidePaymentDetails && (
           <>
-            {/* Logo VNPAY / VietQR + NAPAS 247 — đặt dưới mã quét */}
-            <div className="mt-4 flex items-center justify-center gap-3 rounded-vj border border-vj-border-light bg-white px-4 py-2.5 shadow-vj-sm">
-              {isVnpay ? (
-                <VnpayLogo className="h-5 sm:h-6 w-auto" />
-              ) : (
-                <VietQrLogo className="h-6 sm:h-7 w-auto" />
-              )}
-              <span className="h-4 w-px bg-vj-surface-3" />
-              <NapasLogo className="h-5 sm:h-6 w-auto" />
-            </div>
-
-            {/* Thông tin thanh toán chi tiết (STK Admin, Tên, Số tiền, Nội dung) */}
+            {/* Thông tin tài khoản thanh toán (Chủ TK → STK → NH → Số tiền → Nội dung) */}
             <div className="w-full mt-5 space-y-2 bg-slate-50 p-4 rounded-vj border border-vj-border-light/90 shadow-2xs">
               <div className="flex items-center justify-between pb-2 border-b border-vj-border-light">
                 <span className="text-xs font-black uppercase tracking-wider text-black font-koho flex items-center gap-1.5">
                   <Icon name="InformationCircleIcon" size={16} />
-                  Thông tin thanh toán
+                  Thông tin tài khoản thanh toán
                 </span>
               </div>
 
-              {/* Hàng 1: Số tài khoản thụ hưởng của Admin */}
+              {/* Chủ Tài Khoản */}
               <div className="flex items-center justify-between gap-3 rounded-vj bg-white p-3 sm:p-4">
-                <div className="flex min-w-0 items-center gap-3">
-                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-vj border border-blue-100 bg-blue-50 text-vj-bank-blue">
-                    <Icon name="BuildingLibraryIcon" size={20} />
-                  </span>
-                  <div className="min-w-0">
-                    <span className="block text-3xs sm:text-2xs font-bold uppercase tracking-wider text-black font-koho">
-                      Số tài khoản{' '}
-                    </span>
-                    <span className="block font-mono font-black tracking-tight text-black text-base sm:text-lg">
-                      {data?.bank?.accountNumber ?? '—'}
-                    </span>
-                    <span className="block text-3xs font-medium text-black">
-                      Chủ Tài Khoản : {data?.bank?.accountHolder ?? '—'}
-                    </span>
-                    <span className="block text-3xs font-medium text-black">
-                      Ngân Hàng Thụ Hưởng : {data?.bank?.name ?? '—'}
-                    </span>
-                  </div>
-                </div>
+                <span className="text-3xs sm:text-2xs font-bold uppercase tracking-wider text-black font-koho shrink-0">
+                  Chủ Tài Khoản
+                </span>
+                <span className="font-medium text-gray-700 text-sm text-right">
+                  {data?.bank?.accountHolder ?? '—'}
+                </span>
               </div>
 
-              {/* Hàng 2: Số tiền thanh toán */}
+              {/* Số Tài Khoản */}
               <div className="flex items-center justify-between gap-3 rounded-vj bg-white p-3 sm:p-4">
-                <div className="min-w-0">
-                  <span className="block text-3xs sm:text-2xs font-bold uppercase tracking-wider text-black font-koho">
-                    Số tiền{' '}
-                  </span>
-                  <span className="block font-koho font-black text-black text-base sm:text-lg">
-                    {(data?.amount ?? 0).toLocaleString('vi-VN')}₫
-                  </span>
-                </div>
+                <span className="text-3xs sm:text-2xs font-bold uppercase tracking-wider text-black font-koho shrink-0">
+                  Số Tài Khoản
+                </span>
+                <span className="font-medium text-gray-700 text-sm text-right">
+                  {data?.bank?.accountNumber ?? '—'}
+                </span>
               </div>
 
-              {/* Hàng 3: Nội Dung : */}
+              {/* Ngân Hàng Thụ Hưởng */}
+              <div className="flex items-center justify-between gap-3 rounded-vj bg-white p-3 sm:p-4">
+                <span className="text-3xs sm:text-2xs font-bold uppercase tracking-wider text-black font-koho shrink-0">
+                  Ngân Hàng Thụ Hưởng
+                </span>
+                <span className="font-medium text-gray-700 text-sm text-right">
+                  {data?.bank?.name ?? '—'}
+                </span>
+              </div>
+
+              {/* Số Tiền */}
+              <div className="flex items-center justify-between gap-3 rounded-vj bg-white p-3 sm:p-4">
+                <span className="text-3xs sm:text-2xs font-bold uppercase tracking-wider text-black font-koho shrink-0">
+                  Số Tiền
+                </span>
+                <span className="font-koho font-medium text-gray-700 text-sm text-right">
+                  {(data?.amount ?? 0).toLocaleString('vi-VN')}₫
+                </span>
+              </div>
+
+              {/* Nội Dung */}
               <div className="rounded-vj bg-white p-3 sm:p-4">
                 <div className="flex items-start justify-between gap-3">
-                  <div className="min-w-0">
-                    <span className="block text-3xs sm:text-2xs font-black uppercase tracking-wider text-black font-koho flex items-center gap-1">
-                      <span>Nội Dung :</span>
+                  <div className="min-w-0 flex-1">
+                    <span className="block text-3xs sm:text-2xs font-black uppercase tracking-wider text-black font-koho">
+                      Nội Dung
                     </span>
-                    <span className="block font-bold font-sans text-black text-base sm:text-lg tracking-wider break-all select-all">
+                    <span className="block font-medium font-sans text-gray-700 text-sm sm:text-base tracking-wider break-all select-all">
                       {displayAddInfo}
                     </span>
                   </div>
                 </div>
-                <p className="text-3xs text-black mt-1 italic">
+                <p className="text-3xs text-gray-500 mt-1 italic">
                   * Nhập đúng số tiền và nội dung để hệ thống tự xuất vé.
                 </p>
               </div>
@@ -446,23 +440,7 @@ export default function VietQrBox({
           </div>
         )}
 
-        {!hideScanGuide && (
-          <div className="mt-4 pt-3 border-t border-vj-border-light text-center max-w-md">
-            <p className="text-xs text-vj-text-strong leading-relaxed font-medium">
-              Mở ứng dụng <span className="font-bold text-vj-bank-blue">Mobile Banking</span> của
-              bất kỳ ngân hàng nào (Vietcombank, BIDV, Agribank, VietinBank, MBBank, Techcombank,
-              VPBank, ACB...){' '}
-              {isVnpay ? (
-                <>
-                  hoặc ứng dụng <span className="font-bold text-vj-red-dark">Ví VNPAY</span>{' '}
-                </>
-              ) : (
-                'hoặc ví điện tử '
-              )}
-              để quét mã thanh toán.
-            </p>
-          </div>
-        )}
+        {/* hideScanGuide removed - handled in GatewayQrPage */}
       </div>
     </div>
   );

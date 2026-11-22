@@ -28,14 +28,14 @@ function SummaryRow({ label, value }: { label: string; value: React.ReactNode })
 
 function PnrBox({ pnr }: { pnr: string }) {
   return (
-    <div className="bg-red-50/80 rounded-2xl border border-red-200 p-4 space-y-1">
-      <div className="text-3xs uppercase tracking-widest text-vj-gray font-bold">
+    <div className="bg-gradient-to-br from-red-50 to-red-100/50 rounded-2xl border-2 border-primary/20 p-5 space-y-2 shadow-vj-sm">
+      <div className="text-xs uppercase tracking-widest text-vj-gray font-bold font-koho">
         Mã đặt chỗ (PNR)
       </div>
-      <div className="text-3xl sm:text-4xl font-black text-primary font-mono tracking-widest">
+      <div className="text-4xl sm:text-5xl font-black text-primary font-mono tracking-widest">
         {pnr}
       </div>
-      <div className="text-2xs text-vj-gray">
+      <div className="text-xs text-vj-gray font-medium">
         Vui lòng lưu lại mã đặt chỗ để làm thủ tục check-in trực tuyến.
       </div>
     </div>
@@ -44,29 +44,29 @@ function PnrBox({ pnr }: { pnr: string }) {
 
 function ActionLinks({ bookingId }: { bookingId?: string }) {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-4">
       <Link
         href="/chuyen-bay-cua-toi"
-        className="w-full py-3 rounded-vj bg-primary hover:bg-primary-dark text-white font-bold text-xs uppercase tracking-wider font-koho transition-all shadow-vj-md inline-flex items-center justify-center gap-1.5"
+        className="w-full py-3.5 rounded-vj bg-gradient-to-r from-primary to-primary-dark hover:from-primary-dark hover:to-primary text-white font-bold text-sm uppercase tracking-wider font-koho transition-all shadow-vj-md hover:shadow-vj-lg inline-flex items-center justify-center gap-2 active:scale-98"
       >
-        <Icon name="MagnifyingGlassIcon" size={16} />
+        <Icon name="MagnifyingGlassIcon" size={18} />
         <span>Chuyến bay của tôi</span>
       </Link>
 
       {bookingId ? (
         <Link
           href={`/dat-ve/${encodeURIComponent(bookingId)}`}
-          className="w-full py-3 rounded-vj border border-vj-line hover:bg-vj-surface-2 text-vj-text-dim font-bold text-xs uppercase tracking-wider font-koho transition-all inline-flex items-center justify-center gap-1.5"
+          className="w-full py-3.5 rounded-vj border-2 border-vj-line hover:border-primary hover:bg-vj-surface-2 text-vj-text font-bold text-sm uppercase tracking-wider font-koho transition-all inline-flex items-center justify-center gap-2 active:scale-98"
         >
-          <Icon name="DocumentTextIcon" size={16} />
+          <Icon name="DocumentTextIcon" size={18} />
           <span>Xem hành trình</span>
         </Link>
       ) : (
         <Link
           href="/"
-          className="w-full py-3 rounded-vj border border-vj-line hover:bg-vj-surface-2 text-vj-text-dim font-bold text-xs uppercase tracking-wider font-koho transition-all inline-flex items-center justify-center gap-1.5"
+          className="w-full py-3.5 rounded-vj border-2 border-vj-line hover:border-primary hover:bg-vj-surface-2 text-vj-text font-bold text-sm uppercase tracking-wider font-koho transition-all inline-flex items-center justify-center gap-2 active:scale-98"
         >
-          <Icon name="HomeIcon" size={16} />
+          <Icon name="HomeIcon" size={18} />
           <span>Về trang chủ</span>
         </Link>
       )}
@@ -253,12 +253,14 @@ export default function SuccessContent() {
     <div className="max-w-xl mx-auto py-10 px-4">
       <div className="bg-white rounded-3xl border border-vj-border-light/90 shadow-vj-lg overflow-hidden text-center">
         {/* Success Header */}
-        <div className="bg-gradient-to-r from-emerald-600 to-teal-700 text-white p-8 space-y-3">
-          <div className="w-16 h-16 rounded-full bg-white/20 text-white flex items-center justify-center mx-auto ring-4 ring-white/10">
-            <Icon name="CheckCircleIcon" size={36} />
+        <div className="bg-gradient-to-r from-emerald-600 via-teal-600 to-teal-700 text-white p-8 sm:p-10 space-y-4">
+          <div className="w-20 h-20 rounded-full bg-white/20 text-white flex items-center justify-center mx-auto ring-4 ring-white/20 shadow-vj-lg">
+            <Icon name="CheckCircleIcon" size={48} />
           </div>
-          <h1 className="text-2xl sm:text-3xl font-black font-koho">Thanh toán thành công!</h1>
-          <p className="text-xs sm:text-sm opacity-90">
+          <h1 className="text-2xl sm:text-3xl font-black font-koho tracking-tight">
+            Thanh toán thành công!
+          </h1>
+          <p className="text-sm sm:text-base opacity-95 max-w-md mx-auto">
             Vé điện tử đã được xác nhận và kích hoạt trên toàn hệ thống Vietjet Air.
           </p>
         </div>
@@ -268,7 +270,13 @@ export default function SuccessContent() {
           <PnrBox pnr={pnr} />
 
           {/* Booking Summary */}
-          <div className="bg-vj-surface-2 rounded-2xl p-4 border border-vj-border-light text-xs space-y-2 text-left font-koho">
+          <div className="bg-gradient-to-br from-slate-50 to-slate-100/50 rounded-2xl p-5 border border-vj-border-light text-sm space-y-3 text-left font-koho shadow-vj-sm">
+            <div className="flex items-center gap-2 pb-2 border-b border-vj-border-light">
+              <Icon name="TicketIcon" size={18} className="text-primary" />
+              <span className="text-xs font-bold uppercase tracking-wider text-vj-text">
+                Chi tiết đặt chỗ
+              </span>
+            </div>
             <SummaryRow label="Chuyến bay:" value={booking.flightNo || '—'} />
             <SummaryRow
               label="Hành trình:"
@@ -278,15 +286,38 @@ export default function SuccessContent() {
             />
             <SummaryRow
               label="Trạng thái đặt chỗ:"
-              value={<span className="text-vj-pay-green uppercase">Đã xác nhận</span>}
+              value={
+                <span className="text-vj-pay-green uppercase font-bold flex items-center gap-1">
+                  <Icon name="CheckCircleIcon" size={14} />
+                  Đã xác nhận
+                </span>
+              }
             />
-            <SummaryRow
-              label="Tổng tiền thanh toán:"
-              value={`${booking.totalPrice.toLocaleString('vi-VN')} VND`}
-            />
+            <div className="pt-2 border-t border-vj-border-light">
+              <SummaryRow
+                label="Tổng tiền thanh toán:"
+                value={`${booking.totalPrice.toLocaleString('vi-VN')} VND`}
+              />
+            </div>
           </div>
 
           <ActionLinks bookingId={booking.id} />
+
+          {/* Info note */}
+          <div className="bg-blue-50 rounded-2xl p-4 border border-blue-200 text-xs text-blue-800 flex items-start gap-3">
+            <Icon
+              name="InformationCircleIcon"
+              size={20}
+              className="text-blue-600 shrink-0 mt-0.5"
+            />
+            <div>
+              <p className="font-bold mb-1">Vé điện tử đã được gửi đến email của bạn</p>
+              <p className="opacity-90">
+                Bạn cũng có thể tải vé trực tiếp từ trang &quot;Chuyến bay của tôi&quot; hoặc kiểm
+                tra tại quầy check-in sân bay.
+              </p>
+            </div>
+          </div>
         </div>
       </div>
     </div>

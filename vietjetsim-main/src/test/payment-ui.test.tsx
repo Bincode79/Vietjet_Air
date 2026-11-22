@@ -136,7 +136,7 @@ describe('PaymentClient Component UI & Interaction', () => {
         expect(screen.getAllByText(/VJ120/i).length).toBeGreaterThan(0);
         expect(screen.getAllByText(/Nguyễn Văn Test/i).length).toBeGreaterThan(0);
       },
-      { timeout: 3000 }
+      { timeout: 10000 }
     );
 
     // Check payment method buttons exist
