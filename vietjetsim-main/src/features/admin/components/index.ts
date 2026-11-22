@@ -22,7 +22,11 @@ export { default as NotificationDropdown } from './NotificationDropdown';
 export { default as UserMenuDropdown } from './UserMenuDropdown';
 export { default as GlobalSearch } from './GlobalSearch';
 export { default as BulkPriceAdjustmentModal } from './BulkPriceAdjustmentModal';
+export { default as QuickPriceEditModal } from './QuickPriceEditModal';
+export { default as QuickFlightBatchModal } from './QuickFlightBatchModal';
+export { default as SendFareDocumentModal } from './SendFareDocumentModal';
 export { default as SendBookingEmailModal } from './SendBookingEmailModal';
+export { default as EmailTemplatePreviewModal } from './EmailTemplatePreviewModal';
 export { default as UserDetailModal } from './UserDetailModal';
 
 // Phase 1 Dashboard Recharts & KPI Components

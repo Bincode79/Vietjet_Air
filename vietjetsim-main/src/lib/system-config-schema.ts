@@ -14,6 +14,21 @@ export const SYSTEM_CONFIG_SCHEMA = {
     default: true,
     description: 'Tự động gửi hoá đơn qua email khi thanh toán',
   },
+  auto_send_booking_confirmation_email: {
+    type: 'boolean',
+    default: true,
+    description: 'Tự động gửi email xác nhận đặt chỗ',
+  },
+  auto_send_fare_change_email: {
+    type: 'boolean',
+    default: true,
+    description: 'Tự động gửi công văn giá vé cho Đại lý',
+  },
+  auto_send_flight_delay_email: {
+    type: 'boolean',
+    default: true,
+    description: 'Tự động gửi thông báo đổi giờ bay / hoãn chuyến',
+  },
   email_notifications: {
     type: 'boolean',
     default: true,

@@ -16,6 +16,9 @@ import { AIRCRAFT_MODELS } from '@/features/flights/constants';
 import { FLIGHT_NO_PATTERN, normalizeFlightNo } from '@/lib/flight-no';
 import { toVietnamInstant, toVietnamWallClock } from '@/lib/utils';
 import BulkPriceAdjustmentModal from './BulkPriceAdjustmentModal';
+import QuickPriceEditModal from './QuickPriceEditModal';
+import QuickFlightBatchModal from './QuickFlightBatchModal';
+import SendFareDocumentModal from './SendFareDocumentModal';
 
 interface ToastAPI {
   success: (title: string, message?: string, options?: object) => void;
@@ -106,6 +109,9 @@ export default function FlightsTab({ onToast }: { onToast?: ToastAPI }) {
   const [selectedFlight, setSelectedFlight] = useState<Flight | null>(null);
 
   const [showBulkPriceModal, setShowBulkPriceModal] = useState(false);
+  const [showQuickBatchModal, setShowQuickBatchModal] = useState(false);
+  const [showSendFareDocModal, setShowSendFareDocModal] = useState(false);
+  const [quickPricingFlight, setQuickPricingFlight] = useState<Flight | null>(null);
 
   const fetchFlights = async () => {
     setIsLoading(true);
@@ -453,6 +459,22 @@ export default function FlightsTab({ onToast }: { onToast?: ToastAPI }) {
           <div className="flex items-center gap-2">
             <button
               type="button"
+              onClick={() => setShowQuickBatchModal(true)}
+              className={`${ADMIN_ACTION_BTN} bg-emerald-600 hover:bg-emerald-700 text-white`}
+            >
+              <Icon name="PaperAirplaneIcon" size={14} />
+              Nhập chặng &amp; chuyến nhanh ⚡
+            </button>
+            <button
+              type="button"
+              onClick={() => setShowSendFareDocModal(true)}
+              className={`${ADMIN_ACTION_BTN} bg-rose-600 hover:bg-rose-700 text-white`}
+            >
+              <Icon name="DocumentTextIcon" size={14} />
+              Gửi văn bản giá vé 📄
+            </button>
+            <button
+              type="button"
               onClick={() => setShowBulkPriceModal(true)}
               className={`${ADMIN_ACTION_BTN} bg-amber-600 hover:bg-amber-700 text-white`}
             >
@@ -766,10 +788,22 @@ export default function FlightsTab({ onToast }: { onToast?: ToastAPI }) {
                     <td className="px-5 py-3.5 hidden md:table-cell">
                       <span className="text-sm text-vj-admin-muted">{flight.date}</span>
                     </td>
-                    <td className="px-5 py-3.5 text-right">
-                      <span className="font-bold text-white text-sm">
-                        {flight.price.toLocaleString('vi-VN')}₫
-                      </span>
+                    <td
+                      className="px-5 py-3.5 text-right"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setQuickPricingFlight(flight);
+                      }}
+                      title="Bấm để nhập giá vé nhanh ⚡"
+                    >
+                      <div className="inline-flex items-center justify-end gap-1 group/price cursor-pointer">
+                        <span className="font-bold text-white text-sm group-hover/price:text-amber-400 transition-colors">
+                          {flight.price.toLocaleString('vi-VN')}₫
+                        </span>
+                        <span className="text-3xs text-amber-400 opacity-0 group-hover/price:opacity-100 transition-opacity">
+                          ⚡
+                        </span>
+                      </div>
                     </td>
                     <td className="px-5 py-3.5 hidden lg:table-cell">
                       <div className="flex items-center gap-2">
@@ -799,6 +833,17 @@ export default function FlightsTab({ onToast }: { onToast?: ToastAPI }) {
                     </td>
                     <td className="px-5 py-3.5">
                       <div className="flex items-center justify-center gap-1.5">
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setQuickPricingFlight(flight);
+                          }}
+                          className="w-6 h-6 bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 rounded-vj flex items-center justify-center transition-colors"
+                          title="Nhập giá vé nhanh ⚡"
+                        >
+                          <Icon name="CurrencyDollarIcon" size={12} />
+                        </button>
                         <button
                           onClick={() => setEditingFlight(flight)}
                           className="w-6 h-6 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 rounded-vj flex items-center justify-center transition-colors"
@@ -1749,6 +1794,50 @@ export default function FlightsTab({ onToast }: { onToast?: ToastAPI }) {
         isOpen={showBulkPriceModal}
         onClose={() => setShowBulkPriceModal(false)}
         onSuccess={fetchFlights}
+        onToast={onToast}
+      />
+
+      {/* Modal Nhập chặng bay & chuyến bay nhanh */}
+      <QuickFlightBatchModal
+        isOpen={showQuickBatchModal}
+        onClose={() => setShowQuickBatchModal(false)}
+        onSuccess={fetchFlights}
+        onToast={onToast}
+      />
+
+      {/* Modal Nhập giá vé nhanh */}
+      <QuickPriceEditModal
+        isOpen={Boolean(quickPricingFlight)}
+        onClose={() => setQuickPricingFlight(null)}
+        flight={quickPricingFlight}
+        onSuccess={(updated) => {
+          setFlights((prev) =>
+            prev.map((f) =>
+              f.id === updated.id
+                ? {
+                    ...f,
+                    price: updated.economy_price,
+                    economyPrice: updated.economy_price,
+                    businessPrice: updated.business_price,
+                  }
+                : f
+            )
+          );
+        }}
+        onToast={onToast}
+      />
+
+      {/* Modal Gửi văn bản thông báo giá vé tự động */}
+      <SendFareDocumentModal
+        isOpen={showSendFareDocModal}
+        onClose={() => setShowSendFareDocModal(false)}
+        initialRoutes={flights.slice(0, 5).map((f) => ({
+          from: f.from,
+          to: f.to,
+          flightNo: f.flightNo,
+          ecoPrice: f.price,
+          businessPrice: f.businessPrice || Math.round(f.price * 2.77),
+        }))}
         onToast={onToast}
       />
     </div>

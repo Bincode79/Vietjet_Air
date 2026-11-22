@@ -1,7 +1,7 @@
 'use client';
 import React, { useState, useEffect, useCallback } from 'react';
 import { Icon } from '@/shared/components/ui';
-import { getSystemSettings, updateSystemSettings } from '@/features/admin';
+import { getSystemSettings, updateSystemSettings, sendTestEmail } from '@/features/admin';
 import {
   SYSTEM_CONFIG_SCHEMA,
   getSystemConfigBounds,
@@ -9,6 +9,7 @@ import {
 } from '@/lib/system-config-schema';
 import { getApiErrorMessage } from '@/shared/services';
 import { AdminTabHeader, ADMIN_CARD_STYLE, ADMIN_ACTION_BTN } from './AdminSection';
+import EmailTemplatePreviewModal from './EmailTemplatePreviewModal';
 
 interface SettingsObject {
   [key: string]: { value: string; description?: string };
@@ -21,7 +22,7 @@ interface ToastAPI {
 
 const SETTING_CATEGORIES = [
   { id: 'booking', label: 'Cấu hình đặt vé', icon: 'TicketIcon' },
-  { id: 'notification', label: 'Thông báo', icon: 'BellIcon' },
+  { id: 'notification', label: 'Điều chỉnh Email tự động & Thông báo', icon: 'EnvelopeIcon' },
 ];
 
 /**
@@ -50,19 +51,43 @@ const DEFAULT_SETTINGS: Array<{
     type: 'number',
     category: 'booking',
   },
-  // --- Notification ---
+  // --- Notification / Điều chỉnh Email tự động ---
   {
     key: 'auto_send_payment_invoice_email',
-    label: 'Tự động gửi hoá đơn qua email khi thanh toán',
+    label: 'Tự động gửi hoá đơn & vé điện tử',
     description:
-      'Tự động gửi email hoá đơn & vé điện tử cho khách hàng ngay khi hoàn tất thanh toán.',
+      'Tự động gửi email hoá đơn & vé điện tử (E-ticket) cho khách hàng ngay khi hoàn tất thanh toán.',
+    type: 'boolean',
+    category: 'notification',
+  },
+  {
+    key: 'auto_send_booking_confirmation_email',
+    label: 'Tự động gửi email xác nhận đặt chỗ',
+    description:
+      'Gửi email thông tin hành trình & hướng dẫn chuyển khoản cho khách hàng ngay khi tạo đơn.',
+    type: 'boolean',
+    category: 'notification',
+  },
+  {
+    key: 'auto_send_fare_change_email',
+    label: 'Tự động gửi công văn giá vé cho Đại lý',
+    description:
+      'Tự động phát hành và gửi thông báo biểu giá vé mới cho các đại lý đối tác khi cập nhật giá.',
+    type: 'boolean',
+    category: 'notification',
+  },
+  {
+    key: 'auto_send_flight_delay_email',
+    label: 'Tự động gửi thông báo đổi giờ bay / hoãn chuyến',
+    description:
+      'Gửi email cảnh báo và cập nhật giờ bay mới cho hành khách khi chuyến bay bị hoãn (delayed).',
     type: 'boolean',
     category: 'notification',
   },
   {
     key: 'email_notifications',
-    label: 'Thông báo qua email',
-    description: 'Bật/tắt gửi thông báo qua email cho người dùng.',
+    label: 'Bật/Tắt toàn bộ thông báo qua email',
+    description: 'Công tắc tổng cho phép hoặc tạm dừng gửi mọi loại email từ hệ thống.',
     type: 'boolean',
     category: 'notification',
   },
@@ -75,7 +100,11 @@ export default function SystemSettingsTab({ onToast }: { onToast?: ToastAPI }) {
   const [isSaving, setIsSaving] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
   const [localSettings, setLocalSettings] = useState<SettingsObject>({});
-  const [activeCategory, setActiveCategory] = useState('general');
+  const [activeCategory, setActiveCategory] = useState('booking');
+  const [testEmailTo, setTestEmailTo] = useState('');
+  const [testEmailTemplate, setTestEmailTemplate] = useState('booking');
+  const [isSendingTestEmail, setIsSendingTestEmail] = useState(false);
+  const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
 
   const fetchSettings = useCallback(async () => {
     setIsLoading(true);
@@ -160,6 +189,26 @@ export default function SystemSettingsTab({ onToast }: { onToast?: ToastAPI }) {
       // đưa họ về đúng trạng thái đó, không phải xóa cấu hình.
       setLocalSettings(settings);
       setHasChanges(false);
+    }
+  };
+
+  const handleSendTestEmail = async () => {
+    const trimmed = testEmailTo.trim();
+    if (!trimmed || !trimmed.includes('@')) {
+      onToast?.error('Email không hợp lệ', 'Vui lòng nhập địa chỉ email người nhận chính xác.');
+      return;
+    }
+    setIsSendingTestEmail(true);
+    try {
+      const res = await sendTestEmail({ to: trimmed, template: testEmailTemplate });
+      onToast?.success(
+        'Gửi email thành công',
+        res.message || `Đã gửi email thử nghiệm tới ${trimmed}`
+      );
+    } catch (err) {
+      onToast?.error('Lỗi gửi email', getApiErrorMessage(err, 'Không thể gửi email thử nghiệm.'));
+    } finally {
+      setIsSendingTestEmail(false);
     }
   };
 
@@ -382,6 +431,103 @@ export default function SystemSettingsTab({ onToast }: { onToast?: ToastAPI }) {
           })}
         </div>
       </div>
+
+      {/* Thử nghiệm gửi Email hệ thống (khi đang xem tab Email & Thông báo) */}
+      {activeCategory === 'notification' && (
+        <div className="rounded-2xl border p-6 space-y-5" style={ADMIN_CARD_STYLE}>
+          <div className="flex items-center gap-3 border-b border-white/5 pb-4">
+            <div className="w-10 h-10 rounded-vj flex items-center justify-center bg-primary/10 text-primary">
+              <Icon name="PaperAirplaneIcon" size={20} />
+            </div>
+            <div>
+              <h3 className="font-bold text-white">Kiểm tra gửi email tự động (Gửi thử nghiệm)</h3>
+              <p className="text-xs text-vj-admin-muted mt-0.5">
+                Gửi email thử nghiệm để kiểm tra kết nối máy chủ SMTP và định dạng các mẫu email tự
+                động trước khi áp dụng thực tế.
+              </p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="md:col-span-2 space-y-1.5">
+              <label className="text-xs font-semibold text-white">
+                Địa chỉ email nhận thử nghiệm
+              </label>
+              <input
+                type="email"
+                value={testEmailTo}
+                onChange={(e) => setTestEmailTo(e.target.value)}
+                placeholder="vd: admin@vietjetair.com hoặc email cá nhân..."
+                className="w-full px-4 py-2.5 bg-slate-900 border border-white/10 rounded-vj text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all placeholder:text-vj-admin-muted"
+              />
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-xs font-semibold text-white">Mẫu email kiểm tra</label>
+              <select
+                value={testEmailTemplate}
+                onChange={(e) => setTestEmailTemplate(e.target.value)}
+                className="w-full px-4 py-2.5 bg-slate-900 border border-white/10 rounded-vj text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+              >
+                <option value="booking">Vé & Hướng dẫn thanh toán</option>
+                <option value="invoice">Hóa đơn điện tử (VAT)</option>
+                <option value="fare">Công văn biểu giá vé mới</option>
+                <option value="delay">Thông báo hoãn / đổi giờ bay</option>
+                <option value="test">Kiểm tra kết nối SMTP (Ping)</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2 border-t border-white/5">
+            <div className="text-xs text-vj-admin-muted flex items-center gap-1.5">
+              <Icon
+                name="InformationCircleIcon"
+                size={16}
+                className="text-blue-400 flex-shrink-0"
+              />
+              <span>
+                Hệ thống sử dụng cấu hình SMTP từ biến môi trường. Email test được ghi lại trong
+                nhật ký quản trị.
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setIsPreviewModalOpen(true)}
+                className={`${ADMIN_ACTION_BTN} text-vj-admin-muted border border-white/10 bg-white/5 hover:bg-white/10 hover:text-white`}
+              >
+                <Icon name="EyeIcon" size={14} />
+                Xem trước giao diện
+              </button>
+              <button
+                onClick={handleSendTestEmail}
+                disabled={isSendingTestEmail || !testEmailTo.trim()}
+                className={`${ADMIN_ACTION_BTN} text-white bg-primary hover:bg-primary-dark disabled:opacity-50 disabled:cursor-not-allowed`}
+              >
+                {isSendingTestEmail ? (
+                  <>
+                    <Icon name="ArrowPathIcon" size={14} className="animate-spin" />
+                    Đang gửi thử...
+                  </>
+                ) : (
+                  <>
+                    <Icon name="PaperAirplaneIcon" size={14} />
+                    Gửi email thử nghiệm
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Xem trước giao diện Email tự động */}
+      <EmailTemplatePreviewModal
+        isOpen={isPreviewModalOpen}
+        onClose={() => setIsPreviewModalOpen(false)}
+        initialTemplate={testEmailTemplate}
+        onToast={onToast}
+      />
 
       {/* Info Box */}
       <div

@@ -149,6 +149,20 @@ export function createAdminFlight(input: Partial<AdminFlight>) {
   });
 }
 
+export function createBatchAdminFlights(flights: Array<Partial<AdminFlight>>) {
+  return apiRequest<{
+    success: boolean;
+    createdCount: number;
+    skippedCount: number;
+    message: string;
+    flights: AdminFlight[];
+    skipped?: Array<{ flight_no: string; reason: string }>;
+  }>(EP.FLIGHTS_BATCH, {
+    method: 'POST',
+    body: { flights },
+  });
+}
+
 export function updateAdminFlight(id: string, input: Partial<AdminFlight>) {
   return apiRequest<{ success: boolean }>(withPathParams(EP.FLIGHT, { id }), {
     method: 'PATCH',
@@ -158,6 +172,62 @@ export function updateAdminFlight(id: string, input: Partial<AdminFlight>) {
 
 export function deleteAdminFlight(id: string) {
   return apiRequest<{ success: boolean }>(withPathParams(EP.FLIGHT, { id }), { method: 'DELETE' });
+}
+
+export interface FareDocumentRouteItem {
+  from: string;
+  to: string;
+  flightNo?: string;
+  ecoPrice: number;
+  businessPrice?: number;
+  effectiveDate?: string;
+}
+
+export interface SendFareDocumentPayload {
+  documentNo?: string;
+  title?: string;
+  effectiveDate?: string;
+  routes: FareDocumentRouteItem[];
+  recipientsType: 'agencies' | 'custom' | 'all';
+  customEmails?: string[];
+  note?: string;
+}
+
+export function sendFareDocument(payload: SendFareDocumentPayload) {
+  return apiRequest<{
+    success: boolean;
+    sentCount: number;
+    failedCount: number;
+    message: string;
+    documentNo: string;
+    recipients: string[];
+  }>(EP.SEND_FARE_DOCUMENT, {
+    method: 'POST',
+    body: payload,
+  });
+}
+
+export function sendTestEmail(input: { to: string; template?: string }) {
+  return apiRequest<{ success: boolean; message: string }>(EP.SETTINGS_TEST_EMAIL, {
+    method: 'POST',
+    body: input,
+  });
+}
+
+export interface EmailPreviewResponse {
+  success: boolean;
+  template: string;
+  subject: string;
+  html: string;
+  text: string;
+  title: string;
+  category: string;
+}
+
+export function previewTestEmail(template = 'booking') {
+  return apiRequest<EmailPreviewResponse>(
+    `${EP.SETTINGS_TEST_EMAIL}?template=${encodeURIComponent(template)}`
+  );
 }
 
 // ─── Bookings ───────────────────────────────────────────────────────────────

@@ -1102,3 +1102,252 @@ export async function checkLoginNotificationSettings(
   // TODO: Implement when user settings table has notification_preferences column
   return { enabled: true, newDeviceOnly: true };
 }
+
+// ─── Biểu giá vé & Công văn thông báo giá vé tự động ─────────────────────────
+
+export interface FareAnnouncementRouteItem {
+  from: string;
+  to: string;
+  flightNo?: string;
+  ecoPrice: number;
+  businessPrice?: number;
+  effectiveDate?: string;
+}
+
+export interface FareAnnouncementInput {
+  documentNo?: string;
+  title?: string;
+  effectiveDate?: string;
+  recipientName?: string;
+  routes: FareAnnouncementRouteItem[];
+  note?: string;
+}
+
+export function buildFareAnnouncementHtml(input: FareAnnouncementInput): {
+  subject: string;
+  html: string;
+  text: string;
+} {
+  const docNo = input.documentNo || `CV-VJC/${new Date().getFullYear()}/GVE`;
+  const subject = `[Vietjet Air] [${docNo}] ${input.title || 'Thông báo Biểu giá vé & Chính sách mới'}`;
+  const effectiveDate = input.effectiveDate || 'Áp dụng ngay';
+  const recipientName = input.recipientName || 'Quý Đại lý, Quý Đối tác & Khách hàng';
+
+  const rowsHtml = input.routes
+    .map(
+      (r, idx) => `
+    <tr style="background-color:${idx % 2 === 0 ? '#ffffff' : '#f8fafc'};border-bottom:1px solid #e2e8f0;">
+      <td style="padding:10px 12px;font-weight:bold;color:#0f172a;">${escapeHtml(r.from)} &rarr; ${escapeHtml(r.to)}</td>
+      <td style="padding:10px 12px;color:#475569;font-family:monospace;">${escapeHtml(r.flightNo || 'Tất cả')}</td>
+      <td style="padding:10px 12px;text-align:right;font-weight:bold;color:#059669;">${formatVnd(r.ecoPrice)} ₫</td>
+      <td style="padding:10px 12px;text-align:right;color:#64748b;">${formatVnd(r.ecoPrice + 250000)} ₫</td>
+      <td style="padding:10px 12px;text-align:right;font-weight:bold;color:${BRAND_RED};">${formatVnd(r.businessPrice || Math.round(r.ecoPrice * 2.77))} ₫</td>
+    </tr>
+  `
+    )
+    .join('');
+
+  const inner = `
+<div style="border-bottom:2px solid ${BRAND_RED};padding-bottom:14px;margin-bottom:18px;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+    <tr>
+      <td style="font-size:12px;font-weight:bold;color:#64748b;text-transform:uppercase;">Số công văn: <span style="color:#0f172a;">${escapeHtml(docNo)}</span></td>
+      <td align="right" style="font-size:12px;color:#64748b;">Ngày ban hành: ${new Date().toLocaleDateString('vi-VN')}</td>
+    </tr>
+  </table>
+  <h2 style="margin:12px 0 6px;color:${BRAND_RED};font-size:18px;font-weight:bold;text-transform:uppercase;">${escapeHtml(input.title || 'THÔNG BÁO VỀ VIỆC ÁP DỤNG BIỂU GIÁ VÉ & CHÍNH SÁCH MỚI')}</h2>
+  <p style="margin:0;font-size:13px;color:#475569;">Hiệu lực áp dụng: <strong style="color:#0f172a;">${escapeHtml(effectiveDate)}</strong></p>
+</div>
+
+<p style="margin:0 0 14px;"><strong>Kính gửi:</strong> ${escapeHtml(recipientName)},</p>
+<p style="margin:0 0 16px;color:#334155;">Công ty Cổ phần Hàng không Vietjet (Vietjet Air) trân trọng gửi tới Quý vị văn bản thông báo cập nhật biểu giá vé máy bay chính thức áp dụng trên các đường bay như sau:</p>
+
+<div style="margin:20px 0;border:1px solid #cbd5e1;border-radius:8px;overflow:hidden;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;font-size:13px;text-align:left;">
+    <thead>
+      <tr style="background-color:#f1f5f9;color:#334155;border-bottom:2px solid #cbd5e1;">
+        <th style="padding:10px 12px;font-weight:bold;">Chặng bay</th>
+        <th style="padding:10px 12px;font-weight:bold;">Số hiệu</th>
+        <th style="padding:10px 12px;text-align:right;font-weight:bold;color:#059669;">Eco</th>
+        <th style="padding:10px 12px;text-align:right;font-weight:bold;color:#64748b;">Deluxe</th>
+        <th style="padding:10px 12px;text-align:right;font-weight:bold;color:${BRAND_RED};">SkyBoss</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${rowsHtml}
+    </tbody>
+  </table>
+</div>
+
+${
+  input.note
+    ? `<div style="margin:16px 0;padding:12px 16px;background-color:#fffbeb;border-left:4px solid #f59e0b;border-radius:4px;font-size:13px;color:#92400e;"><strong>Ghi chú:</strong> ${escapeHtml(input.note)}</div>`
+    : ''
+}
+
+<div style="margin:20px 0;padding:16px;background-color:#f8fafc;border-radius:8px;border:1px solid #e2e8f0;font-size:12px;color:#475569;line-height:1.6;">
+  <strong style="color:#0f172a;text-transform:uppercase;">Điều kiện & Chính sách áp dụng:</strong>
+  <ul style="margin:8px 0 0;padding-left:18px;">
+    <li>Giá vé trên đã/chưa bao gồm thuế, phí sân bay theo quy định của Cục Hàng không Việt Nam.</li>
+    <li>Tiêu chuẩn hành lý xách tay 07kg/khách theo quy định của Hãng.</li>
+    <li>Chính sách chiết khấu hoa hồng đại lý áp dụng theo thỏa thuận hợp tác thương mại hiện hành.</li>
+    <li>Mọi thắc mắc xin vui lòng liên hệ Bộ phận Hỗ trợ Đại lý qua email <strong>agency@vietjet.shop</strong> hoặc Tổng đài <strong>1900 1886</strong>.</li>
+  </ul>
+</div>
+
+<div style="margin-top:24px;text-align:right;">
+  <p style="margin:0;font-size:12px;color:#64748b;text-transform:uppercase;">TM. CÔNG TY CỔ PHẦN HÀNG KHÔNG VIETJET</p>
+  <p style="margin:4px 0 0;font-weight:bold;color:${BRAND_RED};font-size:13px;">BAN THƯƠNG MẠI &amp; QUẢN LÝ GIÁ VÉ</p>
+</div>
+`;
+
+  const textLines = [
+    `CÔNG VĂN THÔNG BÁO BIỂU GIÁ VÉ — VIETJET AIR`,
+    `Số công văn: ${docNo}`,
+    `Ngày ban hành: ${new Date().toLocaleDateString('vi-VN')}`,
+    `Tiêu đề: ${input.title || 'THÔNG BÁO VỀ VIỆC ÁP DỤNG BIỂU GIÁ VÉ MỚI'}`,
+    `Hiệu lực áp dụng: ${effectiveDate}`,
+    ``,
+    `Kính gửi: ${recipientName}`,
+    ``,
+    `BIỂU GIÁ VÉ:`,
+    ...input.routes.map(
+      (r) =>
+        `- ${r.from} -> ${r.to} (${r.flightNo || 'Tất cả'}): Eco: ${formatVnd(r.ecoPrice)} đ | SkyBoss: ${formatVnd(r.businessPrice || Math.round(r.ecoPrice * 2.77))} đ`
+    ),
+    ``,
+    input.note ? `Ghi chú: ${input.note}\n` : '',
+    `Tổng đài hỗ trợ 24/7: 1900 1886 | Website: ${siteUrl()}`,
+  ];
+
+  return {
+    subject,
+    html: shell(inner, subject, 'Công văn thông báo giá vé'),
+    text: textLines.join('\n'),
+  };
+}
+
+export async function sendFareAnnouncementEmail(opts: {
+  to: string;
+  documentNo?: string;
+  title?: string;
+  effectiveDate?: string;
+  recipientName?: string;
+  routes: FareAnnouncementRouteItem[];
+  note?: string;
+}): Promise<boolean> {
+  const { subject, html, text } = buildFareAnnouncementHtml({
+    documentNo: opts.documentNo,
+    title: opts.title,
+    effectiveDate: opts.effectiveDate,
+    recipientName: opts.recipientName,
+    routes: opts.routes,
+    note: opts.note,
+  });
+
+  return sendMail({
+    to: opts.to,
+    subject,
+    html,
+    text,
+  });
+}
+
+export interface FlightDelayNotificationInput {
+  fullName: string;
+  bookingCode?: string;
+  flightNumber: string;
+  route: string;
+  originalTime: string;
+  newTime: string;
+  delayReason?: string;
+}
+
+/** Email thông báo thay đổi giờ bay / hoãn chuyến bay cho hành khách */
+export function buildFlightDelayHtml(input: FlightDelayNotificationInput): {
+  subject: string;
+  html: string;
+  text: string;
+} {
+  const {
+    fullName,
+    bookingCode,
+    flightNumber,
+    route,
+    originalTime,
+    newTime,
+    delayReason = 'Lý do khai thác và an toàn bay',
+  } = input;
+
+  const subject = `[Vietjet Air] Thông báo thay đổi giờ bay — Chuyến bay ${flightNumber}`;
+
+  const inner = `<p style="margin:0 0 16px;">Kính gửi Quý hành khách <strong>${escapeHtml(fullName)}</strong>,</p>
+<p style="margin:0 0 20px;">Hãng hàng không Vietjet trân trọng thông báo lịch khởi hành của chuyến bay <strong>${escapeHtml(flightNumber)}</strong> có sự điều chỉnh so với kế hoạch ban đầu như sau:</p>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:20px;background-color:#fffbeb;border:1px solid #fde68a;border-left:4px solid #f59e0b;border-radius:8px;">
+<tr><td style="padding:18px 20px;">
+<div style="font-size:11px;letter-spacing:1.5px;color:#b45309;font-weight:bold;margin-bottom:6px;text-transform:uppercase;">Chi tiết điều chỉnh lịch bay</div>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+<tr><td style="padding:6px 0;color:#78350f;font-size:14px;">Chuyến bay / Hành trình:</td><td align="right" style="padding:6px 0;color:#78350f;font-size:14px;font-weight:bold;">${escapeHtml(flightNumber)} (${escapeHtml(route)})</td></tr>
+${bookingCode ? `<tr><td style="padding:6px 0;color:#78350f;font-size:14px;">Mã đặt chỗ (PNR):</td><td align="right" style="padding:6px 0;color:#78350f;font-size:14px;font-weight:bold;">${escapeHtml(bookingCode)}</td></tr>` : ''}
+<tr><td style="padding:6px 0;color:#78350f;font-size:14px;">Giờ khởi hành cũ:</td><td align="right" style="padding:6px 0;color:#92400e;font-size:14px;text-decoration:line-through;">${escapeHtml(originalTime)}</td></tr>
+<tr><td style="padding:6px 0;color:#b45309;font-size:14px;font-weight:bold;">Giờ khởi hành mới (dự kiến):</td><td align="right" style="padding:6px 0;color:#b45309;font-size:16px;font-weight:bold;">${escapeHtml(newTime)}</td></tr>
+<tr><td style="padding:6px 0;color:#78350f;font-size:14px;">Lý do điều chỉnh:</td><td align="right" style="padding:6px 0;color:#78350f;font-size:14px;">${escapeHtml(delayReason)}</td></tr>
+</table>
+</td></tr>
+</table>
+${noticeBox(`<strong>Chính sách hỗ trợ hành khách:</strong><br>&bull; Quý khách được đổi miễn phí sang chuyến bay gần nhất còn chỗ của Vietjet nếu lịch bay mới không phù hợp.<br>&bull; Trong trường hợp chuyến bay chậm từ 02 giờ trở lên, Vietjet phục vụ nước uống/suất ăn theo quy định tại sân bay.<br>&bull; Quý khách vui lòng có mặt tại cửa khởi hành trước giờ bay mới ít nhất 40 phút.`)}
+${actionButton(`${siteUrl()}/tai-khoan`, 'Xem chi tiết & Quản lý chuyến bay')}
+<p style="margin:16px 0 0;color:#6b7280;font-size:13px;">Vietjet Air thành thật cáo lỗi cùng Quý khách vì sự điều chỉnh bất khả kháng này. Mọi thắc mắc cần hỗ trợ khẩn cấp, Quý khách vui lòng liên hệ tổng đài 24/7: <strong style="color:${BRAND_RED};">1900 1886</strong> hoặc quầy đại diện Vietjet tại sân bay.</p>`;
+
+  const text = [
+    subject,
+    `Kính gửi Quý hành khách ${fullName},`,
+    `Chuyến bay ${flightNumber} (${route}) được điều chỉnh giờ khởi hành:`,
+    `Giờ khởi hành cũ: ${originalTime}`,
+    `Giờ khởi hành mới (dự kiến): ${newTime}`,
+    `Lý do: ${delayReason}`,
+    `Xem chi tiết: ${siteUrl()}/tai-khoan`,
+    `Tổng đài hỗ trợ 24/7: 1900 1886`,
+  ].join('\n');
+
+  return {
+    subject,
+    html: shell(inner, subject, 'Thông báo hoãn chuyến bay'),
+    text,
+  };
+}
+
+/** Email kiểm tra dịch vụ gửi email tự động (Ping SMTP) */
+export function buildTestPingEmailHtml(): {
+  subject: string;
+  html: string;
+  text: string;
+} {
+  const subject = '[Vietjet Air] Kiểm tra kết nối dịch vụ Email tự động';
+  const sentTime = new Date().toLocaleString('vi-VN');
+
+  const inner = `<p style="margin:0 0 16px;">Xin chào <strong>Quản trị viên Hệ thống</strong>,</p>
+<p style="margin:0 0 20px;">Đây là email kiểm tra xác nhận dịch vụ gửi email tự động của <strong>VietjetSim</strong> đã được kết nối và hoạt động chính xác với máy chủ SMTP.</p>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:20px;background-color:#f0fdf4;border:1px solid #bbf7d0;border-left:4px solid #16a34a;border-radius:8px;">
+<tr><td style="padding:18px 20px;">
+<div style="font-size:11px;letter-spacing:1.5px;color:#16a34a;font-weight:bold;margin-bottom:6px;text-transform:uppercase;">Trạng thái kết nối máy chủ</div>
+<div style="font-size:16px;font-weight:bold;color:#15803d;">DỊCH VỤ EMAIL HOẠT ĐỘNG BÌNH THƯỜNG ✈️</div>
+<p style="margin:8px 0 0;font-size:13px;color:#166534;">Thời gian gửi kiểm tra: <strong>${escapeHtml(sentTime)}</strong></p>
+</td></tr>
+</table>
+${noticeBox(`<strong>Thông số chẩn đoán:</strong><br>&bull; Giao thức: SMTP Secure (TLS/SSL)<br>&bull; Hệ thống mã hóa: Base64 UTF-8<br>&bull; Trạng thái hàng đợi: Sẵn sàng gửi tức thời.`)}
+${actionButton(`${siteUrl()}/quan-tri`, 'Truy cập Bảng điều khiển Quản trị')}`;
+
+  const text = [
+    subject,
+    `Hệ thống email tự động của VietjetSim đang hoạt động tốt.`,
+    `Thời gian gửi: ${sentTime}`,
+    `Tổng đài hỗ trợ 24/7: 1900 1886`,
+  ].join('\n');
+
+  return {
+    subject,
+    html: shell(inner, subject, 'Kiểm tra dịch vụ Email'),
+    text,
+  };
+}

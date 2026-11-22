@@ -5933,3 +5933,43 @@ export async function recalcBookingTotal(bookingId: string): Promise<number> {
   }
   return newTotal;
 }
+
+/**
+ * Đọc cài đặt tự động hoá email từ bảng `system_config`.
+ */
+export async function getEmailAutomationSettings(): Promise<{
+  autoSendInvoice: boolean;
+  autoSendBookingConfirmation: boolean;
+  autoSendFareChange: boolean;
+  autoSendFlightDelay: boolean;
+  emailNotifications: boolean;
+}> {
+  try {
+    const rows = await sql<{ key: string; value: string }>`
+      SELECT key, value FROM system_config
+      WHERE key IN (
+        'auto_send_payment_invoice_email',
+        'auto_send_booking_confirmation_email',
+        'auto_send_fare_change_email',
+        'auto_send_flight_delay_email',
+        'email_notifications'
+      )
+    `;
+    const map = new Map((rows || []).map((r) => [r.key, r.value === 'true']));
+    return {
+      autoSendInvoice: map.get('auto_send_payment_invoice_email') ?? true,
+      autoSendBookingConfirmation: map.get('auto_send_booking_confirmation_email') ?? true,
+      autoSendFareChange: map.get('auto_send_fare_change_email') ?? true,
+      autoSendFlightDelay: map.get('auto_send_flight_delay_email') ?? true,
+      emailNotifications: map.get('email_notifications') ?? true,
+    };
+  } catch {
+    return {
+      autoSendInvoice: true,
+      autoSendBookingConfirmation: true,
+      autoSendFareChange: true,
+      autoSendFlightDelay: true,
+      emailNotifications: true,
+    };
+  }
+}
