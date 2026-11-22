@@ -1,4 +1,6 @@
-import React from 'react';
+'use client';
+
+import React, { useState } from 'react';
 import Link from 'next/link';
 import {
   RiFacebookFill,
@@ -7,6 +9,8 @@ import {
   RiYoutubeFill,
   RiRadarLine,
   RiFolderShield2Line,
+  RiArrowDownSLine,
+  RiArrowUpLine,
 } from 'react-icons/ri';
 import { SiLine, SiZalo } from 'react-icons/si';
 import {
@@ -18,12 +22,13 @@ import {
  * Footer của vietjetair.com (đo 13/11/2026, viewport 1440×900):
  *
  * - Nền TRẮNG `#FFFFFF` phủ pattern SVG (`footer-pattern.svg`, background-size
- *   300px cover), cao 905px.
+ *   300px cover).
  * - Container 1200px (x=120..1320), hàng cột bắt đầu ở y=3872 (padding-top 60px).
- * - Bố cục 5 CỘT, mỗi cột rộng 195px, cách nhau 98px (x = 120 / 367 / 613 /
- *   860 / 1106). Cột 3 và cột 4 chứa 2 khối tiêu đề xếp dọc.
- * - Tiêu đề cột: 18px/700 màu `#333333` (KHÔNG phải đỏ thương hiệu).
- * - Liên kết: 14px/500 màu `#333333`, line-height 22.4px.
+ * - Bố cục 5 CỘT trên Desktop, mỗi cột rộng 195px, cách nhau 98px.
+ * - Tiêu đề cột: 18px/700 màu `#333333` (Desktop) / 15px/700 (Mobile).
+ * - Liên kết: 14px/500 màu `#333333` (Desktop) / 13px/500 (Mobile).
+ * - Mobile: Chuyển đổi thành Accordion thu gọn / mở rộng thông minh, có nút
+ *   "Về đầu trang", và khoảng đệm an toàn không bị thanh MobileBottomNav che khuất.
  */
 const FOOTER_COLUMNS: ReadonlyArray<{
   title: string;
@@ -116,14 +121,123 @@ const POLICY_LINKS: ReadonlyArray<readonly [string, string]> = [
   ['Săn vé giá rẻ', '/trang-chu#deals'],
 ];
 
+/** Các nhóm Accordion thu gọn trên Mobile */
+const MOBILE_ACCORDIONS: ReadonlyArray<{
+  id: string;
+  title: string;
+  links: ReadonlyArray<readonly [string, string]>;
+}> = [
+  {
+    id: 'flight-guide',
+    title: 'Để có chuyến bay tốt đẹp',
+    links: FOOTER_COLUMNS[0].links,
+  },
+  {
+    id: 'services',
+    title: 'Hành lý, suất ăn, chọn chỗ ngồi & tiện ích',
+    links: FOOTER_COLUMNS[1].links,
+  },
+  {
+    id: 'premium-about',
+    title: 'Dịch vụ cao cấp & Về Vietjet',
+    links: [...FOOTER_COLUMNS[2].links, ...ABOUT_LINKS],
+  },
+  {
+    id: 'support-booking',
+    title: 'Trung tâm CSKH & Điểm bán vé',
+    links: [...FOOTER_COLUMNS[3].links, ...FOOTER_COLUMNS[4].links],
+  },
+  {
+    id: 'policies',
+    title: 'Chính sách, điều khoản & Bản đồ bay',
+    links: POLICY_LINKS,
+  },
+];
+
 export default function Footer() {
+  const [openSections, setOpenSections] = useState<Record<number, boolean>>({});
+
+  const toggleSection = (idx: number) => {
+    setOpenSections((prev) => ({
+      ...prev,
+      [idx]: !prev[idx],
+    }));
+  };
+
+  const handleScrollTop = () => {
+    if (typeof window !== 'undefined') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
   return (
     // Nền trắng phủ pattern SVG (đo được trên site thật: background-color #fff
     // + footer-pattern.svg, background-size 300px cover).
-    <footer className="vj-footer-sky relative overflow-hidden text-xs pb-24 lg:pb-0">
-      <div className="mx-auto w-full max-w-[1200px] px-4 pb-6 pt-10 sm:px-6 sm:pb-8 sm:pt-15 lg:px-0">
-        {/* 5 cột — mỗi cột rộng 195px, cách nhau 98px. */}
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-8 lg:grid-cols-5 lg:gap-6">
+    <footer className="vj-footer-sky relative overflow-hidden text-xs">
+      <div className="mx-auto w-full max-w-[1200px] px-4 pb-6 pt-8 sm:px-6 sm:pb-8 sm:pt-12 lg:px-0 lg:pt-15">
+        {/* ========================================================
+            1. Mobile Accordion View (< lg)
+            Thu gọn 52+ liên kết thành các mục có thể đóng/mở tiện lợi
+           ======================================================== */}
+        <div className="divide-y divide-[var(--border)] border-y border-[var(--border)] lg:hidden">
+          {MOBILE_ACCORDIONS.map((sec, idx) => {
+            const isOpen = !!openSections[idx];
+            return (
+              <div key={sec.id} className="overflow-hidden">
+                <button
+                  type="button"
+                  onClick={() => toggleSection(idx)}
+                  aria-expanded={isOpen}
+                  aria-controls={`footer-accordion-${sec.id}`}
+                  className="flex w-full items-center justify-between py-3.5 px-1 text-left font-bold text-sm text-[var(--foreground)] hover:text-primary transition-colors select-none"
+                >
+                  <span>{sec.title}</span>
+                  <span
+                    className={`transform transition-transform duration-200 text-stone-400 ${
+                      isOpen ? 'rotate-180 text-primary' : ''
+                    }`}
+                  >
+                    <RiArrowDownSLine size={20} />
+                  </span>
+                </button>
+
+                {isOpen && (
+                  <ul
+                    id={`footer-accordion-${sec.id}`}
+                    className="pb-3.5 pt-1 pl-2 space-y-2 border-t border-stone-100/60"
+                  >
+                    {sec.links.map(([title, href]) => (
+                      <li key={`${sec.id}-${title}`}>
+                        <Link
+                          href={href}
+                          className="vj-footer-link block py-0.5 active:text-primary"
+                        >
+                          {title}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Nút về đầu trang tiện lợi trên Mobile */}
+        <button
+          type="button"
+          onClick={handleScrollTop}
+          className="flex lg:hidden items-center justify-center gap-1.5 w-full py-2.5 my-5 bg-stone-100 hover:bg-stone-200 text-stone-700 rounded-full text-xs font-semibold transition-colors shadow-sm active:scale-[0.98]"
+        >
+          <RiArrowUpLine size={16} />
+          <span>Về đầu trang</span>
+        </button>
+
+        {/* ========================================================
+            2. Desktop 5 Columns View (>= lg)
+            Giữ nguyên 100% tỷ lệ bố cục và số đo site thật
+           ======================================================== */}
+        <div className="hidden lg:grid lg:grid-cols-5 lg:gap-6">
           {/* Cột 1 — Để có chuyến bay tốt đẹp. */}
           <div>
             <h3 className="vj-footer-heading mb-3">{FOOTER_COLUMNS[0].title}</h3>
@@ -216,12 +330,13 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Kết nối với Vietjet + ứng dụng di động + thông tin pháp nhân.
-            Site thật: hàng này nằm ở y=4398, cao 181px, container 1200px. */}
+        {/* ========================================================
+            3. Kết nối với Vietjet + ứng dụng di động + thông tin pháp nhân
+           ======================================================== */}
         <div className="mt-8 grid grid-cols-1 gap-6 border-t border-[var(--border)] pt-6 sm:mt-10 sm:grid-cols-2 sm:gap-8 sm:pt-8 lg:grid-cols-4">
           <div>
             <h3 className="vj-footer-heading mb-3">Kết nối với Vietjet</h3>
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               {[
                 {
                   href: 'https://facebook.com/vietjetvietnam',
@@ -266,15 +381,15 @@ export default function Footer() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={social.label}
-                  className={`w-6 h-6 sm:w-7 sm:h-7 rounded text-white flex items-center justify-center hover:opacity-90 transition-opacity ${social.className}`}
+                  className={`w-8 h-8 rounded-full sm:w-7 sm:h-7 sm:rounded text-white flex items-center justify-center hover:opacity-90 transition-opacity shadow-sm ${social.className}`}
                 >
                   {social.icon}
                 </a>
               ))}
             </div>
 
-            <div className="mt-4">
-              <p className="mb-2 flex items-center gap-2 font-bold text-[var(--foreground)]">
+            <div className="mt-5">
+              <p className="mb-2 flex items-center gap-2 font-bold text-[var(--foreground)] text-xs">
                 <img
                   src="/images/vj-logo.svg"
                   alt="Vietjet Air"
@@ -284,7 +399,7 @@ export default function Footer() {
                 />
                 Tải ứng dụng di động Vietjet Air
               </p>
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2 pt-0.5">
                 <a
                   href="https://apps.apple.com"
                   target="_blank"
@@ -297,7 +412,7 @@ export default function Footer() {
                     alt="Download on the App Store"
                     width={120}
                     height={40}
-                    className="h-10 w-auto"
+                    className="h-9 sm:h-10 w-auto"
                   />
                 </a>
                 <a
@@ -312,7 +427,7 @@ export default function Footer() {
                     alt="Get it on Google Play"
                     width={150}
                     height={48}
-                    className="h-10 w-auto"
+                    className="h-9 sm:h-10 w-auto"
                   />
                 </a>
               </div>
@@ -320,11 +435,11 @@ export default function Footer() {
           </div>
 
           {/* Thông tin pháp nhân + hướng dẫn. */}
-          <div className="space-y-2 text-xs2 leading-relaxed text-[var(--foreground-muted)]">
-            <div className="flex flex-wrap items-center gap-4">
+          <div className="space-y-2 text-xs2 leading-relaxed text-[var(--foreground-muted)] sm:col-span-2 lg:col-span-3">
+            <div className="flex flex-wrap items-center gap-3 sm:gap-4 pb-1">
               <Link
                 href="/hoi-dap#dat-ve"
-                className="flex items-center gap-1.5 font-bold text-[var(--foreground)] hover:text-primary-dark transition-colors"
+                className="inline-flex items-center gap-1.5 font-bold text-[var(--foreground)] hover:text-primary-dark transition-colors py-1"
               >
                 <span className="w-5 h-5 rounded border border-primary-dark flex items-center justify-center p-0.5">
                   <FlightPlaneIcon size={14} />
@@ -333,26 +448,26 @@ export default function Footer() {
               </Link>
               <Link
                 href="/hoi-dap#thanh-toan"
-                className="flex items-center gap-1.5 font-bold text-[var(--foreground)] hover:text-primary-dark transition-colors"
+                className="inline-flex items-center gap-1.5 font-bold text-[var(--foreground)] hover:text-primary-dark transition-colors py-1"
               >
                 <CreditCardPaymentIcon size={20} className="shrink-0" />
                 <span>Hướng dẫn thanh toán</span>
               </Link>
             </div>
 
-            <p className="flex items-center gap-1.5 pt-1">
+            <p className="flex items-center gap-1.5 pt-0.5">
               <span>Cập nhật thông tin chuyến bay Flightradar</span>
               <span className="w-5 h-5 rounded-full border border-sky-400 text-sky-500 flex items-center justify-center">
                 <RiRadarLine size={12} />
               </span>
             </p>
 
-            <p className="font-black text-[var(--foreground)]">
+            <p className="font-black text-[var(--foreground)] pt-1">
               CÔNG TY CỔ PHẦN HÀNG KHÔNG VIETJET
             </p>
             <p>302/3 Phố Kim Mã, Phường Ngọc Hà, TP. Hà Nội, Việt Nam.</p>
             <p>Chịu trách nhiệm nội dung: Ông Nguyễn Thanh Sơn</p>
-            <div className="pt-1 flex items-center gap-2">
+            <div className="pt-1.5 flex items-center gap-2">
               <div className="inline-flex items-center gap-1.5 border border-sky-600 bg-sky-50 text-sky-800 px-2 py-0.5 rounded text-2xs font-bold">
                 <RiFolderShield2Line size={13} className="text-sky-600" />
                 <span>ĐÃ THÔNG BÁO BỘ CÔNG THƯƠNG</span>
@@ -362,14 +477,15 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* Dải lượn sóng 3 màu thương hiệu Vietjet (Đỏ – Vàng – Xanh lá) ở
-          chân trang — CURSOR_TASK.md Hạng mục 5. Asset tự vẽ trong repo
-          (`/images/vj-wave-strip.svg`) nên không phụ thuộc asset site thật. */}
+      {/* Dải lượn sóng 3 màu thương hiệu Vietjet (Đỏ – Vàng – Xanh lá) ở chân trang */}
       <div
         aria-hidden="true"
         data-testid="vj-wave-strip"
-        className="pointer-events-none h-[54px] w-full bg-[url('/images/vj-wave-strip.svg')] bg-cover bg-bottom bg-no-repeat sm:h-[72px]"
+        className="pointer-events-none h-[42px] w-full bg-[url('/images/vj-wave-strip.svg')] bg-cover bg-bottom bg-no-repeat sm:h-[60px] lg:h-[72px]"
       />
+
+      {/* Khoảng trống an toàn tránh bị che bởi thanh MobileBottomNav cố định đáy */}
+      <div className="h-24 lg:hidden" aria-hidden="true" />
     </footer>
   );
 }
