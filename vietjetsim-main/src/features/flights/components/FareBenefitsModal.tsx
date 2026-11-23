@@ -173,7 +173,7 @@ export default function FareBenefitsModal({
             >
               So sánh hạng vé
             </h2>
-            <p className="text-[11px] sm:text-sm text-[var(--foreground-muted)] mt-0.5">
+            <p className="text-xs2 sm:text-sm text-[var(--foreground-muted)] mt-0.5">
               Eco · Deluxe · skyBOSS · Business — quyền lợi đi kèm từng hạng
             </p>
           </div>
@@ -191,7 +191,7 @@ export default function FareBenefitsModal({
             <thead>
               <tr>
                 <th className="w-[140px] sm:w-[190px] sticky left-0 z-10 bg-[var(--surface)] pr-2 sm:pr-3 pb-2 sm:pb-3 align-bottom">
-                  <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-[var(--foreground-subtle)]">
+                  <span className="text-xs2 sm:text-xs font-bold uppercase tracking-wider text-[var(--foreground-subtle)]">
                     Quyền lợi
                   </span>
                 </th>
@@ -216,14 +216,16 @@ export default function FareBenefitsModal({
                         </div>
                         {prices?.[col.id] != null && (
                           <div className="text-center py-1 sm:py-1.5 bg-[var(--surface-2)] border-x border-b border-[var(--border)]">
-                            <span className={`text-[11px] sm:text-xs font-black font-koho ${col.priceColor}`}>
+                            <span
+                              className={`text-xs2 sm:text-xs font-black font-koho ${col.priceColor}`}
+                            >
                               {prices[col.id]!.toLocaleString('vi-VN')}₫
                             </span>
                           </div>
                         )}
                       </div>
                       {isHighlighted && (
-                        <div className="mt-0.5 sm:mt-1 text-center text-[10px] sm:text-xs font-bold uppercase tracking-wider text-primary">
+                        <div className="mt-0.5 sm:mt-1 text-center text-2xs sm:text-xs font-bold uppercase tracking-wider text-primary">
                           Đang chọn
                         </div>
                       )}
@@ -237,7 +239,7 @@ export default function FareBenefitsModal({
                 <tr key={row.label} className="align-top">
                   <th
                     scope="row"
-                    className="sticky left-0 z-10 bg-[var(--surface)] pr-2 sm:pr-3 py-2 sm:py-2.5 text-[11px] sm:text-xs font-semibold text-[var(--foreground)] border-t border-[var(--border)]"
+                    className="sticky left-0 z-10 bg-[var(--surface)] pr-2 sm:pr-3 py-2 sm:py-2.5 text-xs2 sm:text-xs font-semibold text-[var(--foreground)] border-t border-[var(--border)]"
                   >
                     {row.label}
                   </th>
@@ -247,7 +249,7 @@ export default function FareBenefitsModal({
                     return (
                       <td
                         key={col.id}
-                        className={`px-1 sm:px-1.5 py-2 sm:py-2.5 border-t border-[var(--border)] text-[11px] sm:text-xs leading-snug ${
+                        className={`px-1 sm:px-1.5 py-2 sm:py-2.5 border-t border-[var(--border)] text-xs2 sm:text-xs leading-snug ${
                           highlight === col.id
                             ? 'bg-[rgb(var(--primary-rgb))]/5'
                             : index % 2 === 1
@@ -277,7 +279,7 @@ export default function FareBenefitsModal({
         </div>
 
         <div className="px-3 sm:px-6 py-2 sm:py-3 border-t border-[var(--border)] bg-[var(--surface-2)] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-          <p className="text-[11px] sm:text-xs text-[var(--foreground-muted)]">
+          <p className="text-xs2 sm:text-xs text-[var(--foreground-muted)]">
             Quyền lợi mang tính minh hoạ cho mục đích mô phỏng; điều kiện áp dụng theo quy định hiện
             hành của Vietjet.
           </p>

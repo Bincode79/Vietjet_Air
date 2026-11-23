@@ -1077,242 +1077,263 @@ export default function FlightResultsStep({
         )}
 
         {/* Flight results */}
-        {!isLoading &&
-          !loadError && (
-            <div className="mt-6">
-              {filtered.map((flight, idx) => {
-            const economyFare = flight.economyPrice ?? flight.price;
-            const businessFare = flight.businessPrice ?? flight.price;
+        {!isLoading && !loadError && (
+          <div className="mt-6">
+            {filtered.map((flight, idx) => {
+              const economyFare = flight.economyPrice ?? flight.price;
+              const businessFare = flight.businessPrice ?? flight.price;
 
-            const fareClasses: Array<{
-              id: FareClassId;
-              name: string;
-              cabin: Flight['class'];
-              price: number;
-            }> = [
-              {
-                id: 'business' as FareClassId,
-                name: 'Business',
-                cabin: 'business' as const,
-                price: getFareForClass('business', {
-                  economyPrice: economyFare,
-                  businessPrice: businessFare,
-                }),
-              },
-              {
-                id: 'skyboss' as FareClassId,
-                name: 'SkyBoss',
-                cabin: 'business' as const,
-                price: getFareForClass('skyboss', {
-                  economyPrice: economyFare,
-                  businessPrice: businessFare,
-                }),
-              },
-              {
-                id: 'deluxe' as FareClassId,
-                name: 'Deluxe',
-                cabin: 'economy' as const,
-                price: getFareForClass('deluxe', {
-                  economyPrice: economyFare,
-                  businessPrice: businessFare,
-                }),
-              },
-              {
-                id: 'eco' as FareClassId,
-                name: 'Eco',
-                cabin: 'economy' as const,
-                price: getFareForClass('eco', {
-                  economyPrice: economyFare,
-                  businessPrice: businessFare,
-                }),
-              },
-            ];
+              const fareClasses: Array<{
+                id: FareClassId;
+                name: string;
+                cabin: Flight['class'];
+                price: number;
+              }> = [
+                {
+                  id: 'business' as FareClassId,
+                  name: 'Business',
+                  cabin: 'business' as const,
+                  price: getFareForClass('business', {
+                    economyPrice: economyFare,
+                    businessPrice: businessFare,
+                  }),
+                },
+                {
+                  id: 'skyboss' as FareClassId,
+                  name: 'SkyBoss',
+                  cabin: 'business' as const,
+                  price: getFareForClass('skyboss', {
+                    economyPrice: economyFare,
+                    businessPrice: businessFare,
+                  }),
+                },
+                {
+                  id: 'deluxe' as FareClassId,
+                  name: 'Deluxe',
+                  cabin: 'economy' as const,
+                  price: getFareForClass('deluxe', {
+                    economyPrice: economyFare,
+                    businessPrice: businessFare,
+                  }),
+                },
+                {
+                  id: 'eco' as FareClassId,
+                  name: 'Eco',
+                  cabin: 'economy' as const,
+                  price: getFareForClass('eco', {
+                    economyPrice: economyFare,
+                    businessPrice: businessFare,
+                  }),
+                },
+              ];
 
-            const activeFareClass: FareClassId =
-              (selection?.flightNo === flight.flightNo && selection?.fareClass
-                ? (selection.fareClass as FareClassId)
-                : selectedFareClassMap[flight.flightNo]) ?? 'eco';
-            const benefits = FARE_BENEFITS[activeFareClass] ?? FARE_BENEFITS.eco;
-            const isCardExpanded = expandedFlightNo === flight.flightNo;
+              const activeFareClass: FareClassId =
+                (selection?.flightNo === flight.flightNo && selection?.fareClass
+                  ? (selection.fareClass as FareClassId)
+                  : selectedFareClassMap[flight.flightNo]) ?? 'eco';
+              const benefits = FARE_BENEFITS[activeFareClass] ?? FARE_BENEFITS.eco;
+              const isCardExpanded = expandedFlightNo === flight.flightNo;
 
-            return (
-              <div
-                key={flight.id}
-                data-testid="flight-result-card"
-                style={{ transitionDelay: `${Math.min(idx * 50, 300)}ms` }}
-                className="bg-white rounded-vj border border-vj-border-light overflow-hidden shadow-xs hover:shadow-vj-md transition-shadow duration-200 relative flex flex-row flex-wrap mb-6 sm:mb-6"
-              >
-                {/* Left: Flight Info - bright yellow box matching real Vietjet */}
+              return (
                 <div
-                  role="button"
-                  tabIndex={0}
-                  onClick={() => {
-                    setExpandedFlightNo((prev) =>
-                      prev === flight.flightNo ? null : flight.flightNo
-                    );
-                    setSelectedFareClassMap((prev) => ({
-                      ...prev,
-                      [flight.flightNo]: activeFareClass,
-                    }));
-                    const activeFare =
-                      fareClasses.find((item) => item.id === activeFareClass) ?? fareClasses[3];
-                    onSelect({
-                      ...flight,
-                      price: activeFare.price,
-                      class: activeFare.cabin,
-                      fareClass: activeFare.id,
-                    });
-                    const fares = Object.fromEntries(
-                      fareClasses.map((item) => [item.id, item.price])
-                    ) as Partial<Record<FareClassId, number>>;
-                    onFlightSelect?.(
-                      flight.flightNo,
-                      activeFare.id,
-                      activeFare.price,
-                      fares,
-                      flight
-                    );
-                  }}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                      setExpandedFlightNo(flight.flightNo);
-                    }
-                  }}
-                  className="w-[105px] sm:w-[28%] lg:w-[226px] shrink-0 bg-gradient-to-b from-vj-fare-gold-bright via-vj-fare-gold to-vj-fare-gold-deep p-1.5 sm:p-3 lg:p-4 border-r border-yellow-400 flex flex-col items-center justify-between sm:justify-center text-center relative select-none cursor-pointer hover:brightness-[0.97] transition-colors focus:outline-none focus:ring-0"
+                  key={flight.id}
+                  data-testid="flight-result-card"
+                  style={{ transitionDelay: `${Math.min(idx * 50, 300)}ms` }}
+                  className="bg-white rounded-vj border border-vj-border-light overflow-hidden shadow-xs hover:shadow-vj-md transition-shadow duration-200 relative flex flex-row flex-wrap mb-6 sm:mb-6"
                 >
-                  <div className="flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-2.5">
-                    {/* Mobile: the 105px info column cannot hold flight number
+                  {/* Left: Flight Info - bright yellow box matching real Vietjet */}
+                  <div
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => {
+                      setExpandedFlightNo((prev) =>
+                        prev === flight.flightNo ? null : flight.flightNo
+                      );
+                      setSelectedFareClassMap((prev) => ({
+                        ...prev,
+                        [flight.flightNo]: activeFareClass,
+                      }));
+                      const activeFare =
+                        fareClasses.find((item) => item.id === activeFareClass) ?? fareClasses[3];
+                      onSelect({
+                        ...flight,
+                        price: activeFare.price,
+                        class: activeFare.cabin,
+                        fareClass: activeFare.id,
+                      });
+                      const fares = Object.fromEntries(
+                        fareClasses.map((item) => [item.id, item.price])
+                      ) as Partial<Record<FareClassId, number>>;
+                      onFlightSelect?.(
+                        flight.flightNo,
+                        activeFare.id,
+                        activeFare.price,
+                        fares,
+                        flight
+                      );
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        setExpandedFlightNo(flight.flightNo);
+                      }
+                    }}
+                    className="w-[105px] sm:w-[28%] lg:w-[226px] shrink-0 bg-gradient-to-b from-vj-fare-gold-bright via-vj-fare-gold to-vj-fare-gold-deep p-1.5 sm:p-3 lg:p-4 border-r border-yellow-400 flex flex-col items-center justify-between sm:justify-center text-center relative select-none cursor-pointer hover:brightness-[0.97] transition-colors focus:outline-none focus:ring-0"
+                  >
+                    <div className="flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-2.5">
+                      {/* Mobile: the 105px info column cannot hold flight number
                         and a delay/cancel badge on one line (45px + 66px), and
                         `overflow-hidden` on the card clipped the badge's right
                         edge. Let the badge wrap to a second line; from `sm` the
                         column is wide enough for one line. */}
-                    <div className="flex flex-wrap items-center justify-center gap-1 sm:flex-nowrap">
-                      <span className="text-3xs sm:text-2xs font-bold text-vj-text tracking-wider uppercase leading-tight">
-                        {flight.flightNo}
-                      </span>
-                      <FlightRowStatusBadge flightId={flight.id} defaultStatus={flight.status} />
+                      <div className="flex flex-wrap items-center justify-center gap-1 sm:flex-nowrap">
+                        <span className="text-3xs sm:text-2xs font-bold text-vj-text tracking-wider uppercase leading-tight">
+                          {flight.flightNo}
+                        </span>
+                        <FlightRowStatusBadge flightId={flight.id} defaultStatus={flight.status} />
+                      </div>
+
+                      <div className="flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1.5 whitespace-nowrap">
+                        <span className="text-xs sm:text-base lg:text-xl font-black text-vj-dark font-koho leading-none">
+                          {flight.departTime}
+                        </span>
+                        <span className="text-5xs sm:text-2xs font-bold text-vj-text-dim leading-none">
+                          Đến
+                        </span>
+                        <span className="text-xs sm:text-base lg:text-xl font-black text-vj-dark font-koho leading-none">
+                          {flight.arriveTime}
+                        </span>
+                      </div>
                     </div>
 
-                    <div className="flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1.5 whitespace-nowrap">
-                      <span className="text-xs sm:text-base lg:text-xl font-black text-vj-dark font-koho leading-none">
-                        {flight.departTime}
+                    <div className="text-5xs sm:text-2xs text-vj-text-strong font-medium leading-tight flex items-center justify-center whitespace-nowrap gap-0.5 sm:gap-1 mt-0.5 sm:mt-1">
+                      <span className="inline-flex items-center justify-center gap-0.5 sm:gap-1">
+                        <svg
+                          className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-vj-text-strong shrink-0 rotate-45 inline-block"
+                          viewBox="0 0 24 24"
+                          fill="currentColor"
+                          aria-hidden="true"
+                        >
+                          <path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z" />
+                        </svg>
+                        <span className="inline">{flight.aircraft ?? 'Airbus A321'}</span>
                       </span>
-                      <span className="text-5xs sm:text-2xs font-bold text-vj-text-dim leading-none">
-                        Đến
-                      </span>
-                      <span className="text-xs sm:text-base lg:text-xl font-black text-vj-dark font-koho leading-none">
-                        {flight.arriveTime}
-                      </span>
+                      <span className="text-vj-gray"> - </span>
+                      <span className="text-red-700 font-bold inline">Bay thẳng</span>
                     </div>
-                  </div>
 
-                  <div className="text-5xs sm:text-2xs text-vj-text-strong font-medium leading-tight flex items-center justify-center whitespace-nowrap gap-0.5 sm:gap-1 mt-0.5 sm:mt-1">
-                    <span className="inline-flex items-center justify-center gap-0.5 sm:gap-1">
-                      <svg
-                        className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-vj-text-strong shrink-0 rotate-45 inline-block"
-                        viewBox="0 0 24 24"
-                        fill="currentColor"
-                        aria-hidden="true"
-                      >
-                        <path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z" />
-                      </svg>
-                      <span className="inline">{flight.aircraft ?? 'Airbus A321'}</span>
-                    </span>
-                    <span className="text-vj-gray"> - </span>
-                    <span className="text-red-700 font-bold inline">Bay thẳng</span>
-                  </div>
-
-                  {/* Mũi tên chỉ xuống `v` — trên site thật hiện ở CẢ mobile
+                    {/* Mũi tên chỉ xuống `v` — trên site thật hiện ở CẢ mobile
                       (cột trái hẹp 105px, nên ký tự `v` nhỏ thay vì icon). */}
-                  <span className="text-3xs sm:text-xs text-vj-text-dim mt-0.5 leading-none">
-                    ∨
-                  </span>
-                </div>
+                    <span className="text-3xs sm:text-xs text-vj-text-dim mt-0.5 leading-none">
+                      ∨
+                    </span>
+                  </div>
 
-                {/* Right: Fare Classes — 4 cột 1 hàng ngang trên cả mobile và desktop.
+                  {/* Right: Fare Classes — 4 cột 1 hàng ngang trên cả mobile và desktop.
                     Ô hạng 141×96 (đo site thật 13/11/2026): cột trái 790px −
                     khối thông tin 226px = 564px, chia 4 → đúng 141px/ô nên
                     desktop không có khe (gap-0). */}
-                <div className="flex-1 min-w-0 grid grid-cols-4 gap-0.5 sm:gap-0 p-0.5 sm:p-0 bg-vj-pill/60">
-                  {fareClasses.map((fc) => {
-                    const fares = Object.fromEntries(
-                      fareClasses.map((item) => [item.id, item.price])
-                    ) as Partial<Record<FareClassId, number>>;
-                    const isSelected = isCardExpanded && activeFareClass === fc.id;
-                    const isSoldOut =
-                      fc.id === 'business' &&
-                      flight.from === 'HAN' &&
-                      flight.to === 'SGN' &&
-                      !flight.businessPrice;
+                  <div className="flex-1 min-w-0 grid grid-cols-4 gap-0.5 sm:gap-0 p-0.5 sm:p-0 bg-vj-pill/60">
+                    {fareClasses.map((fc) => {
+                      const fares = Object.fromEntries(
+                        fareClasses.map((item) => [item.id, item.price])
+                      ) as Partial<Record<FareClassId, number>>;
+                      const isSelected = isCardExpanded && activeFareClass === fc.id;
+                      const isSoldOut =
+                        fc.id === 'business' &&
+                        flight.from === 'HAN' &&
+                        flight.to === 'SGN' &&
+                        !flight.businessPrice;
 
-                    return (
-                      <div
-                        key={fc.id}
-                        className={`relative flex min-w-0 min-h-[96px] flex-col overflow-hidden transition-all duration-200 ${
-                          isSoldOut
-                            ? 'bg-vj-pill/80 text-vj-muted'
-                            : isSelected
-                              ? fc.id === 'business'
-                                ? 'bg-amber-50/90 ring-2 ring-inset ring-vj-fare-business shadow-xs'
-                                : fc.id === 'skyboss'
-                                  ? 'bg-red-50/90 ring-2 ring-inset ring-vj-fare-red shadow-xs'
-                                  : fc.id === 'deluxe'
-                                    ? 'bg-orange-50/90 ring-2 ring-inset ring-vj-fare-deluxe shadow-xs'
-                                    : 'bg-red-50/90 ring-2 ring-inset ring-primary shadow-xs'
-                              : 'bg-vj-surface-fare hover:bg-vj-surface-fare/70'
-                        }`}
-                      >
-                        {/* Hidden fare div for test suite expectation */}
-                        <div className="sr-only">{fc.price.toLocaleString('vi-VN')}₫</div>
-
-                        {isSelected && !isSoldOut && (
-                          <div className="absolute top-1 inset-x-0 flex justify-center pointer-events-none z-10">
-                            <span
-                              className={`inline-flex items-center gap-0.5 text-5xs sm:text-4xs font-bold text-white px-1 sm:px-1.5 py-0.5 rounded-full shadow-2xs leading-none uppercase tracking-wider ${
-                                fc.id === 'business'
-                                  ? 'bg-vj-fare-business'
+                      return (
+                        <div
+                          key={fc.id}
+                          className={`relative flex min-w-0 min-h-[96px] flex-col overflow-hidden transition-all duration-200 ${
+                            isSoldOut
+                              ? 'bg-vj-pill/80 text-vj-muted'
+                              : isSelected
+                                ? fc.id === 'business'
+                                  ? 'bg-amber-50/90 ring-2 ring-inset ring-vj-fare-business shadow-xs'
                                   : fc.id === 'skyboss'
-                                    ? 'bg-vj-fare-red'
+                                    ? 'bg-red-50/90 ring-2 ring-inset ring-vj-fare-red shadow-xs'
                                     : fc.id === 'deluxe'
-                                      ? 'bg-vj-fare-deluxe'
-                                      : 'bg-vj-red'
-                              }`}
-                            >
-                              <svg
-                                className="w-1.5 h-1.5 sm:w-2 sm:h-2"
-                                viewBox="0 0 12 12"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth="2.5"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                              >
-                                <polyline points="2.5 6 5 8.5 9.5 3.5" />
-                              </svg>
-                              <span>Đã chọn</span>
-                            </span>
-                          </div>
-                        )}
+                                      ? 'bg-orange-50/90 ring-2 ring-inset ring-vj-fare-deluxe shadow-xs'
+                                      : 'bg-red-50/90 ring-2 ring-inset ring-primary shadow-xs'
+                                : 'bg-vj-surface-fare hover:bg-vj-surface-fare/70'
+                          }`}
+                        >
+                          {/* Hidden fare div for test suite expectation */}
+                          <div className="sr-only">{fc.price.toLocaleString('vi-VN')}₫</div>
 
-                        {isSoldOut ? (
-                          <div className="flex-1 flex flex-col items-center justify-center p-1 sm:p-2 text-center select-none min-h-[56px] sm:min-h-[78px]">
-                            <div className="w-5 h-5 sm:w-7 sm:h-7 rounded-full border border-gray-400/50 flex items-center justify-center text-vj-muted mb-0.5 sm:mb-1 relative">
-                              <Icon
-                                name="AirplaneIcon"
-                                size={12}
-                                className="rotate-45 opacity-60 text-vj-muted"
-                              />
-                              <div className="absolute inset-0 flex items-center justify-center">
-                                <div className="w-full h-0.5 bg-gray-400 rotate-45" />
-                              </div>
+                          {isSelected && !isSoldOut && (
+                            <div className="absolute top-1 inset-x-0 flex justify-center pointer-events-none z-10">
+                              <span
+                                className={`inline-flex items-center gap-0.5 text-5xs sm:text-4xs font-bold text-white px-1 sm:px-1.5 py-0.5 rounded-full shadow-2xs leading-none uppercase tracking-wider ${
+                                  fc.id === 'business'
+                                    ? 'bg-vj-fare-business'
+                                    : fc.id === 'skyboss'
+                                      ? 'bg-vj-fare-red'
+                                      : fc.id === 'deluxe'
+                                        ? 'bg-vj-fare-deluxe'
+                                        : 'bg-vj-red'
+                                }`}
+                              >
+                                <svg
+                                  className="w-1.5 h-1.5 sm:w-2 sm:h-2"
+                                  viewBox="0 0 12 12"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  strokeWidth="2.5"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                >
+                                  <polyline points="2.5 6 5 8.5 9.5 3.5" />
+                                </svg>
+                                <span>Đã chọn</span>
+                              </span>
                             </div>
-                            <span className="text-2xs sm:text-xs font-semibold text-vj-sold-out leading-tight text-vj-muted">
-                              Hết chỗ
-                            </span>
+                          )}
+
+                          {isSoldOut ? (
+                            <div className="flex-1 flex flex-col items-center justify-center p-1 sm:p-2 text-center select-none min-h-[56px] sm:min-h-[78px]">
+                              <div className="w-5 h-5 sm:w-7 sm:h-7 rounded-full border border-gray-400/50 flex items-center justify-center text-vj-muted mb-0.5 sm:mb-1 relative">
+                                <Icon
+                                  name="AirplaneIcon"
+                                  size={12}
+                                  className="rotate-45 opacity-60 text-vj-muted"
+                                />
+                                <div className="absolute inset-0 flex items-center justify-center">
+                                  <div className="w-full h-0.5 bg-gray-400 rotate-45" />
+                                </div>
+                              </div>
+                              <span className="text-2xs sm:text-xs font-semibold text-vj-sold-out leading-tight text-vj-muted">
+                                Hết chỗ
+                              </span>
+                              <button
+                                data-testid="select-fare"
+                                type="button"
+                                aria-label={`Hết chỗ hạng ${fc.name}`}
+                                onClick={() => {
+                                  setSelectedFareClassMap((prev) => ({
+                                    ...prev,
+                                    [flight.flightNo]: fc.id,
+                                  }));
+                                  setExpandedFlightNo(flight.flightNo);
+                                  onSelect({
+                                    ...flight,
+                                    price: fc.price,
+                                    class: fc.cabin,
+                                    fareClass: fc.id,
+                                  });
+                                  onFlightSelect?.(flight.flightNo, fc.id, fc.price, fares, flight);
+                                }}
+                                className="absolute inset-0 w-full h-full opacity-0"
+                              />
+                            </div>
+                          ) : (
                             <button
                               data-testid="select-fare"
                               type="button"
-                              aria-label={`Hết chỗ hạng ${fc.name}`}
+                              aria-pressed={isSelected}
                               onClick={() => {
                                 setSelectedFareClassMap((prev) => ({
                                   ...prev,
@@ -1327,211 +1348,189 @@ export default function FlightResultsStep({
                                 });
                                 onFlightSelect?.(flight.flightNo, fc.id, fc.price, fares, flight);
                               }}
-                              className="absolute inset-0 w-full h-full opacity-0"
-                            />
+                              className={`group w-full h-full py-1.5 sm:py-2.5 px-0.5 sm:px-1 flex flex-col items-center justify-center text-center cursor-pointer transition-transform active:scale-[0.98] min-h-[56px] sm:min-h-[78px] focus:outline-none focus:ring-0 ${
+                                isSelected ? 'pt-4 sm:pt-4 bg-amber-50/40' : ''
+                              }`}
+                            >
+                              {/* Giá vé: số tiền hàng trên in đậm, hàng dưới 000 VND in nghiêng giống site thật */}
+                              <span
+                                className={`text-xs sm:text-base lg:text-xl font-bold font-koho leading-none whitespace-nowrap transition-colors ${
+                                  isSelected
+                                    ? fc.id === 'business'
+                                      ? 'text-vj-fare-business'
+                                      : fc.id === 'skyboss'
+                                        ? 'text-vj-fare-red'
+                                        : fc.id === 'deluxe'
+                                          ? 'text-vj-fare-deluxe'
+                                          : 'text-primary'
+                                    : 'text-vj-dark group-hover:text-primary'
+                                }`}
+                              >
+                                {Math.floor(fc.price / 1000).toLocaleString('vi-VN')}
+                              </span>
+                              <span className="text-2xs sm:text-xs italic text-vj-gray font-medium leading-tight mt-0.5 whitespace-nowrap">
+                                000 VND
+                              </span>
+                              <svg
+                                className={`w-2 h-2 sm:w-3 sm:h-3 text-vj-muted mt-0.5 transition-transform duration-200 ${
+                                  isSelected
+                                    ? 'rotate-180 text-primary'
+                                    : 'group-hover:text-vj-text-strong'
+                                }`}
+                                viewBox="0 0 20 20"
+                                fill="currentColor"
+                                aria-hidden="true"
+                              >
+                                <path
+                                  fillRule="evenodd"
+                                  d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+                                  clipRule="evenodd"
+                                />
+                              </svg>
+                            </button>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {/* Expanded flight details accordion matching Screenshot 1, 2, 3, 4 */}
+                  {isCardExpanded && (
+                    <div
+                      className={`w-full basis-full border-t border-black/5 animate-fadeIn ${benefits.bgClass}`}
+                    >
+                      {/* Header route line */}
+                      <div className="flex items-center justify-between text-xs sm:text-sm py-2 sm:py-3 px-2 sm:px-10 border-b border-black/5">
+                        <div className="text-center min-w-0">
+                          <div className="font-bold text-vj-dark text-sm leading-tight font-koho">
+                            {flight.from}
                           </div>
-                        ) : (
-                          <button
-                            data-testid="select-fare"
-                            type="button"
-                            aria-pressed={isSelected}
-                            onClick={() => {
-                              setSelectedFareClassMap((prev) => ({
-                                ...prev,
-                                [flight.flightNo]: fc.id,
-                              }));
-                              setExpandedFlightNo(flight.flightNo);
-                              onSelect({
-                                ...flight,
-                                price: fc.price,
-                                class: fc.cabin,
-                                fareClass: fc.id,
-                              });
-                              onFlightSelect?.(flight.flightNo, fc.id, fc.price, fares, flight);
-                            }}
-                            className={`group w-full h-full py-1.5 sm:py-2.5 px-0.5 sm:px-1 flex flex-col items-center justify-center text-center cursor-pointer transition-transform active:scale-[0.98] min-h-[56px] sm:min-h-[78px] focus:outline-none focus:ring-0 ${
-                              isSelected ? 'pt-4 sm:pt-4 bg-amber-50/40' : ''
-                            }`}
-                          >
-                            {/* Giá vé: số tiền hàng trên in đậm, hàng dưới 000 VND in nghiêng giống site thật */}
-                            <span
-                              className={`text-xs sm:text-base lg:text-xl font-bold font-koho leading-none whitespace-nowrap transition-colors ${
-                                isSelected
-                                  ? fc.id === 'business'
-                                    ? 'text-vj-fare-business'
-                                    : fc.id === 'skyboss'
-                                      ? 'text-vj-fare-red'
-                                      : fc.id === 'deluxe'
-                                        ? 'text-vj-fare-deluxe'
-                                        : 'text-primary'
-                                  : 'text-vj-dark group-hover:text-primary'
-                              }`}
-                            >
-                              {Math.floor(fc.price / 1000).toLocaleString('vi-VN')}
-                            </span>
-                            <span className="text-2xs sm:text-xs italic text-vj-gray font-medium leading-tight mt-0.5 whitespace-nowrap">
-                              000 VND
-                            </span>
-                            <svg
-                              className={`w-2 h-2 sm:w-3 sm:h-3 text-vj-muted mt-0.5 transition-transform duration-200 ${
-                                isSelected
-                                  ? 'rotate-180 text-primary'
-                                  : 'group-hover:text-vj-text-strong'
-                              }`}
-                              viewBox="0 0 20 20"
-                              fill="currentColor"
-                              aria-hidden="true"
-                            >
-                              <path
-                                fillRule="evenodd"
-                                d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
-                                clipRule="evenodd"
-                              />
-                            </svg>
-                          </button>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
+                          <div className="text-xs text-vj-text-strong truncate">
+                            {getAirportCity(flight.from)}
+                          </div>
+                          <div className="text-2xs text-vj-gray font-medium mt-0.5">
+                            {flight.departTime}, {formatDateVi(flight.departDate || search?.depart)}
+                          </div>
+                        </div>
 
-                {/* Expanded flight details accordion matching Screenshot 1, 2, 3, 4 */}
-                {isCardExpanded && (
-                  <div
-                    className={`w-full basis-full border-t border-black/5 animate-fadeIn ${benefits.bgClass}`}
-                  >
-                    {/* Header route line */}
-                    <div className="flex items-center justify-between text-xs sm:text-sm py-2 sm:py-3 px-2 sm:px-10 border-b border-black/5">
-                      <div className="text-center min-w-0">
-                        <div className="font-bold text-vj-dark text-sm leading-tight font-koho">
-                          {flight.from}
-                        </div>
-                        <div className="text-xs text-vj-text-strong truncate">
-                          {getAirportCity(flight.from)}
-                        </div>
-                        <div className="text-2xs text-vj-gray font-medium mt-0.5">
-                          {flight.departTime}, {formatDateVi(flight.departDate || search?.depart)}
-                        </div>
-                      </div>
-
-                      <div className="flex-1 min-w-0 max-w-[120px] sm:max-w-[280px] mx-1 sm:mx-4 flex flex-col items-center">
-                        <span className="text-2xs text-vj-text-dim font-semibold mb-0.5">
-                          {flight.duration || '2 giờ 10 phút'}
-                        </span>
-                        <div className="w-full flex items-center gap-1.5 my-0.5">
-                          <span className="h-px flex-1 border-t border-dashed border-gray-400" />
-                          <svg
-                            className="w-3.5 h-3.5 text-primary rotate-45 inline-block shrink-0"
-                            viewBox="0 0 24 24"
-                            fill="currentColor"
-                            aria-hidden="true"
-                          >
-                            <path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z" />
-                          </svg>
-                          <span className="h-px flex-1 border-t border-dashed border-gray-400" />
-                        </div>
-                        <div className="flex items-center gap-1.5 text-2xs text-vj-text-dim font-medium">
-                          <span className="inline-flex items-center gap-1">
+                        <div className="flex-1 min-w-0 max-w-[120px] sm:max-w-[280px] mx-1 sm:mx-4 flex flex-col items-center">
+                          <span className="text-2xs text-vj-text-dim font-semibold mb-0.5">
+                            {flight.duration || '2 giờ 10 phút'}
+                          </span>
+                          <div className="w-full flex items-center gap-1.5 my-0.5">
+                            <span className="h-px flex-1 border-t border-dashed border-gray-400" />
                             <svg
-                              className="w-2.5 h-2.5 text-vj-text-dim shrink-0 rotate-45 inline-block"
+                              className="w-3.5 h-3.5 text-primary rotate-45 inline-block shrink-0"
                               viewBox="0 0 24 24"
                               fill="currentColor"
                               aria-hidden="true"
                             >
                               <path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z" />
                             </svg>
-                            <span>{flight.aircraft ?? 'Airbus A321'}</span>
-                          </span>
-                          <span className="text-vj-muted">•</span>
-                          <span className="text-red-700 font-bold">Bay thẳng</span>
+                            <span className="h-px flex-1 border-t border-dashed border-gray-400" />
+                          </div>
+                          <div className="flex items-center gap-1.5 text-2xs text-vj-text-dim font-medium">
+                            <span className="inline-flex items-center gap-1">
+                              <svg
+                                className="w-2.5 h-2.5 text-vj-text-dim shrink-0 rotate-45 inline-block"
+                                viewBox="0 0 24 24"
+                                fill="currentColor"
+                                aria-hidden="true"
+                              >
+                                <path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z" />
+                              </svg>
+                              <span>{flight.aircraft ?? 'Airbus A321'}</span>
+                            </span>
+                            <span className="text-vj-muted">•</span>
+                            <span className="text-red-700 font-bold">Bay thẳng</span>
+                          </div>
+                        </div>
+
+                        <div className="text-center min-w-0">
+                          <div className="font-bold text-vj-dark text-sm leading-tight font-koho">
+                            {flight.to}
+                          </div>
+                          <div className="text-xs text-vj-text-strong truncate">
+                            {getAirportCity(flight.to)}
+                          </div>
+                          <div className="text-2xs text-vj-gray font-medium mt-0.5">
+                            {flight.arriveTime}, {formatDateVi(flight.departDate || search?.depart)}
+                          </div>
                         </div>
                       </div>
 
-                      <div className="text-center min-w-0">
-                        <div className="font-bold text-vj-dark text-sm leading-tight font-koho">
-                          {flight.to}
-                        </div>
-                        <div className="text-xs text-vj-text-strong truncate">
-                          {getAirportCity(flight.to)}
-                        </div>
-                        <div className="text-2xs text-vj-gray font-medium mt-0.5">
-                          {flight.arriveTime}, {formatDateVi(flight.departDate || search?.depart)}
+                      {/* Benefits checklist */}
+                      <div className="p-4 sm:p-6 text-xs text-vj-text space-y-3.5">
+                        {benefits.included.length > 0 && (
+                          <div>
+                            <h5 className="font-black text-vj-dark mb-2 text-xs font-koho uppercase tracking-wider">
+                              Bao gồm:
+                            </h5>
+                            <ul className="space-y-2">
+                              {benefits.included.map((item, i) => (
+                                <li
+                                  key={i}
+                                  className="flex items-start gap-2.5 text-xs text-vj-text-strong leading-relaxed"
+                                >
+                                  <span className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-vj-pay-green text-white text-3xs shrink-0 mt-0.5 font-black shadow-xs">
+                                    ✓
+                                  </span>
+                                  <span>{item}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+
+                        {benefits.notIncluded.length > 0 && (
+                          <div className="pt-1">
+                            <h5 className="font-black text-vj-dark mb-2 text-xs font-koho uppercase tracking-wider">
+                              Chưa bao gồm (Có thể mua thêm với phí):
+                            </h5>
+                            <ul className="space-y-2">
+                              {benefits.notIncluded.map((item, i) => (
+                                <li
+                                  key={i}
+                                  className="flex items-start gap-2.5 text-xs text-vj-text-strong leading-relaxed"
+                                >
+                                  <span className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-primary text-white text-3xs shrink-0 mt-0.5 font-black shadow-xs">
+                                    ✕
+                                  </span>
+                                  <span>{item}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+
+                        {/* Footer */}
+                        <div className="flex items-center justify-between pt-3 border-t border-black/5 mt-4">
+                          <button
+                            type="button"
+                            onClick={() => setCompareFare(activeFareClass)}
+                            className="flex items-center gap-1.5 text-xs text-vj-blue hover:underline font-bold"
+                          >
+                            <span className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-blue-600 text-white text-3xs font-bold">
+                              i
+                            </span>
+                            <span>Xem quy định giá vé</span>
+                          </button>
+
+                          <div className="flex items-center gap-1.5 text-vj-pay-green text-xs font-bold">
+                            <span className="inline-flex items-center justify-center w-4 h-4 rounded-full border-2 border-vj-pay-green text-vj-pay-green text-2xs font-black">
+                              ✓
+                            </span>
+                            <span>Đã chọn</span>
+                          </div>
                         </div>
                       </div>
                     </div>
-
-                    {/* Benefits checklist */}
-                    <div className="p-4 sm:p-6 text-xs text-vj-text space-y-3.5">
-                      {benefits.included.length > 0 && (
-                        <div>
-                          <h5 className="font-black text-vj-dark mb-2 text-xs font-koho uppercase tracking-wider">
-                            Bao gồm:
-                          </h5>
-                          <ul className="space-y-2">
-                            {benefits.included.map((item, i) => (
-                              <li
-                                key={i}
-                                className="flex items-start gap-2.5 text-xs text-vj-text-strong leading-relaxed"
-                              >
-                                <span className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-vj-pay-green text-white text-3xs shrink-0 mt-0.5 font-black shadow-xs">
-                                  ✓
-                                </span>
-                                <span>{item}</span>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      )}
-
-                      {benefits.notIncluded.length > 0 && (
-                        <div className="pt-1">
-                          <h5 className="font-black text-vj-dark mb-2 text-xs font-koho uppercase tracking-wider">
-                            Chưa bao gồm (Có thể mua thêm với phí):
-                          </h5>
-                          <ul className="space-y-2">
-                            {benefits.notIncluded.map((item, i) => (
-                              <li
-                                key={i}
-                                className="flex items-start gap-2.5 text-xs text-vj-text-strong leading-relaxed"
-                              >
-                                <span className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-primary text-white text-3xs shrink-0 mt-0.5 font-black shadow-xs">
-                                  ✕
-                                </span>
-                                <span>{item}</span>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      )}
-
-                      {/* Footer */}
-                      <div className="flex items-center justify-between pt-3 border-t border-black/5 mt-4">
-                        <button
-                          type="button"
-                          onClick={() => setCompareFare(activeFareClass)}
-                          className="flex items-center gap-1.5 text-xs text-vj-blue hover:underline font-bold"
-                        >
-                          <span className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-blue-600 text-white text-3xs font-bold">
-                            i
-                          </span>
-                          <span>Xem quy định giá vé</span>
-                        </button>
-
-                        <div className="flex items-center gap-1.5 text-vj-pay-green text-xs font-bold">
-                          <span className="inline-flex items-center justify-center w-4 h-4 rounded-full border-2 border-vj-pay-green text-vj-pay-green text-2xs font-black">
-                            ✓
-                          </span>
-                          <span>Đã chọn</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-            );
-          })}
-            </div>
-          )}
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
 
         {/* Enhanced empty state */}
         {!isLoading && filtered.length === 0 && (
