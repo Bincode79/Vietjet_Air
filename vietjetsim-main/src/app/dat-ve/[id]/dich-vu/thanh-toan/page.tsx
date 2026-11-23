@@ -108,6 +108,7 @@ export default function AncillaryPaymentPage() {
   const paymentMethods = [
     { id: 'vietqr', label: 'VietQR', icon: '🏦', desc: 'Quét mã QR thanh toán' },
     { id: 'vnpay', label: 'VNPay', icon: '💳', desc: 'Thanh toán qua VNPay' },
+    { id: 'napas', label: 'Thẻ ATM Napas', icon: '💳', desc: 'Thẻ ATM nội địa Napas' },
     { id: 'credit_card', label: 'Thẻ ATM/Napas', icon: '💳', desc: 'Thẻ nội địa Việt Nam' },
     { id: 'momo', label: 'Ví MoMo', icon: '📱', desc: 'Ví điện tử MoMo' },
     { id: 'zalopay', label: 'Ví ZaloPay', icon: '📱', desc: 'Ví điện tử ZaloPay' },

@@ -25,6 +25,9 @@ import {
   SecurityFooter,
 } from '@/features/payments/components/PaymentMethodCard';
 
+const PAYMENT_BAR_BUTTON_CLASS =
+  'inline-flex h-11 w-28 shrink-0 items-center justify-center rounded-vj px-3 text-center font-koho text-sm font-bold leading-none transition-all active:scale-98';
+
 /**
  * `YYYY-MM-DD` from the booking, as `d/M/yyyy`.
  *
@@ -846,14 +849,14 @@ export default function PaymentClient() {
             <button
               type="button"
               onClick={() => router.push(bookingCode ? `/dat-ve/${bookingCode}` : '/tim-ve')}
-              className="h-11 px-3.5 sm:px-6 rounded-full border border-gray-300 bg-white hover:bg-gray-50 text-vj-text font-koho font-bold text-xs uppercase tracking-wide transition-all active:scale-98 shadow-2xs inline-flex items-center justify-center cursor-pointer"
+              className={`${PAYMENT_BAR_BUTTON_CLASS} cursor-pointer border border-gray-300 bg-white text-vj-text shadow-2xs hover:bg-gray-50`}
             >
               Quay lại
             </button>
             <button
               type="button"
               onClick={() => router.push('/tim-ve')}
-              className="h-11 px-4 sm:px-5 rounded-full border border-amber-300 bg-amber-50 hover:bg-amber-100 text-amber-900 font-koho font-bold text-xs uppercase tracking-wide shadow-2xs transition-all active:scale-98 cursor-pointer hidden sm:inline-flex items-center justify-center"
+              className={`${PAYMENT_BAR_BUTTON_CLASS} hidden cursor-pointer border border-amber-300 bg-amber-50 text-amber-900 shadow-2xs hover:bg-amber-100 sm:inline-flex`}
             >
               Mua thêm
             </button>
@@ -879,11 +882,9 @@ export default function PaymentClient() {
             type="button"
             data-testid="pay-submit-button"
             onClick={goToPaymentGateway}
-            className="min-h-9 sm:min-h-10 px-4 sm:px-6 py-0.5 rounded-full bg-gradient-vj-yellow hover:brightness-105 active:scale-98 shadow-md transition-all cursor-pointer flex items-center justify-center gap-2 text-center font-koho"
+            className={`${PAYMENT_BAR_BUTTON_CLASS} cursor-pointer bg-gradient-vj-yellow text-vj-text shadow-md hover:brightness-105`}
           >
-            <span className="font-bold text-xs sm:text-sm leading-tight text-vj-text">
-              Thanh Toán
-            </span>
+            <span>Thanh toán</span>
           </button>
         </div>
       </div>

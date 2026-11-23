@@ -246,7 +246,7 @@ export default function BookingDetailPage() {
         </h1>
 
         {/* Dải băng vàng dạng thẻ bo tròn trên Mobile - Chuẩn Mobile Screenshot #1 */}
-        <div className="sm:hidden bg-amber-400 rounded-2xl p-4 text-xs font-medium space-y-1 text-gray-900 shadow-xs">
+        <div className="sm:hidden bg-amber-400 rounded-vj p-3 text-xs font-medium space-y-1 text-gray-900 shadow-xs">
           <div>
             <span>Mã đặt chỗ : </span>
             <span className="font-bold text-vj-booking-red tracking-wider text-sm">
@@ -612,17 +612,6 @@ export default function BookingDetailPage() {
           </button>
         </div>
       </main>
-
-      {/* Floating Cookie Settings Button góc dưới bên trái - chuẩn Image #1 & #2 */}
-      <div className="fixed bottom-4 left-4 z-40">
-        <button
-          type="button"
-          aria-label="Cài đặt Cookie"
-          className="w-10 h-10 rounded-full bg-white border border-gray-300 shadow-md flex items-center justify-center text-lg hover:scale-105 active:scale-95 transition-all cursor-pointer"
-        >
-          🍪
-        </button>
-      </div>
 
       {/* Vệt đuôi máy bay Vietjet góc dưới bên phải - chuẩn Screenshot 1 */}
       <div className="fixed -bottom-4 -right-4 pointer-events-none z-0 opacity-95">

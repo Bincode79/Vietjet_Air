@@ -136,7 +136,9 @@ export default function VietQrBox({
     if (bookingId) {
       (async () => {
         try {
-          const discountParam = discountCode ? `&discountCode=${encodeURIComponent(discountCode)}` : '';
+          const discountParam = discountCode
+            ? `&discountCode=${encodeURIComponent(discountCode)}`
+            : '';
           const result = await apiRequest<VietQrData>(
             `/api/thanh-toan/vietqr?bookingId=${encodeURIComponent(bookingId)}${discountParam}`
           );

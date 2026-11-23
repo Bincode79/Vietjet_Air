@@ -10,7 +10,6 @@ import {
   RiRadarLine,
   RiFolderShield2Line,
   RiArrowDownSLine,
-  RiArrowUpLine,
 } from 'react-icons/ri';
 import { SiLine, SiZalo } from 'react-icons/si';
 import {
@@ -27,8 +26,8 @@ import {
  * - Bố cục 5 CỘT trên Desktop, mỗi cột rộng 195px, cách nhau 98px.
  * - Tiêu đề cột: 18px/700 màu `#333333` (Desktop) / 15px/700 (Mobile).
  * - Liên kết: 14px/500 màu `#333333` (Desktop) / 13px/500 (Mobile).
- * - Mobile: Chuyển đổi thành Accordion thu gọn / mở rộng thông minh, có nút
- *   "Về đầu trang". Layout chung chừa khoảng an toàn cho MobileBottomNav.
+ * - Mobile: Chuyển đổi thành Accordion thu gọn / mở rộng thông minh.
+ *   Layout chung chừa khoảng an toàn cho MobileBottomNav.
  */
 const FOOTER_COLUMNS: ReadonlyArray<{
   title: string;
@@ -164,12 +163,6 @@ export default function Footer() {
     }));
   };
 
-  const handleScrollTop = () => {
-    if (typeof window !== 'undefined') {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-  };
-
   return (
     // Nền trắng phủ pattern SVG (đo được trên site thật: background-color #fff
     // + footer-pattern.svg, background-size 300px cover).
@@ -222,16 +215,6 @@ export default function Footer() {
             );
           })}
         </div>
-
-        {/* Nút về đầu trang tiện lợi trên Mobile */}
-        <button
-          type="button"
-          onClick={handleScrollTop}
-          className="flex lg:hidden min-h-11 items-center justify-center gap-1.5 w-full py-2.5 my-5 bg-stone-100 hover:bg-stone-200 text-stone-700 rounded-full text-xs font-semibold transition-colors shadow-sm active:scale-[0.98]"
-        >
-          <RiArrowUpLine size={16} />
-          <span>Về đầu trang</span>
-        </button>
 
         {/* ========================================================
             2. Desktop 5 Columns View (>= lg)
@@ -391,11 +374,11 @@ export default function Footer() {
             <div className="mt-5">
               <p className="mb-2 flex items-center gap-2 font-bold text-[var(--foreground)] text-xs">
                 <img
-                  src="/images/vj-logo.svg"
+                  src="/images/brand/vietjet-air-circle.jpg"
                   alt="Vietjet Air"
-                  width={20}
-                  height={20}
-                  className="h-5 w-auto"
+                  width={36}
+                  height={36}
+                  className="h-9 w-9 rounded-full object-cover"
                 />
                 Tải ứng dụng di động Vietjet Air
               </p>
@@ -462,6 +445,13 @@ export default function Footer() {
               </span>
             </p>
 
+            <img
+              src="/images/brand/vietjet-logo-red.png"
+              alt="Vietjet Air"
+              width={115}
+              height={20}
+              className="mb-2 h-6 w-auto"
+            />
             <p className="font-black text-[var(--foreground)] pt-1">
               CÔNG TY CỔ PHẦN HÀNG KHÔNG VIETJET
             </p>

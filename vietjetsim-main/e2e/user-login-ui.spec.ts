@@ -39,9 +39,7 @@ test.describe('E2E Flow: User Login and UI Verification', () => {
 
       // Mở menu tài khoản (nếu đã đăng nhập) hoặc nút đăng nhập
       const accountBtn = page
-        .locator(
-          '[aria-label*="tài khoản"], [aria-label*="account"], button:has-text("Đăng nhập")'
-        )
+        .locator('[aria-label*="tài khoản"], [aria-label*="account"], button:has-text("Đăng nhập")')
         .first();
       const hasAccountBtn = await accountBtn.isVisible({ timeout: 5000 }).catch(() => false);
 
@@ -85,7 +83,10 @@ test.describe('E2E Flow: User Login and UI Verification', () => {
 
       // Kiểm tra nav links
       const navLinks = page.getByRole('link', { name: /Chuyến bay của tôi|Online Check-in/i });
-      const hasNavLinks = await navLinks.first().isVisible({ timeout: 5000 }).catch(() => false);
+      const hasNavLinks = await navLinks
+        .first()
+        .isVisible({ timeout: 5000 })
+        .catch(() => false);
 
       if (hasNavLinks) {
         console.info('Navigation links hiển thị trên tablet');
@@ -204,9 +205,7 @@ test.describe('E2E Flow: User Login and UI Verification', () => {
     await page.goto('/trang-chu');
 
     const accountBtn = page
-      .locator(
-        '[aria-label*="tài khoản"], [aria-label*="account"], button:has-text("Đăng nhập")'
-      )
+      .locator('[aria-label*="tài khoản"], [aria-label*="account"], button:has-text("Đăng nhập")')
       .first();
     const hasAccountBtn = await accountBtn.isVisible({ timeout: 5000 }).catch(() => false);
 

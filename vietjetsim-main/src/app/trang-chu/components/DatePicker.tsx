@@ -1,10 +1,12 @@
 'use client';
 
 import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
+import { createPortal } from 'react-dom';
 import {
   MdKeyboardArrowLeft as ChevronLeft,
   MdKeyboardArrowRight as ChevronRight,
   MdCalendarMonth as Calendar,
+  MdClose as CloseIcon,
 } from 'react-icons/md';
 
 export interface CalendarCell {
@@ -89,11 +91,6 @@ export interface FlightDatePickerPopoverProps {
   onClose: () => void;
   minDate?: string;
   className?: string;
-  /**
-   * Khoảng trống theo pixel dưới trường ngày (0 nếu chưa có). Khi không đủ
-   * chỗ dưới mà đủ trên, popover mở lên trên thay vì tràn đáy.
-   */
-  anchorTop?: number;
 }
 
 /**
@@ -111,34 +108,8 @@ export function FlightDatePickerPopover({
   onClose,
   minDate,
   className = '',
-  anchorTop = 0,
 }: FlightDatePickerPopoverProps) {
   const popoverRef = useRef<HTMLDivElement>(null);
-
-  // Tính toán vị trí top động: nếu không đủ chỗ dưới mà đủ trên, mở lên trên.
-  const popoverTop = useMemo(() => {
-    const viewportHeight = typeof window !== 'undefined' ? window.innerHeight : 844;
-    const popoverHeight = 520; // 2 tháng + dải pill, đo trên site thật (dưới 400px)
-    const gap = 8;
-    const roomUnder = viewportHeight - (anchorTop + gap);
-    const fitsUnder = roomUnder >= popoverHeight;
-    const fitsAbove = anchorTop >= popoverHeight + gap;
-
-    if (fitsUnder) {
-      return anchorTop + gap;
-    }
-    if (fitsAbove) {
-      return anchorTop - popoverHeight - gap;
-    }
-    // Neither fits: clamp to viewport so popover never overflows.
-    return Math.max(
-      gap,
-      Math.min(
-        anchorTop + gap,
-        viewportHeight - Math.min(popoverHeight, viewportHeight - gap * 2) - gap
-      )
-    );
-  }, [anchorTop]);
 
   // Initialize view year/month based on active step's date
   const anchorDate = useMemo(() => {
@@ -357,13 +328,13 @@ export function FlightDatePickerPopover({
     );
   };
 
-  const isDesktop = typeof window !== 'undefined' ? window.innerWidth >= 1024 : true;
-
-  return (
+  return createPortal(
     <div
       ref={popoverRef}
-      className={`fixed inset-x-0 bottom-0 z-50 max-h-[85dvh] w-full max-w-none overflow-y-auto overscroll-contain rounded-t-vj border-t border-vj-border-light bg-white p-3 pb-[calc(12px+env(safe-area-inset-bottom,0px))] shadow-vj-popover select-none text-vj-text-strong animate-fadeIn lg:absolute lg:inset-x-auto lg:bottom-auto lg:right-0 lg:top-[112px] lg:max-h-none lg:w-[630px] lg:max-w-[calc(100vw-28px)] lg:rounded-vj lg:border lg:p-5 lg:pb-5 ${className}`}
-      style={{ top: isDesktop && anchorTop > 0 ? `${popoverTop}px` : undefined }}
+      role="dialog"
+      aria-modal="true"
+      aria-label="Chọn ngày bay"
+      className={`fixed inset-x-2 top-1/2 z-50 max-h-[calc(100dvh-32px)] w-auto -translate-y-1/2 overflow-y-auto overscroll-contain rounded-vj border border-vj-border-light bg-white p-3 pb-[calc(12px+env(safe-area-inset-bottom,0px))] shadow-vj-popover select-none text-vj-text-strong animate-fadeIn lg:inset-x-auto lg:w-[630px] lg:max-w-[calc(100vw-32px)] lg:max-h-[calc(100dvh-32px)] lg:left-1/2 lg:-translate-x-1/2 lg:-translate-y-1/2 lg:p-5 lg:pb-5 ${className}`}
     >
       {/* Lời giải thích vì sao popover là "sheet" ở MOBILE.
        *
@@ -372,18 +343,30 @@ export function FlightDatePickerPopover({
        * tức là mở ra ở y=532 trên màn hình 667px cao, và 166px cuối bị cắt
        * mất dưới mép màn hình. Người dùng không chạm được nửa dưới lịch.
        *
-       * Dưới `md` popover trở thành một sheet trượt lên từ đáy màn hình:
-       * cao tối đa 85% chiều cao viewport, tự cuộn bên trong, và chừa
-       * safe-area cho vùng cảm ứng của iPhone. Từ `md` trở lên nó trở về
-       * hộp neo cố định như cũ. */}
+       * Dưới `lg` popover là một hộp thoại căn giữa màn hình (`top-1/2` +
+       * `-translate-y-1/2`), rộng gần hết viewport, tự cuộn bên trong khi
+       * lịch cao hơn màn hình, và chừa safe-area cho vùng cảm ứng của
+       * iPhone. Từ `lg` trở lên nó trở về hộp 2 tháng căn giữa như cũ. */}
 
       {/* Loại hành trình — dải pill bo tròn 999px, đúng site thật:
           track nền #F3F1F1 padding 3px, item active nền trắng + bóng nhẹ,
           chữ 14px, padding ngang 12.5px (đo 14/11/2026: `jss297`).
           Trên trang chủ dải pill này nằm TRONG popover lịch, không nằm trên
           thanh đặt vé — khớp 100% site thật. */}
-      <div className="mb-4 flex justify-end px-2">
-        <div className="vj-pill-track" role="group" aria-label="Loại hành trình">
+      <div className="sticky top-0 z-30 -mx-3 -mt-3 mb-4 flex flex-wrap items-center gap-2 border-b border-vj-border-light bg-white/95 px-3 py-3 backdrop-blur lg:-mx-5 lg:-mt-5 lg:flex-nowrap lg:px-5">
+        <div className="min-w-0 flex-1">
+          <p className="text-sm font-bold text-vj-text-strong">
+            {activeStep === 'depart' ? 'Chọn ngày đi' : 'Chọn ngày về'}
+          </p>
+          <p className="text-xs text-vj-gray">
+            {roundTrip ? 'Chọn lần lượt ngày đi và ngày về' : 'Chọn ngày khởi hành'}
+          </p>
+        </div>
+        <div
+          className="vj-pill-track order-3 mx-auto sm:order-none sm:mx-0"
+          role="group"
+          aria-label="Loại hành trình"
+        >
           <button
             type="button"
             className="vj-pill-item"
@@ -403,6 +386,14 @@ export function FlightDatePickerPopover({
             Khứ hồi
           </button>
         </div>
+        <button
+          type="button"
+          onClick={onClose}
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-vj-text-dim transition-colors hover:bg-vj-pill hover:text-vj-text-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-vjred"
+          aria-label="Đóng lịch"
+        >
+          <CloseIcon className="text-xl" aria-hidden="true" />
+        </button>
       </div>
 
       {/* Two months side by side */}
@@ -410,7 +401,8 @@ export function FlightDatePickerPopover({
         <div>{renderMonth(viewYear, viewMonth, true)}</div>
         <div className="hidden md:block">{renderMonth(month2Year, month2, false)}</div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
 

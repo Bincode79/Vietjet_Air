@@ -3,10 +3,10 @@
 import Link from 'next/link';
 import { AppImage } from '@/shared/components/ui';
 
-/** 4 thẻ dịch vụ nhỏ, số đo site thật (đo 13/11/2026): ~178×96 px desktop,
- * ~160×88 px mobile, bo góc 12px, nền rgba(161,117,117,0.07), padding 12px —
- * icon trên, tiêu đề 14px/700, mô tả 12px. Luôn một hàng ngang (overflow-x-auto
- * trên mobile), thay vì rơi xuống nhiều hàng. */
+/** 4 thẻ dịch vụ nhỏ, bo góc 12px, nền trung tính, padding 12px — icon trên,
+ * tiêu đề 14px/700, mô tả 12px. Grid responsive cho mỗi thẻ một vùng bố cục
+ * riêng và để chiều cao tự tăng theo nội dung, tránh mô tả dài đè lên thẻ kế
+ * bên hoặc section tiếp theo. */
 const SERVICE_CARDS = [
   {
     title: 'SkyJoy',
@@ -36,14 +36,14 @@ const SERVICE_CARDS = [
 
 export default function ServiceStripSection() {
   return (
-    <section className="bg-white pt-4 pb-8 sm:pt-6 sm:pb-12 lg:pt-8 lg:pb-16">
+    <section className="bg-white pt-1 pb-4 sm:pt-2 sm:pb-6 lg:pt-2 lg:pb-8">
       <div className="vj-section-wide">
-        <div className="mt-4 flex gap-2 overflow-x-auto pb-1 sm:mt-5">
+        <div className="mt-1 grid grid-cols-1 gap-3 sm:mt-2 sm:grid-cols-2 lg:grid-cols-4 lg:gap-4">
           {SERVICE_CARDS.map((card) => (
             <Link
               key={card.title}
               href={card.href}
-              className="vj-service-card flex w-[160px] min-w-[160px] max-w-[160px] shrink-0 flex-col overflow-hidden break-words transition-transform duration-200 hover:-translate-y-1 sm:w-[178px] sm:min-w-[178px] sm:max-w-[178px]"
+              className="vj-service-card flex min-w-0 flex-col overflow-hidden break-words transition-transform duration-200 hover:-translate-y-1"
             >
               <AppImage
                 src={card.icon}

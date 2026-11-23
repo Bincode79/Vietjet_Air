@@ -64,7 +64,6 @@ export async function GET(request: NextRequest) {
 
     // Tính discountAmount từ discountCode nếu có
     let discountAmount = 0;
-    let validatedDiscountId: string | undefined;
     let discountCodeForNote = '';
 
     if (discountCode) {
@@ -77,7 +76,6 @@ export async function GET(request: NextRequest) {
             // Kiểm tra min booking amount
             if (booking.total_price >= Number(discount.min_booking_amount)) {
               discountAmount = computeDiscountAmount(discount, booking.total_price);
-              validatedDiscountId = discount.id;
               discountCodeForNote = discount.code;
             }
           }

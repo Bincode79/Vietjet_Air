@@ -243,17 +243,16 @@ function FlightBookingClientInner({
         'outbound'
       );
       if (isUserAction) {
-        if (isRoundTrip) {
-          setCurrentLeg('inbound');
-        } else {
-          if (continueSignal === undefined) {
-            goStep(2);
-          }
-          toast.success(
-            'Chuyến bay đã được chọn!',
-            `${flight.flightNo}: ${flight.fromCity} → ${flight.toCity} lúc ${flight.departTime}`
-          );
+        // Khứ hồi: KHÔNG tự nhảy sang tab chiều về — người dùng cần thấy
+        // nội dung chi tiết chuyến đi vừa chọn (giống trang chiều về) trước
+        // khi đi tiếp. Nút "Đi tiếp" sẽ chuyển sang chọn chuyến về.
+        if (!isRoundTrip && continueSignal === undefined) {
+          goStep(2);
         }
+        toast.success(
+          'Chuyến bay đã được chọn!',
+          `${flight.flightNo}: ${flight.fromCity} → ${flight.toCity} lúc ${flight.departTime}`
+        );
       }
     } else {
       setBooking((b) => ({
@@ -297,8 +296,8 @@ function FlightBookingClientInner({
     }));
     setSelectedSeatPrices(seatFee > 0 ? [seatFee] : []);
     const labels = [
-      seats.length > 0 ? `Đi: ${seats.join(', ')}` : null,
-      returnSeats && returnSeats.length > 0 ? `Về: ${returnSeats.join(', ')}` : null,
+      seats.length > 0 ? `Chuyến đi: ${seats.join(', ')}` : null,
+      returnSeats && returnSeats.length > 0 ? `Chuyến về: ${returnSeats.join(', ')}` : null,
     ].filter(Boolean);
     if (labels.length > 0) {
       toast.success('Đã chọn chỗ ngồi!', labels.join(' | '));

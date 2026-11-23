@@ -7,6 +7,7 @@ import { listTransactions, confirmTransaction } from '@/features/admin';
 import type { AdminTransaction } from '@/features/admin/types';
 import { getApiErrorMessage } from '@/shared/services';
 import SendBookingEmailModal from './SendBookingEmailModal';
+import BankReconciliationModal from './BankReconciliationModal';
 
 /**
  * The tab's view of a transaction row.
@@ -51,6 +52,7 @@ export default function TransactionsTab({ onToast }: { onToast?: ToastAPI }) {
   const [emailModalType, setEmailModalType] = useState<'payment_instruction' | 'ticket_issuance'>(
     'payment_instruction'
   );
+  const [showReconcileModal, setShowReconcileModal] = useState(false);
   const pageSize = 10;
 
   const fetchTransactions = useCallback(async () => {
@@ -208,14 +210,24 @@ export default function TransactionsTab({ onToast }: { onToast?: ToastAPI }) {
             Duyệt thanh toán VietQR / Ngân hàng, xuất vé điện tử tự động
           </p>
         </div>
-        <button
-          onClick={() => fetchTransactions()}
-          disabled={isLoading}
-          className="flex items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-vj-admin-muted hover:text-white border border-white/10 rounded-vj text-xs font-bold transition-all active:scale-98 self-start sm:self-auto"
-        >
-          <Icon name="ArrowPathIcon" size={16} className={isLoading ? 'animate-spin' : ''} />
-          Làm mới
-        </button>
+        <div className="flex items-center gap-2 self-start sm:self-auto">
+          <button
+            type="button"
+            onClick={() => setShowReconcileModal(true)}
+            className="flex items-center gap-2 px-4 py-2 bg-teal-500 hover:bg-teal-400 text-slate-950 rounded-vj text-xs font-black uppercase tracking-wider transition-all active:scale-98 shadow-lg shadow-teal-500/20"
+          >
+            <Icon name="CurrencyDollarIcon" size={16} />
+            <span>Đối soát VietQR tự động ⚡</span>
+          </button>
+          <button
+            onClick={() => fetchTransactions()}
+            disabled={isLoading}
+            className="flex items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-vj-admin-muted hover:text-white border border-white/10 rounded-vj text-xs font-bold transition-all active:scale-98"
+          >
+            <Icon name="ArrowPathIcon" size={16} className={isLoading ? 'animate-spin' : ''} />
+            Làm mới
+          </button>
+        </div>
       </div>
 
       {/* KPI Cards */}
@@ -846,6 +858,16 @@ export default function TransactionsTab({ onToast }: { onToast?: ToastAPI }) {
               );
             }
           }
+        }}
+      />
+
+      {/* Modal Đối soát VietQR & Sao kê Ngân hàng tự động */}
+      <BankReconciliationModal
+        isOpen={showReconcileModal}
+        onClose={() => setShowReconcileModal(false)}
+        onSuccess={(msg) => {
+          onToast?.success('Đối soát thành công', msg);
+          fetchTransactions();
         }}
       />
     </div>

@@ -103,7 +103,6 @@ export default function HeroBookingWidget() {
   const [pax, setPax] = useState<PaxCounts>({ adult: 1, child: 0, infant: 0 });
   const [searchError, setSearchError] = useState<string | null>(null);
   const [openCalendar, setOpenCalendar] = useState<'depart' | 'return' | null>(null);
-  const [dateAnchorTop, setDateAnchorTop] = useState(0);
 
   useEffect(() => {
     let active = true;
@@ -297,9 +296,6 @@ export default function HeroBookingWidget() {
               </div>
               <button
                 type="button"
-                ref={(el) => {
-                  if (el) setDateAnchorTop(el.getBoundingClientRect().top);
-                }}
                 onClick={() => setOpenCalendar((prev) => (prev === 'depart' ? null : 'depart'))}
                 aria-label="Ngày đi"
                 aria-expanded={openCalendar === 'depart'}
@@ -330,9 +326,6 @@ export default function HeroBookingWidget() {
               {roundTrip && (
                 <button
                   type="button"
-                  ref={(el) => {
-                    if (el) setDateAnchorTop(el.getBoundingClientRect().top);
-                  }}
                   onClick={() => setOpenCalendar((prev) => (prev === 'return' ? null : 'return'))}
                   aria-label="Ngày về"
                   aria-expanded={openCalendar === 'return'}
@@ -446,7 +439,6 @@ export default function HeroBookingWidget() {
               onTripTypeChange={(isRound) => handleTripTypeChange(isRound ? 'round' : 'one')}
               onClose={() => setOpenCalendar(null)}
               minDate={toInputDate(new Date())}
-              anchorTop={dateAnchorTop}
             />
           )}
         </div>

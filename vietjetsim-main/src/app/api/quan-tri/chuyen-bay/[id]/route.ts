@@ -3,6 +3,7 @@ import { verifyAdminRequest } from '@/lib/admin-auth';
 import { auditAdmin } from '@/lib/admin-audit';
 import { getFlightById, updateFlight, insertFlightUpdateLog } from '@/lib/db';
 import { FLIGHT_NO_PATTERN, normalizeFlightNo } from '@/lib/flight-no';
+import { sql } from '@/lib/neon';
 
 // ─── Allowed update fields & their validators ────────────────────────────────
 
@@ -359,6 +360,63 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
             ? error.message
             : 'Đã xảy ra lỗi khi cập nhật thông tin chuyến bay.',
       },
+      { status: 500 }
+    );
+  }
+}
+
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  try {
+    const authResult = await verifyAdminRequest(request, 'flight:view');
+    if (authResult.error || authResult.response) return authResult.response!;
+
+    const { id } = await params;
+    const flight = await getFlightById(id);
+    if (!flight) {
+      return NextResponse.json(
+        { error: 'Not Found', message: `Không tìm thấy chuyến bay với ID: ${id}` },
+        { status: 404 }
+      );
+    }
+
+    let occupiedSeats: string[] = [];
+    let lockedSeats: string[] = [];
+
+    try {
+      const seatRows = (await sql`
+        SELECT seat_number FROM seats WHERE flight_id = ${id}
+      `) as Array<{ seat_number: string }>;
+      occupiedSeats = seatRows.map((r) => r.seat_number).filter(Boolean);
+    } catch (e) {
+      console.warn('[SEAT_MAP] Could not query seats table:', e);
+    }
+
+    try {
+      const lockRows = (await sql`
+        SELECT seat_number FROM seat_locks WHERE flight_id = ${id} AND expires_at > NOW()
+      `) as Array<{ seat_number: string }>;
+      lockedSeats = lockRows.map((r) => r.seat_number).filter(Boolean);
+    } catch (e) {
+      console.warn('[SEAT_MAP] Could not query seat_locks table:', e);
+    }
+
+    const totalSeats = flight.aircraft?.includes('A330') ? 377 : 180;
+    const occupiedCount = occupiedSeats.length;
+    const occupancyRate = Math.round((occupiedCount / totalSeats) * 1000) / 10;
+
+    return NextResponse.json({
+      success: true,
+      flight,
+      occupiedSeats,
+      lockedSeats,
+      totalSeats,
+      occupiedCount,
+      occupancyRate,
+    });
+  } catch (error) {
+    console.error('[FLIGHT-GET-ERROR]', error);
+    return NextResponse.json(
+      { error: 'Internal Server Error', message: 'Đã xảy ra lỗi khi lấy thông tin chuyến bay.' },
       { status: 500 }
     );
   }

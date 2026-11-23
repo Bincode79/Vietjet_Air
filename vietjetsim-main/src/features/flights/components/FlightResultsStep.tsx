@@ -980,12 +980,14 @@ export default function FlightResultsStep({
             màu (brightness-0 invert) — nếu giữ nền đủ 4 màu như site thật thì
             hàng này là "chip 4 màu" mà quy ước của dự án đã loại bỏ. */}
         {!isLoading && filtered.length > 0 && (
-          <div className="flex flex-row items-stretch gap-0 mt-3 mb-1">
+          <div className="flex flex-row items-stretch gap-0 mt-4 mb-4">
             {/* Khoảng trống khớp với ô thông tin chuyến bay bên trái
                 (mobile 105px, desktop 226px). */}
             <div className="w-[105px] sm:w-[28%] lg:w-[226px] shrink-0" />
-            {/* 4 Fare Headers aligned with flight card columns — màu chuẩn theo site thật vietjetair.com */}
-            <div className="flex-1 min-w-0 grid grid-cols-4 gap-0 lg:grid-cols-[repeat(4,minmax(0,1fr))]">
+            {/* 4 Fare Headers aligned with flight card columns — màu chuẩn theo site thật vietjetair.com.
+                Padding/gap phải khớp y hệt khối ô giá trong thẻ chuyến bay
+                (`p-0.5 sm:p-0 gap-0.5 sm:gap-0`) để header bám sát từng cột. */}
+            <div className="flex-1 min-w-0 grid grid-cols-4 gap-0.5 sm:gap-0 p-0.5 sm:p-0 lg:grid-cols-[repeat(4,minmax(0,1fr))]">
               <div
                 role="button"
                 tabIndex={0}
@@ -1076,8 +1078,9 @@ export default function FlightResultsStep({
 
         {/* Flight results */}
         {!isLoading &&
-          !loadError &&
-          filtered.map((flight, idx) => {
+          !loadError && (
+            <div className="mt-6">
+              {filtered.map((flight, idx) => {
             const economyFare = flight.economyPrice ?? flight.price;
             const businessFare = flight.businessPrice ?? flight.price;
 
@@ -1137,7 +1140,7 @@ export default function FlightResultsStep({
                 key={flight.id}
                 data-testid="flight-result-card"
                 style={{ transitionDelay: `${Math.min(idx * 50, 300)}ms` }}
-                className="bg-white rounded-vj border border-vj-border-light overflow-hidden shadow-xs hover:shadow-vj-md transition-shadow duration-200 relative flex flex-row flex-wrap mb-2 sm:mb-3"
+                className="bg-white rounded-vj border border-vj-border-light overflow-hidden shadow-xs hover:shadow-vj-md transition-shadow duration-200 relative flex flex-row flex-wrap mb-6 sm:mb-6"
               >
                 {/* Left: Flight Info - bright yellow box matching real Vietjet */}
                 <div
@@ -1527,6 +1530,8 @@ export default function FlightResultsStep({
               </div>
             );
           })}
+            </div>
+          )}
 
         {/* Enhanced empty state */}
         {!isLoading && filtered.length === 0 && (
@@ -2068,12 +2073,12 @@ export default function FlightResultsStep({
         )}
       </div>
 
-      {/* Không còn bản sao panel tổng ở đây: `/tim-ve` render panel "Thông tin
+      {/* Không còn bản sao panel tổng ở đây: /tim-ve render panel "Thông tin
           đặt chỗ" đúng chuẩn (380px, gradient đỏ, thanh mục #F1F1F1) ở cột
-          phải qua `BookingSummaryPanel`, và thanh "Tổng tiền" dính đáy qua
-          `FlightBookingResultsWrapper`. Bản sao cũ ở đây vẽ thêm MỘT panel
+          phải qua BookingSummaryPanel, và thanh "Tổng tiền" dính đáy qua
+          FlightBookingResultsWrapper. Bản sao cũ ở đây vẽ thêm MỘT panel
           tổng thứ hai trong cột trái và MỘT thanh đáy thứ hai — hai thanh cùng
-          `position: fixed` chồng lên nhau ở desktop. */}
+          position: fixed chồng lên nhau ở desktop. */}
 
       <FareBenefitsModal
         open={Boolean(compareFare)}

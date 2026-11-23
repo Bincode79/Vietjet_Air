@@ -697,14 +697,15 @@ h6 {
   padding-right: 20px;
 }
 
-/* Dải dịch vụ nhỏ (SkyJoy / Swift 247 / E-Sim / E-Visa): ~160×88 px mobile, ~178×96 px desktop, bo góc 12px, nền xám trung tính, padding 12px.
+/* Dải dịch vụ nhỏ (SkyJoy / Swift 247 / E-Sim / E-Visa): thẻ responsive,
+   tự tăng chiều cao theo nội dung, bo góc 12px, nền xám trung tính, padding 12px.
    Nền phải là xám trung tính (không phải tint ấm) vì icon dịch vụ là hình vuông đỏ —
    nền hồng đất làm icon đỏ bị lẫn/đè lên nhau. */
 .vj-service-card {
   background-color: rgb(var(--vj-muted-rgb) / 0.08);
   border-radius: 12px;
   padding: 12px;
-  min-height: 96px;
+  min-height: 132px;
 }
 
 /* Nhóm pill chọn hành trình: nền #F3F1F1, bo tròn 999px, item active trắng

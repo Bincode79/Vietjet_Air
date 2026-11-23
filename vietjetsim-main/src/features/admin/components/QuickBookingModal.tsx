@@ -5,6 +5,7 @@ import { listAdminFlights, createAdminQuickBooking, type AdminFlight } from '@/f
 import { getApiErrorMessage } from '@/shared/services';
 import { parseQuickFlightText } from '@/lib/quick-flight-parser';
 import { parsePassengerQuickText, type ParsedPassenger } from '@/lib/quick-booking-parser';
+import AdminSeatPickerModal from './AdminSeatPickerModal';
 
 interface ToastAPI {
   success: (title: string, message?: string) => void;
@@ -91,6 +92,7 @@ export default function QuickBookingModal({
   const [flightPasteText, setFlightPasteText] = useState('');
   const [showPassengerPaste, setShowPassengerPaste] = useState(false);
   const [passengerPasteText, setPassengerPasteText] = useState('');
+  const [seatPickerPaxIndex, setSeatPickerPaxIndex] = useState<number | null>(null);
 
   // Submitting & Result
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -966,9 +968,22 @@ export default function QuickBookingModal({
                         </div>
 
                         <div className="space-y-1">
-                          <label className="text-2xs text-vj-admin-muted font-bold uppercase">
-                            Ghế ngồi (nếu có)
-                          </label>
+                          <div className="flex items-center justify-between">
+                            <label className="text-2xs text-vj-admin-muted font-bold uppercase">
+                              Ghế ngồi (nếu có)
+                            </label>
+                            {selectedFlightId && (
+                              <button
+                                type="button"
+                                onClick={() => setSeatPickerPaxIndex(idx)}
+                                className="text-2xs text-emerald-400 hover:text-emerald-300 font-bold flex items-center gap-0.5"
+                                title="Xem sơ đồ ghế"
+                              >
+                                <Icon name="TicketIcon" size={11} />
+                                <span>Sơ đồ</span>
+                              </button>
+                            )}
+                          </div>
                           <input
                             type="text"
                             placeholder="VD: 12A"
@@ -1225,6 +1240,25 @@ export default function QuickBookingModal({
             </div>
           </div>
         )}
+
+        {/* Modal Sơ đồ ghế */}
+        <AdminSeatPickerModal
+          isOpen={seatPickerPaxIndex !== null}
+          onClose={() => setSeatPickerPaxIndex(null)}
+          flightId={selectedFlightId}
+          initialSelectedSeats={
+            seatPickerPaxIndex !== null && passengers[seatPickerPaxIndex]?.seat_number
+              ? [passengers[seatPickerPaxIndex].seat_number!]
+              : []
+          }
+          maxSelectable={1}
+          onConfirm={(seats) => {
+            if (seatPickerPaxIndex !== null && seats.length > 0) {
+              handleUpdatePassenger(seatPickerPaxIndex, 'seat_number', seats[0]);
+            }
+          }}
+          mode="pick"
+        />
       </div>
     </div>
   );

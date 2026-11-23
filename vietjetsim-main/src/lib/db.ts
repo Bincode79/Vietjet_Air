@@ -251,6 +251,8 @@ export interface BookingDetail {
   hold_expires_at?: string | null;
   /** Phương thức đang giữ chỗ ('movi') — xem `BookingRecord`. */
   hold_method?: string | null;
+  /** Ghi chú vận hành của operator (migration 050). */
+  operator_notes?: string | null;
   created_at: string;
   updated_at: string;
   flight: Pick<

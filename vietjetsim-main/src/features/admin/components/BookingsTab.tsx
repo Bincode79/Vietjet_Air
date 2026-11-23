@@ -12,12 +12,16 @@ import { getApiErrorMessage } from '@/shared/services';
 import { renderInvoiceHtml } from '@/features/admin/invoice';
 import SendBookingEmailModal from './SendBookingEmailModal';
 import QuickBookingModal from './QuickBookingModal';
+import RebookingModal from './RebookingModal';
+import AncillaryUpsellModal from './AncillaryUpsellModal';
 
 /** Mirrors the `bookings.status` union in `@/lib/db`, including `refunded`. */
 type BookingStatus = 'pending' | 'confirmed' | 'completed' | 'cancelled' | 'refunded';
 
 interface Booking {
   id: string;
+  realId?: string;
+  flightId?: string;
   userId: string;
   userName: string;
   userEmail?: string;
@@ -92,6 +96,8 @@ export default function BookingsTab({ onToast }: BookingsTabProps = {}) {
     'payment_instruction'
   );
   const [showQuickBookingModal, setShowQuickBookingModal] = useState(false);
+  const [rebookingTarget, setRebookingTarget] = useState<Booking | null>(null);
+  const [ancillaryTarget, setAncillaryTarget] = useState<Booking | null>(null);
 
   const loadBookings = React.useCallback(async () => {
     setIsLoading(true);
@@ -103,6 +109,8 @@ export default function BookingsTab({ onToast }: BookingsTabProps = {}) {
       const mapped: Booking[] = (res?.bookings || []).map((b) => {
         return {
           id: b.booking_code || b.id.slice(0, 8).toUpperCase(),
+          realId: b.id,
+          flightId: b.flight_id,
           userId: b.user_id || '0',
           userName: b.user_name || 'Khách hàng',
           userEmail: b.user_email || undefined,
@@ -902,6 +910,28 @@ export default function BookingsTab({ onToast }: BookingsTabProps = {}) {
                           type="button"
                           onClick={(e) => {
                             e.stopPropagation();
+                            setRebookingTarget(booking);
+                          }}
+                          className="p-1.5 rounded-vj bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 hover:text-amber-300 transition-all active:scale-98 border border-amber-500/20"
+                          title="Đổi chuyến bay (Rebooking) 🔄"
+                        >
+                          <Icon name="ArrowPathIcon" size={14} />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setAncillaryTarget(booking);
+                          }}
+                          className="p-1.5 rounded-vj bg-orange-500/10 hover:bg-orange-500/20 text-orange-400 hover:text-orange-300 transition-all active:scale-98 border border-orange-500/20"
+                          title="Mua bổ sung dịch vụ & hành lý (Ancillaries) 🧳"
+                        >
+                          <Icon name="BriefcaseIcon" size={14} />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
                             setEmailModalBooking(booking);
                             setEmailModalType(
                               booking.status === 'confirmed' || booking.status === 'completed'
@@ -1349,6 +1379,26 @@ export default function BookingsTab({ onToast }: BookingsTabProps = {}) {
                   </svg>
                   <span>Gửi Gmail</span>
                 </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setRebookingTarget(selectedBooking);
+                  }}
+                  className="flex-1 px-5 py-3 bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 rounded-2xl text-2xs font-black uppercase tracking-widest transition-all border border-amber-500/30 flex items-center justify-center gap-2 active:scale-98"
+                >
+                  <Icon name="ArrowPathIcon" size={16} />
+                  <span>Đổi chuyến bay</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setAncillaryTarget(selectedBooking);
+                  }}
+                  className="flex-1 px-5 py-3 bg-orange-500/15 hover:bg-orange-500/25 text-orange-300 rounded-2xl text-2xs font-black uppercase tracking-widest transition-all border border-orange-500/30 flex items-center justify-center gap-2 active:scale-98"
+                >
+                  <Icon name="BriefcaseIcon" size={16} />
+                  <span>Dịch vụ & Hành lý</span>
+                </button>
                 {selectedBooking.status === 'pending' && (
                   <button
                     onClick={() => {
@@ -1558,6 +1608,46 @@ export default function BookingsTab({ onToast }: BookingsTabProps = {}) {
             ...booking,
             userId: '0',
           });
+        }}
+      />
+
+      {/* Modal Đổi chuyến bay (Rebooking) */}
+      <RebookingModal
+        isOpen={Boolean(rebookingTarget)}
+        onClose={() => setRebookingTarget(null)}
+        booking={
+          rebookingTarget
+            ? {
+                id: rebookingTarget.realId || rebookingTarget.id,
+                booking_code: rebookingTarget.id,
+                user_name: rebookingTarget.userName,
+                user_email: rebookingTarget.userEmail,
+                flight_id: rebookingTarget.flightId,
+                flight_no: rebookingTarget.flightNo,
+                total_price: rebookingTarget.amount,
+                route: rebookingTarget.route,
+                status: rebookingTarget.status,
+                created_at: rebookingTarget.createdAt,
+              }
+            : null
+        }
+        onSuccess={() => {
+          loadBookings();
+          if (selectedBooking && rebookingTarget && selectedBooking.id === rebookingTarget.id) {
+            setSelectedBooking(null);
+          }
+        }}
+        onToast={onToast}
+      />
+
+      {/* Modal Mua bổ sung dịch vụ & hành lý */}
+      <AncillaryUpsellModal
+        isOpen={Boolean(ancillaryTarget)}
+        onClose={() => setAncillaryTarget(null)}
+        booking={ancillaryTarget}
+        onSuccess={(msg) => {
+          onToast?.success('Thành công', msg);
+          loadBookings();
         }}
       />
     </div>

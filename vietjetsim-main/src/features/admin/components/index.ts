@@ -29,6 +29,12 @@ export { default as SendBookingEmailModal } from './SendBookingEmailModal';
 export { default as QuickBookingModal } from './QuickBookingModal';
 export { default as EmailTemplatePreviewModal } from './EmailTemplatePreviewModal';
 export { default as UserDetailModal } from './UserDetailModal';
+export { default as AdminSeatPickerModal } from './AdminSeatPickerModal';
+export { default as SmartCannedResponsesModal } from './SmartCannedResponsesModal';
+export { default as FlightManifestModal } from './FlightManifestModal';
+export { default as RebookingModal } from './RebookingModal';
+export { default as AncillaryUpsellModal } from './AncillaryUpsellModal';
+export { default as BankReconciliationModal } from './BankReconciliationModal';
 
 // Phase 1 Dashboard Recharts & KPI Components
 export { KPIWidget } from './KPIWidget';

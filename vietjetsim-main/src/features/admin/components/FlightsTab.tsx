@@ -20,6 +20,8 @@ import BulkPriceAdjustmentModal from './BulkPriceAdjustmentModal';
 import QuickPriceEditModal from './QuickPriceEditModal';
 import QuickFlightBatchModal from './QuickFlightBatchModal';
 import SendFareDocumentModal from './SendFareDocumentModal';
+import AdminSeatPickerModal from './AdminSeatPickerModal';
+import FlightManifestModal from './FlightManifestModal';
 import { parseSingleFlightToForm, type SingleFlightFormData } from '@/lib/quick-flight-parser';
 
 interface ToastAPI {
@@ -114,6 +116,8 @@ export default function FlightsTab({ onToast }: { onToast?: ToastAPI }) {
   const [showQuickBatchModal, setShowQuickBatchModal] = useState(false);
   const [showSendFareDocModal, setShowSendFareDocModal] = useState(false);
   const [quickPricingFlight, setQuickPricingFlight] = useState<Flight | null>(null);
+  const [viewSeatMapFlightId, setViewSeatMapFlightId] = useState<string | null>(null);
+  const [manifestFlightId, setManifestFlightId] = useState<string | null>(null);
 
   const fetchFlights = async () => {
     setIsLoading(true);
@@ -954,6 +958,28 @@ export default function FlightsTab({ onToast }: { onToast?: ToastAPI }) {
                     </td>
                     <td className="px-5 py-3.5">
                       <div className="flex items-center justify-center gap-1.5">
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setViewSeatMapFlightId(flight.id);
+                          }}
+                          className="w-6 h-6 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 rounded-vj flex items-center justify-center transition-colors"
+                          title="Xem sơ đồ ghế ngồi 💺"
+                        >
+                          <Icon name="TicketIcon" size={12} />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setManifestFlightId(flight.id);
+                          }}
+                          className="w-6 h-6 bg-sky-500/10 hover:bg-sky-500/20 text-sky-400 rounded-vj flex items-center justify-center transition-colors"
+                          title="Danh sách hành khách (PNL) 👥"
+                        >
+                          <Icon name="UsersIcon" size={12} />
+                        </button>
                         <button
                           type="button"
                           onClick={(e) => {
@@ -1983,8 +2009,25 @@ export default function FlightsTab({ onToast }: { onToast?: ToastAPI }) {
               >
                 Cập nhật chuyến bay
               </button>
-              <button className="px-8 py-4 bg-white/5 hover:bg-white/10 text-vj-admin-muted hover:text-white border border-white/5 rounded-2xl text-xs font-black uppercase tracking-[0.2em] transition-all active:scale-90">
-                Xem danh sách khách
+              <button
+                type="button"
+                onClick={() => {
+                  setManifestFlightId(selectedFlight.id);
+                }}
+                className="px-8 py-4 bg-sky-500/15 hover:bg-sky-500/25 text-sky-300 border border-sky-500/30 rounded-2xl text-xs font-black uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-2 active:scale-95"
+              >
+                <Icon name="UsersIcon" size={16} />
+                <span>Xem danh sách khách</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setViewSeatMapFlightId(selectedFlight.id);
+                }}
+                className="px-8 py-4 bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-300 border border-emerald-500/30 rounded-2xl text-xs font-black uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-2 active:scale-95"
+              >
+                <Icon name="TicketIcon" size={16} />
+                <span>Xem sơ đồ ghế</span>
               </button>
             </div>
           </div>
@@ -2041,6 +2084,21 @@ export default function FlightsTab({ onToast }: { onToast?: ToastAPI }) {
           businessPrice: f.businessPrice || Math.round(f.price * 2.77),
         }))}
         onToast={onToast}
+      />
+
+      {/* Modal Xem sơ đồ ghế ngồi trực quan */}
+      <AdminSeatPickerModal
+        isOpen={Boolean(viewSeatMapFlightId)}
+        onClose={() => setViewSeatMapFlightId(null)}
+        flightId={viewSeatMapFlightId || ''}
+        mode="view"
+      />
+
+      {/* Modal Xuất Danh sách Hành khách Chuyến bay (PNL) */}
+      <FlightManifestModal
+        isOpen={Boolean(manifestFlightId)}
+        onClose={() => setManifestFlightId(null)}
+        flightId={manifestFlightId || ''}
       />
     </div>
   );

@@ -22,6 +22,8 @@ import type {
 
 const EP = API_ENDPOINTS.ADMIN;
 
+export type { AdminFlight, AdminBooking, AdminUser, AdminRefund, AdminTransaction } from '../types';
+
 export interface AdminListQuery {
   page?: number;
   limit?: number;
@@ -163,6 +165,52 @@ export function createBatchAdminFlights(flights: Array<Partial<AdminFlight>>) {
   });
 }
 
+export interface AdminFlightSeatMapData {
+  flight: AdminFlight;
+  occupiedSeats: string[];
+  lockedSeats: string[];
+  totalSeats: number;
+  occupiedCount: number;
+  occupancyRate: number;
+}
+
+export function getAdminFlightSeatMap(id: string) {
+  return apiRequest<AdminFlightSeatMapData>(withPathParams(EP.FLIGHT, { id }));
+}
+
+export interface AdminFlightManifestPassenger {
+  id: string;
+  booking_id: string;
+  booking_code: string;
+  booking_status: string;
+  name: string;
+  gender: string | null;
+  dob: string | null;
+  id_number: string | null;
+  passenger_type: string | null;
+  phone: string | null;
+  email: string | null;
+  seat_number: string | null;
+  is_checked_in: boolean;
+  check_in_time: string | null;
+  boarding_pass_code: string | null;
+  contact_email: string | null;
+  contact_phone: string | null;
+}
+
+export interface AdminFlightManifestData {
+  success: boolean;
+  flight: AdminFlight;
+  passengers: AdminFlightManifestPassenger[];
+  totalPassengers: number;
+  checkedInCount: number;
+  notCheckedInCount: number;
+}
+
+export function getAdminFlightManifest(id: string) {
+  return apiRequest<AdminFlightManifestData>(`${withPathParams(EP.FLIGHT, { id })}/hanh-khach`);
+}
+
 export function updateAdminFlight(id: string, input: Partial<AdminFlight>) {
   return apiRequest<{ success: boolean }>(withPathParams(EP.FLIGHT, { id }), {
     method: 'PATCH',
@@ -281,6 +329,46 @@ export function updateAdminBookingStatus(bookingId: string, status: string) {
       body: { bookingId, status },
     }
   );
+}
+
+export interface RebookPayload {
+  newFlightId: string;
+  seatNumber?: string;
+  passengerSeats?: Record<string, string>;
+  waiveFee?: boolean;
+  reason?: string;
+  customChangeFee?: number;
+}
+
+export interface RebookResponse {
+  success: boolean;
+  message: string;
+  bookingId: string;
+  oldFlight: { id: string; flightNo: string };
+  newFlight: {
+    id: string;
+    flightNo: string;
+    from: string;
+    to: string;
+    departTime: string;
+    arriveTime: string;
+  };
+  summary: {
+    passengerCount: number;
+    oldPricePerPax: number;
+    newPricePerPax: number;
+    totalFareDifference: number;
+    changeFee: number;
+    totalAdditionalAmount: number;
+    waivedFee: boolean;
+  };
+}
+
+export function rebookAdminBooking(bookingId: string, payload: RebookPayload) {
+  return apiRequest<RebookResponse>(`${EP.BOOKINGS}/${bookingId}/doi-chuyen`, {
+    method: 'POST',
+    body: payload,
+  });
 }
 
 export interface AdminQuickBookingPassenger {
@@ -708,6 +796,99 @@ export async function exportRevenueReportPdf(query: RevenueReportQuery): Promise
     throw new Error(message || `Không tải được báo cáo PDF (${res.status})`);
   }
   return res.blob();
+}
+
+export interface AdminAncillaryPayload {
+  baggagePackageId?: string;
+  mealId?: string;
+  hasInsurance?: boolean;
+  hasTaxi?: boolean;
+  isPaidNow?: boolean;
+  notes?: string;
+}
+
+export function getAdminBookingAncillaries(bookingId: string) {
+  return apiRequest<{
+    success: boolean;
+    booking: {
+      id: string;
+      booking_code: string;
+      flight_id: string;
+      flight_no?: string;
+      total_price: number;
+      status: string;
+      operator_notes?: string;
+    };
+    baggage: unknown[];
+    ancillaries: unknown[];
+    pendingAmount: number;
+  }>(`/api/quan-tri/dat-ve/${bookingId}/dich-vu`);
+}
+
+export function addAdminBookingAncillaries(bookingId: string, payload: AdminAncillaryPayload) {
+  return apiRequest<{
+    success: boolean;
+    message: string;
+    extraTotal: number;
+    isPaidNow: boolean;
+    addedItems: Array<{ type: string; id: string; price: number }>;
+  }>(`/api/quan-tri/dat-ve/${bookingId}/dich-vu`, {
+    method: 'POST',
+    body: payload,
+  });
+}
+
+// ─── Đối soát giao dịch VietQR / Ngân hàng tự động ───────────────────────────
+
+export interface BankReconciliationPayload {
+  action: 'preview' | 'settle';
+  items: Array<{
+    refId?: string;
+    date?: string;
+    amount: number;
+    description: string;
+  }>;
+  settleBookingCodes?: string[];
+}
+
+export interface BankReconciliationResponse {
+  success: boolean;
+  action: 'preview' | 'settle';
+  message: string;
+  summary: {
+    totalRecords: number;
+    matchedCount: number;
+    mismatchCount: number;
+    alreadySettledCount: number;
+    unmatchedCount: number;
+    invalidCount: number;
+    totalAmount: number;
+    matchedAmount: number;
+    settledCount: number;
+  };
+  results: Array<{
+    id: string;
+    refId: string;
+    date: string;
+    amount: number;
+    description: string;
+    extractedPnr: string | null;
+    bookingId?: string;
+    bookingStatus?: string;
+    expectedAmount?: number;
+    difference?: number;
+    passengerName?: string;
+    flightNo?: string;
+    status: 'matched' | 'mismatch' | 'already_settled' | 'unmatched' | 'invalid_booking';
+    settled?: boolean;
+  }>;
+}
+
+export function reconcileBankTransactions(payload: BankReconciliationPayload) {
+  return apiRequest<BankReconciliationResponse>('/api/quan-tri/giao-dich/doi-soat', {
+    method: 'POST',
+    body: payload,
+  });
 }
 
 export * from './dashboard.service';

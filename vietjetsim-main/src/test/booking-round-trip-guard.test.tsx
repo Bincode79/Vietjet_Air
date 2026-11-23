@@ -84,13 +84,14 @@ describe('round-trip booking flow', () => {
     // Initially on outbound leg
     expect(screen.getByRole('button', { name: 'Chọn chuyến đi VJ301' })).toBeInTheDocument();
 
-    // Select outbound flight
+    // Select outbound flight — stays on outbound leg so the user can see the
+    // selected flight's detail content (same as the return-leg page) before
+    // moving on to pick the return flight.
     fireEvent.click(screen.getByRole('button', { name: 'Chọn chuyến đi VJ301' }));
+    expect(screen.getByRole('button', { name: 'Chọn chuyến đi VJ301' })).toBeInTheDocument();
 
-    // Automatically switches to return leg
-    expect(screen.getByRole('button', { name: 'Chọn chuyến về VJ302' })).toBeInTheDocument();
-
-    // Select return flight -> advances to passenger info step
+    // Switch to the return leg, then select return flight -> passenger info step
+    fireEvent.click(screen.getByTestId('tab-leg-inbound'));
     fireEvent.click(screen.getByRole('button', { name: 'Chọn chuyến về VJ302' }));
 
     expect(screen.getByRole('heading', { name: 'Nhập thông tin hành khách' })).toBeInTheDocument();

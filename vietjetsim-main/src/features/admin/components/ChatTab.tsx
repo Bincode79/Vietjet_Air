@@ -20,6 +20,7 @@ import {
 } from '@/features/chat/services';
 import { playNewMessageChime } from '@/features/chat/services/callSounds';
 import VoiceCallModal from '@/features/chat/components/VoiceCallModal';
+import SmartCannedResponsesModal from './SmartCannedResponsesModal';
 
 const QUICK_ADMIN_RESPONSES = [
   'Dạ chào Quý khách! Em là tổng đài viên Vietjet Air, em có thể hỗ trợ gì cho mình ạ?',
@@ -60,6 +61,7 @@ export default function ChatTab() {
   const [loadingConvs, setLoadingConvs] = useState(true);
   const [loadingMsgs, setLoadingMsgs] = useState(false);
   const [sending, setSending] = useState(false);
+  const [showCannedModal, setShowCannedModal] = useState(false);
 
   // Voice call states for admin
   const [activeCall, setActiveCall] = useState<ChatCall | null>(null);
@@ -277,6 +279,8 @@ export default function ChatTab() {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       handleSend();
+    } else if (e.key === '/' && !inputText.trim()) {
+      setShowCannedModal(true);
     }
   };
 
@@ -954,6 +958,15 @@ export default function ChatTab() {
                 <span className="text-vj-muted font-bold whitespace-nowrap uppercase tracking-wider text-3xs">
                   Trả lời nhanh:
                 </span>
+                <button
+                  type="button"
+                  onClick={() => setShowCannedModal(true)}
+                  className="whitespace-nowrap px-3 py-1 rounded-vj bg-sky-500/15 hover:bg-sky-500/25 text-sky-400 font-bold border border-sky-500/30 flex items-center gap-1 transition-colors"
+                  title="Kho câu trả lời mẫu thông minh (/)"
+                >
+                  <Icon name="BoltIcon" size={13} />
+                  <span>Mẫu trả lời (/)</span>
+                </button>
                 {QUICK_ADMIN_RESPONSES.map((tmpl, idx) => (
                   <button
                     key={idx}
@@ -1006,6 +1019,19 @@ export default function ChatTab() {
         onAccept={handleAcceptCall}
         onReject={handleRejectCall}
         onEnd={handleEndCall}
+      />
+
+      {/* Kho câu trả lời mẫu thông minh */}
+      <SmartCannedResponsesModal
+        isOpen={showCannedModal}
+        onClose={() => setShowCannedModal(false)}
+        onSelect={(rendered) => {
+          setInputText(rendered);
+          setTimeout(() => inputRef.current?.focus(), 50);
+        }}
+        contextVariables={{
+          name: selectedConv?.user_name || undefined,
+        }}
       />
     </div>
   );

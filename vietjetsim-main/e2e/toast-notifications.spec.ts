@@ -49,7 +49,9 @@ test.describe('E2E Flow: Toast Notifications UI', () => {
       if (viewport) {
         const isTopRight = toastBox.x > viewport.width * 0.5;
         const isTop = toastBox.y < viewport.height * 0.3;
-        console.info(`Toast position: x=${toastBox.x}, y=${toastBox.y}, isTopRight=${isTopRight}, isTop=${isTop}`);
+        console.info(
+          `Toast position: x=${toastBox.x}, y=${toastBox.y}, isTopRight=${isTopRight}, isTop=${isTop}`
+        );
       }
     }
 
@@ -180,7 +182,9 @@ test.describe('E2E Flow: Toast Notifications UI', () => {
     await loginBtn.click();
 
     // Kiểm tra toast lỗi hiển thị
-    const errorToast = page.locator('[role="alert"]').filter({ hasText: /thất bại|lỗi|không tồn tại/i });
+    const errorToast = page
+      .locator('[role="alert"]')
+      .filter({ hasText: /thất bại|lỗi|không tồn tại/i });
     const hasErrorToast = await errorToast.isVisible({ timeout: 10_000 }).catch(() => false);
 
     if (hasErrorToast) {
@@ -195,26 +199,31 @@ test.describe('E2E Flow: Toast Notifications UI', () => {
     // Thiết lập booking trong session
     await page.goto('/thanh-toan');
     await page.evaluate(() => {
-      sessionStorage.setItem('vjsim_booking', JSON.stringify({
-        bookingId: 'demo-booking-toast-1',
-        bookingCode: 'VJTOAST1',
-        total: 1800000,
-        passengers: [{ name: 'Nguyen Van A', type: 'adult' }],
-        flight: {
-          flightNo: 'VJ141',
-          from: 'SGN',
-          to: 'HAN',
-          departTime: '2025-01-15T08:00:00',
-          arriveTime: '2025-01-15T10:30:00',
-        },
-      }));
+      sessionStorage.setItem(
+        'vjsim_booking',
+        JSON.stringify({
+          bookingId: 'demo-booking-toast-1',
+          bookingCode: 'VJTOAST1',
+          total: 1800000,
+          passengers: [{ name: 'Nguyen Van A', type: 'adult' }],
+          flight: {
+            flightNo: 'VJ141',
+            from: 'SGN',
+            to: 'HAN',
+            departTime: '2025-01-15T08:00:00',
+            arriveTime: '2025-01-15T10:30:00',
+          },
+        })
+      );
     });
 
     // Vào trang thanh toán
     await page.goto('/thanh-toan?bookingId=demo-booking-toast-1');
 
     // Tìm ô nhập mã giảm giá
-    const promoInput = page.locator('input[placeholder*="mã"], input[placeholder*="khuyến mãi"]').first();
+    const promoInput = page
+      .locator('input[placeholder*="mã"], input[placeholder*="khuyến mãi"]')
+      .first();
     const hasPromoInput = await promoInput.isVisible({ timeout: 10_000 }).catch(() => false);
 
     if (hasPromoInput) {
@@ -223,7 +232,9 @@ test.describe('E2E Flow: Toast Notifications UI', () => {
       await applyBtn.click();
 
       // Kiểm tra toast thành công
-      const successToast = page.locator('[role="alert"]').filter({ hasText: /thành công|áp dụng/i });
+      const successToast = page
+        .locator('[role="alert"]')
+        .filter({ hasText: /thành công|áp dụng/i });
       const hasSuccessToast = await successToast.isVisible({ timeout: 10_000 }).catch(() => false);
 
       if (hasSuccessToast) {

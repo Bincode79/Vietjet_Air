@@ -24,29 +24,37 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     }
 
     // Fetch additional data for modal
-    const [walletRows, loyaltyRows, sessionRows, bookingRows, paymentRows, chatRows] =
-      await Promise.all([
-        // Wallet
-        sql`
+    const [
+      walletRows,
+      loyaltyRows,
+      sessionRows,
+      bookingRows,
+      paymentRows,
+      chatRows,
+      refundRows,
+      loyaltyTxRows,
+    ] = await Promise.all([
+      // Wallet
+      sql`
         SELECT balance FROM user_wallets WHERE user_id = ${id}
       `,
-        // Loyalty
-        sql`
+      // Loyalty
+      sql`
         SELECT ul.tier, ul.available_points, lp.name as tier_name
         FROM user_loyalty ul
         LEFT JOIN loyalty_tiers lp ON ul.tier = lp.name AND ul.program_id = lp.program_id
         WHERE ul.user_id = ${id}
       `,
-        // Sessions
-        sql`
+      // Sessions
+      sql`
         SELECT id, device_name, device_type, browser, os, ip_address, last_active
         FROM user_sessions
         WHERE user_id = ${id}
         ORDER BY last_active DESC
         LIMIT 20
       `,
-        // Recent bookings
-        sql`
+      // Recent bookings
+      sql`
         SELECT b.id, b.booking_code, b.status, b.total_price, b.created_at,
                f.flight_number as flight_no,
                CONCAT(f.departure_airport, ' - ', f.arrival_airport) as route
@@ -56,23 +64,39 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
         ORDER BY b.created_at DESC
         LIMIT 10
       `,
-        // Recent payments
-        sql`
+      // Recent payments
+      sql`
         SELECT id, amount, method, status, created_at
         FROM payments
         WHERE user_id = ${id}
         ORDER BY created_at DESC
         LIMIT 10
       `,
-        // Chat conversations
-        sql`
+      // Chat conversations
+      sql`
         SELECT id, status, last_message, updated_at
         FROM chat_conversations
         WHERE user_id = ${id}
         ORDER BY updated_at DESC
         LIMIT 10
       `,
-      ]);
+      // Refund requests
+      sql`
+        SELECT id, booking_id, booking_code, refund_amount, status, reason, created_at
+        FROM refund_requests
+        WHERE user_id = ${id}
+        ORDER BY created_at DESC
+        LIMIT 10
+      `,
+      // Loyalty transactions
+      sql`
+        SELECT id, points, type, description, created_at
+        FROM loyalty_transactions
+        WHERE user_id = ${id}
+        ORDER BY created_at DESC
+        LIMIT 15
+      `,
+    ]);
 
     const wallet = (walletRows as { balance: number }[])[0]?.balance ?? 0;
     const loyalty = (
@@ -112,6 +136,24 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       last_message: string | null;
       updated_at: string;
     }[];
+    const refund_requests =
+      (refundRows as Array<{
+        id: string;
+        booking_id: string;
+        booking_code: string;
+        refund_amount: number;
+        status: string;
+        reason: string;
+        created_at: string;
+      }>) || [];
+    const loyalty_transactions =
+      (loyaltyTxRows as Array<{
+        id: string;
+        points: number;
+        type: string;
+        description: string;
+        created_at: string;
+      }>) || [];
 
     return NextResponse.json({
       ...user,
@@ -122,6 +164,8 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       recent_bookings,
       recent_payments,
       chat_conversations,
+      refund_requests,
+      loyalty_transactions,
     });
   } catch (error) {
     console.error('Error fetching user:', error);

@@ -394,29 +394,21 @@ export default function FlightBookingResultsWrapper({
             </div>
           </div>
 
-          {/* Nút nổi "Đi tiếp" ở MOBILE — đo 15/11/2026 (472×915, site thật):
-              nút `157×40px`, bo góc `10px`, gradient vàng `26.73deg`
-              (`#F9A51A 13.7% → #FBB612 29.8% → #FFDD00 66.81%`), nằm cố định
-              ở `y=850` (cách mép dưới `25px`), CĂN GIỮA màn hình
-              (`x=158`), chữ `14px/500` KoHo màu `rgba(0,0,0,.87)`, shadow 3 tầng
-              của MUI. */}
-          {/* Tailwind arbitrary values cannot contain raw spaces; `_+_` is
-              emitted as `calc(25px + env(safe-area-inset-bottom))`. Without the
-              spaces CSS drops the declaration and the fixed button loses its
-              bottom anchor. */}
-          <div className="sm:hidden fixed bottom-[calc(25px_+_env(safe-area-inset-bottom))] left-0 right-0 z-[60] flex justify-center pointer-events-none">
+          {/* Thanh hành động mobile NỔI — chỉ nút vàng chữ đen, căn giữa */}
+          <div className="fixed inset-x-3 bottom-3 z-[60] flex justify-center sm:hidden">
             <button
               type="button"
               onClick={handleContinue}
               disabled={!bookings.outbound}
-              className="vj-cta vj-cta--booking pointer-events-auto h-[40px] w-[157px] min-w-[157px] max-w-[157px] disabled:opacity-50 disabled:cursor-not-allowed active:scale-98 transition-all cursor-pointer"
+              aria-label={bookings.outbound ? 'Đi tiếp' : 'Đi tiếp — cần chọn hạng vé trước'}
+              className="vj-cta vj-cta--booking h-[44px] px-8 disabled:cursor-not-allowed disabled:opacity-50 active:scale-98 transition-all cursor-pointer"
             >
               Đi tiếp
             </button>
           </div>
 
-          {/* CTA bottom margin + safe-area padding để tránh che nội dung khi scroll hoặc mở bàn phím */}
-          <div className="sm:hidden pt-3 pb-safe" />
+          {/* Khoảng trống đúng chiều cao thanh nổi để dòng cuối cùng cuộn lên trên CTA. */}
+          <div className="h-[72px] sm:hidden" aria-hidden="true" />
         </>
       )}
 

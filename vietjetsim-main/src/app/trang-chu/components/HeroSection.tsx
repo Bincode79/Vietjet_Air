@@ -152,7 +152,7 @@ export default function HeroSection() {
       </div>
 
       {/* Dải đặt vé 380px neo mép phải container 1200px chuẩn vietjetair.com */}
-      <div className="absolute inset-x-0 top-[333px] z-20 mx-auto w-full max-w-[1200px] lg:inset-x-auto lg:left-1/2 lg:top-[164px] lg:-translate-x-1/2 lg:flex lg:justify-end lg:px-0">
+      <div className="absolute inset-x-0 top-[280px] z-20 mx-auto w-full max-w-[1200px] lg:inset-x-auto lg:left-1/2 lg:top-[164px] lg:-translate-x-1/2 lg:flex lg:justify-end lg:px-0">
         <div className="w-full lg:w-[380px] lg:max-w-[380px]">
           <HeroBookingWidget />
         </div>

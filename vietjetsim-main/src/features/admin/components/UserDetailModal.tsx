@@ -1,14 +1,63 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Icon } from '@/shared/components/ui';
 import { useToast } from '@/hooks/useToast';
 import { apiRequest, getApiErrorMessage } from '@/shared/services';
+import { AdminUser } from '../types';
 
-interface UserDetailModalProps {
+export interface UserDetailUser extends AdminUser {
+  updated_at?: string;
+  skyjoy_id?: string;
+  bookings?: Array<{
+    id: string;
+    booking_code: string;
+    flight_id?: string;
+    status: string;
+    total_price: number;
+    flight_no?: string;
+    route?: string;
+    created_at: string;
+  }>;
+  payments?: Array<{
+    id: string;
+    booking_id?: string;
+    amount: number;
+    payment_method?: string;
+    status: string;
+    created_at: string;
+  }>;
+  chat_sessions?: Array<{
+    id: string;
+    customer_name?: string;
+    status: string;
+    last_message?: string;
+    created_at: string;
+  }>;
+  refund_requests?: Array<{
+    id: string;
+    booking_id: string;
+    booking_code: string;
+    refund_amount: number;
+    status: string;
+    reason: string;
+    created_at: string;
+  }>;
+  loyalty_transactions?: Array<{
+    id: string;
+    points: number;
+    type: string;
+    description: string;
+    created_at: string;
+  }>;
+}
+
+export interface UserDetailModalProps {
   isOpen: boolean;
   onClose: () => void;
-  userId: string | null;
+  userId?: string | null;
+  user?: UserDetailUser | AdminUser | null;
+  onUpdateUser?: (user: AdminUser) => void;
 }
 
 interface UserDetail {
@@ -62,47 +111,241 @@ interface UserDetail {
     last_message: string | null;
     updated_at: string;
   }>;
+  refund_requests?: Array<{
+    id: string;
+    booking_id: string;
+    booking_code: string;
+    refund_amount: number;
+    status: string;
+    reason: string;
+    created_at: string;
+  }>;
+  loyalty_transactions?: Array<{
+    id: string;
+    points: number;
+    type: string;
+    description: string;
+    created_at: string;
+  }>;
 }
 
-export default function UserDetailModal({ isOpen, onClose, userId }: UserDetailModalProps) {
+type TimelineCategory = 'all' | 'booking' | 'payment' | 'chat' | 'loyalty' | 'refund';
+
+interface TimelineEvent {
+  id: string;
+  timestamp: string;
+  category: TimelineCategory;
+  categoryLabel: string;
+  title: string;
+  description: string;
+  badge?: string;
+  icon: string;
+}
+
+export default function UserDetailModal({ isOpen, onClose, userId, user }: UserDetailModalProps) {
   const toast = useToast();
   const [detail, setDetail] = useState<UserDetail | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<
-    'overview' | 'bookings' | 'wallet' | 'loyalty' | 'sessions' | 'chat'
+    'overview' | 'timeline' | 'bookings' | 'wallet' | 'loyalty' | 'sessions' | 'chat'
   >('overview');
+  const [timelineFilter, setTimelineFilter] = useState<TimelineCategory>('all');
 
   const fetchDetail = useCallback(async () => {
-    if (!userId) return;
+    const targetId = userId || user?.id;
+    if (!targetId) return;
     setIsLoading(true);
     try {
-      const data = await apiRequest<UserDetail>(`/api/quan-tri/nguoi-dung/${userId}`);
+      const data = await apiRequest<UserDetail>(`/api/quan-tri/nguoi-dung/${targetId}`);
       setDetail(data);
     } catch (error) {
       toast.error('Lỗi', getApiErrorMessage(error, 'Không thể tải chi tiết người dùng.'));
     } finally {
       setIsLoading(false);
     }
-  }, [userId, toast]);
+  }, [userId, user?.id, toast]);
 
   useEffect(() => {
-    if (isOpen && userId) {
-      fetchDetail();
-    } else {
+    if (!isOpen) {
       setDetail(null);
+      return;
     }
-  }, [isOpen, userId, fetchDetail]);
 
-  if (!isOpen || !userId) return null;
+    if (user) {
+      const u = user as UserDetailUser;
+      const mappedDetail: UserDetail = {
+        id: u.id,
+        email: u.email,
+        full_name: u.full_name || 'Khách hàng',
+        role: u.role || 'user',
+        phone: u.phone || null,
+        skyjoy_member_id: u.skyjoy_id || null,
+        email_verified: true,
+        phone_verified: false,
+        created_at: u.created_at || new Date().toISOString(),
+        updated_at: u.updated_at || new Date().toISOString(),
+        last_login: null,
+        locked_until: null,
+        operator_notes: null,
+        bookings_count: (u.bookings || []).length,
+        total_spent: (u.bookings || []).reduce((sum, b) => sum + (Number(b.total_price) || 0), 0),
+        wallet_balance: (u as { wallet_balance?: number }).wallet_balance || 0,
+        loyalty_tier: (u as { loyalty_tier?: string }).loyalty_tier || 'Thành viên',
+        loyalty_points: (u as { loyalty_points?: number }).loyalty_points || 0,
+        sessions: (u as { sessions?: UserDetail['sessions'] }).sessions || [],
+        recent_bookings: (u.bookings || []).map((b) => ({
+          id: b.id,
+          booking_code: b.booking_code,
+          status: b.status,
+          total_price: Number(b.total_price) || 0,
+          created_at: b.created_at,
+          flight_no: b.flight_no || 'VJ',
+          route: b.route || '—',
+        })),
+        recent_payments: (u.payments || []).map((p) => ({
+          id: p.id,
+          amount: Number(p.amount) || 0,
+          method: p.payment_method || 'vietqr',
+          status: p.status,
+          created_at: p.created_at,
+        })),
+        chat_conversations: (u.chat_sessions || []).map((c) => ({
+          id: c.id,
+          status: c.status,
+          last_message: c.last_message || null,
+          updated_at: c.created_at,
+        })),
+        refund_requests: (u.refund_requests || []).map((r) => ({
+          id: r.id,
+          booking_id: r.booking_id,
+          booking_code: r.booking_code,
+          refund_amount: Number(r.refund_amount) || 0,
+          status: r.status,
+          reason: r.reason || '',
+          created_at: r.created_at,
+        })),
+        loyalty_transactions: (u.loyalty_transactions || []).map((l) => ({
+          id: l.id,
+          points: Number(l.points) || 0,
+          type: l.type,
+          description: l.description,
+          created_at: l.created_at,
+        })),
+      };
+      setDetail(mappedDetail);
+    } else if (userId) {
+      fetchDetail();
+    }
+  }, [isOpen, userId, user, fetchDetail]);
+
+  const timelineEvents = useMemo(() => {
+    if (!detail) return [];
+    const events: TimelineEvent[] = [];
+
+    // Account creation
+    if (detail.created_at) {
+      events.push({
+        id: `reg-${detail.id}`,
+        timestamp: detail.created_at,
+        category: 'all',
+        categoryLabel: 'Tài khoản',
+        title: 'Đăng ký tài khoản thành viên',
+        description: `Tài khoản ${detail.email} được tạo trên hệ thống Vietjet.`,
+        icon: 'UserPlusIcon',
+      });
+    }
+
+    // Bookings
+    (detail.recent_bookings || []).forEach((b) => {
+      events.push({
+        id: `b-${b.id}`,
+        timestamp: b.created_at,
+        category: 'booking',
+        categoryLabel: 'Đặt vé',
+        title: `Đặt chỗ chuyến bay ${b.flight_no} (${b.route})`,
+        description: `Mã PNR: ${b.booking_code} • Số tiền: ${b.total_price.toLocaleString('vi-VN')}₫`,
+        badge: b.status,
+        icon: 'TicketIcon',
+      });
+    });
+
+    // Payments
+    (detail.recent_payments || []).forEach((p) => {
+      events.push({
+        id: `pay-${p.id}`,
+        timestamp: p.created_at,
+        category: 'payment',
+        categoryLabel: 'Thanh toán',
+        title: `Thanh toán thành công qua ${p.method}`,
+        description: `Số tiền: ${p.amount.toLocaleString('vi-VN')}₫ • Trạng thái: ${p.status}`,
+        icon: 'CreditCardIcon',
+      });
+    });
+
+    // Chat
+    (detail.chat_conversations || []).forEach((c) => {
+      events.push({
+        id: `chat-${c.id}`,
+        timestamp: c.updated_at,
+        category: 'chat',
+        categoryLabel: 'CSKH',
+        title: 'Hỗ trợ trực tuyến qua Chat CSKH',
+        description: c.last_message
+          ? `Nội dung: "${c.last_message}"`
+          : 'Phiên trao đổi thông tin với hỗ trợ viên.',
+        badge: c.status,
+        icon: 'ChatBubbleLeftRightIcon',
+      });
+    });
+
+    // Refunds
+    (detail.refund_requests || []).forEach((r) => {
+      events.push({
+        id: `ref-${r.id}`,
+        timestamp: r.created_at,
+        category: 'refund',
+        categoryLabel: 'Hoàn vé',
+        title: `Yêu cầu hoàn vé: ${r.status === 'approved' ? 'Đã duyệt' : r.status}`,
+        description: `Mã PNR: ${r.booking_code} • Hoàn lại: ${r.refund_amount.toLocaleString('vi-VN')}₫. Lý do: ${r.reason}`,
+        badge: r.status,
+        icon: 'ArrowPathIcon',
+      });
+    });
+
+    // Loyalty
+    (detail.loyalty_transactions || []).forEach((l) => {
+      events.push({
+        id: `loy-${l.id}`,
+        timestamp: l.created_at,
+        category: 'loyalty',
+        categoryLabel: 'Điểm thưởng',
+        title: l.type === 'earn' ? 'Cộng điểm SkyJoy' : 'Tiêu điểm SkyJoy',
+        description: `${l.points > 0 ? '+' : ''}${l.points} SkyPoint • ${l.description}`,
+        icon: 'SparklesIcon',
+      });
+    });
+
+    // Sort descending by timestamp
+    return events.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+  }, [detail]);
+
+  const filteredTimeline = useMemo(() => {
+    if (timelineFilter === 'all') return timelineEvents;
+    return timelineEvents.filter((e) => e.category === timelineFilter);
+  }, [timelineEvents, timelineFilter]);
+
+  if (!isOpen || (!userId && !user)) return null;
 
   const formatCurrency = (amount: number) => amount.toLocaleString('vi-VN') + '₫';
   const formatDate = (dateStr: string | null) =>
     dateStr ? new Date(dateStr).toLocaleString('vi-VN') : '—';
-  const formatDateOnly = (dateStr: string | null) =>
-    dateStr ? new Date(dateStr).toLocaleDateString('vi-VN') : '—';
-
   const tabs = [
     { id: 'overview', label: 'Tổng quan', icon: 'UserCircleIcon' },
+    {
+      id: 'timeline',
+      label: 'Dòng thời gian 360°',
+      icon: 'ClockIcon',
+    },
     {
       id: 'bookings',
       label: `Đặt vé (${detail?.recent_bookings.length || 0})`,
@@ -148,357 +391,259 @@ export default function UserDetailModal({ isOpen, onClose, userId }: UserDetailM
 
   if (isLoading) {
     return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-        <div className="bg-[var(--surface)] rounded-2xl p-8 w-full max-w-4xl max-h-[90vh] overflow-y-auto">
-          <div className="animate-pulse space-y-4">
-            <div className="h-8 bg-[var(--surface-2)] rounded w-1/4" />
-            <div className="h-4 bg-[var(--surface-2)] rounded w-1/2" />
-            <div className="h-4 bg-[var(--surface-2)] rounded w-1/3" />
-            <div className="grid grid-cols-3 gap-4 mt-4">
-              <div className="h-20 bg-[var(--surface-2)] rounded" />
-              <div className="h-20 bg-[var(--surface-2)] rounded" />
-              <div className="h-20 bg-[var(--surface-2)] rounded" />
-            </div>
-          </div>
+      <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-8 max-w-sm w-full text-center">
+          <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-sm text-[var(--foreground-muted)] font-[Be_Vietnam_Pro,sans-serif]">
+            Đang tải thông tin khách hàng...
+          </p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-      <div className="bg-[var(--surface)] rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+      <div className="bg-[var(--background)] border border-[var(--border)] rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col shadow-2xl animate-fade-in">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-[var(--border)]">
+        <div className="p-6 border-b border-[var(--border)] flex items-center justify-between bg-[var(--surface)]">
           <div className="flex items-center gap-4">
-            <div className="w-16 h-16 rounded-full bg-[rgb(var(--primary-rgb))]/10 flex items-center justify-center">
-              <span className="text-2xl font-bold text-[var(--primary)] font-[KoHo,sans-serif]">
-                {detail?.full_name?.charAt(0).toUpperCase() || 'U'}
-              </span>
+            <div className="w-14 h-14 rounded-full bg-primary/10 border-2 border-primary/20 flex items-center justify-center text-primary font-bold text-xl">
+              {detail?.full_name?.charAt(0) || 'U'}
             </div>
             <div>
-              <h2 className="text-xl font-bold font-[KoHo,sans-serif] text-[var(--foreground)]">
-                {detail?.full_name || 'Người dùng'}
-              </h2>
-              <p className="text-sm text-[var(--foreground-muted)] font-[Be_Vietnam_Pro,sans-serif]">
-                {detail?.email}
+              <div className="flex items-center gap-2">
+                <h2 className="text-xl font-bold font-[KoHo,sans-serif] text-[var(--foreground)]">
+                  {detail?.full_name}
+                </h2>
+                <span
+                  className="text-xs px-2.5 py-0.5 rounded-full font-semibold text-white"
+                  style={{ background: getRoleBadge(detail?.role || 'user').bg }}
+                >
+                  {getRoleBadge(detail?.role || 'user').label}
+                </span>
+                {detail?.skyjoy_member_id && (
+                  <span className="text-xs px-2.5 py-0.5 rounded-full font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30">
+                    {detail.skyjoy_member_id}
+                  </span>
+                )}
+              </div>
+              <p className="text-sm text-[var(--foreground-muted)] font-[Be_Vietnam_Pro,sans-serif] mt-0.5">
+                {detail?.email} • {detail?.phone || 'Chưa cập nhật SĐT'}
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-3">
-            <span
-              className={`px-3 py-1 rounded-full text-xs font-semibold font-[KoHo,sans-serif] ${getRoleBadge(detail?.role || '').bg}`}
-            >
-              {getRoleBadge(detail?.role || '').label}
-            </span>
-            {detail?.locked_until && new Date(detail.locked_until) > new Date() && (
-              <span className="px-3 py-1 rounded-full text-xs font-semibold font-[KoHo,sans-serif] bg-red-100 text-red-700">
-                Đã khoá
-              </span>
-            )}
-            <button
-              onClick={onClose}
-              className="p-2 rounded-lg bg-[var(--surface-2)] hover:bg-[var(--surface-3)] transition-colors"
-            >
-              <Icon name="XMarkIcon" size={20} className="text-[var(--foreground-muted)]" />
-            </button>
-          </div>
+          <button
+            onClick={onClose}
+            className="p-2 text-[var(--foreground-muted)] hover:text-[var(--foreground)] hover:bg-[var(--surface-active)] rounded-vj transition-all"
+          >
+            <Icon name="XMarkIcon" size={20} />
+          </button>
         </div>
 
-        {/* Tabs */}
-        <div className="border-b border-[var(--border)]">
-          <nav className="flex overflow-x-auto px-6 -mb-px" role="tablist">
-            {tabs.map((tab) => (
+        {/* Tab Navigation */}
+        <div className="flex items-center gap-1 p-2 border-b border-[var(--border)] bg-[var(--surface)] overflow-x-auto">
+          {tabs.map((tab) => {
+            const isActive = activeTab === tab.id;
+            return (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id as typeof activeTab)}
-                className={`flex items-center gap-2 px-4 py-3 font-medium text-sm font-[KoHo,sans-serif] border-b-2 transition-colors ${
-                  activeTab === tab.id
-                    ? 'border-[var(--primary)] text-[var(--primary)]'
-                    : 'border-transparent text-[var(--foreground-muted)] hover:text-[var(--foreground)]'
+                className={`flex items-center gap-2 px-3.5 py-2 rounded-vj text-xs font-semibold whitespace-nowrap transition-all ${
+                  isActive
+                    ? 'bg-primary text-white shadow-vj-sm'
+                    : 'text-[var(--foreground-muted)] hover:text-[var(--foreground)] hover:bg-[var(--surface-hover)]'
                 }`}
-                role="tab"
-                aria-selected={activeTab === tab.id}
               >
-                <Icon name={tab.icon} size={18} />
-                {tab.label}
+                <Icon name={tab.icon} size={16} />
+                <span>{tab.label}</span>
               </button>
-            ))}
-          </nav>
+            );
+          })}
         </div>
 
         {/* Tab Content */}
         <div className="flex-1 overflow-y-auto p-6">
           {activeTab === 'overview' && (
             <div className="space-y-6">
-              {/* Info Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                <InfoCard label="ID" value={detail?.id || '—'} />
-                <InfoCard label="Email" value={detail?.email || '—'} />
-                <InfoCard label="Số điện thoại" value={detail?.phone || '—'} />
-                <InfoCard label="Mã SkyJoy" value={detail?.skyjoy_member_id || '—'} />
-                <InfoCard
-                  label="Email xác thực"
-                  value={detail?.email_verified ? '✅ Có' : '❌ Chưa'}
-                />
-                <InfoCard
-                  label="SĐT xác thực"
-                  value={detail?.phone_verified ? '✅ Có' : '❌ Chưa'}
-                />
-                <InfoCard label="Ngày tạo" value={formatDateOnly(detail?.created_at ?? null)} />
-                <InfoCard label="Đăng nhập cuối" value={formatDate(detail?.last_login ?? null)} />
-              </div>
-
-              {/* Stats */}
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <StatCard
-                  label="Số đặt vé"
-                  value={String(detail?.bookings_count || 0)}
-                  icon="TicketIcon"
-                  color="var(--primary)"
-                />
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                 <StatCard
                   label="Tổng chi tiêu"
-                  value={
-                    detail?.total_spent ? detail.total_spent.toLocaleString('vi-VN') + '₫' : '0₫'
-                  }
-                  icon="CurrencyDollarIcon"
-                  color="var(--vj-navy)"
+                  value={formatCurrency(detail?.total_spent || 0)}
+                  icon="CreditCardIcon"
+                  color="#10B981"
+                />
+                <StatCard
+                  label="Số lượt bay"
+                  value={`${detail?.bookings_count || 0} vé`}
+                  icon="TicketIcon"
+                  color="#3B82F6"
                 />
                 <StatCard
                   label="Số dư ví"
-                  value={
-                    detail?.wallet_balance
-                      ? detail.wallet_balance.toLocaleString('vi-VN') + '₫'
-                      : '0₫'
-                  }
+                  value={formatCurrency(detail?.wallet_balance || 0)}
                   icon="WalletIcon"
-                  color="var(--vj-purple)"
+                  color="#8B5CF6"
                 />
                 <StatCard
-                  label="Điểm SkyJoy"
-                  value={
-                    detail?.loyalty_points
-                      ? detail.loyalty_points.toLocaleString('vi-VN') + 'đ'
-                      : '0đ'
-                  }
-                  icon="BadgeCheckIcon"
-                  color="var(--vj-purple)"
+                  label="Hạng SkyJoy"
+                  value={detail?.loyalty_tier || 'Thành viên'}
+                  icon="SparklesIcon"
+                  color="#F59E0B"
                 />
               </div>
 
-              {/* Operator Notes */}
-              {detail?.operator_notes && (
-                <div className="bg-[var(--surface-2)] rounded-vj p-4">
-                  <h4 className="font-semibold text-[var(--foreground)] mb-2">Ghi chú vận hành</h4>
-                  <p className="text-[var(--foreground-muted)] whitespace-pre-wrap">
-                    {detail.operator_notes}
-                  </p>
-                </div>
-              )}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <InfoCard label="Email đăng ký" value={detail?.email || ''} />
+                <InfoCard label="Số điện thoại" value={detail?.phone || 'Chưa cập nhật'} />
+                <InfoCard label="Ngày tham gia" value={formatDate(detail?.created_at || null)} />
+                <InfoCard
+                  label="Cập nhật lần cuối"
+                  value={formatDate(detail?.updated_at || null)}
+                />
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'timeline' && (
+            <div className="space-y-5">
+              {/* Category Filter Chips */}
+              <div className="flex items-center gap-2 overflow-x-auto pb-1 text-xs">
+                {[
+                  { id: 'all', label: 'Tất cả' },
+                  { id: 'booking', label: 'Đặt vé' },
+                  { id: 'payment', label: 'Thanh toán' },
+                  { id: 'chat', label: 'CSKH' },
+                  { id: 'loyalty', label: 'Điểm thưởng' },
+                  { id: 'refund', label: 'Hoàn vé' },
+                ].map((chip) => (
+                  <button
+                    key={chip.id}
+                    onClick={() => setTimelineFilter(chip.id as TimelineCategory)}
+                    className={`px-3 py-1 rounded-xl font-bold transition-all ${
+                      timelineFilter === chip.id
+                        ? 'bg-primary text-white shadow'
+                        : 'bg-white/5 text-slate-400 hover:text-white border border-white/5'
+                    }`}
+                  >
+                    {chip.label}
+                  </button>
+                ))}
+              </div>
+
+              {/* Timeline Items */}
+              <div className="relative pl-6 space-y-6 before:absolute before:left-2.5 before:top-2 before:bottom-2 before:w-0.5 before:bg-white/10">
+                {filteredTimeline.length === 0 ? (
+                  <div className="text-center py-8 text-xs text-slate-400">
+                    Chưa có sự kiện nào trong danh mục này.
+                  </div>
+                ) : (
+                  filteredTimeline.map((item) => (
+                    <div key={item.id} className="relative group">
+                      <div className="absolute -left-6 top-1 w-3.5 h-3.5 rounded-full bg-primary ring-4 ring-slate-900" />
+                      <div className="p-4 rounded-2xl bg-white/[0.02] border border-white/5 hover:border-white/10 transition-colors">
+                        <div className="flex items-center justify-between gap-2 mb-1">
+                          <span className="font-bold text-sm text-white">{item.title}</span>
+                          <span className="text-xs2 text-slate-500 font-mono">
+                            {new Date(item.timestamp).toLocaleString('vi-VN')}
+                          </span>
+                        </div>
+                        <p className="text-xs text-slate-300">{item.description}</p>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
             </div>
           )}
 
           {activeTab === 'bookings' && (
-            <div className="space-y-4">
-              {detail?.recent_bookings.length === 0 ? (
-                <div className="text-center py-8 text-[var(--foreground-muted)]">
-                  <Icon name="TicketIcon" size={32} className="mx-auto mb-2 opacity-50" />
-                  <p>Chưa có đặt vé nào</p>
-                </div>
+            <div className="space-y-3">
+              {(detail?.recent_bookings || []).length === 0 ? (
+                <p className="text-sm text-[var(--foreground-muted)] text-center py-8">
+                  Chưa có lịch sử đặt vé nào.
+                </p>
               ) : (
-                <div className="overflow-x-auto">
-                  <table className="w-full text-sm">
-                    <thead>
-                      <tr className="text-left text-[var(--foreground-muted)] border-b border-[var(--border)]">
-                        <th className="pb-2">Mã đặt chỗ</th>
-                        <th className="pb-2">Chuyến bay</th>
-                        <th className="pb-2">Tuyến</th>
-                        <th className="pb-2">Trạng thái</th>
-                        <th className="pb-2">Giá trị</th>
-                        <th className="pb-2">Ngày tạo</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {detail?.recent_bookings.map((b) => (
-                        <tr key={b.id} className="border-b border-[var(--border)]">
-                          <td className="py-3 font-mono font-[KoHo,sans-serif]">
-                            {b.booking_code}
-                          </td>
-                          <td className="py-3">{b.flight_no}</td>
-                          <td className="py-3">{b.route}</td>
-                          <td className="py-3">
-                            <span
-                              className={`px-2 py-1 rounded text-xs font-semibold ${getStatusBadge(b.status).bg} ${getStatusBadge(b.status).text}`}
-                            >
-                              {getStatusBadge(b.status).label}
-                            </span>
-                          </td>
-                          <td className="py-3">{b.total_price.toLocaleString('vi-VN')}₫</td>
-                          <td className="py-3 text-[var(--foreground-muted)]">
-                            {formatDateOnly(b.created_at)}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
+                detail?.recent_bookings.map((b) => (
+                  <div
+                    key={b.id}
+                    className="p-4 rounded-vj border border-[var(--border)] bg-[var(--surface)] flex items-center justify-between"
+                  >
+                    <div>
+                      <p className="font-bold text-[var(--foreground)]">
+                        {b.flight_no} ({b.route})
+                      </p>
+                      <p className="text-xs text-[var(--foreground-muted)]">
+                        PNR: {b.booking_code} • Ngày: {formatDate(b.created_at)}
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-bold text-primary">{formatCurrency(b.total_price)}</p>
+                      <span
+                        className={`text-2xs px-2 py-0.5 rounded font-bold ${getStatusBadge(b.status).bg} ${getStatusBadge(b.status).text}`}
+                      >
+                        {getStatusBadge(b.status).label}
+                      </span>
+                    </div>
+                  </div>
+                ))
               )}
             </div>
           )}
 
           {activeTab === 'wallet' && (
-            <div className="space-y-6">
-              <div className="bg-[var(--surface-2)] rounded-2xl p-6 text-center">
-                <p className="text-sm text-[var(--foreground-muted)]">Số dư hiện tại</p>
-                <p className="text-4xl font-bold font-[KoHo,sans-serif] text-[var(--vj-purple)] mt-2">
-                  {detail?.wallet_balance?.toLocaleString('vi-VN') || 0}₫
-                </p>
-              </div>
-              <div className="bg-[var(--surface)] rounded-vj border border-[var(--border)] p-4">
-                <h4 className="font-semibold mb-3">Lịch sử giao dịch (giả lập)</h4>
-                <p className="text-[var(--foreground-muted)]">
-                  Tích hợp với wallet_transactions table khi cần.
-                </p>
-              </div>
+            <div className="p-4 bg-[var(--surface)] rounded-vj border border-[var(--border)]">
+              <p className="text-xs text-[var(--foreground-muted)]">Số dư khả dụng:</p>
+              <p className="text-2xl font-black text-emerald-500 mt-1">
+                {formatCurrency(detail?.wallet_balance || 0)}
+              </p>
             </div>
           )}
 
           {activeTab === 'loyalty' && (
-            <div className="space-y-6">
-              <div className="bg-[rgb(var(--vj-purple-rgb))]/10 border-[rgb(var(--vj-purple-rgb))]/30 rounded-2xl p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-[var(--vj-purple)] font-[Be_Vietnam_Pro,sans-serif]">
-                      Hạng thành viên
-                    </p>
-                    <p className="text-2xl font-bold font-[KoHo,sans-serif] text-[var(--vj-purple)]">
-                      {detail?.loyalty_tier || 'Bronze'}
-                    </p>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-sm text-[var(--vj-purple)]">Điểm hiện tại</p>
-                    <p className="text-3xl font-bold font-[KoHo,sans-serif] text-[var(--vj-purple)]">
-                      {detail?.loyalty_points?.toLocaleString('vi-VN') || 0}đ
-                    </p>
-                  </div>
-                </div>
-              </div>
-              <div className="bg-[var(--surface)] rounded-vj border border-[var(--border)] p-4">
-                <h4 className="font-semibold mb-3">Lịch sử tích điểm (giả lập)</h4>
-                <p className="text-[var(--foreground-muted)]">
-                  Tích hợp với loyalty_transactions table khi cần.
-                </p>
-              </div>
+            <div className="p-4 bg-[var(--surface)] rounded-vj border border-[var(--border)]">
+              <p className="text-xs text-[var(--foreground-muted)]">Hạng hội viên SkyJoy:</p>
+              <p className="text-xl font-bold text-amber-400 mt-1">{detail?.loyalty_tier}</p>
+              <p className="text-xs text-slate-400 mt-2">
+                Điểm thưởng khả dụng:{' '}
+                <strong className="text-white">{detail?.loyalty_points || 0} SkyPoint</strong>
+              </p>
             </div>
           )}
 
           {activeTab === 'sessions' && (
-            <div className="space-y-4">
-              {detail?.sessions.length === 0 ? (
-                <div className="text-center py-8 text-[var(--foreground-muted)]">
-                  <Icon name="DeviceMobileIcon" size={32} className="mx-auto mb-2 opacity-50" />
-                  <p>Không có phiên hoạt động</p>
+            <div className="space-y-3">
+              {(detail?.sessions || []).map((s) => (
+                <div
+                  key={s.id}
+                  className="p-3 bg-[var(--surface)] rounded-vj border border-[var(--border)] flex justify-between text-xs"
+                >
+                  <div>
+                    <span className="font-bold text-white">
+                      {s.device_name || 'Thiết bị'} ({s.browser || 'Web'} on {s.os || 'OS'})
+                    </span>
+                    <p className="text-slate-400">IP: {s.ip_address}</p>
+                  </div>
+                  <span className="text-slate-500">{formatDate(s.last_active)}</span>
                 </div>
-              ) : (
-                <div className="overflow-x-auto">
-                  <table className="w-full text-sm">
-                    <thead>
-                      <tr className="text-left text-[var(--foreground-muted)] border-b border-[var(--border)]">
-                        <th className="pb-2">Thiết bị</th>
-                        <th className="pb-2">Trình duyệt/OS</th>
-                        <th className="pb-2">IP</th>
-                        <th className="pb-2">Hoạt động cuối</th>
-                        <th className="pb-2">Trạng thái</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {detail?.sessions.map((s) => (
-                        <tr key={s.id} className="border-b border-[var(--border)]">
-                          <td className="py-3">
-                            <div className="flex items-center gap-2">
-                              <Icon
-                                name={
-                                  s.device_type === 'mobile'
-                                    ? 'DeviceMobileIcon'
-                                    : s.device_type === 'tablet'
-                                      ? 'TabletIcon'
-                                      : 'DesktopComputerIcon'
-                                }
-                                size={18}
-                                className="text-[var(--primary)]"
-                              />
-                              <span className="font-[KoHo,sans-serif]">
-                                {s.device_name || 'Unknown'}
-                              </span>
-                            </div>
-                          </td>
-                          <td className="py-3 text-[var(--foreground-muted)]">
-                            {s.browser} / {s.os}
-                          </td>
-                          <td className="py-3 font-mono">{s.ip_address}</td>
-                          <td className="py-3 text-[var(--foreground-muted)]">
-                            {formatDate(s.last_active)}
-                          </td>
-                          <td className="py-3">
-                            {s.is_current ? (
-                              <span className="px-2 py-1 rounded text-xs font-semibold bg-green-100 text-green-700">
-                                Đang dùng
-                              </span>
-                            ) : (
-                              <span className="px-2 py-1 rounded text-xs font-semibold bg-gray-100 text-gray-700">
-                                Cũ
-                              </span>
-                            )}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
+              ))}
             </div>
           )}
 
           {activeTab === 'chat' && (
-            <div className="space-y-4">
-              {detail?.chat_conversations.length === 0 ? (
-                <div className="text-center py-8 text-[var(--foreground-muted)]">
-                  <Icon
-                    name="ChatBubbleLeftRightIcon"
-                    size={32}
-                    className="mx-auto mb-2 opacity-50"
-                  />
-                  <p>Chưa có cuộc hội thoại nào</p>
+            <div className="space-y-3">
+              {(detail?.chat_conversations || []).map((c) => (
+                <div
+                  key={c.id}
+                  className="p-3.5 bg-[var(--surface)] rounded-vj border border-[var(--border)] flex justify-between items-center text-xs"
+                >
+                  <div>
+                    <p className="font-bold text-white">Hội thoại #{c.id.slice(0, 8)}</p>
+                    <p className="text-slate-400">{c.last_message || 'Chưa có tin nhắn'}</p>
+                  </div>
+                  <span className="px-2 py-0.5 rounded bg-white/5 text-slate-300">{c.status}</span>
                 </div>
-              ) : (
-                <div className="space-y-3">
-                  {detail?.chat_conversations.map((c) => (
-                    <div
-                      key={c.id}
-                      className="bg-[var(--surface)] rounded-vj border border-[var(--border)] p-4"
-                    >
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="font-semibold text-[var(--foreground)]">
-                            Cuộc hội thoại #{c.id.slice(0, 8)}
-                          </p>
-                          <p className="text-sm text-[var(--foreground-muted)]">
-                            {c.last_message
-                              ? `Tin nhắn cuối: ${c.last_message.slice(0, 50)}...`
-                              : 'Chưa có tin nhắn'}
-                          </p>
-                        </div>
-                        <span
-                          className={`px-2 py-1 rounded text-xs font-semibold ${c.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'}`}
-                        >
-                          {c.status === 'active' ? 'Đang mở' : 'Đã lưu'}
-                        </span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
+              ))}
             </div>
           )}
         </div>

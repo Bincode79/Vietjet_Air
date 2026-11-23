@@ -63,7 +63,7 @@ export default function PassengerDetailModal({
   const grandTotal = outTotal + (isRoundTrip ? inTotal : 0);
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-2 sm:p-4">
+    <div className="fixed inset-0 z-[1400] overflow-y-auto flex items-center justify-center p-2 sm:p-4">
       {/* Backdrop */}
       <div
         className="fixed inset-0 bg-black/60 transition-opacity animate-fadeIn"

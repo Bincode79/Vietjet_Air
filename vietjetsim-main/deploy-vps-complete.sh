@@ -30,7 +30,11 @@ cp -r public deploy-package/
 cp package.json deploy-package/
 cp scripts/start-standalone.cjs deploy-package/scripts/
 cp ecosystem.config.js deploy-package/
-cp .env.production deploy-package/.env
+if [ -f .env.production ]; then
+  cp .env.production deploy-package/.env
+elif [ -f .env.production.example ]; then
+  cp .env.production.example deploy-package/.env
+fi
 
 # Copy VPS management scripts
 cp vps-scripts/*.sh deploy-package/vps-scripts/
