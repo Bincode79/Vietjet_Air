@@ -149,30 +149,16 @@ export async function sendMail(payload: MailPayload): Promise<boolean> {
       return false;
     }
 
-    const attachments: Array<{
-      filename: string;
-      content: Buffer | string;
-      contentType: string;
-      cid?: string;
-      disposition?: 'attachment' | 'inline';
-    }> = payload.attachments
-      ? payload.attachments.map((attachment) => ({
-          filename: attachment.filename,
-          content: attachment.content,
-          contentType: attachment.contentType,
-          cid: attachment.cid,
-          disposition: attachment.disposition,
-        }))
-      : [];
+    const inlineAttachments: MailAttachment[] = [];
 
     // Tự động đính kèm inline logo nếu HTML dùng cid:vietjet-logo mà chưa có
     if (
       payload.html.includes('cid:vietjet-logo') &&
-      !attachments.some((a) => a.cid === 'vietjet-logo')
+      !payload.attachments?.some((a) => a.cid === 'vietjet-logo')
     ) {
       const logoBuf = getMailLogoBuffer();
       if (logoBuf) {
-        attachments.push({
+        inlineAttachments.push({
           filename: 'vietjet-logo.png',
           content: logoBuf,
           contentType: 'image/png',
@@ -189,18 +175,24 @@ export async function sendMail(payload: MailPayload): Promise<boolean> {
       html: payload.html,
       text: payload.text,
       replyTo: payload.replyTo ?? process.env.MAIL_REPLY_TO,
-      // Gắn `attachments` khi có
-      ...(attachments.length > 0
+      // Gắn `attachments` khi có (vé điện tử PDF, invoice,...)
+      ...(payload.attachments && payload.attachments.length > 0
         ? {
-            attachments: attachments.map((attachment) => ({
-              filename: attachment.filename,
-              content: attachment.content,
-              contentType: attachment.contentType,
-              cid: attachment.cid,
-              ...(attachment.disposition ? { disposition: attachment.disposition } : {}),
-            })),
+            attachments: payload.attachments.map(
+              (attachment): MailAttachment => ({
+                filename: attachment.filename,
+                content: attachment.content,
+                contentType: attachment.contentType,
+                cid: attachment.cid,
+                disposition: attachment.disposition,
+              })
+            ).concat(inlineAttachments),
           }
-        : {}),
+        : inlineAttachments.length > 0
+          ? {
+              attachments: inlineAttachments,
+            }
+          : {}),
     });
     console.info(`[MAIL] Đã gửi "${payload.subject}" tới ${payload.to}`);
     return true;
