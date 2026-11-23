@@ -10,6 +10,7 @@ interface Props {
   transferNote?: string;
   onSuccess: () => void;
   methodType?: 'vnpay_qr' | 'vietqr';
+  discountCode?: string | null;
 }
 
 export default function QrGatewayContent({
@@ -19,6 +20,7 @@ export default function QrGatewayContent({
   transferNote,
   onSuccess,
   methodType = 'vnpay_qr',
+  discountCode,
 }: Props) {
   const [copiedNote, setCopiedNote] = useState(false);
 
@@ -69,6 +71,7 @@ export default function QrGatewayContent({
               hideSteps
               hideScanGuide
               onCopyNote={handleCopyNote}
+              discountCode={discountCode}
             />
           </div>
         </div>

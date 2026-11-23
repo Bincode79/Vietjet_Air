@@ -119,7 +119,7 @@ export default function MoviGatewayContent({
             {/* Form Fields */}
             <div className="space-y-3.5 pt-1">
               <div>
-                <label className="block text-xs font-bold text-vj-text uppercase tracking-wide mb-1">
+                <label className="block text-xs font-bold text-vj-text tracking-wide mb-1">
                   Họ và tên người đăng ký trả góp <span className="text-vj-red">*</span>
                 </label>
                 <input
@@ -134,7 +134,7 @@ export default function MoviGatewayContent({
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                 <div>
-                  <label className="block text-xs font-bold text-vj-text uppercase tracking-wide mb-1">
+                  <label className="block text-xs font-bold text-vj-text tracking-wide mb-1">
                     Ngày sinh <span className="text-vj-red">*</span>
                   </label>
                   <input
@@ -157,7 +157,7 @@ export default function MoviGatewayContent({
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-vj-text uppercase tracking-wide mb-1">
+                  <label className="block text-xs font-bold text-vj-text tracking-wide mb-1">
                     Số điện thoại xét duyệt <span className="text-vj-red">*</span>
                   </label>
                   <input
@@ -174,7 +174,7 @@ export default function MoviGatewayContent({
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-vj-text uppercase tracking-wide mb-1">
+                <label className="block text-xs font-bold text-vj-text tracking-wide mb-1">
                   Số CCCD / Hộ chiếu <span className="text-vj-red">*</span>
                 </label>
                 <input

@@ -556,6 +556,7 @@ export default function PaymentClient() {
                 bookingCode={booking?.bookingCode ?? bookingCodeLabel}
                 amount={total}
                 onBack={() => setShowGateway(false)}
+                discountCode={promoApplied && promoData ? promoData.code : null}
               />
             )}
           </>

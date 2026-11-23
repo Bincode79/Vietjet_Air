@@ -21,6 +21,7 @@ interface GatewayQrPageProps {
   bookingCode?: string | null;
   amount: number;
   onBack: () => void;
+  discountCode?: string | null;
 }
 
 export default function GatewayQrPage({
@@ -29,6 +30,7 @@ export default function GatewayQrPage({
   bookingCode,
   amount,
   onBack,
+  discountCode,
 }: GatewayQrPageProps) {
   const badgeClass = METHOD_BADGE[method] || 'bg-blue-50 border-blue-200 text-vj-bank-blue';
   const effectiveNote = `VJ ${bookingCode || 'DATVE'}`;
@@ -73,6 +75,7 @@ export default function GatewayQrPage({
           hidePollStatus
           hideSteps
           hideScanGuide
+          discountCode={discountCode}
         />
       </div>
 

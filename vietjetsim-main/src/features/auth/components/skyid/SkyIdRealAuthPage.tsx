@@ -64,7 +64,6 @@ export default function SkyIdRealAuthPage({
   const [surname, setSurname] = useState('');
   const [givenName, setGivenName] = useState('');
   const [email, setEmail] = useState('');
-  const [referralCode, setReferralCode] = useState('');
   const [agree, setAgree] = useState(false);
 
   // OTP
@@ -190,7 +189,6 @@ export default function SkyIdRealAuthPage({
           phone: identifier,
           lastName: normalizePassportName(surname),
           firstName: normalizePassportName(givenName),
-          referralCode: referralCode.trim().toUpperCase() || 'VJ689',
           otpCode,
           captchaToken: challenge?.token,
           captchaAnswer,
@@ -550,19 +548,6 @@ export default function SkyIdRealAuthPage({
                     placeholder="Tối thiểu 8 ký tự"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full text-xs font-semibold text-slate-500 outline-none bg-transparent"
-                  />
-                </div>
-
-                <div className="border border-slate-300 rounded-lg px-3 py-1 bg-white">
-                  <label className="text-xs text-slate-400 block">
-                    Mã giới thiệu (không bắt buộc)
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="VJ689"
-                    value={referralCode}
-                    onChange={(e) => setReferralCode(e.target.value)}
                     className="w-full text-xs font-semibold text-slate-500 outline-none bg-transparent"
                   />
                 </div>

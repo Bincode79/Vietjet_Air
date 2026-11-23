@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getBookingByCodeOrId, getActiveBankAccounts } from '@/lib/db';
+import { getBookingByCodeOrId, getActiveBankAccounts, getDiscountCodeByCode } from '@/lib/db';
 import { verifyAuthRequest } from '@/lib/auth';
 import { rateLimit } from '@/lib/rate-limit';
 import { canAccessBooking } from '@/lib/booking-access';
 import { renderTransferNote } from '@/lib/transfer-note';
 import { buildVietQrPayload, lookupBankBin } from '@/lib/vietqr';
+import { computeDiscountAmount } from '@/lib/discount';
 import { getApiErrorMessage } from '@/shared/services';
 
 /**
@@ -22,6 +23,7 @@ export async function GET(request: NextRequest) {
     const { user } = await verifyAuthRequest(request);
 
     const bookingId = request.nextUrl.searchParams.get('bookingId');
+    const discountCode = request.nextUrl.searchParams.get('discountCode');
     if (!bookingId) {
       return NextResponse.json(
         { error: 'Bad Request', message: 'bookingId là bắt buộc' },
@@ -59,14 +61,39 @@ export async function GET(request: NextRequest) {
     }
 
     const account = accounts[0];
-    const discountAmount = booking.discount_amount || 0;
-    const amount = Math.max(0, booking.total_price - discountAmount);
+
+    // Tính discountAmount từ discountCode nếu có
+    let discountAmount = 0;
+    let validatedDiscountId: string | undefined;
+    let discountCodeForNote = '';
+
+    if (discountCode) {
+      const discount = await getDiscountCodeByCode(discountCode);
+      if (discount && discount.is_active) {
+        const now = new Date();
+        if (now >= new Date(discount.start_date) && now <= new Date(discount.end_date)) {
+          // Kiểm tra usage limit
+          if (discount.usage_limit === null || discount.used_count < discount.usage_limit) {
+            // Kiểm tra min booking amount
+            if (booking.total_price >= Number(discount.min_booking_amount)) {
+              discountAmount = computeDiscountAmount(discount, booking.total_price);
+              validatedDiscountId = discount.id;
+              discountCodeForNote = discount.code;
+            }
+          }
+        }
+      }
+    }
+
+    // Ưu tiên dùng discount_amount từ booking nếu đã có (đã thanh toán trước đó)
+    const finalDiscountAmount = booking.discount_amount || discountAmount;
+    const amount = Math.max(0, booking.total_price - finalDiscountAmount);
     const addInfo = renderTransferNote(account.transfer_note_template, {
       code: booking.booking_code ?? '',
       originalAmount: booking.total_price,
-      discountAmount,
+      discountAmount: finalDiscountAmount,
       amount,
-      discountCode: '',
+      discountCode: discountCodeForNote,
     });
 
     const effectiveBin = lookupBankBin(account.bank_name, account.bank_bin);

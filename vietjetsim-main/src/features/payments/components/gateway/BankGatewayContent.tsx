@@ -179,7 +179,7 @@ export default function BankGatewayContent({
 
         {accounts.length > 1 && (
           <div>
-            <label className="block text-xs font-bold text-vj-text-dim uppercase mb-1">
+            <label className="block text-xs font-bold text-vj-text-dim mb-1">
               Tài khoản ngân hàng nhận
             </label>
             <select
@@ -248,6 +248,7 @@ export default function BankGatewayContent({
                 hideScanGuide
                 onCopyNote={(note) => handleCopy('note', note)}
                 onCopyAmount={(amt) => handleCopy('amount', String(amt))}
+                discountCode={discountCode}
               />
             </div>
           </div>
@@ -296,7 +297,7 @@ export default function BankGatewayContent({
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-xs font-bold text-vj-text-dim uppercase mb-1">
+            <label className="block text-xs font-bold text-vj-text-dim mb-1">
               Xác nhận nội dung đã chuyển <span className="text-vj-red">*</span>
             </label>
             <input
@@ -308,7 +309,7 @@ export default function BankGatewayContent({
             />
           </div>
           <div>
-            <label className="block text-xs font-bold text-vj-text-dim uppercase mb-1">
+            <label className="block text-xs font-bold text-vj-text-dim mb-1">
               Xác nhận số tiền đã chuyển <span className="text-vj-red">*</span>
             </label>
             <input

@@ -301,7 +301,7 @@ export default function BookingTicketCard({
             {/* Promo code form */}
             {onApplyPromo && (
               <div className="bg-gray-50/80 rounded-lg p-3 border border-gray-100">
-                <label className="block text-2xs font-semibold text-[var(--foreground-subtle)] uppercase tracking-wider mb-1">
+                <label className="block text-2xs font-semibold text-[var(--foreground-subtle)] tracking-wider mb-1">
                   Mã khuyến mãi
                 </label>
                 <div className="flex items-center gap-2">

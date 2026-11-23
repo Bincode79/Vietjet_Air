@@ -60,6 +60,9 @@ import VoiceCallModal from './VoiceCallModal';
 export default function UserChat() {
   const { user } = useAuth();
   const pathname = usePathname();
+  // Widget bị ẩn trên console admin (return null bên dưới) — tắt luôn polling
+  // để không spam API chat cho một surface không hiển thị.
+  const isAdminArea = pathname?.startsWith('/quan-tri') ?? false;
 
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -96,8 +99,9 @@ export default function UserChat() {
     [user, guestUser]
   );
 
-  // Presence state
-  const [adminOnline, setAdminOnline] = useState(false);
+  // Presence state — adminOnline không còn dùng để hiển thị (luôn "Online"),
+  // chỉ giữ setter để pollPresence cập nhật trạng thái nội bộ.
+  const [, setAdminOnline] = useState(false);
   const [adminTyping, setAdminTyping] = useState(false);
 
   const handleStartGuestChat = async (e?: React.FormEvent) => {
@@ -378,6 +382,7 @@ export default function UserChat() {
   // Poll for new messages & audio notifications
   const pollMessages = useCallback(async () => {
     if (!conversation?.id || !activeUser || authErrorRef.current) return;
+    if (document.visibilityState === 'hidden') return;
     try {
       const data = await getConversationMessages(conversation.id);
       const newMessages = data.messages || [];
@@ -408,6 +413,7 @@ export default function UserChat() {
   // Poll for incoming voice call
   const pollCall = useCallback(async () => {
     if (!conversation?.id || !activeUser || authErrorRef.current) return;
+    if (document.visibilityState === 'hidden') return;
     try {
       const data = await getActiveChatCall(conversation.id);
       const currentCall = data.call;
@@ -494,6 +500,7 @@ export default function UserChat() {
   // Poll for presence
   const pollPresence = useCallback(async () => {
     if (!conversation?.id || !activeUser || authErrorRef.current) return;
+    if (document.visibilityState === 'hidden') return;
     try {
       const data = await getChatPresence(conversation.id);
       if (data.presence) {
@@ -509,15 +516,15 @@ export default function UserChat() {
 
   // Load conversation on mount
   useEffect(() => {
-    if (user) {
+    if (user && !isAdminArea) {
       loadConversation();
     }
     return () => stopPolling();
-  }, [user, loadConversation, stopPolling]);
+  }, [user, isAdminArea, loadConversation, stopPolling]);
 
   // Start polling when conversation is loaded — and activeUser is present.
   useEffect(() => {
-    if (conversation?.id && activeUser) {
+    if (conversation?.id && activeUser && !isAdminArea) {
       authErrorRef.current = false;
       pollingRef.current = setInterval(pollMessages, 3000);
       presencePollingRef.current = setInterval(pollPresence, 3000);
@@ -528,7 +535,15 @@ export default function UserChat() {
       pollCall();
     }
     return () => stopPolling();
-  }, [conversation?.id, activeUser, pollMessages, pollPresence, pollCall, stopPolling]);
+  }, [
+    conversation?.id,
+    activeUser,
+    isAdminArea,
+    pollMessages,
+    pollPresence,
+    pollCall,
+    stopPolling,
+  ]);
 
   // Session lost mid-session: drop the conversation so polling stays off until
   // the user signs in again (the effect above only re-arms on a new `activeUser`).
@@ -639,7 +654,6 @@ export default function UserChat() {
   // Signed-out visitors get the same launcher vietjetair.com shows to everyone;
   // opening it asks them to sign in instead of showing an empty thread.
   const isGuest = !user;
-  const operatorOnline = !isGuest && adminOnline;
 
   return (
     <>
@@ -749,10 +763,7 @@ export default function UserChat() {
                   <h3 className="font-bold text-vj-red-dark font-koho text-sm sm:text-base leading-tight">
                     Vietjet Air 24/7
                   </h3>
-                  <span
-                    className={`h-2 w-2 rounded-full ${operatorOnline ? 'bg-green-500' : 'bg-gray-400'}`}
-                    title={operatorOnline ? 'Online' : 'Offline'}
-                  />
+                  <span className="h-2 w-2 rounded-full bg-green-500" title="Online" />
                 </div>
                 <div className="text-3xs text-vj-muted leading-tight">Tổng đài Vietjet Air</div>
               </div>

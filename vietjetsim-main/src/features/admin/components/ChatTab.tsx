@@ -202,6 +202,7 @@ export default function ChatTab() {
 
   const pollCall = useCallback(async () => {
     if (!selectedConv) return;
+    if (document.visibilityState === 'hidden') return;
     try {
       const data = await getActiveChatCall(selectedConv.id);
       const currentCall = data.call;
@@ -460,6 +461,7 @@ export default function ChatTab() {
     loadConversations();
     // Refresh conversations list periodically
     pollingRef.current = setInterval(() => {
+      if (document.visibilityState === 'hidden') return;
       loadConversations();
       if (selectedConv) {
         loadMessages(selectedConv.id, true);
@@ -476,7 +478,7 @@ export default function ChatTab() {
     markUserMessagesRead(selectedConv.id);
     pollCall();
     if (callPollingRef.current) clearInterval(callPollingRef.current);
-    callPollingRef.current = setInterval(pollCall, 2500);
+    callPollingRef.current = setInterval(pollCall, 4000);
 
     // Mark conversation unread count as cleared
     setConversations((prev) =>

@@ -76,7 +76,7 @@ export default function NapasGatewayContent({
 
         {step === 'bank' && (
           <div className="space-y-4">
-            <label className="block text-xs font-bold text-vj-text-dim uppercase font-koho">
+            <label className="block text-xs font-bold text-vj-text-dim font-koho">
               1. Chọn ngân hàng phát hành thẻ:
             </label>
             <div className="grid grid-cols-3 sm:grid-cols-4 gap-2.5">
@@ -124,7 +124,7 @@ export default function NapasGatewayContent({
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-vj-text-dim uppercase mb-1">
+              <label className="block text-xs font-bold text-vj-text-dim mb-1">
                 Số thẻ ATM (in trên mặt trước thẻ) <span className="text-vj-red">*</span>
               </label>
               <input
@@ -138,7 +138,7 @@ export default function NapasGatewayContent({
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-vj-text-dim uppercase mb-1">
+              <label className="block text-xs font-bold text-vj-text-dim mb-1">
                 Tên chủ thẻ (không dấu) <span className="text-vj-red">*</span>
               </label>
               <input
@@ -152,7 +152,7 @@ export default function NapasGatewayContent({
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-vj-text-dim uppercase mb-1">
+              <label className="block text-xs font-bold text-vj-text-dim mb-1">
                 Ngày phát hành / Ngày hết hạn (MM/YY) <span className="text-vj-red">*</span>
               </label>
               <input

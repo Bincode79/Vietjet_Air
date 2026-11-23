@@ -164,6 +164,7 @@ export default function AdminDashboardClient() {
 
   useEffect(() => {
     const fetchChatStatus = async () => {
+      if (document.visibilityState === 'hidden') return;
       try {
         const data = await listConversations();
         const convs = data.conversations || [];
@@ -201,7 +202,7 @@ export default function AdminDashboardClient() {
     };
 
     fetchChatStatus();
-    const interval = setInterval(fetchChatStatus, 4000);
+    const interval = setInterval(fetchChatStatus, 6000);
     return () => clearInterval(interval);
   }, [activeTab, toast]);
 
@@ -209,6 +210,7 @@ export default function AdminDashboardClient() {
     if (activeTab === 'chat') return; // ChatTab handles calls itself when active
 
     const checkIncoming = async () => {
+      if (document.visibilityState === 'hidden') return;
       try {
         const res = await getIncomingAdminCall();
         if (res.incomingCall) {
@@ -225,7 +227,7 @@ export default function AdminDashboardClient() {
       }
     };
 
-    const interval = setInterval(checkIncoming, 3500);
+    const interval = setInterval(checkIncoming, 5000);
     return () => clearInterval(interval);
   }, [activeTab, globalCall?.status]);
 

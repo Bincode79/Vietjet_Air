@@ -110,7 +110,7 @@ export default function CardGatewayContent({
         {/* Card Form */}
         <form onSubmit={handleSubmit} className="space-y-4 font-koho">
           <div>
-            <label className="block text-xs font-bold text-vj-text-dim uppercase mb-1">
+            <label className="block text-xs font-bold text-vj-text-dim mb-1">
               Số thẻ <span className="text-vj-red">*</span>
             </label>
             <input
@@ -125,7 +125,7 @@ export default function CardGatewayContent({
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-vj-text-dim uppercase mb-1">
+            <label className="block text-xs font-bold text-vj-text-dim mb-1">
               Tên in trên thẻ (không dấu) <span className="text-vj-red">*</span>
             </label>
             <input
@@ -141,7 +141,7 @@ export default function CardGatewayContent({
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-bold text-vj-text-dim uppercase mb-1">
+              <label className="block text-xs font-bold text-vj-text-dim mb-1">
                 Ngày hết hạn (MM/YY) <span className="text-vj-red">*</span>
               </label>
               <input
@@ -155,7 +155,7 @@ export default function CardGatewayContent({
               />
             </div>
             <div>
-              <label className="block text-xs font-bold text-vj-text-dim uppercase mb-1">
+              <label className="block text-xs font-bold text-vj-text-dim mb-1">
                 CVV / CVC <span className="text-vj-red">*</span>
               </label>
               <input

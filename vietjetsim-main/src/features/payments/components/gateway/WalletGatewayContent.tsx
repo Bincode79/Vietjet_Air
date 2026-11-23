@@ -128,7 +128,7 @@ export default function WalletGatewayContent({
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-vj-text-dim uppercase mb-1">
+            <label className="block text-xs font-bold text-vj-text-dim mb-1">
               Nhập mã PIN ví tài khoản (hoặc 123456) <span className="text-vj-red">*</span>
             </label>
             <input

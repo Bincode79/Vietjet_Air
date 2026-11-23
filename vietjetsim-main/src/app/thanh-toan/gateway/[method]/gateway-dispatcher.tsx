@@ -395,6 +395,7 @@ export default function GatewayDispatcher() {
               amount={effectiveAmount}
               onSuccess={handlePaymentSuccess}
               methodType="vnpay_qr"
+              discountCode={promoCode || null}
             />
           )}
         </Suspense>

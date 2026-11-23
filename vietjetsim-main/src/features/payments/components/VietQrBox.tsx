@@ -67,6 +67,8 @@ interface VietQrBoxProps {
   onCopyNote?: (note: string) => void;
   /** Callback khi copy số tiền */
   onCopyAmount?: (amount: number) => void;
+  /** Mã giảm giá để tính toán số tiền đúng */
+  discountCode?: string | null;
 }
 
 type PollState = 'waiting' | 'checking' | 'paid';
@@ -83,6 +85,7 @@ export default function VietQrBox({
   hidePaymentDetails = false,
   hidePollStatus = false,
   hideScanGuide: _hideScanGuide = false, // deprecated, handled in parent
+  discountCode,
 }: VietQrBoxProps) {
   const isVnpay = methodType === 'vnpay_qr' || methodType === 'vnpay_dom';
   const methodLabel = isVnpay ? 'VNPAY-QR' : 'VietQR';
@@ -133,8 +136,9 @@ export default function VietQrBox({
     if (bookingId) {
       (async () => {
         try {
+          const discountParam = discountCode ? `&discountCode=${encodeURIComponent(discountCode)}` : '';
           const result = await apiRequest<VietQrData>(
-            `/api/thanh-toan/vietqr?bookingId=${encodeURIComponent(bookingId)}`
+            `/api/thanh-toan/vietqr?bookingId=${encodeURIComponent(bookingId)}${discountParam}`
           );
           if (cancelled) return;
           setData(result);
@@ -202,6 +206,7 @@ export default function VietQrBox({
     fallbackPnr,
     generateQrFromPayload,
     methodLabel,
+    discountCode,
   ]);
 
   // Polling tự thăm dò giao dịch (giới hạn ~15 phút với nhịp 5s).

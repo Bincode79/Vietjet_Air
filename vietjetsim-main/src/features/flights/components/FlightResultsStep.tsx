@@ -742,7 +742,7 @@ export default function FlightResultsStep({
             <div className="p-2 sm:p-3 space-y-3 sm:space-y-4">
               {/* Sort */}
               <div>
-                <label className="text-2xs font-bold text-[var(--foreground)] uppercase tracking-wider block mb-1 font-koho">
+                <label className="text-2xs font-bold text-[var(--foreground)] tracking-wider block mb-1 font-koho">
                   Sắp xếp theo
                 </label>
                 <select
@@ -760,7 +760,7 @@ export default function FlightResultsStep({
 
               {/* Airline Filter */}
               <div>
-                <label className="text-2xs font-bold text-[var(--foreground)] uppercase tracking-wider block mb-1.5 font-koho">
+                <label className="text-2xs font-bold text-[var(--foreground)] tracking-wider block mb-1.5 font-koho">
                   Hãng hàng không
                 </label>
                 <div className="space-y-1">
@@ -790,7 +790,7 @@ export default function FlightResultsStep({
 
               {/* Price Range */}
               <div>
-                <label className="text-2xs font-bold text-[var(--foreground)] uppercase tracking-wider block mb-1.5 font-koho">
+                <label className="text-2xs font-bold text-[var(--foreground)] tracking-wider block mb-1.5 font-koho">
                   Khoảng giá
                 </label>
                 <div className="space-y-1.5">
@@ -849,7 +849,7 @@ export default function FlightResultsStep({
 
               {/* Departure Time */}
               <div>
-                <label className="text-2xs font-bold text-[var(--foreground)] uppercase tracking-wider block mb-1.5 font-koho">
+                <label className="text-2xs font-bold text-[var(--foreground)] tracking-wider block mb-1.5 font-koho">
                   Giờ khởi hành
                 </label>
                 <div className="grid grid-cols-2 gap-1">
@@ -874,7 +874,7 @@ export default function FlightResultsStep({
 
               {/* Stop Count */}
               <div>
-                <label className="text-2xs font-bold text-[var(--foreground)] uppercase tracking-wider block mb-1.5 font-koho">
+                <label className="text-2xs font-bold text-[var(--foreground)] tracking-wider block mb-1.5 font-koho">
                   Số điểm dừng
                 </label>
                 <div className="space-y-1">
@@ -912,7 +912,7 @@ export default function FlightResultsStep({
 
               {/* Duration */}
               <div>
-                <label className="text-2xs font-bold text-[var(--foreground)] uppercase tracking-wider block mb-1.5 font-koho">
+                <label className="text-2xs font-bold text-[var(--foreground)] tracking-wider block mb-1.5 font-koho">
                   Thời gian bay tối đa:{' '}
                   <span className="text-primary">
                     {Math.floor(shownMaxDuration / 60)}h{' '}
