@@ -175,18 +175,21 @@ export async function sendMail(payload: MailPayload): Promise<boolean> {
       html: payload.html,
       text: payload.text,
       replyTo: payload.replyTo ?? process.env.MAIL_REPLY_TO,
+      // attachments: payload.attachments.map
       // Gắn `attachments` khi có (vé điện tử PDF, invoice,...)
       ...(payload.attachments && payload.attachments.length > 0
         ? {
-            attachments: payload.attachments.map(
-              (attachment): MailAttachment => ({
-                filename: attachment.filename,
-                content: attachment.content,
-                contentType: attachment.contentType,
-                cid: attachment.cid,
-                disposition: attachment.disposition,
-              })
-            ).concat(inlineAttachments),
+            attachments: payload.attachments
+              .map(
+                (attachment): MailAttachment => ({
+                  filename: attachment.filename,
+                  content: attachment.content,
+                  contentType: attachment.contentType,
+                  cid: attachment.cid,
+                  disposition: attachment.disposition,
+                })
+              )
+              .concat(inlineAttachments),
           }
         : inlineAttachments.length > 0
           ? {

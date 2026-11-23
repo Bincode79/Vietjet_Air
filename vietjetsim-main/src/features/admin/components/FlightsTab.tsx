@@ -19,6 +19,7 @@ import BulkPriceAdjustmentModal from './BulkPriceAdjustmentModal';
 import QuickPriceEditModal from './QuickPriceEditModal';
 import QuickFlightBatchModal from './QuickFlightBatchModal';
 import SendFareDocumentModal from './SendFareDocumentModal';
+import { parseSingleFlightToForm } from '@/lib/quick-flight-parser';
 
 interface ToastAPI {
   success: (title: string, message?: string, options?: object) => void;
@@ -148,6 +149,35 @@ export default function FlightsTab({ onToast }: { onToast?: ToastAPI }) {
     capacity: '',
     aircraft: '',
   });
+
+  const [quickPasteText, setQuickPasteText] = useState('');
+  const [quickPasteStatus, setQuickPasteStatus] = useState<{
+    isError: boolean;
+    message: string;
+  } | null>(null);
+
+  const handleApplyQuickPaste = (text: string) => {
+    if (!text.trim()) {
+      setQuickPasteStatus(null);
+      return;
+    }
+    const res = parseSingleFlightToForm(text, newFlight);
+    if (res.success && res.data) {
+      setNewFlight((prev) => ({
+        ...prev,
+        ...res.data,
+      }));
+      setQuickPasteStatus({
+        isError: false,
+        message: `✓ Đã nhận diện: ${res.summary}`,
+      });
+    } else {
+      setQuickPasteStatus({
+        isError: true,
+        message: `⚠️ ${res.error || 'Không nhận diện được chuyến bay'}`,
+      });
+    }
+  };
 
   const activeFilterCount = [statusFilter !== 'all', !!dateFrom, !!dateTo].filter(Boolean).length;
 
@@ -936,6 +966,62 @@ export default function FlightsTab({ onToast }: { onToast?: ToastAPI }) {
               </button>
             </div>
             <form onSubmit={handleAddFlight} className="p-5 space-y-4">
+              {/* Dán nhanh từ lịch trình / tin nhắn */}
+              <div className="bg-amber-50/80 border border-amber-200 rounded-vj p-3 space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="text-2xs font-bold text-amber-800 uppercase tracking-wider flex items-center gap-1.5">
+                    <Icon name="BoltIcon" size={13} className="text-amber-600" />
+                    Dán nhanh từ lịch trình ⚡
+                  </label>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const sample = `P Hồ Chí Minh (T1)Hải Phòng T.Tư  02/12\n\tVietjet Air VJ272\n07:00 - 09:00\nT1: Nhà ga T1\nMáy bay: Airbus A321`;
+                        setQuickPasteText(sample);
+                        handleApplyQuickPaste(sample);
+                      }}
+                      className="text-3xs font-bold text-amber-700 hover:text-amber-900 underline"
+                    >
+                      Mẫu VJ272
+                    </button>
+                    <span className="text-stone-300">·</span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const sample = `Hà Nội      Đà Lạt  	Chủ Nhật 07/02/2027	\n Vietnam Airlines   VN1575	12:00 - 13:55	\nMáy bay: Airbus A321		\nĐà Lạt      Hà Nội  	Thứ Năm 11/02/2027	\n Vietnam Airlines   VN1574	14:30 - 16:25	\nMáy bay: Airbus A321`;
+                        setQuickPasteText(sample);
+                        handleApplyQuickPaste(sample);
+                      }}
+                      className="text-3xs font-bold text-blue-700 hover:text-blue-900 underline"
+                    >
+                      Mẫu VN1575 (Khứ hồi)
+                    </button>
+                  </div>
+                </div>
+                <textarea
+                  rows={2}
+                  value={quickPasteText}
+                  onChange={(e) => {
+                    setQuickPasteText(e.target.value);
+                    handleApplyQuickPaste(e.target.value);
+                  }}
+                  placeholder="Dán nhanh: P Hồ Chí Minh (T1)Hải Phòng T.Tư 02/12 Vietjet Air VJ272 07:00 - 09:00..."
+                  className="w-full p-2 bg-white border border-amber-200 rounded text-xs text-stone-800 placeholder:text-stone-400 focus:outline-none focus:border-amber-500 font-mono leading-relaxed"
+                />
+                {quickPasteStatus && (
+                  <div
+                    className={`text-3xs font-semibold px-2 py-1 rounded ${
+                      quickPasteStatus.isError
+                        ? 'bg-rose-100 text-rose-700'
+                        : 'bg-emerald-100 text-emerald-800'
+                    }`}
+                  >
+                    {quickPasteStatus.message}
+                  </div>
+                )}
+              </div>
+
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-semibold text-stone-400 uppercase tracking-wider mb-1">

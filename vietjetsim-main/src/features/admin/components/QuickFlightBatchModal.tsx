@@ -5,6 +5,7 @@ import { AIRPORT_CITIES } from '@/shared/constants';
 import { AIRCRAFT_MODELS } from '@/features/flights/constants';
 import { createBatchAdminFlights, type AdminFlight } from '@/features/admin';
 import { getApiErrorMessage } from '@/shared/services';
+import { parseQuickFlightText } from '@/lib/quick-flight-parser';
 
 interface ToastAPI {
   success: (title: string, message?: string, options?: object) => void;
@@ -246,75 +247,52 @@ export default function QuickFlightBatchModal({
     aircraft,
   ]);
 
-  // Parse CSV Preview
+  // Parse Quick Flight Text / Itinerary / CSV Preview
   const parsedCsvFlights = useMemo(() => {
     if (activeTab !== 'csv' || !csvContent.trim()) return [];
-    const lines = csvContent.trim().split('\n');
-    const result: Array<Partial<AdminFlight> & { parseError?: string }> = [];
+    return parseQuickFlightText(csvContent, {
+      defaultEcoPrice: economyPrice,
+      defaultBizPrice: businessPrice,
+      defaultAircraft: aircraft,
+      defaultCapacity: capacity,
+    });
+  }, [activeTab, csvContent, economyPrice, businessPrice, aircraft, capacity]);
 
-    for (let i = 0; i < lines.length; i++) {
-      const line = lines[i].trim();
-      if (!line || line.startsWith('#')) continue;
+  // Load sample itinerary text (như người dùng yêu cầu: VJ272 SGN - HPH)
+  const handleLoadSampleItinerary = () => {
+    const sample = `P Hồ Chí Minh (T1)Hải Phòng T.Tư  02/12
+	Vietjet Air VJ272
+07:00 - 09:00
+T1: Nhà ga T1
+Máy bay: Airbus A321
 
-      const parts = line.split(',').map((p) => p.trim());
-      // Expecting: flight_no, from, to, date, dep_time, arr_time, eco_price, biz_price, capacity, aircraft
-      if (parts.length < 5) {
-        result.push({
-          flight_no: `Dòng ${i + 1}`,
-          parseError: 'Thiếu cột (Cần tối thiểu: Số hiệu, Điểm đi, Điểm đến, Ngày bay, Giờ đi)',
-        });
-        continue;
-      }
+Hải Phòng (T1)P Hồ Chí Minh T.Tư  02/12
+	Vietjet Air VJ273
+09:45 - 11:45
+T1: Nhà ga T1
+Máy bay: Airbus A321`;
+    setCsvContent(sample);
+  };
 
-      const fNo = parts[0];
-      const from = parts[1]?.toUpperCase();
-      const to = parts[2]?.toUpperCase();
-      const dateStr = parts[3];
-      const depTime = parts[4];
-      const arrTime = parts[5] || '10:00';
-      const eco = parts[6] ? parseInt(parts[6], 10) : 499000;
-      const biz = parts[7] ? parseInt(parts[7], 10) : Math.round(eco * FARE_LADDER_RATIO);
-      const cap = parts[8] ? parseInt(parts[8], 10) : 180;
-      const ac = parts[9] || 'Airbus A321';
-
-      try {
-        const depD = new Date(`${dateStr}T${depTime}:00+07:00`);
-        const arrD = new Date(`${dateStr}T${arrTime}:00+07:00`);
-
-        result.push({
-          flight_no: fNo,
-          from_code: from,
-          to_code: to,
-          depart_time: depD.toISOString(),
-          arrive_time: arrD.toISOString(),
-          economy_price: eco,
-          business_price: biz,
-          price: eco,
-          class: 'economy',
-          available: cap,
-          aircraft: ac,
-        });
-      } catch {
-        result.push({
-          flight_no: fNo,
-          parseError: 'Định dạng ngày/giờ không hợp lệ',
-        });
-      }
-    }
-    return result;
-  }, [activeTab, csvContent]);
+  // Load sample round-trip text (như người dùng yêu cầu: VN1575 / VN1574 HAN - DLI)
+  const handleLoadSampleRoundTrip = () => {
+    const sample = `Hà Nội      Đà Lạt  	Chủ Nhật 07/02/2027	
+ Vietnam Airlines   VN1575	12:00 - 13:55	
+Máy bay: Airbus A321		
+Đà Lạt      Hà Nội  	Thứ Năm 11/02/2027	
+ Vietnam Airlines   VN1574	14:30 - 16:25	
+Máy bay: Airbus A321`;
+    setCsvContent(sample);
+  };
 
   // Load sample CSV
   const handleLoadSampleCsv = () => {
     const d1 = formatDateISO(tomorrow);
     const d2 = formatDateISO(nextWeek);
-    const sample = `# Cú pháp: Số hiệu, Điểm đi, Điểm đến, Ngày bay (YYYY-MM-DD), Giờ đi (HH:mm), Giờ đến (HH:mm), Giá Eco, Giá SkyBoss, Ghế, Máy bay
+    const sample = `# Cú pháp CSV: Số hiệu, Điểm đi, Điểm đến, Ngày bay, Giờ đi, Giờ đến, Giá Eco, Giá SkyBoss, Ghế, Máy bay
 VJ 120, SGN, HAN, ${d1}, 07:00, 09:15, 599000, 1699000, 180, Airbus A321
 VJ 121, HAN, SGN, ${d1}, 10:30, 12:45, 599000, 1699000, 180, Airbus A321
-VJ 128, SGN, HAN, ${d1}, 15:00, 17:15, 699000, 1899000, 180, Airbus A321neo
-VJ 129, HAN, SGN, ${d1}, 18:30, 20:45, 699000, 1899000, 180, Airbus A321neo
-VJ 301, SGN, DAD, ${d2}, 08:30, 09:50, 499000, 1380000, 180, Airbus A320
-VJ 302, DAD, SGN, ${d2}, 11:15, 12:35, 499000, 1380000, 180, Airbus A320`;
+VJ 301, SGN, DAD, ${d2}, 08:30, 09:50, 499000, 1380000, 180, Airbus A320`;
     setCsvContent(sample);
   };
 
@@ -407,7 +385,7 @@ VJ 302, DAD, SGN, ${d2}, 11:15, 12:35, 499000, 1380000, 180, Airbus A320`;
             }`}
           >
             <Icon name="DocumentTextIcon" size={14} />
-            Dán danh sách nhanh (Paste CSV / Bảng)
+            Dán danh sách nhanh (Hành trình copy / CSV / Bảng)
           </button>
         </div>
 
@@ -767,55 +745,114 @@ VJ 302, DAD, SGN, ${d2}, 11:15, 12:35, 499000, 1380000, 180, Airbus A320`;
               </div>
             </div>
           ) : (
-            /* Mode 2: CSV / Text */
+            /* Mode 2: CSV / Itinerary Text */
             <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-vj-admin-muted">
-                  Dán nội dung bảng (Mỗi dòng một chuyến bay, ngăn cách bằng dấu phẩy):
-                </span>
-                <button
-                  type="button"
-                  onClick={handleLoadSampleCsv}
-                  className="px-3 py-1 bg-white/10 hover:bg-white/20 text-emerald-400 rounded-lg text-xs font-bold transition-colors"
-                >
-                  Dán dữ liệu mẫu 📋
-                </button>
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div>
+                  <span className="text-xs font-bold text-white block">
+                    Dán văn bản hành trình hoặc bảng CSV:
+                  </span>
+                  <span className="text-3xs text-vj-admin-muted">
+                    Hỗ trợ tin nhắn hành trình (P Hồ Chí Minh Hải Phòng VJ272...) hoặc bảng CSV
+                  </span>
+                </div>
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  <button
+                    type="button"
+                    onClick={handleLoadSampleItinerary}
+                    className="px-2.5 py-1 bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 rounded-lg text-xs font-bold transition-colors flex items-center gap-1"
+                  >
+                    <span>Mẫu VJ272 📋</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleLoadSampleRoundTrip}
+                    className="px-2.5 py-1 bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 rounded-lg text-xs font-bold transition-colors flex items-center gap-1"
+                  >
+                    <span>Mẫu Khứ hồi VN1575 🔄</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleLoadSampleCsv}
+                    className="px-2.5 py-1 bg-white/10 hover:bg-white/20 text-emerald-400 rounded-lg text-xs font-bold transition-colors flex items-center gap-1"
+                  >
+                    <span>Mẫu CSV 📄</span>
+                  </button>
+                </div>
               </div>
 
               <textarea
                 rows={8}
                 value={csvContent}
                 onChange={(e) => setCsvContent(e.target.value)}
-                placeholder="VJ 120, SGN, HAN, 2026-11-25, 08:00, 10:15, 699000, 1899000, 180, Airbus A321..."
+                placeholder="Dán văn bản hành trình:&#10;P Hồ Chí Minh (T1)Hải Phòng T.Tư  02/12&#10;	Vietjet Air VJ272&#10;07:00 - 09:00&#10;T1: Nhà ga T1&#10;Máy bay: Airbus A321&#10;&#10;Hoặc định dạng CSV:&#10;VJ 120, SGN, HAN, 2026-11-25, 08:00, 10:15, 699000, 1899000, 180, Airbus A321..."
                 className="w-full p-3.5 bg-slate-950 border border-white/15 rounded-xl font-mono text-xs text-white focus:outline-none focus:border-emerald-400 leading-relaxed"
               />
 
               {parsedCsvFlights.length > 0 && (
-                <div className="bg-slate-950 border border-white/10 rounded-xl p-3 max-h-48 overflow-y-auto">
-                  <div className="text-3xs font-bold text-vj-admin-muted uppercase tracking-wider mb-2">
-                    Xem trước kết quả phân tích ({parsedCsvFlights.length} dòng):
+                <div className="bg-slate-950 border border-white/10 rounded-xl p-3 max-h-56 overflow-y-auto space-y-2">
+                  <div className="flex items-center justify-between text-3xs font-bold text-vj-admin-muted uppercase tracking-wider">
+                    <span>Kết quả phân tích ({parsedCsvFlights.length} chuyến):</span>
+                    <span className="text-emerald-400 normal-case font-semibold">
+                      {parsedCsvFlights.filter((f) => !f.parseError).length} chuyến hợp lệ
+                    </span>
                   </div>
-                  <div className="space-y-1.5 text-xs font-mono">
+                  <div className="space-y-2">
                     {parsedCsvFlights.map((item, idx) => (
                       <div
                         key={idx}
-                        className={`flex items-center justify-between p-1.5 rounded ${
+                        className={`flex flex-col sm:flex-row sm:items-center justify-between p-2.5 rounded-xl border gap-2 ${
                           item.parseError
-                            ? 'bg-rose-500/20 text-rose-300'
-                            : 'bg-white/5 text-white/90'
+                            ? 'bg-rose-500/10 border-rose-500/30 text-rose-300'
+                            : 'bg-white/5 border-white/10 text-white/90'
                         }`}
                       >
-                        <span>
-                          {item.flight_no} · {item.from_code} → {item.to_code}
-                        </span>
+                        <div className="flex items-center gap-3">
+                          <span className="font-mono font-bold text-xs text-amber-400 bg-amber-400/15 border border-amber-400/30 px-2 py-0.5 rounded-lg whitespace-nowrap">
+                            {item.flight_no}
+                          </span>
+                          <div className="text-xs">
+                            <div className="font-bold text-white flex items-center gap-1.5 flex-wrap">
+                              <span>
+                                {item.from_code}{' '}
+                                <span className="text-white/60 font-normal">
+                                  ({item.from_city || item.from_code})
+                                </span>
+                              </span>
+                              <span className="text-emerald-400">→</span>
+                              <span>
+                                {item.to_code}{' '}
+                                <span className="text-white/60 font-normal">
+                                  ({item.to_city || item.to_code})
+                                </span>
+                              </span>
+                            </div>
+                            <div className="text-3xs text-vj-admin-muted mt-0.5 flex items-center gap-2 flex-wrap">
+                              {item.date && <span>📅 {item.date}</span>}
+                              {item.depart_time_str && item.arrive_time_str && (
+                                <span>
+                                  ⏰ {item.depart_time_str} - {item.arrive_time_str}
+                                </span>
+                              )}
+                              {item.aircraft && <span>✈️ {item.aircraft}</span>}
+                              {item.terminal && <span>🏢 {item.terminal}</span>}
+                            </div>
+                          </div>
+                        </div>
+
                         {item.parseError ? (
-                          <span className="text-3xs font-bold text-rose-400">
+                          <span className="text-3xs font-bold text-rose-400 bg-rose-500/15 px-2.5 py-1 rounded-lg border border-rose-500/30 self-start sm:self-auto">
                             {item.parseError}
                           </span>
                         ) : (
-                          <span className="text-3xs text-emerald-400 font-bold">
-                            Eco {item.economy_price?.toLocaleString('vi-VN')}₫
-                          </span>
+                          <div className="text-left sm:text-right flex sm:flex-col gap-2 sm:gap-0 self-start sm:self-auto">
+                            <span className="text-xs text-emerald-400 font-bold block">
+                              Eco: {item.economy_price?.toLocaleString('vi-VN')}₫
+                            </span>
+                            <span className="text-3xs text-vj-admin-muted">
+                              Biz: {item.business_price?.toLocaleString('vi-VN')}₫
+                            </span>
+                          </div>
                         )}
                       </div>
                     ))}
