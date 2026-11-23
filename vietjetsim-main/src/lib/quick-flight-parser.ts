@@ -24,11 +24,17 @@ export interface ParsedFlight {
   available: number;
   rawText?: string;
   parseError?: string;
+  priceSource?: 'text' | 'default' | 'roundtrip_split';
+  tripType?: 'one_way' | 'round_trip';
+  direction?: 'outbound' | 'return';
+  roundTripTotalPrice?: number;
 }
 
 export interface QuickFlightParserOptions {
   defaultEcoPrice?: number;
   defaultBizPrice?: number;
+  defaultReturnEcoPrice?: number;
+  defaultReturnBizPrice?: number;
   defaultCapacity?: number;
   defaultAircraft?: string;
   referenceYear?: number;
@@ -419,6 +425,129 @@ export function parseAircraft(text: string): string | null {
 }
 
 /**
+ * Trích xuất giá trị số tiền từ chuỗi (hỗ trợ 1.550.000, 1,550,000, 1550k, 599k, 0đ)
+ */
+export function parseCurrencyValue(raw: string): number | null {
+  if (!raw) return null;
+  const clean = raw.trim().toLowerCase();
+
+  // Dạng viết tắt có 'k' (VD: 599k, 1550k, 1.550k)
+  const kMatch = clean.match(/^([\d.,]+)\s*k$/i);
+  if (kMatch) {
+    const numPart = parseFloat(kMatch[1].replace(/,/g, '.'));
+    if (!isNaN(numPart)) {
+      const val = Math.round(numPart * 1000);
+      if (val >= 10000 && val <= 100000000) return val;
+    }
+  }
+
+  // Lấy các chữ số
+  const digitsOnly = clean.replace(/[^\d]/g, '');
+  if (!digitsOnly) return null;
+  const val = parseInt(digitsOnly, 10);
+  if (!isNaN(val) && val >= 10000 && val <= 100000000) {
+    return val;
+  }
+  // Cho phép vé 0đ khuyến mãi
+  if (digitsOnly === '0' && /(?:0\s*(?:đ|vnd|vnđ)|miễn\s*phí)/i.test(clean)) {
+    return 0;
+  }
+  return null;
+}
+
+/**
+ * Phân tích dòng văn bản để trích xuất giá vé (1 chiều, 2 chiều, Eco, Business / SkyBoss)
+ */
+export function parsePriceFromLine(line: string): {
+  economyPrice?: number;
+  businessPrice?: number;
+  isRoundTripPrice?: boolean;
+  isOutboundPrice?: boolean;
+  isReturnPrice?: boolean;
+} | null {
+  const trimmed = line.trim();
+  if (!trimmed) return null;
+
+  // 1. Kiểm tra nếu dòng chứa cả Eco / Phổ thông và Business / Thương gia / SkyBoss
+  const ecoMatch = trimmed.match(
+    /(?:Eco(?:nomy)?|Phổ\s*thông|Hạng\s*phổ\s*thông)\s*[:\s]*([\d.,]+(?:k)?)\s*(?:₫|vnd|vnđ)?/i
+  );
+  const bizMatch = trimmed.match(
+    /(?:Business|Biz|Thương\s*gia|SkyBoss|Hạng\s*thương\s*gia)\s*[:\s]*([\d.,]+(?:k)?)\s*(?:₫|vnd|vnđ)?/i
+  );
+
+  if (ecoMatch || bizMatch) {
+    const res: { economyPrice?: number; businessPrice?: number } = {};
+    if (ecoMatch) {
+      const val = parseCurrencyValue(ecoMatch[1]);
+      if (val !== null) res.economyPrice = val;
+    }
+    if (bizMatch) {
+      const val = parseCurrencyValue(bizMatch[1]);
+      if (val !== null) res.businessPrice = val;
+    }
+    if (res.economyPrice !== undefined || res.businessPrice !== undefined) {
+      return res;
+    }
+  }
+
+  // 2. Kiểm tra nếu là giá 2 chiều / khứ hồi / tổng tiền vé
+  const roundTripMatch = trimmed.match(
+    /(?:Giá\s*(?:vé)?\s*(?:khứ\s*hồi|2\s*chiều|hai\s*chiều)|Tổng\s*(?:tiền|giá|cộng)?\s*(?:vé|2\s*chiều|khứ\s*hồi)?)\s*[:\s]*([\d.,]+(?:k)?)\s*(?:₫|vnd|vnđ)?/i
+  );
+  if (roundTripMatch) {
+    const val = parseCurrencyValue(roundTripMatch[1]);
+    if (val !== null) {
+      return { economyPrice: val, isRoundTripPrice: true };
+    }
+  }
+
+  // 3. Kiểm tra nếu là giá chiều đi
+  const outboundMatch = trimmed.match(
+    /(?:Giá\s*(?:vé)?\s*)?Chiều\s*đi\s*[:\s]*([\d.,]+(?:k)?)\s*(?:₫|vnd|vnđ)?/i
+  );
+  if (outboundMatch) {
+    const val = parseCurrencyValue(outboundMatch[1]);
+    if (val !== null) {
+      return { economyPrice: val, isOutboundPrice: true };
+    }
+  }
+
+  // 4. Kiểm tra nếu là giá chiều về
+  const returnMatch = trimmed.match(
+    /(?:Giá\s*(?:vé)?\s*)?Chiều\s*về\s*[:\s]*([\d.,]+(?:k)?)\s*(?:₫|vnd|vnđ)?/i
+  );
+  if (returnMatch) {
+    const val = parseCurrencyValue(returnMatch[1]);
+    if (val !== null) {
+      return { economyPrice: val, isReturnPrice: true };
+    }
+  }
+
+  // 5. Kiểm tra giá 1 chiều thông thường: "Giá vé: 1.550.000 VND", "Giá: 1.550.000đ", "Giá 1 chiều: 1.550.000"
+  const singleMatch = trimmed.match(
+    /(?:Giá\s*(?:vé)?(?:\s*(?:1|một)\s*chiều)?|Tiền\s*vé|Net|Giá\s*nét)\s*[:\s]*([\d.,]+(?:k)?)\s*(?:₫|vnd|vnđ)?/i
+  );
+  if (singleMatch) {
+    const val = parseCurrencyValue(singleMatch[1]);
+    if (val !== null) {
+      return { economyPrice: val };
+    }
+  }
+
+  // 6. Dòng chỉ ghi số tiền kèm đơn vị tiền tệ VND/đ/₫ (VD: "1.550.000 VND", "1.550.000 đ", "1.550.000₫")
+  const standaloneCurrencyMatch = trimmed.match(/^([\d.,]+(?:k)?)\s*(?:₫|vnd|vnđ)$/i);
+  if (standaloneCurrencyMatch) {
+    const val = parseCurrencyValue(standaloneCurrencyMatch[1]);
+    if (val !== null) {
+      return { economyPrice: val };
+    }
+  }
+
+  return null;
+}
+
+/**
  * Phân tích một khối văn bản hành trình (Itinerary block)
  * Ví dụ:
  * P Hồ Chí Minh (T1)Hải Phòng T.Tư  02/12
@@ -426,6 +555,7 @@ export function parseAircraft(text: string): string | null {
  * 07:00 - 09:00
  * T1: Nhà ga T1
  * Máy bay: Airbus A321
+ * Giá vé: 1.550.000 VND
  */
 export function parseItineraryBlock(
   blockText: string,
@@ -448,6 +578,8 @@ export function parseItineraryBlock(
   let terminal: string | null = null;
   let economyPrice = options?.defaultEcoPrice || 499000;
   let businessPrice = options?.defaultBizPrice || Math.round(economyPrice * FARE_LADDER_RATIO);
+  let priceSource: 'text' | 'default' | 'roundtrip_split' = 'default';
+  let hasExplicitBizPrice = false;
   const capacity = options?.defaultCapacity || 180;
 
   for (const line of lines) {
@@ -495,15 +627,22 @@ export function parseItineraryBlock(
       }
     }
 
-    // 6. Kiểm tra giá vé (nếu có ghi trong text, VD: Giá: 599.000đ)
-    const priceMatch = line.match(
-      /(?:Giá(?: vé)?|Eco(?:nomy)?|Từ)?\s*[:\s]*([\d.,]+)\s*(?:₫|VND|k)?/i
-    );
-    if (priceMatch) {
-      const cleanNum = parseInt(priceMatch[1].replace(/[.,]/g, ''), 10);
-      if (!isNaN(cleanNum) && cleanNum >= 10000 && cleanNum <= 50000000) {
-        economyPrice = cleanNum;
-        businessPrice = Math.round(cleanNum * FARE_LADDER_RATIO);
+    // 6. Kiểm tra giá vé (hỗ trợ giá 1 chiều, 2 chiều, Eco, Business / SkyBoss)
+    const priceRes = parsePriceFromLine(line);
+    if (priceRes) {
+      // Nếu dòng là giá vé 2 chiều / khứ hồi tổng cộng, để parseQuickFlightText phân bổ đều cho 2 chiều
+      if (priceRes.isRoundTripPrice) {
+        continue;
+      }
+      if (priceRes.economyPrice !== undefined) {
+        economyPrice = priceRes.economyPrice;
+        priceSource = 'text';
+      }
+      if (priceRes.businessPrice !== undefined) {
+        businessPrice = priceRes.businessPrice;
+        hasExplicitBizPrice = true;
+      } else if (priceRes.economyPrice !== undefined && !hasExplicitBizPrice) {
+        businessPrice = Math.round(priceRes.economyPrice * FARE_LADDER_RATIO);
       }
     }
   }
@@ -573,6 +712,8 @@ export function parseItineraryBlock(
     available: capacity,
     rawText: blockText,
     parseError: errors.length > 0 ? errors.join('; ') : undefined,
+    priceSource,
+    tripType: 'one_way',
   };
 }
 
@@ -604,6 +745,8 @@ export function parseCsvLine(
       available: 0,
       parseError: 'Thiếu cột (Cần tối thiểu: Số hiệu, Điểm đi, Điểm đến, Ngày bay, Giờ đi)',
       rawText: line,
+      priceSource: 'default',
+      tripType: 'one_way',
     };
   }
 
@@ -646,6 +789,8 @@ export function parseCsvLine(
       available: cap,
       aircraft: ac,
       rawText: line,
+      priceSource: parts[6] ? 'text' : 'default',
+      tripType: 'one_way',
     };
   } catch {
     return {
@@ -665,6 +810,8 @@ export function parseCsvLine(
       available: cap,
       parseError: 'Định dạng ngày hoặc giờ không hợp lệ',
       rawText: line,
+      priceSource: parts[6] ? 'text' : 'default',
+      tripType: 'one_way',
     };
   }
 }
@@ -693,9 +840,20 @@ export function parseQuickFlightText(
     });
 
   if (isPureCsv) {
-    return lines
+    const csvResults = lines
       .map((l, i) => parseCsvLine(l.trim(), i + 1, options))
       .filter((item): item is ParsedFlight => item !== null);
+
+    if (csvResults.length === 2) {
+      csvResults[0].tripType = 'round_trip';
+      csvResults[0].direction = 'outbound';
+      csvResults[1].tripType = 'round_trip';
+      csvResults[1].direction = 'return';
+      const sum = (csvResults[0].economy_price || 0) + (csvResults[1].economy_price || 0);
+      csvResults[0].roundTripTotalPrice = sum;
+      csvResults[1].roundTripTotalPrice = sum;
+    }
+    return csvResults;
   }
 
   // Phân tách thành các block hành trình (hỗ trợ cả có hoặc không có dòng trống phân cách)
@@ -716,7 +874,7 @@ export function parseQuickFlightText(
       const routeCheck = parseRouteLine(line);
       const lineHasRoute = !!(routeCheck.fromCode && routeCheck.toCode);
       const lineHasFlightNo =
-        /(?:(?:Vietnam\s*Airlines|Vietjet(?:\s*Air)?|Bamboo(?:\s*Airways)?|Vietravel(?:\s*Airlines)?|Pacific(?:\s*Airlines)?)\s*)?(?:\b(VJ|VN|QH|BL|VU)\s*[-]?\s*\d{2,4}\b|(?<![a-zA-ZÀ-ỹ])[A-Z]{2}\s*[-]?\s*\d{2,4}\b)/.test(
+        /(?:(?:Vietnam\s*Airlines|Vietjet(?:\s*Air)?|Bamboo(?:\s*Airways)?|Vietravel(?:\s*Airlines)?|Pacific(?:\s*Airlines)?)\s*)?(?:\b(VJ|VN|QH|BL|VU)\s*[-]?\s*\d{2,4}\b|(?<![a-zA-ZÀ-ỹ])([A-Z]{2})\s*[-]?\s*\d{2,4}\b)/.test(
           line
         );
 
@@ -750,6 +908,66 @@ export function parseQuickFlightText(
     }
   }
 
+  // Xử lý thông tin giá vé 1 chiều và 2 chiều (khứ hồi)
+  if (results.length === 1) {
+    results[0].tripType = 'one_way';
+    results[0].direction = 'outbound';
+  } else if (results.length === 2) {
+    const f0 = results[0];
+    const f1 = results[1];
+
+    f0.tripType = 'round_trip';
+    f0.direction = 'outbound';
+    f1.tripType = 'round_trip';
+    f1.direction = 'return';
+
+    // 1. Kiểm tra nếu có dòng ghi rõ "Giá vé 2 chiều" hoặc "Tổng tiền / Giá khứ hồi"
+    const roundTripPriceMatch = text.match(
+      /(?:Giá\s*(?:vé)?\s*(?:khứ\s*hồi|2\s*chiều|hai\s*chiều)|Tổng\s*(?:tiền|giá|cộng)?\s*(?:vé|2\s*chiều|khứ\s*hồi)?)\s*[:\s]*([\d.,]+(?:k)?)\s*(?:₫|vnd|vnđ)?/i
+    );
+
+    if (roundTripPriceMatch) {
+      const totalRt = parseCurrencyValue(roundTripPriceMatch[1]);
+      if (totalRt && totalRt >= 10000) {
+        // Nếu các chuyến chưa có giá từ text trong từng block, chia đều cho 2 chiều
+        if (f0.priceSource !== 'text' && f1.priceSource !== 'text') {
+          const half = Math.round(totalRt / 2);
+          f0.economy_price = half;
+          f0.price = half;
+          f0.business_price = Math.round(half * FARE_LADDER_RATIO);
+          f0.priceSource = 'roundtrip_split';
+
+          f1.economy_price = totalRt - half;
+          f1.price = totalRt - half;
+          f1.business_price = Math.round((totalRt - half) * FARE_LADDER_RATIO);
+          f1.priceSource = 'roundtrip_split';
+        }
+        f0.roundTripTotalPrice = totalRt;
+        f1.roundTripTotalPrice = totalRt;
+      }
+    }
+
+    // 2. Nếu có tùy chọn defaultReturnEcoPrice và chiều về chưa có giá từ text
+    if (options?.defaultReturnEcoPrice && f1.priceSource === 'default') {
+      f1.economy_price = options.defaultReturnEcoPrice;
+      f1.price = options.defaultReturnEcoPrice;
+      f1.business_price =
+        options.defaultReturnBizPrice ||
+        Math.round(options.defaultReturnEcoPrice * FARE_LADDER_RATIO);
+    }
+
+    if (!f0.roundTripTotalPrice) {
+      const sum = (f0.economy_price || 0) + (f1.economy_price || 0);
+      f0.roundTripTotalPrice = sum;
+      f1.roundTripTotalPrice = sum;
+    }
+  } else if (results.length > 2) {
+    for (let i = 0; i < results.length; i++) {
+      results[i].tripType = 'one_way';
+      results[i].direction = i % 2 === 0 ? 'outbound' : 'return';
+    }
+  }
+
   return results;
 }
 
@@ -764,11 +982,15 @@ export interface SingleFlightFormData {
   businessPrice: string;
   capacity: string;
   aircraft: string;
+  tripType?: 'one_way' | 'round_trip';
+  direction?: 'outbound' | 'return';
+  returnFlight?: SingleFlightFormData;
+  totalRoundTripPrice?: number;
 }
 
 /**
- * Trợ thủ phân tích nhanh cho form "Thêm chuyến bay mới" (đơn lẻ)
- * Tự động điền tất cả các trường: số hiệu, ngày bay, điểm đi, điểm đến, giờ đi, giờ đến, tàu bay...
+ * Trợ thủ phân tích nhanh cho form "Thêm chuyến bay mới" (đơn lẻ hoặc vé khứ hồi 2 chiều)
+ * Tự động điền tất cả các trường: số hiệu, ngày bay, điểm đi, điểm đến, giờ đi, giờ đến, giá vé...
  */
 export function parseSingleFlightToForm(
   text: string,
@@ -788,10 +1010,33 @@ export function parseSingleFlightToForm(
     return { success: false, error: f.parseError };
   }
 
-  let summary = `${f.flight_no} (${f.from_code} → ${f.to_code}, ${f.date} ${f.depart_time_str} - ${f.arrive_time_str})`;
+  const ecoFormatted = (f.economy_price || 499000).toLocaleString('vi-VN');
+  let summary = `Chuyến 1 chiều: ${f.flight_no} (${f.from_code} → ${f.to_code}, ${f.date} ${f.depart_time_str} - ${f.arrive_time_str}, Giá vé: ${ecoFormatted}₫)`;
+  let returnData: SingleFlightFormData | undefined;
+  let totalRoundTrip: number | undefined;
+
   if (flights.length > 1) {
     const ret = flights[1];
-    summary += ` · Kèm chiều về: ${ret.flight_no} (${ret.from_code} → ${ret.to_code}, ${ret.date} ${ret.depart_time_str} - ${ret.arrive_time_str})`;
+    const retEcoFormatted = (ret.economy_price || 499000).toLocaleString('vi-VN');
+    totalRoundTrip = (f.economy_price || 0) + (ret.economy_price || 0);
+    summary = `Chiều đi: ${f.flight_no} (${f.from_code} → ${f.to_code}, ${f.date} ${f.depart_time_str}, ${ecoFormatted}₫) · Kèm chiều về: ${ret.flight_no} (${ret.from_code} → ${ret.to_code}, ${ret.date} ${ret.depart_time_str}, ${retEcoFormatted}₫) · Tổng 2 chiều: ${totalRoundTrip.toLocaleString('vi-VN')}₫`;
+
+    returnData = {
+      flightNo: ret.flight_no,
+      date: ret.date,
+      from: ret.from_code,
+      to: ret.to_code,
+      departTime: ret.depart_time_str,
+      arriveTime: ret.arrive_time_str,
+      economyPrice: String(ret.economy_price || current?.economyPrice || 499000),
+      businessPrice: String(
+        ret.business_price || current?.businessPrice || Math.round(499000 * FARE_LADDER_RATIO)
+      ),
+      capacity: String(ret.available || current?.capacity || 180),
+      aircraft: ret.aircraft || current?.aircraft || 'Airbus A321',
+      tripType: 'round_trip',
+      direction: 'return',
+    };
   }
 
   return {
@@ -809,6 +1054,10 @@ export function parseSingleFlightToForm(
       ),
       capacity: String(f.available || current?.capacity || 180),
       aircraft: f.aircraft || current?.aircraft || 'Airbus A321',
+      tripType: flights.length > 1 ? 'round_trip' : 'one_way',
+      direction: 'outbound',
+      returnFlight: returnData,
+      totalRoundTripPrice: totalRoundTrip,
     },
     summary,
   };

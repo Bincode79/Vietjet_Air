@@ -215,6 +215,115 @@ Máy bay: Airbus A321`;
       expect(res.data?.departTime).toBe('12:00');
       expect(res.data?.arriveTime).toBe('13:55');
       expect(res.summary).toContain('Kèm chiều về: VN 1574');
+      expect(res.data?.returnFlight?.flightNo).toBe('VN 1574');
+    });
+  });
+
+  describe('Bổ sung thêm giá vé cho chuyến bay 1 chiều và 2 chiều', () => {
+    it('nhận diện giá vé 1 chiều (VJ272 có Giá vé: 1.550.000 VND)', () => {
+      const input = `P Hồ Chí Minh (T1)Hải Phòng T.Tư  02/12
+	Vietjet Air VJ272
+07:00 - 09:00
+T1: Nhà ga T1
+Máy bay: Airbus A321
+Giá vé: 1.550.000 VND`;
+
+      const results = parseQuickFlightText(input);
+      expect(results).toHaveLength(1);
+      const f = results[0];
+      expect(f.flight_no).toBe('VJ 272');
+      expect(f.economy_price).toBe(1550000);
+      expect(f.price).toBe(1550000);
+      expect(f.priceSource).toBe('text');
+      expect(f.tripType).toBe('one_way');
+    });
+
+    it('nhận diện giá vé cả Eco và Thương gia trong cùng một dòng', () => {
+      const input = `Hà Nội - Sài Gòn 10/12/2026
+VJ 120
+07:00 - 09:15
+Eco: 1.250.000 VND | Thương gia: 3.500.000 VND`;
+
+      const results = parseQuickFlightText(input);
+      expect(results).toHaveLength(1);
+      const f = results[0];
+      expect(f.economy_price).toBe(1250000);
+      expect(f.business_price).toBe(3500000);
+      expect(f.priceSource).toBe('text');
+    });
+
+    it('nhận diện vé 2 chiều có giá riêng cho từng chiều', () => {
+      const input = `Hà Nội      Đà Lạt  	Chủ Nhật 07/02/2027	
+ Vietnam Airlines   VN1575	12:00 - 13:55	
+Máy bay: Airbus A321		
+Giá vé: 1.850.000 VND
+
+Đà Lạt      Hà Nội  	Thứ Năm 11/02/2027	
+ Vietnam Airlines   VN1574	14:30 - 16:25	
+Máy bay: Airbus A321
+Giá vé: 1.650.000 VND`;
+
+      const results = parseQuickFlightText(input);
+      expect(results).toHaveLength(2);
+
+      const [outbound, inbound] = results;
+      expect(outbound.economy_price).toBe(1850000);
+      expect(outbound.priceSource).toBe('text');
+      expect(outbound.tripType).toBe('round_trip');
+      expect(outbound.direction).toBe('outbound');
+
+      expect(inbound.economy_price).toBe(1650000);
+      expect(inbound.priceSource).toBe('text');
+      expect(inbound.tripType).toBe('round_trip');
+      expect(inbound.direction).toBe('return');
+
+      expect(outbound.roundTripTotalPrice).toBe(3500000);
+      expect(inbound.roundTripTotalPrice).toBe(3500000);
+    });
+
+    it('nhận diện vé 2 chiều có dòng tổng giá vé khứ hồi (chia đều 2 chiều)', () => {
+      const input = `Hà Nội      Đà Lạt  	Chủ Nhật 07/02/2027	
+ Vietnam Airlines   VN1575	12:00 - 13:55	
+Máy bay: Airbus A321		
+Đà Lạt      Hà Nội  	Thứ Năm 11/02/2027	
+ Vietnam Airlines   VN1574	14:30 - 16:25	
+Máy bay: Airbus A321
+Giá vé 2 chiều: 3.500.000 VND`;
+
+      const results = parseQuickFlightText(input);
+      expect(results).toHaveLength(2);
+
+      const [outbound, inbound] = results;
+      expect(outbound.economy_price).toBe(1750000);
+      expect(inbound.economy_price).toBe(1750000);
+      expect(outbound.priceSource).toBe('roundtrip_split');
+      expect(inbound.priceSource).toBe('roundtrip_split');
+      expect(outbound.roundTripTotalPrice).toBe(3500000);
+    });
+
+    it('parseSingleFlightToForm trả về đầy đủ giá vé 1 chiều và 2 chiều', () => {
+      const singleInput = `P Hồ Chí Minh Hải Phòng 02/12
+VJ 272 07:00 - 09:00
+Giá vé: 1.550.000 VND`;
+
+      const res1 = parseSingleFlightToForm(singleInput);
+      expect(res1.success).toBe(true);
+      expect(res1.data?.economyPrice).toBe('1550000');
+      expect(res1.summary).toContain('1.550.000₫');
+
+      const roundInput = `Hà Nội - Đà Lạt 07/02/2027
+VN 1575 12:00 - 13:55
+Giá vé: 1.850.000 VND
+Đà Lạt - Hà Nội 11/02/2027
+VN 1574 14:30 - 16:25
+Giá vé: 1.650.000 VND`;
+
+      const res2 = parseSingleFlightToForm(roundInput);
+      expect(res2.success).toBe(true);
+      expect(res2.data?.economyPrice).toBe('1850000');
+      expect(res2.data?.returnFlight?.economyPrice).toBe('1650000');
+      expect(res2.data?.totalRoundTripPrice).toBe(3500000);
+      expect(res2.summary).toContain('Tổng 2 chiều: 3.500.000₫');
     });
   });
 });

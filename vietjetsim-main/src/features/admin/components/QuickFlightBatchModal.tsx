@@ -94,6 +94,11 @@ export default function QuickFlightBatchModal({
   const [economyPrice, setEconomyPrice] = useState<number>(499000);
   const [businessPrice, setBusinessPrice] = useState<number>(1382000);
 
+  // Cấu hình giá riêng cho Chiều về (khứ hồi / 2 chiều)
+  const [separateReturnPrice, setSeparateReturnPrice] = useState(false);
+  const [returnEconomyPrice, setReturnEconomyPrice] = useState<number>(499000);
+  const [returnBusinessPrice, setReturnBusinessPrice] = useState<number>(1382000);
+
   // ─── Mode 2: CSV / Text Paste State ───────────────────────────────────────
   const [csvContent, setCsvContent] = useState('');
 
@@ -109,6 +114,12 @@ export default function QuickFlightBatchModal({
     const eco = Math.max(0, val);
     setEconomyPrice(eco);
     setBusinessPrice(Math.round(eco * FARE_LADDER_RATIO));
+  };
+
+  const handleReturnEcoChange = (val: number) => {
+    const eco = Math.max(0, val);
+    setReturnEconomyPrice(eco);
+    setReturnBusinessPrice(Math.round(eco * FARE_LADDER_RATIO));
   };
 
   // Add time slot
@@ -207,15 +218,18 @@ export default function QuickFlightBatchModal({
               retArrDate.getMinutes() + durationMinutes
             );
 
+            const effectiveReturnEco = separateReturnPrice ? returnEconomyPrice : economyPrice;
+            const effectiveReturnBiz = separateReturnPrice ? returnBusinessPrice : businessPrice;
+
             list.push({
               flight_no: returnFlightNo,
               from_code: toCode,
               to_code: fromCode,
               depart_time: retDepDate.toISOString(),
               arrive_time: retArrDate.toISOString(),
-              economy_price: economyPrice,
-              business_price: businessPrice,
-              price: economyPrice,
+              economy_price: effectiveReturnEco,
+              business_price: effectiveReturnBiz,
+              price: effectiveReturnEco,
               class: 'economy',
               available: capacity,
               aircraft,
@@ -243,6 +257,9 @@ export default function QuickFlightBatchModal({
     returnFlightNo,
     economyPrice,
     businessPrice,
+    separateReturnPrice,
+    returnEconomyPrice,
+    returnBusinessPrice,
     capacity,
     aircraft,
   ]);
@@ -253,35 +270,57 @@ export default function QuickFlightBatchModal({
     return parseQuickFlightText(csvContent, {
       defaultEcoPrice: economyPrice,
       defaultBizPrice: businessPrice,
+      defaultReturnEcoPrice: separateReturnPrice ? returnEconomyPrice : economyPrice,
+      defaultReturnBizPrice: separateReturnPrice ? returnBusinessPrice : businessPrice,
       defaultAircraft: aircraft,
       defaultCapacity: capacity,
     });
-  }, [activeTab, csvContent, economyPrice, businessPrice, aircraft, capacity]);
+  }, [
+    activeTab,
+    csvContent,
+    economyPrice,
+    businessPrice,
+    separateReturnPrice,
+    returnEconomyPrice,
+    returnBusinessPrice,
+    aircraft,
+    capacity,
+  ]);
 
-  // Load sample itinerary text (như người dùng yêu cầu: VJ272 SGN - HPH)
+  // Load sample itinerary text (1 chiều: VJ272 SGN - HPH có giá vé)
   const handleLoadSampleItinerary = () => {
     const sample = `P Hồ Chí Minh (T1)Hải Phòng T.Tư  02/12
 	Vietjet Air VJ272
 07:00 - 09:00
 T1: Nhà ga T1
 Máy bay: Airbus A321
-
-Hải Phòng (T1)P Hồ Chí Minh T.Tư  02/12
-	Vietjet Air VJ273
-09:45 - 11:45
-T1: Nhà ga T1
-Máy bay: Airbus A321`;
+Giá vé: 1.550.000 VND`;
     setCsvContent(sample);
   };
 
-  // Load sample round-trip text (như người dùng yêu cầu: VN1575 / VN1574 HAN - DLI)
+  // Load sample round-trip text (2 chiều - giá riêng từng chặng: VN1575 / VN1574 HAN - DLI)
   const handleLoadSampleRoundTrip = () => {
+    const sample = `Hà Nội      Đà Lạt  	Chủ Nhật 07/02/2027	
+ Vietnam Airlines   VN1575	12:00 - 13:55	
+Máy bay: Airbus A321		
+Giá vé: 1.850.000 VND
+
+Đà Lạt      Hà Nội  	Thứ Năm 11/02/2027	
+ Vietnam Airlines   VN1574	14:30 - 16:25	
+Máy bay: Airbus A321
+Giá vé: 1.650.000 VND`;
+    setCsvContent(sample);
+  };
+
+  // Load sample round-trip total price (2 chiều - tổng giá khứ hồi)
+  const handleLoadSampleRoundTripTotal = () => {
     const sample = `Hà Nội      Đà Lạt  	Chủ Nhật 07/02/2027	
  Vietnam Airlines   VN1575	12:00 - 13:55	
 Máy bay: Airbus A321		
 Đà Lạt      Hà Nội  	Thứ Năm 11/02/2027	
  Vietnam Airlines   VN1574	14:30 - 16:25	
-Máy bay: Airbus A321`;
+Máy bay: Airbus A321
+Giá vé 2 chiều: 3.500.000 VND`;
     setCsvContent(sample);
   };
 
@@ -669,62 +708,164 @@ VJ 301, SGN, DAD, ${d2}, 08:30, 09:50, 499000, 1380000, 180, Airbus A320`;
                 </div>
               </div>
 
-              {/* Nhập giá vé nhanh cho chặng */}
+              {/* Nhập giá vé nhanh cho chặng (1 chiều và 2 chiều) */}
               <div className="bg-white/5 border border-white/10 rounded-xl p-4 space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-black text-amber-400 uppercase tracking-wider">
-                    4. Nhập giá vé nhanh cho chặng
+                    4. Nhập giá vé nhanh {isRoundTrip ? '(1 chiều & 2 chiều)' : '(1 chiều)'}
                   </span>
-                  <span className="text-xs font-bold text-white">
-                    Eco: {economyPrice.toLocaleString('vi-VN')}₫ | Biz:{' '}
-                    {businessPrice.toLocaleString('vi-VN')}₫
-                  </span>
-                </div>
-
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-3xs font-bold text-vj-admin-muted uppercase mb-1">
-                      Giá vé Phổ thông (Eco)
-                    </label>
-                    <input
-                      type="number"
-                      step={1000}
-                      value={economyPrice}
-                      onChange={(e) => handleEcoChange(Number(e.target.value))}
-                      className="w-full px-3 py-2 bg-slate-950 border border-white/15 rounded-xl text-sm font-bold text-white focus:outline-none focus:border-amber-400"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-3xs font-bold text-vj-admin-muted uppercase mb-1">
-                      Giá vé Thương gia (SkyBoss)
-                    </label>
-                    <input
-                      type="number"
-                      step={1000}
-                      value={businessPrice}
-                      onChange={(e) => setBusinessPrice(Number(e.target.value))}
-                      className="w-full px-3 py-2 bg-slate-950 border border-white/15 rounded-xl text-sm font-bold text-white focus:outline-none focus:border-amber-400"
-                    />
+                  <div className="text-xs font-bold text-white flex items-center gap-2">
+                    <span className="text-emerald-400">
+                      1 chiều: {economyPrice.toLocaleString('vi-VN')}₫
+                    </span>
+                    {isRoundTrip && (
+                      <span className="text-amber-400 bg-amber-400/10 px-2 py-0.5 rounded-lg border border-amber-400/20">
+                        Tổng 2 chiều:{' '}
+                        {(
+                          economyPrice + (separateReturnPrice ? returnEconomyPrice : economyPrice)
+                        ).toLocaleString('vi-VN')}
+                        ₫
+                      </span>
+                    )}
                   </div>
                 </div>
 
-                {/* Gợi ý giá nhanh */}
-                <div className="flex flex-wrap gap-1.5 pt-1">
-                  {QUICK_ECO_PRESETS.map((p) => (
+                {/* Switch tách giá riêng chiều về nếu là khứ hồi */}
+                {isRoundTrip && (
+                  <div className="flex items-center justify-between p-2.5 bg-slate-950/60 rounded-xl border border-white/10 text-xs">
+                    <div>
+                      <span className="font-bold text-white block">
+                        Tách giá riêng cho Chiều về
+                      </span>
+                      <span className="text-3xs text-vj-admin-muted">
+                        Bật nếu giá vé chiều về ({toCode} → {fromCode}) khác với chiều đi (
+                        {fromCode} → {toCode})
+                      </span>
+                    </div>
                     <button
-                      key={p.label}
                       type="button"
-                      onClick={() => handleEcoChange(p.value)}
-                      className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all ${
-                        economyPrice === p.value
-                          ? 'bg-amber-500 text-slate-950'
-                          : 'bg-slate-950 border border-white/15 text-white/80 hover:text-white'
+                      onClick={() => setSeparateReturnPrice(!separateReturnPrice)}
+                      className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
+                        separateReturnPrice ? 'bg-amber-500' : 'bg-white/20'
                       }`}
                     >
-                      {p.label}
+                      <span
+                        className={`inline-block h-3.5 w-3.5 transform rounded-full bg-slate-950 font-bold transition-transform ${
+                          separateReturnPrice ? 'translate-x-4' : 'translate-x-1'
+                        }`}
+                      />
                     </button>
-                  ))}
+                  </div>
+                )}
+
+                {/* Khối giá Chiều đi (1 chiều) */}
+                <div className="space-y-2">
+                  {isRoundTrip && separateReturnPrice && (
+                    <span className="text-3xs font-black text-emerald-400 uppercase tracking-widest block">
+                      ✈️ Chiều đi ({fromCode} → {toCode}):
+                    </span>
+                  )}
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-3xs font-bold text-vj-admin-muted uppercase mb-1">
+                        {isRoundTrip && separateReturnPrice
+                          ? 'Giá Eco chiều đi'
+                          : 'Giá vé Phổ thông (Eco)'}
+                      </label>
+                      <input
+                        type="number"
+                        step={1000}
+                        value={economyPrice}
+                        onChange={(e) => handleEcoChange(Number(e.target.value))}
+                        className="w-full px-3 py-2 bg-slate-950 border border-white/15 rounded-xl text-sm font-bold text-white focus:outline-none focus:border-amber-400"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-3xs font-bold text-vj-admin-muted uppercase mb-1">
+                        {isRoundTrip && separateReturnPrice
+                          ? 'Giá SkyBoss chiều đi'
+                          : 'Giá vé Thương gia (SkyBoss)'}
+                      </label>
+                      <input
+                        type="number"
+                        step={1000}
+                        value={businessPrice}
+                        onChange={(e) => setBusinessPrice(Number(e.target.value))}
+                        className="w-full px-3 py-2 bg-slate-950 border border-white/15 rounded-xl text-sm font-bold text-white focus:outline-none focus:border-amber-400"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Gợi ý giá nhanh */}
+                  <div className="flex flex-wrap gap-1.5 pt-0.5">
+                    {QUICK_ECO_PRESETS.map((p) => (
+                      <button
+                        key={p.label}
+                        type="button"
+                        onClick={() => handleEcoChange(p.value)}
+                        className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all ${
+                          economyPrice === p.value
+                            ? 'bg-amber-500 text-slate-950'
+                            : 'bg-slate-950 border border-white/15 text-white/80 hover:text-white'
+                        }`}
+                      >
+                        {p.label}
+                      </button>
+                    ))}
+                  </div>
                 </div>
+
+                {/* Khối giá Chiều về (nếu bật separateReturnPrice) */}
+                {isRoundTrip && separateReturnPrice && (
+                  <div className="space-y-2 pt-2 border-t border-white/10">
+                    <span className="text-3xs font-black text-blue-400 uppercase tracking-widest block">
+                      🔄 Chiều về ({toCode} → {fromCode}):
+                    </span>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-3xs font-bold text-vj-admin-muted uppercase mb-1">
+                          Giá Eco chiều về
+                        </label>
+                        <input
+                          type="number"
+                          step={1000}
+                          value={returnEconomyPrice}
+                          onChange={(e) => handleReturnEcoChange(Number(e.target.value))}
+                          className="w-full px-3 py-2 bg-slate-950 border border-white/15 rounded-xl text-sm font-bold text-white focus:outline-none focus:border-blue-400"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-3xs font-bold text-vj-admin-muted uppercase mb-1">
+                          Giá SkyBoss chiều về
+                        </label>
+                        <input
+                          type="number"
+                          step={1000}
+                          value={returnBusinessPrice}
+                          onChange={(e) => setReturnBusinessPrice(Number(e.target.value))}
+                          className="w-full px-3 py-2 bg-slate-950 border border-white/15 rounded-xl text-sm font-bold text-white focus:outline-none focus:border-blue-400"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="flex flex-wrap gap-1.5 pt-0.5">
+                      {QUICK_ECO_PRESETS.map((p) => (
+                        <button
+                          key={p.label}
+                          type="button"
+                          onClick={() => handleReturnEcoChange(p.value)}
+                          className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all ${
+                            returnEconomyPrice === p.value
+                              ? 'bg-blue-500 text-slate-950'
+                              : 'bg-slate-950 border border-white/15 text-white/80 hover:text-white'
+                          }`}
+                        >
+                          {p.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Tóm tắt xem trước */}
@@ -753,7 +894,7 @@ VJ 301, SGN, DAD, ${d2}, 08:30, 09:50, 499000, 1380000, 180, Airbus A320`;
                     Dán văn bản hành trình hoặc bảng CSV:
                   </span>
                   <span className="text-3xs text-vj-admin-muted">
-                    Hỗ trợ tin nhắn hành trình (P Hồ Chí Minh Hải Phòng VJ272...) hoặc bảng CSV
+                    Hỗ trợ tin nhắn hành trình 1 chiều / 2 chiều kèm giá vé hoặc bảng CSV
                   </span>
                 </div>
                 <div className="flex items-center gap-1.5 flex-wrap">
@@ -762,14 +903,21 @@ VJ 301, SGN, DAD, ${d2}, 08:30, 09:50, 499000, 1380000, 180, Airbus A320`;
                     onClick={handleLoadSampleItinerary}
                     className="px-2.5 py-1 bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 rounded-lg text-xs font-bold transition-colors flex items-center gap-1"
                   >
-                    <span>Mẫu VJ272 📋</span>
+                    <span>Mẫu VJ272 (1 chiều) 📋</span>
                   </button>
                   <button
                     type="button"
                     onClick={handleLoadSampleRoundTrip}
                     className="px-2.5 py-1 bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 rounded-lg text-xs font-bold transition-colors flex items-center gap-1"
                   >
-                    <span>Mẫu Khứ hồi VN1575 🔄</span>
+                    <span>Mẫu VN1575 (2 chiều) 🔄</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleLoadSampleRoundTripTotal}
+                    className="px-2.5 py-1 bg-purple-500/20 hover:bg-purple-500/30 text-purple-300 rounded-lg text-xs font-bold transition-colors flex items-center gap-1"
+                  >
+                    <span>Mẫu 2 chiều tổng tiền 💰</span>
                   </button>
                   <button
                     type="button"
@@ -785,7 +933,7 @@ VJ 301, SGN, DAD, ${d2}, 08:30, 09:50, 499000, 1380000, 180, Airbus A320`;
                 rows={8}
                 value={csvContent}
                 onChange={(e) => setCsvContent(e.target.value)}
-                placeholder="Dán văn bản hành trình:&#10;P Hồ Chí Minh (T1)Hải Phòng T.Tư  02/12&#10;	Vietjet Air VJ272&#10;07:00 - 09:00&#10;T1: Nhà ga T1&#10;Máy bay: Airbus A321&#10;&#10;Hoặc định dạng CSV:&#10;VJ 120, SGN, HAN, 2026-11-25, 08:00, 10:15, 699000, 1899000, 180, Airbus A321..."
+                placeholder="Dán văn bản hành trình 1 chiều hoặc 2 chiều:&#10;P Hồ Chí Minh (T1)Hải Phòng T.Tư 02/12&#10;	Vietjet Air VJ272&#10;07:00 - 09:00&#10;T1: Nhà ga T1&#10;Máy bay: Airbus A321&#10;Giá vé: 1.550.000 VND&#10;&#10;Hoặc vé khứ hồi 2 chiều:&#10;Hà Nội Đà Lạt 07/02/2027 VN1575 12:00 - 13:55 (Giá vé: 1.850.000 VND)&#10;Đà Lạt Hà Nội 11/02/2027 VN1574 14:30 - 16:25 (Giá vé: 1.650.000 VND)..."
                 className="w-full p-3.5 bg-slate-950 border border-white/15 rounded-xl font-mono text-xs text-white focus:outline-none focus:border-emerald-400 leading-relaxed"
               />
 
@@ -797,6 +945,28 @@ VJ 301, SGN, DAD, ${d2}, 08:30, 09:50, 499000, 1380000, 180, Airbus A320`;
                       {parsedCsvFlights.filter((f) => !f.parseError).length} chuyến hợp lệ
                     </span>
                   </div>
+
+                  {/* Banner tổng kết nếu là vé khứ hồi 2 chiều */}
+                  {parsedCsvFlights.length === 2 &&
+                    parsedCsvFlights[0].tripType === 'round_trip' && (
+                      <div className="p-2.5 rounded-xl bg-blue-500/10 border border-blue-500/30 flex items-center justify-between text-xs">
+                        <div className="flex items-center gap-2">
+                          <span className="text-blue-400 font-black">🔄 Vé khứ hồi 2 chiều:</span>
+                          <span className="text-white/80 font-semibold">
+                            {parsedCsvFlights[0].from_code} ⇄ {parsedCsvFlights[0].to_code}
+                          </span>
+                        </div>
+                        <div className="font-bold text-amber-300">
+                          Tổng 2 chiều:{' '}
+                          {(
+                            (parsedCsvFlights[0].economy_price || 0) +
+                            (parsedCsvFlights[1].economy_price || 0)
+                          ).toLocaleString('vi-VN')}
+                          ₫ (Eco)
+                        </div>
+                      </div>
+                    )}
+
                   <div className="space-y-2">
                     {parsedCsvFlights.map((item, idx) => (
                       <div
@@ -808,9 +978,22 @@ VJ 301, SGN, DAD, ${d2}, 08:30, 09:50, 499000, 1380000, 180, Airbus A320`;
                         }`}
                       >
                         <div className="flex items-center gap-3">
-                          <span className="font-mono font-bold text-xs text-amber-400 bg-amber-400/15 border border-amber-400/30 px-2 py-0.5 rounded-lg whitespace-nowrap">
-                            {item.flight_no}
-                          </span>
+                          <div className="flex flex-col gap-1 items-start">
+                            <span className="font-mono font-bold text-xs text-amber-400 bg-amber-400/15 border border-amber-400/30 px-2 py-0.5 rounded-lg whitespace-nowrap">
+                              {item.flight_no}
+                            </span>
+                            {item.tripType === 'round_trip' ? (
+                              <span className="text-4xs font-bold px-1.5 py-0.5 rounded bg-blue-500/15 text-blue-300 border border-blue-500/30 whitespace-nowrap">
+                                {item.direction === 'outbound'
+                                  ? 'Chiều đi (1 chiều)'
+                                  : 'Chiều về (2 chiều)'}
+                              </span>
+                            ) : (
+                              <span className="text-4xs font-bold px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-300 border border-amber-500/30 whitespace-nowrap">
+                                1 chiều
+                              </span>
+                            )}
+                          </div>
                           <div className="text-xs">
                             <div className="font-bold text-white flex items-center gap-1.5 flex-wrap">
                               <span>
@@ -848,6 +1031,16 @@ VJ 301, SGN, DAD, ${d2}, 08:30, 09:50, 499000, 1380000, 180, Airbus A320`;
                           <div className="text-left sm:text-right flex sm:flex-col gap-2 sm:gap-0 self-start sm:self-auto">
                             <span className="text-xs text-emerald-400 font-bold block">
                               Eco: {item.economy_price?.toLocaleString('vi-VN')}₫
+                              {item.priceSource === 'text' && (
+                                <span className="text-3xs text-amber-300 font-semibold ml-1">
+                                  (từ text ⚡)
+                                </span>
+                              )}
+                              {item.priceSource === 'roundtrip_split' && (
+                                <span className="text-3xs text-cyan-300 font-semibold ml-1">
+                                  (chia đều 2 chiều)
+                                </span>
+                              )}
                             </span>
                             <span className="text-3xs text-vj-admin-muted">
                               Biz: {item.business_price?.toLocaleString('vi-VN')}₫

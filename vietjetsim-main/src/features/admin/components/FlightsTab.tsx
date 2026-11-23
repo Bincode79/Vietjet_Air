@@ -5,6 +5,7 @@ import { Pagination } from '@/shared/components/ui';
 import {
   listAdminFlights,
   createAdminFlight,
+  createBatchAdminFlights,
   updateAdminFlight,
   deleteAdminFlight,
   type AdminFlight,
@@ -19,7 +20,7 @@ import BulkPriceAdjustmentModal from './BulkPriceAdjustmentModal';
 import QuickPriceEditModal from './QuickPriceEditModal';
 import QuickFlightBatchModal from './QuickFlightBatchModal';
 import SendFareDocumentModal from './SendFareDocumentModal';
-import { parseSingleFlightToForm } from '@/lib/quick-flight-parser';
+import { parseSingleFlightToForm, type SingleFlightFormData } from '@/lib/quick-flight-parser';
 
 interface ToastAPI {
   success: (title: string, message?: string, options?: object) => void;
@@ -155,10 +156,12 @@ export default function FlightsTab({ onToast }: { onToast?: ToastAPI }) {
     isError: boolean;
     message: string;
   } | null>(null);
+  const [parsedRoundTrip, setParsedRoundTrip] = useState<SingleFlightFormData | null>(null);
 
   const handleApplyQuickPaste = (text: string) => {
     if (!text.trim()) {
       setQuickPasteStatus(null);
+      setParsedRoundTrip(null);
       return;
     }
     const res = parseSingleFlightToForm(text, newFlight);
@@ -167,16 +170,104 @@ export default function FlightsTab({ onToast }: { onToast?: ToastAPI }) {
         ...prev,
         ...res.data,
       }));
+      if (res.data.returnFlight) {
+        setParsedRoundTrip(res.data);
+      } else {
+        setParsedRoundTrip(null);
+      }
       setQuickPasteStatus({
         isError: false,
         message: `✓ Đã nhận diện: ${res.summary}`,
       });
     } else {
+      setParsedRoundTrip(null);
       setQuickPasteStatus({
         isError: true,
         message: `⚠️ ${res.error || 'Không nhận diện được chuyến bay'}`,
       });
     }
+  };
+
+  const handleCreateBothRoundTripFlights = async () => {
+    if (!parsedRoundTrip || !parsedRoundTrip.returnFlight) return;
+    setIsAdding(true);
+    try {
+      const f1 = parsedRoundTrip;
+      const f2 = parsedRoundTrip.returnFlight;
+
+      const dep1 = toVietnamInstant(f1.date, f1.departTime);
+      const arr1 = toVietnamInstant(f1.date, f1.arriveTime);
+      const dep2 = toVietnamInstant(f2.date, f2.departTime);
+      const arr2 = toVietnamInstant(f2.date, f2.arriveTime);
+
+      const payload1: Partial<AdminFlight> = {
+        flight_no: f1.flightNo.toUpperCase(),
+        from_code: f1.from.toUpperCase(),
+        to_code: f1.to.toUpperCase(),
+        depart_time: dep1,
+        arrive_time: arr1,
+        price: parseInt(f1.economyPrice),
+        economy_price: parseInt(f1.economyPrice),
+        business_price: f1.businessPrice.trim()
+          ? parseInt(f1.businessPrice)
+          : Math.round(parseInt(f1.economyPrice) * 2.77),
+        class: 'economy',
+        available: parseInt(f1.capacity),
+        aircraft: f1.aircraft || null,
+      };
+
+      const payload2: Partial<AdminFlight> = {
+        flight_no: f2.flightNo.toUpperCase(),
+        from_code: f2.from.toUpperCase(),
+        to_code: f2.to.toUpperCase(),
+        depart_time: dep2,
+        arrive_time: arr2,
+        price: parseInt(f2.economyPrice),
+        economy_price: parseInt(f2.economyPrice),
+        business_price: f2.businessPrice.trim()
+          ? parseInt(f2.businessPrice)
+          : Math.round(parseInt(f2.economyPrice) * 2.77),
+        class: 'economy',
+        available: parseInt(f2.capacity),
+        aircraft: f2.aircraft || null,
+      };
+
+      await createBatchAdminFlights([payload1, payload2]);
+      onToast?.success(
+        'Thêm vé khứ hồi thành công ⚡',
+        `Đã tạo cả 2 chiều: ${payload1.flight_no} (${payload1.from_code} → ${payload1.to_code}) & ${payload2.flight_no} (${payload2.from_code} → ${payload2.to_code})`
+      );
+      setShowAddModal(false);
+      setParsedRoundTrip(null);
+      setQuickPasteText('');
+      setQuickPasteStatus(null);
+      fetchFlights();
+    } catch (err) {
+      onToast?.error('Lỗi khi thêm vé khứ hồi', getApiErrorMessage(err, 'Vui lòng thử lại.'));
+    } finally {
+      setIsAdding(false);
+    }
+  };
+
+  const handleFillReturnFlight = () => {
+    if (!parsedRoundTrip || !parsedRoundTrip.returnFlight) return;
+    const ret = parsedRoundTrip.returnFlight;
+    setNewFlight({
+      flightNo: ret.flightNo,
+      from: ret.from,
+      to: ret.to,
+      departTime: ret.departTime,
+      arriveTime: ret.arriveTime,
+      date: ret.date,
+      economyPrice: ret.economyPrice,
+      businessPrice: ret.businessPrice,
+      capacity: ret.capacity,
+      aircraft: ret.aircraft,
+    });
+    onToast?.info(
+      'Đã điền Chiều về',
+      `Thông tin chuyến ${ret.flightNo} (${ret.from} → ${ret.to}) đã được điền.`
+    );
   };
 
   const activeFilterCount = [statusFilter !== 'all', !!dateFrom, !!dateTo].filter(Boolean).length;
@@ -977,25 +1068,25 @@ export default function FlightsTab({ onToast }: { onToast?: ToastAPI }) {
                     <button
                       type="button"
                       onClick={() => {
-                        const sample = `P Hồ Chí Minh (T1)Hải Phòng T.Tư  02/12\n\tVietjet Air VJ272\n07:00 - 09:00\nT1: Nhà ga T1\nMáy bay: Airbus A321`;
+                        const sample = `P Hồ Chí Minh (T1)Hải Phòng T.Tư  02/12\n\tVietjet Air VJ272\n07:00 - 09:00\nT1: Nhà ga T1\nMáy bay: Airbus A321\nGiá vé: 1.550.000 VND`;
                         setQuickPasteText(sample);
                         handleApplyQuickPaste(sample);
                       }}
                       className="text-3xs font-bold text-amber-700 hover:text-amber-900 underline"
                     >
-                      Mẫu VJ272
+                      Mẫu VJ272 (1 chiều)
                     </button>
                     <span className="text-stone-300">·</span>
                     <button
                       type="button"
                       onClick={() => {
-                        const sample = `Hà Nội      Đà Lạt  	Chủ Nhật 07/02/2027	\n Vietnam Airlines   VN1575	12:00 - 13:55	\nMáy bay: Airbus A321		\nĐà Lạt      Hà Nội  	Thứ Năm 11/02/2027	\n Vietnam Airlines   VN1574	14:30 - 16:25	\nMáy bay: Airbus A321`;
+                        const sample = `Hà Nội      Đà Lạt  	Chủ Nhật 07/02/2027	\n Vietnam Airlines   VN1575	12:00 - 13:55	\nMáy bay: Airbus A321		\nGiá vé: 1.850.000 VND\nĐà Lạt      Hà Nội  	Thứ Năm 11/02/2027	\n Vietnam Airlines   VN1574	14:30 - 16:25	\nMáy bay: Airbus A321\nGiá vé: 1.650.000 VND`;
                         setQuickPasteText(sample);
                         handleApplyQuickPaste(sample);
                       }}
                       className="text-3xs font-bold text-blue-700 hover:text-blue-900 underline"
                     >
-                      Mẫu VN1575 (Khứ hồi)
+                      Mẫu VN1575 (2 chiều)
                     </button>
                   </div>
                 </div>
@@ -1006,18 +1097,43 @@ export default function FlightsTab({ onToast }: { onToast?: ToastAPI }) {
                     setQuickPasteText(e.target.value);
                     handleApplyQuickPaste(e.target.value);
                   }}
-                  placeholder="Dán nhanh: P Hồ Chí Minh (T1)Hải Phòng T.Tư 02/12 Vietjet Air VJ272 07:00 - 09:00..."
+                  placeholder="Dán nhanh: P Hồ Chí Minh (T1)Hải Phòng T.Tư 02/12 Vietjet Air VJ272 07:00 - 09:00 Giá vé: 1.550.000 VND..."
                   className="w-full p-2 bg-white border border-amber-200 rounded text-xs text-stone-800 placeholder:text-stone-400 focus:outline-none focus:border-amber-500 font-mono leading-relaxed"
                 />
                 {quickPasteStatus && (
                   <div
-                    className={`text-3xs font-semibold px-2 py-1 rounded ${
+                    className={`text-3xs font-semibold p-2.5 rounded-lg border ${
                       quickPasteStatus.isError
-                        ? 'bg-rose-100 text-rose-700'
-                        : 'bg-emerald-100 text-emerald-800'
+                        ? 'bg-rose-100 text-rose-700 border-rose-200'
+                        : 'bg-emerald-50 text-emerald-900 border-emerald-200'
                     }`}
                   >
-                    {quickPasteStatus.message}
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="font-bold">{quickPasteStatus.message}</span>
+                    </div>
+
+                    {parsedRoundTrip?.returnFlight && !quickPasteStatus.isError && (
+                      <div className="mt-2 pt-2 border-t border-emerald-200/60 flex items-center gap-2 flex-wrap">
+                        <button
+                          type="button"
+                          onClick={handleCreateBothRoundTripFlights}
+                          disabled={isAdding}
+                          className="px-3 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded font-bold text-3xs uppercase tracking-wider flex items-center gap-1 shadow-sm transition-all disabled:opacity-50"
+                        >
+                          <Icon name="CheckIcon" size={12} />
+                          Tạo cả 2 chiều ngay ⚡
+                        </button>
+                        <button
+                          type="button"
+                          onClick={handleFillReturnFlight}
+                          disabled={isAdding}
+                          className="px-2.5 py-1 bg-stone-200 hover:bg-stone-300 text-stone-800 rounded font-bold text-3xs transition-colors flex items-center gap-1 disabled:opacity-50"
+                        >
+                          <Icon name="ArrowPathIcon" size={12} />
+                          Điền Chiều về 🔄
+                        </button>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
