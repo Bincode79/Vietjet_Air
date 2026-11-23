@@ -11,6 +11,7 @@ import {
 import { getApiErrorMessage } from '@/shared/services';
 import { renderInvoiceHtml } from '@/features/admin/invoice';
 import SendBookingEmailModal from './SendBookingEmailModal';
+import QuickBookingModal from './QuickBookingModal';
 
 /** Mirrors the `bookings.status` union in `@/lib/db`, including `refunded`. */
 type BookingStatus = 'pending' | 'confirmed' | 'completed' | 'cancelled' | 'refunded';
@@ -90,6 +91,7 @@ export default function BookingsTab({ onToast }: BookingsTabProps = {}) {
   const [emailModalType, setEmailModalType] = useState<'payment_instruction' | 'ticket_issuance'>(
     'payment_instruction'
   );
+  const [showQuickBookingModal, setShowQuickBookingModal] = useState(false);
 
   const loadBookings = React.useCallback(async () => {
     setIsLoading(true);
@@ -395,6 +397,13 @@ export default function BookingsTab({ onToast }: BookingsTabProps = {}) {
           </p>
         </div>
         <div className="flex items-center gap-2">
+          <button
+            onClick={() => setShowQuickBookingModal(true)}
+            className="flex items-center gap-2 text-2xs font-black uppercase tracking-wider text-amber-300 hover:text-amber-200 bg-amber-500/20 border border-amber-500/40 px-4 py-2 rounded-vj transition-all hover:translate-y-[-1px] active:scale-98 shadow-sm"
+          >
+            <Icon name="BoltIcon" size={14} className="text-amber-400" />
+            Đặt vé nhanh ⚡
+          </button>
           {filtered.length > 0 && (
             <>
               <button
@@ -1515,6 +1524,40 @@ export default function BookingsTab({ onToast }: BookingsTabProps = {}) {
                 : prev
             );
           }
+        }}
+      />
+
+      {/* Modal Đặt vé nhanh cho Admin */}
+      <QuickBookingModal
+        isOpen={showQuickBookingModal}
+        onClose={() => setShowQuickBookingModal(false)}
+        onSuccess={() => {
+          loadBookings();
+        }}
+        onToast={onToast}
+        onSendEmail={(booking) => {
+          setShowQuickBookingModal(false);
+          setEmailModalBooking({
+            id: booking.id,
+            userId: '0',
+            userName: booking.userName,
+            userEmail: booking.userEmail,
+            flightNo: 'VJ',
+            route: '—',
+            date: new Date().toLocaleDateString('vi-VN'),
+            seat: '—',
+            amount: booking.amount,
+            status: 'confirmed',
+            payMethod: '—',
+            createdAt: new Date().toLocaleString('vi-VN'),
+          });
+          setEmailModalType('ticket_issuance');
+        }}
+        onPrintInvoice={(booking) => {
+          printSingleInvoice({
+            ...booking,
+            userId: '0',
+          });
         }}
       />
     </div>

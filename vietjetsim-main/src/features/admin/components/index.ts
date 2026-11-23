@@ -26,6 +26,7 @@ export { default as QuickPriceEditModal } from './QuickPriceEditModal';
 export { default as QuickFlightBatchModal } from './QuickFlightBatchModal';
 export { default as SendFareDocumentModal } from './SendFareDocumentModal';
 export { default as SendBookingEmailModal } from './SendBookingEmailModal';
+export { default as QuickBookingModal } from './QuickBookingModal';
 export { default as EmailTemplatePreviewModal } from './EmailTemplatePreviewModal';
 export { default as UserDetailModal } from './UserDetailModal';
 

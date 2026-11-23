@@ -283,6 +283,67 @@ export function updateAdminBookingStatus(bookingId: string, status: string) {
   );
 }
 
+export interface AdminQuickBookingPassenger {
+  name: string;
+  dob?: string | null;
+  id_number?: string | null;
+  gender?: string;
+  country_code?: string | null;
+  phone?: string | null;
+  email?: string | null;
+  passenger_type?: string;
+  seat_number?: string | null;
+}
+
+export interface AdminQuickBookingPayload {
+  flight_id: string;
+  return_flight_id?: string;
+  fare_class?: 'eco' | 'deluxe' | 'skyboss' | 'business';
+  return_fare_class?: 'eco' | 'deluxe' | 'skyboss' | 'business';
+  passengers: AdminQuickBookingPassenger[];
+  contact?: {
+    name?: string;
+    phone?: string;
+    email?: string;
+  };
+  seats?: string[];
+  return_seats?: string[];
+  custom_price?: number;
+  status?: 'confirmed' | 'pending';
+  payment_method?: string;
+  note?: string;
+  send_email?: boolean;
+}
+
+export interface AdminQuickBookingResult {
+  success: boolean;
+  message: string;
+  booking: {
+    id: string;
+    booking_code: string;
+    total_price: number;
+    status: string;
+    trip_id: string;
+    flight_id: string;
+    return_booking_id?: string;
+    return_booking_code?: string;
+    flight_no?: string;
+    from_code?: string;
+    to_code?: string;
+    date?: string;
+    user_name?: string;
+    user_email?: string;
+    payment_method?: string;
+  };
+}
+
+export function createAdminQuickBooking(input: AdminQuickBookingPayload) {
+  return apiRequest<AdminQuickBookingResult>(EP.BOOKINGS, {
+    method: 'POST',
+    body: input,
+  });
+}
+
 // ─── Check-ins (làm thủ tục) ───────────────────────────────────────────────
 
 export function listAdminCheckins(query: AdminListQuery = {}) {
