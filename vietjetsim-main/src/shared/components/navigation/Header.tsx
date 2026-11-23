@@ -332,12 +332,15 @@ export default function Header({
                   className="flex items-center gap-1 text-2xs font-bold text-white transition hover:text-vjgold"
                 >
                   <RiHeadphoneLine aria-hidden="true" className="h-[12px] w-[12px] shrink-0" />
-                  <span>Hỗ trợ</span>
+                  <span className="max-[359px]:hidden">Hỗ trợ</span>
                 </a>
 
-                <HiOutlineGlobeAlt aria-hidden="true" className="ml-1 h-[14px] w-[14px] shrink-0" />
+                <HiOutlineGlobeAlt
+                  aria-hidden="true"
+                  className="ml-1 h-[14px] w-[14px] shrink-0 max-[359px]:hidden"
+                />
 
-                <span className="ml-1 text-2xs font-bold text-white">
+                <span className="ml-1 text-2xs font-bold text-white max-[359px]:hidden">
                   {user ? (
                     <span className="max-w-[90px] truncate">
                       {(user.fullName || user.email)?.replace(/\s*\(CCCD:.*?\)/gi, '')}
@@ -403,7 +406,7 @@ export default function Header({
                   type="button"
                   onClick={() => setMobileMenuOpen(true)}
                   aria-label="Mở menu"
-                  className="ml-2 flex h-[14px] w-[12px] items-center justify-center text-white transition hover:opacity-80"
+                  className="ml-2 flex h-8 w-8 items-center justify-center text-white transition hover:opacity-80 min-[360px]:h-[14px] min-[360px]:w-[12px]"
                 >
                   <HiOutlineMenu aria-hidden="true" className="h-[14px] w-[12px]" />
                 </button>

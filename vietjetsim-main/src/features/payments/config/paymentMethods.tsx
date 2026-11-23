@@ -284,14 +284,14 @@ export function getGatewayRoute(groupKey: string): string {
 
 /** Default groupKey từ URL param */
 export function getDefaultGroupFromUrl(): string {
-  if (typeof window === 'undefined') return 'vnpay_qr';
+  if (typeof window === 'undefined') return 'vietqr';
   const param = new URLSearchParams(window.location.search).get('method');
   // Map legacy params
   if (param === 'card') return 'card';
   if (param === 'bank') return 'napas';
   if (param === 'wallet') return 'momo';
   if (param === 'skypoint') return 'skypay';
-  return param || 'vnpay_qr';
+  return param || 'vietqr';
 }
 
 /** Default paymentMethod từ groupKey */

@@ -79,11 +79,12 @@ const fieldBoxClass =
 
 /** Nhãn nhóm 18px/600 (khác `vj-field-label` 12px/600 dùng cho "Hành khách").
  *  Số đo site thật: nhãn sân bay 18px/600, line-height 18.9px. */
-const fieldHeadingClass = 'block text-lg font-semibold leading-[18.9px] text-[var(--foreground)]';
+const fieldHeadingClass =
+  'block text-sm font-semibold leading-[18.9px] text-[var(--foreground)] min-[360px]:text-lg';
 
 /** Giá trị sân bay 17px/600, line-height 17.9px (đo được trên site thật). */
 const fieldAirportValueClass =
-  'block w-full min-w-0 border-0 bg-transparent p-0 text-lg2 font-semibold leading-[17.9px] text-[var(--foreground)] outline-none';
+  'block w-full min-w-0 border-0 bg-transparent p-0 text-sm font-semibold leading-[17.9px] text-[var(--foreground)] outline-none min-[360px]:text-lg2';
 
 export default function HeroBookingWidget() {
   const router = useRouter();
@@ -222,12 +223,16 @@ export default function HeroBookingWidget() {
         <div className="vj-booking-panel">
           {/* Hàng 1 — loại hành trình (radio 18px) + tiền tệ.
               Cao 58px, padding 16.5px 15px, justify-between. */}
-          <div className="flex h-[58px] items-center justify-between px-3.75">
-            <div className="flex items-center" role="group" aria-label="Loại hành trình">
+          <div className="flex min-h-[58px] items-center justify-between px-3.75 py-2">
+            <div
+              className="flex min-w-0 flex-1 flex-wrap items-center gap-y-1"
+              role="group"
+              aria-label="Loại hành trình"
+            >
               {TRIP_TYPES.map(({ value, label }) => (
                 <label
                   key={value}
-                  className="mr-4 inline-flex cursor-pointer items-center gap-1.5 text-sm font-medium text-white"
+                  className="mr-2 inline-flex cursor-pointer items-center gap-1.5 whitespace-nowrap text-sm font-medium text-white min-[360px]:mr-4"
                 >
                   <input
                     type="radio"
@@ -242,7 +247,7 @@ export default function HeroBookingWidget() {
               ))}
               <a
                 href="/trang-chu#hero-booking-form"
-                className="inline-flex items-center gap-0.5 text-sm font-medium text-white transition hover:opacity-80"
+                className="inline-flex items-center gap-0.5 whitespace-nowrap text-sm font-medium text-white transition hover:opacity-80"
               >
                 Nhiều chặng
                 <MdArrowOutward aria-hidden="true" className="text-xs" />
@@ -250,7 +255,7 @@ export default function HeroBookingWidget() {
             </div>
 
             {/* Tiền tệ — chữ 17px/700 trắng + mũi tên 24px. */}
-            <label className="flex h-[24px] items-center gap-1 text-white">
+            <label className="flex h-[24px] shrink-0 items-center gap-1 text-white">
               <select
                 value={currency}
                 onChange={(event) => setCurrency(event.target.value as 'VND' | 'USD')}
@@ -298,9 +303,9 @@ export default function HeroBookingWidget() {
                 onClick={() => setOpenCalendar((prev) => (prev === 'depart' ? null : 'depart'))}
                 aria-label="Ngày đi"
                 aria-expanded={openCalendar === 'depart'}
-                className="flex w-[127px] shrink-0 items-center justify-center border-l border-[var(--border)] px-1 text-center lg:w-[121px]"
+                className="flex w-[104px] shrink-0 items-center justify-center border-l border-[var(--border)] px-1 text-center min-[360px]:w-[127px] lg:w-[121px]"
               >
-                <span className="text-lg font-medium leading-[18.72px] text-[var(--foreground)]">
+                <span className="text-sm font-medium leading-[18.72px] text-[var(--foreground)] min-[360px]:text-lg">
                   {formatDisplayDate(departDate) || 'Ngày đi'}
                 </span>
               </button>
@@ -331,9 +336,9 @@ export default function HeroBookingWidget() {
                   onClick={() => setOpenCalendar((prev) => (prev === 'return' ? null : 'return'))}
                   aria-label="Ngày về"
                   aria-expanded={openCalendar === 'return'}
-                  className="flex w-[127px] shrink-0 items-center justify-center border-l border-[var(--border)] px-1 text-center lg:w-[121px]"
+                  className="flex w-[104px] shrink-0 items-center justify-center border-l border-[var(--border)] px-1 text-center min-[360px]:w-[127px] lg:w-[121px]"
                 >
-                  <span className="text-lg font-medium leading-[18.72px] text-[var(--foreground)]">
+                  <span className="text-sm font-medium leading-[18.72px] text-[var(--foreground)] min-[360px]:text-lg">
                     {formatDisplayDate(returnDate) || 'Ngày về'}
                   </span>
                 </button>

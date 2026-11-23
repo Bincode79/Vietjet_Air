@@ -12,7 +12,7 @@ import { apiRequest } from '@/shared/services';
  *
  * Nội dung dài luôn nằm gọn trong một dòng (`truncate`) với `min-w-0 flex-1`,
  * nên một thông báo dài không thể đẩy cụm nút ra khỏi khung hay làm vỡ bố cục;
- * nội dung đầy đủ vẫn đọc được qua `title` khi rê chuột.
+ * nội dung đầy đủ đọc được khi chạm vào dòng tin hoặc rê chuột xem `title`.
  *
  * Nguồn nội dung là `/api/cong-khai/thong-bao` — các thông báo quản trị viên đã
  * phát hành cho mọi khách (`announcements`, lọc `is_active`, khoảng hiệu lực và
@@ -51,6 +51,7 @@ export default function AnnouncementBar() {
   const [messages, setMessages] = useState<readonly string[]>(FALLBACK_ANNOUNCEMENTS);
   const [index, setIndex] = useState(0);
   const [dismissed, setDismissed] = useState(false);
+  const [expanded, setExpanded] = useState(false);
 
   const barRef = useRef<HTMLDivElement>(null);
 
@@ -116,7 +117,10 @@ export default function AnnouncementBar() {
   if (total === 0) return null;
 
   const message = messages[index] ?? messages[0];
-  const move = (step: number) => setIndex((current) => (current + step + total) % total);
+  const move = (step: number) => {
+    setExpanded(false);
+    setIndex((current) => (current + step + total) % total);
+  };
 
   // Nút điều hướng thông báo: 25×25px (đo được trên site thật), bo tròn.
   const controlClass =
@@ -133,26 +137,36 @@ export default function AnnouncementBar() {
       // hàng nội dung cao 26px, nên thanh không được cộng thêm `py-2` như desktop.
       className="w-full min-h-[35px] lg:min-h-[50px] bg-vj-announce-bg text-[var(--foreground)] border-b border-vj-border-light flex items-center"
     >
-      <div className="mx-auto flex w-full max-w-[1200px] items-center gap-3.5 px-4 sm:px-6 py-0 lg:py-2 text-lg2 lg:text-lg2">
+      <div
+        className={`mx-auto flex w-full max-w-[1200px] gap-3.5 px-4 sm:px-6 text-lg2 lg:text-lg2 ${expanded ? 'items-start py-2' : 'items-center py-0 lg:py-2'}`}
+      >
         {/* Icon chuông: 24×26px (đo được trên site thật). */}
         <RiNotification3Line aria-hidden="true" className="h-[26px] w-[24px] shrink-0 text-vjred" />
 
-        <div
+        <button
+          type="button"
+          onClick={() => setExpanded((current) => !current)}
+          aria-expanded={expanded}
+          aria-label={expanded ? 'Thu gọn thông báo' : 'Xem toàn bộ thông báo'}
           aria-live="polite"
           title={message}
-          className="min-w-0 flex-1 truncate text-lg2 font-medium leading-[20px] text-[var(--foreground)] flex items-center gap-2"
+          className={`min-w-0 flex-1 text-left text-lg2 font-medium leading-[20px] text-[var(--foreground)] flex gap-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary ${expanded ? 'items-start' : 'items-center truncate'}`}
         >
           {message.startsWith('TIN MỚI') ? (
             <>
               <span className="shrink-0 bg-vjgold text-vjwine text-xs2 font-black px-2 py-0.5 rounded-full uppercase tracking-wider">
                 TIN MỚI
               </span>
-              <span className="truncate">{message.replace(/^TIN MỚI\s*[:-]?\s*/, '')}</span>
+              <span className={expanded ? 'whitespace-normal break-words' : 'truncate'}>
+                {message.replace(/^TIN MỚI\s*[:-]?\s*/, '')}
+              </span>
             </>
           ) : (
-            <span className="truncate">{message}</span>
+            <span className={expanded ? 'whitespace-normal break-words' : 'truncate'}>
+              {message}
+            </span>
           )}
-        </div>
+        </button>
 
         <div className="flex shrink-0 items-center gap-1">
           <button

@@ -95,11 +95,11 @@ export default function MobileBottomNav() {
           const active =
             base === '/trang-chu' ? pathname === '/trang-chu' : pathname.startsWith(base);
           return (
-            <li key={tab.label} className="min-w-0 flex-shrink-0">
+            <li key={tab.label} className="min-w-0 max-w-[87px] flex-1">
               <Link
                 href={tab.href}
                 aria-current={active ? 'page' : undefined}
-                className={`flex h-[56px] min-h-[56px] w-[87px] flex-col items-center justify-center gap-1.5 px-0.2 text-sm2 font-medium leading-[16px] transition-colors ${
+                className={`flex h-[56px] min-h-[56px] w-full flex-col items-center justify-center gap-1.5 px-0.2 text-sm2 font-medium leading-[16px] transition-colors ${
                   active ? ACTIVE_CLASS : 'text-vj-mobile-nav-ink'
                 }`}
               >

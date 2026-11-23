@@ -114,7 +114,7 @@ export default function FlightBookingResultsWrapper({
             const unitFare = item.fare / currentWeight;
             const nextWeight = newPax.adult + newPax.child * 0.75;
             const nextFare = Math.round(unitFare * nextWeight);
-            const nextTax = 581581 * (newPax.adult || 1);
+            const nextTax = Math.round(nextFare * 0.15);
             next[key] = {
               ...item,
               fare: nextFare,
@@ -139,7 +139,7 @@ export default function FlightBookingResultsWrapper({
       leg: 'outbound' | 'inbound' = 'outbound'
     ) => {
       const normalized = normalizeFareClass(fareClass);
-      const tax = 581581 * (paxCounts.adult || 1);
+      const tax = Math.round(fare * 0.15);
       const baseFare = fares?.eco ?? Math.round(fare / (FARE_CLASS_MULTIPLIER[normalized] ?? 1));
       const legFlight = {
         flightNo,
@@ -158,7 +158,7 @@ export default function FlightBookingResultsWrapper({
         [leg]: legFlight,
       }));
     },
-    [paxCounts.adult]
+    []
   );
 
   const handleContinue = useCallback(() => {
@@ -433,8 +433,8 @@ export default function FlightBookingResultsWrapper({
         onClose={() => setShowSummaryModal(false)}
         outboundFare={bookings.outbound?.fare ?? 1220400}
         inboundFare={bookings.inbound?.fare ?? 549720}
-        outboundTax={bookings.outbound?.tax ?? 581581}
-        inboundTax={bookings.inbound?.tax ?? 581581}
+        outboundTax={bookings.outbound?.tax ?? 0}
+        inboundTax={bookings.inbound?.tax ?? 0}
         outboundFlightNo={bookings.outbound?.flightNo ?? 'VJ141'}
         inboundFlightNo={bookings.inbound?.flightNo ?? 'VJ134'}
         isRoundTrip={isRoundTrip}

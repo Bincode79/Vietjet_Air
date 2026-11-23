@@ -321,7 +321,7 @@ export default function SkyIdRealAuthPage({
                 </p>
 
                 {/* Input Row matching Image #1 */}
-                <div className="mt-5 flex items-center gap-1">
+                <div className="mt-5 grid grid-cols-[auto_minmax(0,1fr)] items-center gap-2 sm:flex sm:gap-1">
                   {/* Country Code Picker */}
                   <div className="relative">
                     <button
@@ -382,7 +382,7 @@ export default function SkyIdRealAuthPage({
                     type="button"
                     disabled={!canContinue || loading}
                     onClick={handlePhoneContinue}
-                    className={`vj-skyid-btn vj-skyid-btn-yellow !min-w-0 !min-h-0 !w-auto h-9 px-4 rounded-md font-extrabold text-xs tracking-wide transition-all flex items-center justify-center whitespace-nowrap shrink-0 ${
+                    className={`vj-skyid-btn vj-skyid-btn-yellow col-span-2 !min-w-0 !min-h-0 !w-full sm:!w-auto h-9 px-4 rounded-md font-extrabold text-xs tracking-wide transition-all flex items-center justify-center whitespace-nowrap shrink-0 ${
                       canContinue && !loading
                         ? 'shadow-md hover:shadow-lg active:scale-98 cursor-pointer'
                         : '!bg-slate-100 !text-slate-400 border border-slate-200/60 cursor-not-allowed'

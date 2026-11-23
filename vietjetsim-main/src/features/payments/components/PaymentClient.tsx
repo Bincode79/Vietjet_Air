@@ -227,10 +227,14 @@ export default function PaymentClient() {
             status: b.status,
             hold_expires_at: b.hold_expires_at,
             hold_method: b.hold_method,
-            fareSubtotal: Math.round(dbTotal * 0.65),
-            tax: Math.round(dbTotal * 0.25),
-            seatFee: prev?.seatFee ?? 0,
-            ancillaryFee: Math.round(dbTotal * 0.1),
+            // Chỉ dùng chi tiết giá từ phiên vừa đặt nếu tổng khớp số tiền
+            // máy chủ xác nhận. Không chia giả 65/25/10 từ tổng thanh toán.
+            fareSubtotal:
+              prev?.bookingId === b.id && prev.total === dbTotal ? prev.fareSubtotal : dbTotal,
+            tax: prev?.bookingId === b.id && prev.total === dbTotal ? prev.tax : 0,
+            seatFee: prev?.bookingId === b.id && prev.total === dbTotal ? prev.seatFee : 0,
+            ancillaryFee:
+              prev?.bookingId === b.id && prev.total === dbTotal ? (prev.ancillaryFee ?? 0) : 0,
             ancillaries: prev?.ancillaries || [],
             total: dbTotal > 0 ? dbTotal : (prev?.total ?? 0),
             returnBookingId: prev?.returnBookingId,
@@ -266,13 +270,10 @@ export default function PaymentClient() {
   const [gatewayMethod, setGatewayMethod] = useState<string>('qr');
   const toast = useToast();
 
-  const vietQrConvenienceFee = useMemo(() => {
-    if (!booking) return 0;
-    return (booking.seatFee ?? 0) + (booking.ancillaryFee ?? 0);
-  }, [booking]);
+  const vietQrConvenienceFee = 0;
 
   const vietQrGrandTotal = useMemo(() => {
-    const subtotal = booking?.fareSubtotal ?? 0;
+    const subtotal = booking?.total ?? 0;
     return Math.max(0, subtotal + vietQrConvenienceFee - discountAmount);
   }, [booking, vietQrConvenienceFee, discountAmount]);
 
@@ -385,6 +386,13 @@ export default function PaymentClient() {
     bank: 'bank',
   };
   const goToPaymentGateway = () => {
+    if (selectedMethodGroup === 'momo' || selectedMethodGroup === 'zalopay') {
+      toast.error(
+        'Phương thức chưa khả dụng',
+        'Cổng thanh toán này chưa được kết nối. Vui lòng chọn Mobile Banking VietQR hoặc Thẻ.'
+      );
+      return;
+    }
     const gw = GATEWAY_METHOD_BY_GROUP[selectedMethodGroup] || 'qr';
     setGatewayMethod(gw);
     setGatewaySuccess(false);
@@ -884,7 +892,7 @@ export default function PaymentClient() {
         isOpen={showVietQrModal}
         onClose={() => setShowVietQrModal(false)}
         methodLabel="VietQR"
-        subtotal={booking?.fareSubtotal}
+        subtotal={booking?.total}
         discount={discountAmount}
         convenienceFee={vietQrConvenienceFee}
         grandTotal={vietQrGrandTotal}

@@ -90,7 +90,6 @@ export default function BookingTicketCard({
 
   // Tính tổng chuyến đi = giá vé + thuế phí + dịch vụ ghế
   const outboundTotal = fareSubtotal + tax + seatFee;
-  const convenienceFee = 54000;
 
   return (
     <div className="bg-white rounded-vj border border-vj-border-light shadow-vj-sm overflow-hidden transition-all">
@@ -388,16 +387,12 @@ export default function BookingTicketCard({
                   </span>
                 </div>
               )}
-              <div className="flex justify-between text-vj-text-dim">
-                <span className="text-[var(--foreground-muted)]">Phí tiện ích</span>
-                <span className="font-semibold">+{convenienceFee.toLocaleString('vi-VN')}₫</span>
-              </div>
               <div className="border-t border-[var(--border)] pt-2 flex justify-between font-bold text-[var(--foreground)] text-sm">
                 <span>Tổng thanh toán</span>
                 <span className="text-primary text-base font-black">
-                  {(
-                    total || outboundTotal + ancillaryFee + convenienceFee - (discountAmount ?? 0)
-                  ).toLocaleString('vi-VN')}
+                  {(total || outboundTotal + ancillaryFee - (discountAmount ?? 0)).toLocaleString(
+                    'vi-VN'
+                  )}
                   ₫
                 </span>
               </div>
@@ -420,9 +415,7 @@ export default function BookingTicketCard({
           Tổng tiền
         </span>
         <span className="font-koho text-base sm:text-lg font-black text-white">
-          {(
-            total || outboundTotal + ancillaryFee + convenienceFee - (discountAmount ?? 0)
-          ).toLocaleString('vi-VN')}{' '}
+          {(total || outboundTotal + ancillaryFee - (discountAmount ?? 0)).toLocaleString('vi-VN')}{' '}
           VND
         </span>
       </div>

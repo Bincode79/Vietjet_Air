@@ -143,6 +143,12 @@ function FlightBookingClientInner({
 
   const router = useRouter();
   const toast = useToast();
+  const openDrawer = (setOpen: React.Dispatch<React.SetStateAction<boolean>>) => {
+    // A confirmation from the previous step sits over the passenger card in
+    // these full-screen drawers. Clear it before showing the next choice.
+    toast.dismissAll();
+    setOpen(true);
+  };
 
   const goStep = (next: number) => {
     setStep(next);
@@ -739,13 +745,13 @@ function FlightBookingClientInner({
               mealFee={mealFee}
               mealCount={Object.values(selectedMeals).reduce((a, b) => a + b, 0)}
               totalAmount={finalTotal}
-              onOpenSeatDrawer={() => setIsSeatDrawerOpen(true)}
-              onOpenBaggageDrawer={() => setIsBaggageDrawerOpen(true)}
-              onOpenMealDrawer={() => setIsMealDrawerOpen(true)}
-              onOpenTaxiDrawer={() => setIsTaxiDrawerOpen(true)}
-              onOpenInsuranceDrawer={() => setIsInsuranceDrawerOpen(true)}
-              onOpenPassengerServicesDrawer={() => setIsPassengerServicesDrawerOpen(true)}
-              onOpenPetDrawer={() => setIsPetDrawerOpen(true)}
+              onOpenSeatDrawer={() => openDrawer(setIsSeatDrawerOpen)}
+              onOpenBaggageDrawer={() => openDrawer(setIsBaggageDrawerOpen)}
+              onOpenMealDrawer={() => openDrawer(setIsMealDrawerOpen)}
+              onOpenTaxiDrawer={() => openDrawer(setIsTaxiDrawerOpen)}
+              onOpenInsuranceDrawer={() => openDrawer(setIsInsuranceDrawerOpen)}
+              onOpenPassengerServicesDrawer={() => openDrawer(setIsPassengerServicesDrawerOpen)}
+              onOpenPetDrawer={() => openDrawer(setIsPetDrawerOpen)}
               onBack={() => goStep(2)}
               onContinue={handleFinalBookingSubmit}
               isSubmitting={isSubmitting}

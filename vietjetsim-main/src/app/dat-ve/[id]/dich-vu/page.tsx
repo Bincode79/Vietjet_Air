@@ -400,14 +400,14 @@ export default function AncillaryServicesPage() {
 
   if (error) {
     return (
-      <div className="min-h-screen flex flex-col bg-gray-50">
+      <div className="min-h-screen flex flex-col bg-vj-surface-cool">
         <Header variant="compact" hideMobileLogo={true} mobileTitle="DỊCH VỤ BỔ SUNG" />
         <main className="flex-1 flex items-center justify-center p-4">
           <div className="bg-white rounded-vj shadow-lg p-8 max-w-md text-center space-y-4">
             <p className="text-vj-red-dark font-bold">{error}</p>
             <button
               type="button"
-              onClick={() => router.push('/tim-kiem-chuyen-bay')}
+              onClick={() => router.push('/tim-ve')}
               className="px-6 py-2 rounded-full bg-vj-yellow text-vj-text font-bold text-xs"
             >
               Quay lại tìm chuyến

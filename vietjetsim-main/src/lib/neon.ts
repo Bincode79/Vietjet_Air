@@ -1350,8 +1350,11 @@ function createMockSql(): SqlClient {
 
   /** Sinh id giả cho dòng mock — đủ duy nhất trong phạm vi một phiên test. */
   let mockSeq = 0;
+  // Six fixed UUIDs below are reserved for the smoke/UI fixtures. Dynamic
+  // bookings must never reuse them or a later lookup reads the fixture first.
+  let mockUuidSeq = 6;
   const _nextMockId = (prefix: string) => `${prefix}-mock-${++mockSeq}`;
-  const mockUuid = () => '00000000-0000-4000-8000-' + String(++mockSeq).padStart(12, '0');
+  const mockUuid = () => '00000000-0000-4000-8000-' + String(++mockUuidSeq).padStart(12, '0');
 
   /**
    * Sinh PNR 6 ký tự giống hàm `generateBookingCode` của Postgres.

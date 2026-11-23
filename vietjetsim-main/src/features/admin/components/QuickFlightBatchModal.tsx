@@ -60,7 +60,6 @@ export default function QuickFlightBatchModal({
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // ─── Mode 1: Route & Schedule Generator State ─────────────────────────────
-  const today = useMemo(() => new Date(), []);
   const tomorrow = useMemo(() => {
     const d = new Date();
     d.setDate(d.getDate() + 1);
@@ -79,7 +78,7 @@ export default function QuickFlightBatchModal({
   const [outboundFlightNo, setOutboundFlightNo] = useState('VJ 120');
   const [returnFlightNo, setReturnFlightNo] = useState('VJ 121');
   const [aircraft, setAircraft] = useState('Airbus A321');
-  const [capacity, setCapacity] = useState(180);
+  const [capacity] = useState(180);
 
   const [durationHours, setDurationHours] = useState(2);
   const [durationMinutes, setDurationMinutes] = useState(15);
@@ -96,8 +95,6 @@ export default function QuickFlightBatchModal({
 
   // ─── Mode 2: CSV / Text Paste State ───────────────────────────────────────
   const [csvContent, setCsvContent] = useState('');
-
-  if (!isOpen) return null;
 
   // Swap route
   const handleSwapRoute = () => {
@@ -167,8 +164,6 @@ export default function QuickFlightBatchModal({
       const dayOfWeek = cur.getDay(); // 0 is Sunday, 1 is Monday...
 
       if (selectedDays.includes(dayOfWeek)) {
-        const curDateStr = formatDateISO(cur);
-
         for (let i = 0; i < timeSlots.length; i++) {
           const t = timeSlots[i];
           const [hStr, mStr] = t.split(':');
@@ -358,6 +353,8 @@ VJ 302, DAD, SGN, ${d2}, 11:15, 12:35, 499000, 1380000, 180, Airbus A320`;
       setIsSubmitting(false);
     }
   };
+
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">

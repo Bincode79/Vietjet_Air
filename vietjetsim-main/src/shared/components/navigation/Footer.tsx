@@ -28,7 +28,7 @@ import {
  * - Tiêu đề cột: 18px/700 màu `#333333` (Desktop) / 15px/700 (Mobile).
  * - Liên kết: 14px/500 màu `#333333` (Desktop) / 13px/500 (Mobile).
  * - Mobile: Chuyển đổi thành Accordion thu gọn / mở rộng thông minh, có nút
- *   "Về đầu trang", và khoảng đệm an toàn không bị thanh MobileBottomNav che khuất.
+ *   "Về đầu trang". Layout chung chừa khoảng an toàn cho MobileBottomNav.
  */
 const FOOTER_COLUMNS: ReadonlyArray<{
   title: string;
@@ -210,7 +210,7 @@ export default function Footer() {
                       <li key={`${sec.id}-${title}`}>
                         <Link
                           href={href}
-                          className="vj-footer-link block py-0.5 active:text-primary"
+                          className="vj-footer-link flex min-h-11 items-center py-2 active:text-primary"
                         >
                           {title}
                         </Link>
@@ -227,7 +227,7 @@ export default function Footer() {
         <button
           type="button"
           onClick={handleScrollTop}
-          className="flex lg:hidden items-center justify-center gap-1.5 w-full py-2.5 my-5 bg-stone-100 hover:bg-stone-200 text-stone-700 rounded-full text-xs font-semibold transition-colors shadow-sm active:scale-[0.98]"
+          className="flex lg:hidden min-h-11 items-center justify-center gap-1.5 w-full py-2.5 my-5 bg-stone-100 hover:bg-stone-200 text-stone-700 rounded-full text-xs font-semibold transition-colors shadow-sm active:scale-[0.98]"
         >
           <RiArrowUpLine size={16} />
           <span>Về đầu trang</span>
@@ -381,7 +381,7 @@ export default function Footer() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={social.label}
-                  className={`w-8 h-8 rounded-full sm:w-7 sm:h-7 sm:rounded text-white flex items-center justify-center hover:opacity-90 transition-opacity shadow-sm ${social.className}`}
+                  className={`w-10 h-10 rounded-full sm:w-7 sm:h-7 sm:rounded text-white flex items-center justify-center hover:opacity-90 transition-opacity shadow-sm ${social.className}`}
                 >
                   {social.icon}
                 </a>
@@ -412,7 +412,7 @@ export default function Footer() {
                     alt="Download on the App Store"
                     width={120}
                     height={40}
-                    className="h-9 sm:h-10 w-auto"
+                    className="h-10 w-auto"
                   />
                 </a>
                 <a
@@ -427,7 +427,7 @@ export default function Footer() {
                     alt="Get it on Google Play"
                     width={150}
                     height={48}
-                    className="h-9 sm:h-10 w-auto"
+                    className="h-10 w-auto"
                   />
                 </a>
               </div>
@@ -483,9 +483,6 @@ export default function Footer() {
         data-testid="vj-wave-strip"
         className="pointer-events-none h-[42px] w-full bg-[url('/images/vj-wave-strip.svg')] bg-cover bg-bottom bg-no-repeat sm:h-[60px] lg:h-[72px]"
       />
-
-      {/* Khoảng trống an toàn tránh bị che bởi thanh MobileBottomNav cố định đáy */}
-      <div className="h-24 lg:hidden" aria-hidden="true" />
     </footer>
   );
 }

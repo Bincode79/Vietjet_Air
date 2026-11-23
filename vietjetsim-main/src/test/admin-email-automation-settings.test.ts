@@ -7,7 +7,6 @@ import {
 } from '@/app/api/quan-tri/cai-dat/test-email/route';
 import * as mail from '@/lib/mail';
 import * as db from '@/lib/db';
-import { sql } from '@/lib/neon';
 
 vi.mock('@/lib/role-permissions', () => ({
   getRolePermissionsFromDb: vi.fn(async () => new Set<never>([])),

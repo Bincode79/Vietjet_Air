@@ -76,4 +76,23 @@ describe('AnnouncementBar', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Đóng thông báo' }));
     expect(screen.queryByLabelText('Thông báo')).not.toBeInTheDocument();
   });
+
+  it('mở nội dung bị cắt và thu gọn khi chuyển thông báo', async () => {
+    fetchMock().mockResolvedValue(jsonResponse({ announcements: [] }));
+    render(<AnnouncementBar />);
+
+    const expand = screen.getByRole('button', { name: 'Xem toàn bộ thông báo' });
+    expect(expand).toHaveAttribute('aria-expanded', 'false');
+    fireEvent.click(expand);
+    expect(screen.getByRole('button', { name: 'Thu gọn thông báo' })).toHaveAttribute(
+      'aria-expanded',
+      'true'
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Thông báo tiếp theo' }));
+    expect(screen.getByRole('button', { name: 'Xem toàn bộ thông báo' })).toHaveAttribute(
+      'aria-expanded',
+      'false'
+    );
+  });
 });

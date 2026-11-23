@@ -180,7 +180,8 @@ class Cdp {
 }
 
 async function connect() {
-  for (let attempt = 0; attempt < 40; attempt += 1) {
+  // Chrome can take more than ten seconds to initialize on a busy macOS host.
+  for (let attempt = 0; attempt < 120; attempt += 1) {
     try {
       const res = await fetch(`http://127.0.0.1:${PORT}/json/version`);
       const info = await res.json();
@@ -788,6 +789,7 @@ async function main() {
     await closeTarget(skipTarget.targetId);
   }
 
+  browserWs.close();
   chrome.kill('SIGTERM');
   writeFileSync(
     path.join(SHOTS_DIR, 'report.json'),
@@ -889,6 +891,7 @@ async function main() {
     process.exit(1);
   }
   console.log(`\n✅ UI check passed — ${results.length}/${results.length} màn hình sạch.`);
+  process.exit(0);
 }
 
 main().catch((error) => {

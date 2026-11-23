@@ -89,7 +89,10 @@ export default function FAQPage() {
                   className="bg-white rounded-vj shadow-vj-sm overflow-hidden border border-vj-border-light transition-all duration-300 hover:shadow-vj-md"
                 >
                   <button
+                    type="button"
                     onClick={() => toggleAccordion(faq.id)}
+                    aria-expanded={openId === faq.id}
+                    aria-controls={`faq-answer-${faq.id}`}
                     className="w-full flex items-center justify-between p-5 text-left"
                   >
                     <div className="flex items-center gap-3">
@@ -113,6 +116,8 @@ export default function FAQPage() {
                     </div>
                   </button>
                   <div
+                    id={`faq-answer-${faq.id}`}
+                    aria-hidden={openId !== faq.id}
                     className={`overflow-hidden transition-all duration-300 ease-in-out ${
                       openId === faq.id ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
                     }`}

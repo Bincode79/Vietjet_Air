@@ -238,10 +238,12 @@ export default function BaggageSelectionDrawer({
               {BAGGAGE_PACKAGES.map((pkg) => {
                 const isSelected = currentPkgId === pkg.id;
                 return (
-                  <div
+                  <button
                     key={pkg.id}
+                    type="button"
                     onClick={() => handleSelectPkg(pkg.id)}
-                    className={`relative cursor-pointer rounded-vj border p-2.5 flex flex-col items-center justify-center text-center transition-all bg-vj-surface-fare ${
+                    aria-pressed={isSelected}
+                    className={`relative w-full cursor-pointer rounded-vj border p-2.5 flex flex-col items-center justify-center text-center transition-all bg-vj-surface-fare ${
                       isSelected
                         ? 'border-primary border-2 shadow-vj-md'
                         : 'border-vj-field-line hover:border-vj-line shadow-vj-sm'
@@ -268,7 +270,7 @@ export default function BaggageSelectionDrawer({
                     <span className="text-base font-medium text-primary mt-0.5">
                       {pkg.price.toLocaleString('vi-VN')}₫
                     </span>
-                  </div>
+                  </button>
                 );
               })}
             </div>
@@ -283,10 +285,12 @@ export default function BaggageSelectionDrawer({
               {OVERSIZED_BAGGAGE.map((pkg) => {
                 const isSelected = currentPkgId === pkg.id;
                 return (
-                  <div
+                  <button
                     key={pkg.id}
+                    type="button"
                     onClick={() => handleSelectPkg(pkg.id)}
-                    className={`relative cursor-pointer rounded-vj border p-3 flex flex-col items-center justify-center text-center transition-all bg-vj-surface-fare ${
+                    aria-pressed={isSelected}
+                    className={`relative w-full cursor-pointer rounded-vj border p-3 flex flex-col items-center justify-center text-center transition-all bg-vj-surface-fare ${
                       isSelected
                         ? 'border-primary border-2 shadow-vj-md'
                         : 'border-vj-field-line hover:border-vj-line shadow-vj-sm'
@@ -305,31 +309,33 @@ export default function BaggageSelectionDrawer({
                     <span className="text-base font-medium text-primary mt-1">
                       {pkg.price.toLocaleString('vi-VN')}₫
                     </span>
-                  </div>
+                  </button>
                 );
               })}
             </div>
           </div>
 
           {/* Radio: Không mua thêm */}
-          <div
+          <button
+            type="button"
             onClick={() => setCurrentPkgId(null)}
-            className={`cursor-pointer rounded-vj border p-3 flex items-center gap-2.5 transition-all bg-white ${
+            aria-pressed={currentPkgId === null}
+            className={`w-full cursor-pointer rounded-vj border p-3 flex items-center gap-2.5 text-left transition-all bg-white ${
               currentPkgId === null
                 ? 'border-green-500 bg-vj-pay-green ring-2 ring-emerald-500/20'
                 : 'border-vj-border-light hover:border-vj-line'
             }`}
           >
-            <input
-              type="radio"
-              checked={currentPkgId === null}
-              onChange={() => setCurrentPkgId(null)}
-              className="text-vj-pay-green focus:ring-emerald-500"
-            />
+            <span
+              aria-hidden="true"
+              className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-full border ${currentPkgId === null ? 'border-vj-pay-green' : 'border-vj-border-light'}`}
+            >
+              {currentPkgId === null && <span className="h-2 w-2 rounded-full bg-vj-pay-green" />}
+            </span>
             <span className="text-xs font-bold text-vj-text-strong">
               Không, cảm ơn (chỉ dùng 7kg xách tay)
             </span>
-          </div>
+          </button>
 
           {/* Priority Hand Luggage (+2kg) */}
           <div className="rounded-vj border border-vj-border-light bg-white p-3.5 shadow-vj-sm space-y-2">
