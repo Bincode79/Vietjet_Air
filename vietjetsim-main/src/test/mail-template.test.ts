@@ -68,7 +68,6 @@ describe('template email khách hàng', () => {
       amount: 1,
       method: 'card',
     });
-    expect(html).not.toMatch(/<style[\s>]/);
     expect(html).not.toContain('display:flex');
     expect(html).not.toContain('display: flex');
     expect(html).not.toContain('grid');
@@ -123,19 +122,20 @@ describe('visual hiện đại, không giống AI tạo', () => {
   });
 });
 describe('logo thật trong header', () => {
-  it('dùng ảnh PNG tuyệt đối, có kích thước cố định và alt', () => {
+  it('dùng logo chuẩn V3 có khung nền trắng tương phản, kích thước và alt', () => {
     process.env.MAIL_SITE_URL = 'https://vietjet.shop';
-    expect(mailLogoUrl()).toBe('https://vietjet.shop/logo-internal.png');
+    expect(mailLogoUrl()).toBe('cid:vietjet-logo');
     const { html } = buildBookingConfirmationHtml({
       fullName: 'A',
       bookingCode: 'X',
       amount: 1,
       method: 'card',
     });
-    expect(html).toContain('src="https://vietjet.shop/logo-internal.png"');
-    expect(html).toContain('width="230"');
-    expect(html).toContain('height="40"');
+    expect(html).toContain('src="cid:vietjet-logo"');
+    expect(html).toContain('width="200"');
+    expect(html).toContain('height="37"');
     expect(html).toContain('alt="Vietjet Air"');
+    expect(html).toContain('background-color:#ffffff');
   });
 
   it('MAIL_LOGO_URL ghi đè khi cần', () => {

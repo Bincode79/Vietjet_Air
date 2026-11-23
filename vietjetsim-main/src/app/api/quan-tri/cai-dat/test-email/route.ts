@@ -135,10 +135,18 @@ export async function GET(request: NextRequest) {
 
     const payload = generateTestEmailPayload(template);
 
+    // Khi xem trước trong iframe trình duyệt, cid:vietjet-logo không tự nạp được
+    // Chuyển sang /vietjet-logo.png để modal xem trước hiển thị logo rõ nét
+    const previewHtml = payload.html.replace(
+      /src=["']cid:vietjet-logo["']/g,
+      'src="/vietjet-logo.png"'
+    );
+
     return NextResponse.json({
       success: true,
       template,
       ...payload,
+      html: previewHtml,
     });
   } catch (err) {
     console.error('Lỗi khi xem trước mẫu email:', err);

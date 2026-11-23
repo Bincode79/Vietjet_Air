@@ -2,6 +2,53 @@
 
 Repository memory for Vietjet Air (Next.js 16 / React 19 / TypeScript / Tailwind / Neon Postgres).
 
+## Email Template Design
+
+Hệ thống email tự động đã được thiết kế lại theo phong cách dự án VietjetSim:
+
+### Màu sắc thương hiệu (theo tailwind.config.js)
+- Đỏ chính: `#EC2029` (primary.DEFAULT - màu đỏ chủ đạo của dự án)
+- Vàng CTA: `#FFDD00` (accent.DEFAULT - màu vàng nút bấm của dự án)
+- Chữ chính: `#333333` (vj.text)
+- Chữ tiêu đề: `#1F272D` (vj.ink)
+- Chữ phụ: `#6C6C6C` (vj.gray)
+- Border: `#E0E0E0` (line)
+
+### Typography (theo tailwind.config.js)
+- Font chính: KoHo (300-700) cho toàn bộ văn bản
+- Font CTA/Heading: JambonoMedium cho nút bấm và nhãn in đậm
+- Font-weight: 500 cho label, 700 cho value và CTA
+
+### Thay đổi chính
+- **Header:** Bold red background (#EC2029) với logo Vietjet và yellow accent line (3px #FFDD00)
+- **Footer:** Gray background (#fafafa) với hotline nổi bật màu đỏ
+- **Action Button:** Yellow background (#FFDD00) với text màu đỏ (#EC2029), uppercase, font-weight 700, font JambonoMedium
+- **Notice Box:** Yellow background (#FFF9D4 - accent-50) với viền gold (#FFE873 - accent-200)
+- **Detail Rows:** Typography KoHo với font-weight 500/700, spacing 12px
+- **Banners:** Hỗ trợ banner hình ảnh (tạm thời disabled, xem EMAIL_BANNER_IMAGES.md)
+
+### Các loại email
+1. Thanh toán / Hướng dẫn thanh toán (buildPaymentInstructionHtml)
+2. Xác nhận thanh toán thành công (buildPaymentSuccessHtml)
+3. Thanh toán thất bại (buildPaymentFailedHtml)
+4. Chờ đối soát (buildPaymentPendingReviewHtml)
+5. Hoàn tiền (buildRefundNotificationHtml)
+6. Đặt lại mật khẩu (buildPasswordResetHtml)
+7. Đăng ký thành công (buildRegistrationSuccessHtml)
+8. OTP xác thực (buildOtpEmailHtml)
+9. Thông báo delay chuyến bay (buildFlightDelayHtml)
+10. Công văn giá vé (buildFareAnnouncementHtml)
+11. Test ping SMTP (buildTestPingEmailHtml)
+
+### Bật banner hình ảnh
+Để bật banner hình ảnh trong email, chỉnh `USE_EMAIL_BANNERS = true` trong `src/lib/mail.ts` và thêm các file ảnh vào `public/`:
+- `email-banner-success.jpg` (640x180px)
+- `email-banner-payment.jpg` (640x160px)
+- `email-banner-delay.jpg` (640x140px)
+- `email-banner-generic.jpg` (640x150px)
+
+Xem `EMAIL_BANNER_IMAGES.md` để biết chi tiết.
+
 ## Commands
 
 ```bash

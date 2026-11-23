@@ -12,11 +12,19 @@
  * luồng đặt vé / đặt lại mật khẩu.
  */
 
+import fs from 'node:fs';
+import path from 'node:path';
 import { createTransport, type Transporter } from 'nodemailer';
 
 let transporter: Transporter | null | undefined;
 
-const BRAND_RED = '#EC2029';
+// Màu sắc thương hiệu theo dự án VietjetSim
+const BRAND_RED = '#EC2029'; // Màu đỏ chủ đạo của dự án (primary.DEFAULT)
+const BRAND_GOLD = '#FFDD00'; // Màu vàng CTA của dự án (accent.DEFAULT)
+const _BRAND_TEXT = '#333333'; // Màu chữ chính của dự án (vj.text)
+const _BRAND_INK = '#1F272D'; // Màu chữ tiêu đề của dự án (vj.ink)
+const BRAND_GRAY_LIGHT = '#E0E0E0'; // Border light
+const _BRAND_GRAY_DARK = '#6C6C6C'; // Màu chữ phụ (vj.gray)
 const SITE_URL_FALLBACK = 'https://vietjet.shop';
 
 /**
@@ -34,13 +42,13 @@ export function isGmailHost(host: string | undefined): boolean {
 }
 
 /**
- * URL tuyệt đối của logo dùng trong email. Client mail chặn ảnh ngoài theo
- * mặc định nên thẻ <img> luôn kèm width/height cố định và alt text để layout
- * không vỡ khi ảnh chưa được tải. Ghi đè qua MAIL_LOGO_URL khi cần.
+ * URL tuyệt đối hoặc Content-ID (CID) của logo dùng trong email.
+ * Mặc định dùng `cid:vietjet-logo` để client mail nạp ảnh đính kèm inline (V3).
+ * Ghi đè qua MAIL_LOGO_URL khi cần.
  */
 export function mailLogoUrl(env: NodeJS.ProcessEnv = process.env): string {
   if (env.MAIL_LOGO_URL) return env.MAIL_LOGO_URL.replace(/\/$/, '');
-  return `${siteUrl(env)}/logo-internal.png`;
+  return 'cid:vietjet-logo';
 }
 
 /** `.env` hay shell thường bọc giá trị trong dấu nháy — bóc ra trước khi gửi. */
@@ -92,10 +100,14 @@ function getTransporter(): Transporter | null {
 export interface MailAttachment {
   /** Tên file khách thấy (kèm đuôi đúng, ví dụ `ve-dien-tu-FG7KH9.pdf`). */
   filename: string;
-  /** MIME type. PDF = `application/pdf`. */
+  /** MIME type. PDF = `application/pdf`, PNG = `image/png`. */
   contentType: string;
   /** Nội dung file. */
   content: Buffer | string;
+  /** Content-ID cho inline image (ví dụ: 'vietjet-logo'). */
+  cid?: string;
+  /** Content-Disposition (mặc định 'attachment', 'inline' cho ảnh chìm). */
+  disposition?: 'attachment' | 'inline';
 }
 
 export interface MailPayload {
@@ -108,6 +120,26 @@ export interface MailPayload {
   attachments?: MailAttachment[];
 }
 
+let cachedLogoBuffer: Buffer | null = null;
+function getMailLogoBuffer(): Buffer | null {
+  if (cachedLogoBuffer) return cachedLogoBuffer;
+  const candidates = [
+    path.join(process.cwd(), 'public/vietjet-logo.png'),
+    path.join(process.cwd(), 'public/logo-internal.png'),
+  ];
+  for (const p of candidates) {
+    if (fs.existsSync(p)) {
+      try {
+        cachedLogoBuffer = fs.readFileSync(p);
+        return cachedLogoBuffer;
+      } catch {
+        // continue
+      }
+    }
+  }
+  return null;
+}
+
 /** Gửi một email. Trả false (không throw) khi chưa cấu hình hoặc gửi hỏng. */
 export async function sendMail(payload: MailPayload): Promise<boolean> {
   try {
@@ -117,6 +149,39 @@ export async function sendMail(payload: MailPayload): Promise<boolean> {
       return false;
     }
 
+    const attachments: Array<{
+      filename: string;
+      content: Buffer | string;
+      contentType: string;
+      cid?: string;
+      disposition?: 'attachment' | 'inline';
+    }> = payload.attachments
+      ? payload.attachments.map((attachment) => ({
+          filename: attachment.filename,
+          content: attachment.content,
+          contentType: attachment.contentType,
+          cid: attachment.cid,
+          disposition: attachment.disposition,
+        }))
+      : [];
+
+    // Tự động đính kèm inline logo nếu HTML dùng cid:vietjet-logo mà chưa có
+    if (
+      payload.html.includes('cid:vietjet-logo') &&
+      !attachments.some((a) => a.cid === 'vietjet-logo')
+    ) {
+      const logoBuf = getMailLogoBuffer();
+      if (logoBuf) {
+        attachments.push({
+          filename: 'vietjet-logo.png',
+          content: logoBuf,
+          contentType: 'image/png',
+          cid: 'vietjet-logo',
+          disposition: 'inline',
+        });
+      }
+    }
+
     await tx.sendMail({
       from: resolveMailFrom(),
       to: payload.to,
@@ -124,14 +189,15 @@ export async function sendMail(payload: MailPayload): Promise<boolean> {
       html: payload.html,
       text: payload.text,
       replyTo: payload.replyTo ?? process.env.MAIL_REPLY_TO,
-      // Chỉ gắn `attachments` khi có — nodemailer xử lý mảng rỗng như multipart
-      // vô hại, nhưng bỏ qua giữ payload gọn.
-      ...(payload.attachments && payload.attachments.length > 0
+      // Gắn `attachments` khi có
+      ...(attachments.length > 0
         ? {
-            attachments: payload.attachments.map((attachment) => ({
+            attachments: attachments.map((attachment) => ({
               filename: attachment.filename,
               content: attachment.content,
               contentType: attachment.contentType,
+              cid: attachment.cid,
+              ...(attachment.disposition ? { disposition: attachment.disposition } : {}),
             })),
           }
         : {}),
@@ -171,46 +237,88 @@ const METHOD_LABELS: Record<string, string> = {
 
 const METHOD_LABEL_FALLBACK = 'Thanh toán trực tuyến';
 
-const INK = '#0f1c2e';
-
-/** Bọc nội dung trong khung email hãng bay: vạch đỏ mỏng, header trắng, footer xám. */
+/** Bọc nội dung trong khung email hãng bay - VietjetSim style với bold red header, yellow accents, font KoHo/Jambono */
 function shell(inner: string, preheader: string, eyebrow: string): string {
   const url = siteUrl();
   const domain = url.replace(/^https?:\/\//, '');
   const year = new Date().getFullYear();
-  // Logo gốc 230x40 — hiển thị đúng kích thước gốc để nét nhất.
-  // Muốn to hơn nữa cần file nguồn phân giải cao hơn, không phóng ảnh nhỏ lên.
-  const logo = `<img src="${escapeHtml(mailLogoUrl())}" width="230" height="40" alt="Vietjet Air" style="display:block;border:0;outline:none;text-decoration:none;-ms-interpolation-mode:bicubic;">`;
+  const logoSrc = mailLogoUrl();
+  const logo = `<img alt="Vietjet Air" height="37" src="${escapeHtml(logoSrc)}" style="display:block;max-width:100%;height:auto;border:0;outline:none;text-decoration:none;-ms-interpolation-mode:bicubic;" width="200"/>`;
+
   return `<!DOCTYPE html>
 <html lang="vi">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="color-scheme" content="light">
-<meta name="supported-color-schemes" content="light">
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<meta content="light" name="color-scheme"/>
+<meta content="light" name="supported-color-schemes"/>
 <title>Vietjet Air</title>
+<style type="text/css">
+/* Vietjet email UI refresh - email-client-safe enhancement */
+html, body { margin:0 !important; padding:0 !important; width:100% !important; background:#f3f5f8 !important; }
+body, table, td, p, a, span, div { font-family:Arial, Helvetica, sans-serif; }
+.email-shell { width:100% !important; background:#f3f5f8 !important; }
+.email-card { width:100% !important; max-width:640px !important; background:#ffffff !important; border-radius:16px !important; overflow:hidden !important; box-shadow:0 8px 28px rgba(20,32,50,.10) !important; }
+.email-header { padding:24px 34px !important; background:#e51f2a !important; }
+.email-content { padding:34px 36px 28px !important; color:#263238 !important; font-size:15px !important; line-height:1.75 !important; }
+.email-footer { padding:24px 34px !important; background:#f8fafc !important; border-top:1px solid #e7ebf0 !important; color:#64748b !important; font-size:12px !important; line-height:1.65 !important; }
+.email-card img { max-width:100%; height:auto; }
+.email-card a { overflow-wrap:anywhere; }
+@media only screen and (max-width:600px) {
+  .email-card { width:100% !important; border-radius:0 !important; }
+  .email-shell-cell { padding:0 !important; }
+  .email-header { padding:20px 20px !important; }
+  .email-content { padding:26px 20px 22px !important; font-size:15px !important; }
+  .email-footer { padding:20px !important; }
+  .email-header img { width:180px !important; max-width:180px !important; height:auto !important; }
+  .email-card h1 { font-size:23px !important; line-height:1.3 !important; }
+  .email-card h2 { font-size:19px !important; line-height:1.35 !important; }
+}
+@media (prefers-color-scheme: dark) {
+  /* Keep the transactional email intentionally light for consistent legibility. */
+  .email-card { background:#ffffff !important; }
+  .email-content { color:#263238 !important; }
+}
+</style>
+<style type="text/css">
+/* High-contrast Vietjet red / yellow email palette */
+body, p, td, th, div, span, a, li, h1, h2, h3, h4, h5, h6 { color:#111111; font-weight:700; }
+.email-header, .email-header td, .email-header div, .email-header span, .email-header a { color:#ffffff !important; font-weight:700 !important; }
+.email-content { color:#111111 !important; font-weight:700 !important; }
+.email-footer { color:#111111 !important; font-weight:700 !important; }
+</style>
 </head>
-<body style="margin:0;padding:0;background-color:#f1f4f8;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;">
-<div style="display:none;max-height:0;overflow:hidden;opacity:0;">${escapeHtml(preheader)}</div>
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f1f4f8;">
-<tr><td align="center" style="padding:28px 12px;">
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;background-color:#ffffff;border-radius:10px;overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;box-shadow:0 4px 12px rgba(0,0,0,0.05);border:1px solid #e2e8f0;">
-<tr><td style="background-color:${BRAND_RED};height:4px;font-size:0;line-height:0;">&nbsp;</td></tr>
-<tr><td style="padding:22px 32px 0;">
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
-<td valign="middle">${logo}</td>
-<td align="right" valign="middle" style="color:#64748b;font-size:12px;font-weight:600;letter-spacing:0.5px;text-transform:uppercase;">${escapeHtml(eyebrow)}</td>
+<body style="margin:0;padding:0;background-color:#f3f5f8;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;font-family:KoHo,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#111111;font-weight:700;">
+<div style="display:none;max-height:0;overflow:hidden;opacity:0;color:#111111;font-weight:700;">${escapeHtml(preheader)}</div>
+<table border="0" cellpadding="0" cellspacing="0" class="email-shell" role="presentation" style="background-color:#f3f5f8;" width="100%">
+<tr><td align="center" class="email-shell-cell" style="padding:28px 14px;color:#111111;font-weight:700;">
+<table border="0" cellpadding="0" cellspacing="0" class="email-card" role="presentation" style="width:100%;max-width:640px;background-color:#ffffff;border-radius:16px;overflow:hidden;font-family:KoHo,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;box-shadow:0 2px 8px rgba(0,0,0,0.08);" width="100%">
+<!-- Bold Red Header với Yellow Accent -->
+<tr><td class="email-header" style="background-color:${BRAND_RED};padding:24px 34px;color:#ffffff;font-weight:700;">
+<table border="0" cellpadding="0" cellspacing="0" role="presentation" width="100%"><tr>
+<td style="color:#ffffff;font-weight:700;background-color:#ffffff;padding:7px 10px;border-radius:5px;" valign="middle">${logo}</td>
+<td align="right" style="font-size:13px;letter-spacing:1px;text-transform:uppercase;font-family:JambonoMedium,KoHo,sans-serif;color:#ffffff;font-weight:700;" valign="middle">${escapeHtml(eyebrow)}</td>
 </tr></table>
 </td></tr>
-<tr><td style="padding:14px 32px 0;"><div style="border-top:1px solid #edf0f4;font-size:0;line-height:0;">&nbsp;</div></td></tr>
-<tr><td style="padding:22px 32px 12px;color:#1f2328;font-size:15px;line-height:1.65;">
+<!-- Yellow Accent Line -->
+<tr><td style="background-color:${BRAND_GOLD};height:3px;font-size:0;line-height:0;color:#111111;font-weight:700;">&nbsp;</td></tr>
+<!-- Main Content -->
+<tr><td class="email-content" style="padding:34px 36px 28px;font-size:15px;line-height:1.75;color:#111111;font-weight:700;">
 ${inner}
 </td></tr>
-<tr><td style="padding:22px 32px 28px;background-color:#f8fafc;border-top:1px solid #edf0f4;font-size:12px;line-height:1.7;color:#64748b;">
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
-<tr><td style="font-size:12px;line-height:1.7;color:#64748b;">
-Tổng đài hỗ trợ 24/7: <strong style="color:${BRAND_RED};">1900 1886</strong> &middot; Website: <a href="${escapeHtml(url)}" style="color:#0f172a;font-weight:600;text-decoration:none;">${escapeHtml(domain)}</a>
-<p style="margin:6px 0 0;color:#94a3b8;font-size:11px;">&copy; ${year} Vietjet Air. Email này được gửi tự động, vui lòng không trả lời.</p>
+<!-- Footer với gray background -->
+<tr><td class="email-footer" style="padding:24px 34px;background-color:#f8fafc;border-top:1px solid #e7ebf0;font-size:12px;line-height:1.65;color:#111111;font-weight:700;">
+<table border="0" cellpadding="0" cellspacing="0" role="presentation" width="100%">
+<tr><td style="font-size:13px;line-height:1.6;text-align:center;color:#111111;font-weight:700;">
+<div style="margin-bottom:12px;color:#111111;font-weight:700;">
+<strong style="font-size:16px;color:#111111;font-weight:700;">Tổng đài hỗ trợ 24/7: 1900 1886</strong>
+</div>
+<div style="margin-bottom:8px;color:#111111;font-weight:700;">
+Website: <a href="${escapeHtml(url)}" style="text-decoration:underline;color:#111111;font-weight:700;">${escapeHtml(domain)}</a>
+</div>
+<div style="margin-top:16px;padding-top:16px;border-top:1px solid ${BRAND_GRAY_LIGHT};font-size:12px;color:#111111;font-weight:700;">
+&copy; ${year} Vietjet Air. Email này được gửi tự động, vui lòng không trả lời.
+</div>
 </td></tr>
 </table>
 </td></tr>
@@ -221,25 +329,65 @@ Tổng đài hỗ trợ 24/7: <strong style="color:${BRAND_RED};">1900 1886</str
 </html>`;
 }
 
-/** Hộp lưu ý trung tính (hết hạn, bảo mật...) — xám nhạt, viền đỏ mỏng trang trọng. */
+/** Hộp lưu ý trung tính (hết hạn, bảo mật...) — VietjetSim style với yellow background */
 function noticeBox(innerHtml: string): string {
-  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top:20px;background-color:#f8fafc;border:1px solid #e2e8f0;border-left:4px solid ${BRAND_RED};border-radius:6px;">
-<tr><td style="padding:14px 18px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:13px;line-height:1.6;color:#334155;">${innerHtml}</td></tr>
+  return `<table border="0" cellpadding="0" cellspacing="0" role="presentation" style="margin-top:24px;background-color:#FFF9D4;border:1px solid #FFE873;border-left:4px solid ${BRAND_GOLD};border-radius:4px;" width="100%">
+<tr><td style="padding:16px 20px;font-family:KoHo,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:14px;line-height:1.7;color:#111111;font-weight:700;">${innerHtml}</td></tr>
 </table>`;
 }
 
 function actionButton(href: string, label: string): string {
-  return `<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:24px 0;">
-<tr><td style="background-color:${BRAND_RED};border-radius:8px;">
-<a href="${escapeHtml(href)}" style="display:inline-block;padding:13px 26px;color:#ffffff;font-size:15px;font-weight:bold;text-decoration:none;letter-spacing:0.3px;">${escapeHtml(label)}</a>
+  return `<table border="0" cellpadding="0" cellspacing="0" role="presentation" style="margin:28px 0;">
+<tr><td align="center" style="background-color:${BRAND_GOLD};border-radius:6px;box-shadow:0 2px 4px rgba(0,0,0,0.1);color:#111111;font-weight:700;">
+<a href="${escapeHtml(href)}" style="display:inline-block;padding:16px 32px;font-size:16px;text-decoration:none;letter-spacing:0.5px;text-transform:uppercase;font-family:JambonoMedium,KoHo,sans-serif;color:#111111;font-weight:700;">${escapeHtml(label)}</a>
 </td></tr></table>`;
 }
 
 function detailRow(label: string, value: string, large = false): string {
   return `<tr>
-<td style="padding:10px 0;border-bottom:1px solid #eef0f3;color:#6b7280;font-size:14px;">${escapeHtml(label)}</td>
-<td align="right" style="padding:10px 0;border-bottom:1px solid #eef0f3;color:${INK};font-size:${large ? '18px' : '14px'};font-weight:bold;">${escapeHtml(value)}</td>
+<td style="padding:12px 0;border-bottom:1px solid ${BRAND_GRAY_LIGHT};font-size:14px;font-family:KoHo,sans-serif;color:#111111;font-weight:700;">${escapeHtml(label)}</td>
+<td align="right" style="padding:12px 0;border-bottom:1px solid ${BRAND_GRAY_LIGHT};font-size:${large ? '18px' : '15px'};font-family:KoHo,sans-serif;color:#111111;font-weight:700;">${escapeHtml(value)}</td>
 </tr>`;
+}
+
+/** Banner hình ảnh cho email chính - Vietjet travel imagery style */
+// Tạm thời disabled cho đến khi có ảnh thực tế trong public/
+// Để bật: đổi USE_EMAIL_BANNERS = true
+const USE_EMAIL_BANNERS = false;
+
+function bannerImage(type: 'success' | 'payment' | 'delay' | 'generic'): string {
+  if (!USE_EMAIL_BANNERS) {
+    return '';
+  }
+
+  const banners = {
+    success: {
+      url: `${siteUrl()}/email-banner-success.jpg`,
+      alt: 'Chuyến bay thành công',
+      height: 180,
+    },
+    payment: {
+      url: `${siteUrl()}/email-banner-payment.jpg`,
+      alt: 'Thanh toán vé máy bay',
+      height: 160,
+    },
+    delay: {
+      url: `${siteUrl()}/email-banner-delay.jpg`,
+      alt: 'Thông báo chuyến bay',
+      height: 140,
+    },
+    generic: {
+      url: `${siteUrl()}/email-banner-generic.jpg`,
+      alt: 'Vietjet Air',
+      height: 150,
+    },
+  };
+  const banner = banners[type];
+  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:24px;">
+<tr><td align="center" style="background-color:${BRAND_RED};padding:0;">
+<img src="${escapeHtml(banner.url)}" width="100%" height="${banner.height}" alt="${escapeHtml(banner.alt)}" style="display:block;max-width:100%;height:auto;border:0;outline:none;text-decoration:none;-ms-interpolation-mode:bicubic;">
+</td></tr>
+</table>`;
 }
 
 export interface BookingConfirmationInput {
@@ -377,6 +525,9 @@ export function buildPaymentInstructionHtml(input: PaymentInstructionInput): {
     ? noticeBox(`<strong>Ghi chú bổ sung từ Hệ Thống:</strong><br>${escapeHtml(customNote)}`)
     : '';
 
+  // Banner hình ảnh cho email thanh toán
+  const bannerHtml = bannerImage('payment');
+
   // The QR carries only the beneficiary: BIN (bank) + account number, plus the
   // holder name as a caption. It deliberately omits `amount` and `addInfo` —
   // when those are embedded, the banking app pre-fills the transfer and the
@@ -393,7 +544,8 @@ export function buildPaymentInstructionHtml(input: PaymentInstructionInput): {
 </td></tr>
 </table>`;
 
-  const inner = `<p style="margin:0 0 16px;">Kính chào <strong>${escapeHtml(fullName)}</strong>,</p>
+  const inner = `${bannerHtml}
+<p style="margin:0 0 16px;">Kính chào <strong>${escapeHtml(fullName)}</strong>,</p>
 <p style="margin:0 0 20px;">Đặt chỗ của Quý khách đã được giữ tạm thời. Vui lòng hoàn tất thanh toán trong vòng <strong>${expiresInMinutes} phút</strong> để đảm bảo giữ chỗ và được phát hành vé điện tử chính thức.</p>
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:20px;background-color:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;">
 <tr><td align="center" style="padding:22px 16px;">
@@ -494,7 +646,11 @@ export function buildPaymentSuccessHtml(input: PaymentSuccessInput): {
     ? noticeBox(`<strong>Lời nhắn từ Hệ Thống Vietjet Air:</strong><br>${escapeHtml(customNote)}`)
     : '';
 
-  const inner = `<p style="margin:0 0 16px;">Kính chào <strong>${escapeHtml(fullName)}</strong>,</p>
+  // Banner hình ảnh cho email thành công
+  const bannerHtml = bannerImage('success');
+
+  const inner = `${bannerHtml}
+<p style="margin:0 0 16px;">Kính chào <strong>${escapeHtml(fullName)}</strong>,</p>
 <p style="margin:0 0 20px;">Vietjet Air xin trân trọng thông báo giao dịch thanh toán của Quý khách đã <strong>hoàn tất thành công</strong>. Vé điện tử đã được phát hành chính thức với chi tiết dưới đây:</p>
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:20px;background-color:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;">
 <tr><td align="center" style="padding:22px 16px;">
@@ -584,7 +740,11 @@ export function buildPaymentFailedHtml(input: PaymentFailedInput): {
     ? noticeBox(`<strong>Chi tiết phản hồi từ hệ thống:</strong><br>${escapeHtml(customNote)}`)
     : '';
 
-  const inner = `<p style="margin:0 0 16px;">Kính chào <strong>${escapeHtml(fullName)}</strong>,</p>
+  // Banner hình ảnh cho email thất bại
+  const bannerHtml = bannerImage('generic');
+
+  const inner = `${bannerHtml}
+<p style="margin:0 0 16px;">Kính chào <strong>${escapeHtml(fullName)}</strong>,</p>
 <p style="margin:0 0 20px;">Vietjet Air xin thông báo: Giao dịch thanh toán cho mã đặt chỗ của Quý khách <strong>chưa được hoàn tất thành công</strong>.</p>
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:20px;background-color:#fff5f5;border:1px solid #fed7d7;border-radius:8px;">
 <tr><td align="center" style="padding:22px 16px;">
@@ -674,7 +834,11 @@ export function buildPaymentPendingReviewHtml(input: PaymentPendingReviewInput):
     ? noticeBox(`<strong>Ghi chú từ Hệ Thống:</strong><br>${escapeHtml(customNote)}`)
     : '';
 
-  const inner = `<p style="margin:0 0 16px;">Kính chào <strong>${escapeHtml(fullName)}</strong>,</p>
+  // Banner hình ảnh cho email chờ đối soát
+  const bannerHtml = bannerImage('payment');
+
+  const inner = `${bannerHtml}
+<p style="margin:0 0 16px;">Kính chào <strong>${escapeHtml(fullName)}</strong>,</p>
 <p style="margin:0 0 20px;">Vietjet Air đã tiếp nhận thông tin chuyển khoản và ảnh biên lai thanh toán cho mã đặt chỗ của Quý khách. Đơn hàng đang được chuyển sang bộ phận kế toán để <strong>đối soát giao dịch</strong>.</p>
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:20px;background-color:#fefce8;border:1px solid #fef08a;border-radius:8px;">
 <tr><td align="center" style="padding:22px 16px;">
@@ -1281,7 +1445,11 @@ export function buildFlightDelayHtml(input: FlightDelayNotificationInput): {
 
   const subject = `[Vietjet Air] Thông báo thay đổi giờ bay — Chuyến bay ${flightNumber}`;
 
-  const inner = `<p style="margin:0 0 16px;">Kính gửi Quý hành khách <strong>${escapeHtml(fullName)}</strong>,</p>
+  // Banner hình ảnh cho email delay
+  const bannerHtml = bannerImage('delay');
+
+  const inner = `${bannerHtml}
+<p style="margin:0 0 16px;">Kính gửi Quý hành khách <strong>${escapeHtml(fullName)}</strong>,</p>
 <p style="margin:0 0 20px;">Hãng hàng không Vietjet trân trọng thông báo lịch khởi hành của chuyến bay <strong>${escapeHtml(flightNumber)}</strong> có sự điều chỉnh so với kế hoạch ban đầu như sau:</p>
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:20px;background-color:#fffbeb;border:1px solid #fde68a;border-left:4px solid #f59e0b;border-radius:8px;">
 <tr><td style="padding:18px 20px;">
