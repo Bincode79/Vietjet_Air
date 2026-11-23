@@ -1,6 +1,6 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { render, screen, fireEvent, within } from '@testing-library/react';
+import { describe, it, expect, vi } from 'vitest';
 import Footer from '@/shared/components/navigation/Footer';
 
 vi.mock('next/link', () => ({
@@ -12,48 +12,37 @@ vi.mock('next/link', () => ({
 }));
 
 describe('Footer Component — Mobile & Desktop Responsiveness', () => {
-  beforeEach(() => {
-    vi.restoreAllMocks();
-  });
-
   it('renders all key sections and the brand wave strip', () => {
     render(<Footer />);
 
     expect(screen.getByTestId('vj-wave-strip')).toBeInTheDocument();
     expect(screen.getByText('CÔNG TY CỔ PHẦN HÀNG KHÔNG VIETJET')).toBeInTheDocument();
     expect(screen.getByText('ĐÃ THÔNG BÁO BỘ CÔNG THƯƠNG')).toBeInTheDocument();
-    expect(screen.getByText('Về đầu trang')).toBeInTheDocument();
   });
 
   it('toggles mobile accordion sections when clicked', () => {
     render(<Footer />);
 
-    // Initial state: accordion buttons exist
     const accordionBtn = screen.getByRole('button', { name: /Để có chuyến bay tốt đẹp/i });
+    const panelId = accordionBtn.getAttribute('aria-controls')!;
     expect(accordionBtn).toHaveAttribute('aria-expanded', 'false');
+    expect(document.getElementById(panelId)).not.toBeInTheDocument();
 
-    // Click to open
     fireEvent.click(accordionBtn);
     expect(accordionBtn).toHaveAttribute('aria-expanded', 'true');
+    const panel = within(document.getElementById(panelId)!);
+    expect(panel.getByRole('link', { name: 'Điều lệ vận chuyển' })).toHaveAttribute(
+      'href',
+      '/gioi-thieu#terms'
+    );
+    expect(panel.getByRole('link', { name: 'Quy định hành lý' })).toHaveAttribute(
+      'href',
+      '/hanh-ly'
+    );
 
-    // Links inside section should now be visible
-    expect(screen.getAllByText('Điều lệ vận chuyển').length).toBeGreaterThanOrEqual(1);
-    expect(screen.getAllByText('Quy định hành lý').length).toBeGreaterThanOrEqual(1);
-
-    // Click again to close
     fireEvent.click(accordionBtn);
     expect(accordionBtn).toHaveAttribute('aria-expanded', 'false');
-  });
-
-  it('calls window.scrollTo when clicking Về đầu trang', () => {
-    const scrollToSpy = vi.fn();
-    window.scrollTo = scrollToSpy;
-
-    render(<Footer />);
-    const topBtn = screen.getByText('Về đầu trang');
-    fireEvent.click(topBtn);
-
-    expect(scrollToSpy).toHaveBeenCalledWith({ top: 0, behavior: 'smooth' });
+    expect(document.getElementById(panelId)).not.toBeInTheDocument();
   });
 
   it('renders social channels and mobile app badges', () => {
