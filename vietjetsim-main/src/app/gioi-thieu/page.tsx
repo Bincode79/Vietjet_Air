@@ -65,11 +65,11 @@ export default function AboutPage() {
           </h2>
           <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
             {[
-              { name: 'Next.js 15', desc: 'React Framework', color: '#000000' },
+              { name: 'Next.js 16', desc: 'React Framework', color: '#000000' },
               { name: 'React 19', desc: 'UI Library', color: '#61DAFB' },
               { name: 'TypeScript', desc: 'Type Safety', color: '#3178C6' },
               { name: 'Tailwind CSS', desc: 'Styling', color: '#06B6D4' },
-              { name: 'Supabase', desc: 'Backend & DB', color: '#3ECF8E' },
+              { name: 'Neon Postgres', desc: 'Serverless Database', color: '#00E599' },
             ].map((tech, i) => (
               <div
                 key={i}
@@ -102,7 +102,7 @@ export default function AboutPage() {
           <div className="grid md:grid-cols-3 gap-6">
             {[
               { role: 'Frontend Lead', name: 'Nguyễn Văn A', desc: 'Next.js, React, Tailwind' },
-              { role: 'Backend Lead', name: 'Trần Thị B', desc: 'Supabase, API, Database' },
+              { role: 'Backend Lead', name: 'Trần Thị B', desc: 'Neon, API, Database' },
               { role: 'UI/UX Designer', name: 'Lê Văn C', desc: 'Figma, Design System' },
             ].map((member, i) => (
               <div
